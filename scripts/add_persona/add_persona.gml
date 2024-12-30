@@ -24,7 +24,8 @@ function add_persona(){
 		ocios : [],
 		es_hijo : false,
 		nacionalidad : 0,
-		religion : false
+		religion : false,
+		relacion : control.null_relacion
 	}
 	array_push(control.null_edificio.trabajadores, persona)
 	array_push(control.personas, persona)
@@ -33,5 +34,7 @@ function add_persona(){
 	for(var b = 0; b < array_length(control.edificio_nombre); b++)
 		if control.edificio_es_ocio[b]
 			array_push(persona.ocios, b)
+	persona.relacion.vivo = true
+	persona.relacion.nombre = name(persona)
 	return persona
 }

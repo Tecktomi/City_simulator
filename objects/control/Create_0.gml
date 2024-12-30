@@ -3,6 +3,17 @@ randomize()
 draw_set_font(Font1)
 var a, b
 //Personas
+null_relacion = {
+	padre : undefined,
+	madre : undefined,
+	hijos : [],
+	vivo : false,
+	nombre : "VOID"
+}
+null_relacion.padre = null_relacion
+null_relacion.madre = null_relacion
+array_push(null_relacion.hijos, null_relacion)
+array_pop(null_relacion.hijos)
 null_persona = {
 	familia : undefined,
 	trabajo : undefined,
@@ -27,7 +38,8 @@ null_persona = {
 	ocios : [undefined],
 	es_hijo : false,
 	nacionalidad : 0,
-	religion : true
+	religion : true,
+	relacion : null_relacion
 }
 null_persona.pareja = null_persona
 personas = [null_persona]
@@ -106,93 +118,10 @@ for(a = 0; a < 28; a++){
 	dia_trabajo[a] = [null_edificio]
 	array_pop(dia_trabajo[a])
 }
-jubilado = {
-	familias : [null_familia],
-	trabajadores : [null_persona],
-	clientes : [null_persona],
-	edificios_cerca : [null_edificio],
-	trabajos_cerca : [null_edificio],
-	casas_cerca : [null_edificio],
-	iglesias_cerca : [null_edificio],
-	almacen_cerca : [null_edificio],
-	x : 0,
-	y : 0,
-	tipo : 1,
-	dia_factura : irandom(27),
-	count : 0,
-	almacen : undefined,
-	eficiencia : 1,
-	modo : 0,
-	array_real_1 : [],
-	array_real_2 : []
-}
-array_pop(jubilado.familias)
-array_pop(jubilado.trabajadores)
-array_pop(jubilado.clientes)
-array_pop(jubilado.edificios_cerca)
-array_pop(jubilado.trabajos_cerca)
-array_pop(jubilado.casas_cerca)
-array_pop(jubilado.iglesias_cerca)
-array_pop(jubilado.almacen_cerca)
-desausiado = {
-	familias : [null_familia],
-	trabajadores : [null_persona],
-	clientes : [null_persona],
-	edificios_cerca : [null_edificio],
-	trabajos_cerca : [null_edificio],
-	casas_cerca : [null_edificio],
-	iglesias_cerca : [null_edificio],
-	almacen_cerca : [null_edificio],
-	x : 0,
-	y : 0,
-	tipo : 2,
-	dia_factura : irandom(27),
-	count : 0,
-	almacen : undefined,
-	eficiencia : 1,
-	modo : 0,
-	array_real_1 : [],
-	array_real_2 : []
-}
-array_push(dia_trabajo[desausiado.dia_factura], desausiado)
-array_pop(desausiado.familias)
-array_pop(desausiado.trabajadores)
-array_pop(desausiado.clientes)
-array_pop(desausiado.edificios_cerca)
-array_pop(desausiado.trabajos_cerca)
-array_pop(desausiado.casas_cerca)
-array_pop(desausiado.iglesias_cerca)
-array_pop(desausiado.almacen_cerca)
+jubilado = add_edificio(0, 0, 1, false)
+desausiado = add_edificio(0, 0, 2, false)
 medicos = [desausiado]
-homeless = {
-	familias : [null_familia],
-	trabajadores : [null_persona],
-	clientes : [null_persona],
-	edificios_cerca : [null_edificio],
-	trabajos_cerca : [null_edificio],
-	casas_cerca : [null_edificio],
-	iglesias_cerca : [null_edificio],
-	almacen_cerca : [null_edificio],
-	x : 0,
-	y : 0,
-	tipo : 3,
-	dia_factura : irandom(27),
-	count : 0,
-	almacen : undefined,
-	eficiencia : 1,
-	modo : 0,
-	array_real_1 : [],
-	array_real_2 : []
-}
-array_push(dia_trabajo[homeless.dia_factura], homeless)
-array_pop(homeless.familias)
-array_pop(homeless.trabajadores)
-array_pop(homeless.clientes)
-array_pop(homeless.edificios_cerca)
-array_pop(homeless.trabajos_cerca)
-array_pop(homeless.casas_cerca)
-array_pop(homeless.iglesias_cerca)
-array_pop(homeless.almacen_cerca)
+homeless = add_edificio(0, 0, 3, false)
 null_familia.casa = homeless
 edificio_nombre = ["Sin trabajo", "Jubilado", "Sin atención médica", "Homeless", "Granja", "Aserradero", "Escuela", "Consultorio", "Chabola", "Cabaña", "Mansión", "Taberna", "Circo", "Muelle", "Pescadería", "Mina", "Capilla"]
 edificio_trabajadores_max = [0, 0, 0, 0, 10, 5, 4, 2, 0, 0, 2, 2, 8, 10, 6, 5, 4]
@@ -317,6 +246,7 @@ sel_persona = null_persona
 sel_tipo = 0
 sel_build = false
 sel_modo = false
+sel_cerca = false
 build_sel = false
 build_index = 0
 build_type = 0
@@ -326,6 +256,8 @@ pais_nombre = ["Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Hond
 pais_idioma = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 3, 3, 0, 3, 3]
 pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88, 90, 92, 88, 88, 77, 86, 96, 78]
 idioma_nombre = ["Español", "Francés", "Portugués", "Inglés"]
+ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía"]
+ministerio = -1
 felicidad_total = 50
 for(a = 0; a < 12; a++){
 	mes_enfermos[a] = 0
@@ -342,6 +274,8 @@ for(a = 0; a < 12; a++){
 	mes_construccion[a] = 0
 	mes_tarifas[a] = 0
 }
+for(a = 0; a < array_length(edificio_nombre); a++)
+	show[a] = false
 dinero = 10000
 pos = 0
 deuda = false

@@ -53,6 +53,8 @@ function add_familia(origen = -1){
 			hijo.es_hijo = true
 			hijo.nacionalidad = choose(persona.nacionalidad, persona_2.nacionalidad)
 			hijo.religion = choose(persona.religion, persona_2.religion)
+			hijo.relacion.padre = persona.relacion
+			hijo.relacion.madre = persona_2.relacion
 			array_push(familia.hijos, hijo)
 		}
 	}

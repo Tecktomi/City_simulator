@@ -41,5 +41,6 @@ function destroy_persona(persona = control.null_persona, muerte = true){
 		else
 			game_end()
 	}
+	persona.relacion.vivo = false
 	return flag
 }
