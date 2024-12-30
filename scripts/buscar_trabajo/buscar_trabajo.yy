@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"buscar_trabajo",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"buscar_trabajo",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

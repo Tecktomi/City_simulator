@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ao",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ao",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

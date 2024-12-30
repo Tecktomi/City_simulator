@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"calcular_felicidad",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"calcular_felicidad",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
