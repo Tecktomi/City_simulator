@@ -7,7 +7,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		trabajos_cerca : [control.null_edificio],
 		casas_cerca : [control.null_edificio],
 		iglesias_cerca : [control.null_edificio],
-		almacen_cerca : [control.null_edificio],
 		x : x,
 		y : y,
 		tipo : tipo,
@@ -17,7 +16,12 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		eficiencia : 1,
 		modo : 0,
 		array_real_1 : [],
-		array_real_2 : []
+		array_real_2 : [],
+		paro : false,
+		paro_motivo : 0,
+		paro_tiempo : 0,
+		exigencia : null_exigencia,
+		exigencia_fallida : false
 	}
 	array_pop(edificio.familias)
 	array_pop(edificio.trabajadores)
@@ -26,14 +30,15 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 	array_pop(edificio.trabajos_cerca)
 	array_pop(edificio.casas_cerca)
 	array_pop(edificio.iglesias_cerca)
-	array_pop(edificio.almacen_cerca)
 	array_push(control.dia_trabajo[edificio.dia_factura], edificio)
 	if fisico{
 		array_push(control.edificios, edificio)
 		if control.edificio_es_trabajo[tipo]
 			array_push(control.trabajos, edificio)
-		if control.edificio_es_escuela[tipo]
+		if control.edificio_es_escuela[tipo]{
 			array_push(control.escuelas, edificio)
+			cumplir_exigencia(1)
+		}
 		if control.edificio_es_medico[tipo]{
 			array_push(control.medicos, edificio)
 			repeat(min(control.edificio_clientes_max[tipo], array_length(control.desausiado.clientes))){
@@ -41,11 +46,16 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 				array_push(edificio.clientes, persona)
 				persona.medico = edificio
 			}
+			cumplir_exigencia(0)
 		}
 		if control.edificio_es_casa[tipo]
 			array_push(control.casas, edificio)
-		if control.edificio_es_iglesia[tipo]
+		if control.edificio_es_iglesia[tipo]{
 			array_push(control.iglesias, edificio)
+			cumplir_exigencia(4)
+		}
+		if control.edificio_es_ocio[tipo]
+			cumplir_exigencia(3)
 		array_push(control.edificio_count[tipo], edificio)
 		for(var a = 0; a < array_length(control.recurso_nombre); a++)
 			edificio.almacen[a] = 0
@@ -76,10 +86,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 							array_push(temp_edificio.iglesias_cerca, edificio)
 						if control.edificio_es_iglesia[temp_edificio.tipo]
 							array_push(edificio.iglesias_cerca, temp_edificio)
-						if control.edificio_es_almacen[edificio.tipo]
-							array_push(temp_edificio.almacen_cerca, edificio)
-						if control.edificio_es_almacen[temp_edificio.tipo]
-							array_push(edificio.almacen_cerca, temp_edificio)
 					}
 				}
 		//Marcar terreno

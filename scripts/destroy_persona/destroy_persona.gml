@@ -10,9 +10,21 @@ function destroy_persona(persona = control.null_persona, muerte = true){
 		 familia.padre = control.null_persona
 	else if familia.madre = persona
 		 familia.madre = control.null_persona
-	else
+	else{
 		array_remove(familia.hijos, persona)
-	if familia.padre = control.null_persona and familia.madre = control.null_persona and array_length(familia.hijos) = 0{
+		for(var a = 0; a < array_length(familia.hijos); a++)
+			if familia.hijos[a].trabajo != control.null_edificio{
+				flag = true
+				break
+			}
+		if not flag{
+			add_felicidad_ley(familia.padre, 10)
+			add_felicidad_ley(familia.madre, 10)
+		}
+	}
+	flag = false
+	familia.integrantes--
+	if familia.integrantes = 0{
 		destroy_familia(familia, muerte)
 		flag = true
 	}
@@ -42,5 +54,6 @@ function destroy_persona(persona = control.null_persona, muerte = true){
 			game_end()
 	}
 	persona.relacion.vivo = false
+	persona.relacion.persona = undefined
 	return flag
 }

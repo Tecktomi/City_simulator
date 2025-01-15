@@ -1,4 +1,4 @@
-function draw_boton(x, y, text, borde = false){
+function draw_boton(x, y, text, borde = false, able = true){
 	var c = draw_get_color()
 	var d = draw_get_halign()
 	if borde{
@@ -16,31 +16,35 @@ function draw_boton(x, y, text, borde = false){
 	draw_text(x, y, text)
 	control.last_width = string_width(text)
 	control.last_height = string_height(text)
-	control.pos += last_height
-	if d = fa_left{
-		if mouse_x > x and mouse_y > y and mouse_x < x + string_width(text) and mouse_y < y + string_height(text){
-			window_set_cursor(cr_handpoint)
-			if mouse_check_button_pressed(mb_left){
-				mouse_clear(mb_left)
-				return true
+	if draw_get_valign() = fa_top
+		control.pos += last_height
+	else
+		control.pos -= last_height
+	if able
+		if d = fa_left{
+			if mouse_x > x and mouse_y > y and mouse_x < x + string_width(text) and mouse_y < y + string_height(text){
+				window_set_cursor(cr_handpoint)
+				if mouse_check_button_pressed(mb_left){
+					mouse_clear(mb_left)
+					return true
+				}
+				else
+					return false
 			}
 			else
 				return false
 		}
-		else
-			return false
-	}
-	else{
-		if mouse_x > x - string_width(text) and mouse_y > y and mouse_x < x and mouse_y < y + string_height(text){
-			window_set_cursor(cr_handpoint)
-			if mouse_check_button_pressed(mb_left){
-				mouse_clear(mb_left)
-				return true
+		else{
+			if mouse_x > x - string_width(text) and mouse_y > y and mouse_x < x and mouse_y < y + string_height(text){
+				window_set_cursor(cr_handpoint)
+				if mouse_check_button_pressed(mb_left){
+					mouse_clear(mb_left)
+					return true
+				}
+				else
+					return false
 			}
 			else
 				return false
 		}
-		else
-			return false
-	}
 }

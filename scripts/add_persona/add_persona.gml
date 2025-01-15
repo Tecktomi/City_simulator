@@ -18,6 +18,7 @@ function add_persona(){
 		felicidad_ocio : 50,
 		felicidad_transporte : 50,
 		felicidad_religion : 50,
+		felicidad_ley : 50,
 		educacion : 0,
 		escuela : control.null_edificio,
 		medico : control.null_edificio,
@@ -25,8 +26,18 @@ function add_persona(){
 		es_hijo : false,
 		nacionalidad : 0,
 		religion : false,
-		relacion : control.null_relacion
+		relacion : {
+			padre : control.null_relacion,
+			madre : control.null_relacion,
+			hijos : [],
+			vivo : true,
+			persona: undefined,
+			nombre : "",
+			sexo : a
+			
+		}
 	}
+	
 	array_push(control.null_edificio.trabajadores, persona)
 	array_push(control.personas, persona)
 	array_push(control.cumples[persona.cumple], persona)
@@ -34,7 +45,7 @@ function add_persona(){
 	for(var b = 0; b < array_length(control.edificio_nombre); b++)
 		if control.edificio_es_ocio[b]
 			array_push(persona.ocios, b)
-	persona.relacion.vivo = true
+	persona.relacion.persona = persona
 	persona.relacion.nombre = name(persona)
 	return persona
 }

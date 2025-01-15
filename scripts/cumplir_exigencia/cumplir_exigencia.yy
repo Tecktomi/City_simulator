@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"cumplir_exigencia",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"cumplir_exigencia",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

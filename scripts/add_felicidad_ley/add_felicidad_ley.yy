@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"add_felicidad_ley",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"add_felicidad_ley",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

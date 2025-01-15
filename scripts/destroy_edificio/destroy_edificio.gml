@@ -3,8 +3,6 @@ function destroy_edificio(edificio = null_edificio){
 		cambiar_trabajo(edificio.trabajadores[a], null_edificio)
 	for(var a = 0; a < array_length(edificio.familias); a++)
 		cambiar_casa(edificio.familias[a], homeless)
-	for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
-		array_remove(edificio.edificios_cerca[a].edificios_cerca, edificio)
 	if control.edificio_es_medico[edificio.tipo]{
 		array_remove(control.medicos, edificio)
 		for(var a = 0; a < array_length(edificio.clientes); a++)
@@ -28,9 +26,6 @@ function destroy_edificio(edificio = null_edificio){
 	if control.edificio_es_iglesia[edificio.tipo]
 		for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
 			array_remove(edificio.edificios_cerca[a].iglesias_cerca, edificio)
-	if control.edificio_es_almacen[edificio.tipo]
-		for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
-			array_remove(edificio.edificios_cerca[a].almacen_cerca, edificio)
 	for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
 		array_remove(edificio.edificios_cerca[a].edificios_cerca, edificio)
 	array_remove(dia_trabajo[edificio.dia_factura], edificio)
@@ -39,4 +34,6 @@ function destroy_edificio(edificio = null_edificio){
 		for(var b = 0; b < control.edificio_height[edificio.tipo]; b++)
 			array_set(control.bool_edificio[edificio.x + a], edificio.y + b, false)
 	array_remove(control.edificios, edificio)
+	if edificio.exigencia != control.null_exigencia
+		array_remove(edificio.exigencia.edificios, edificio)
 }

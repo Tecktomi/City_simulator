@@ -3,9 +3,10 @@ function edificio_valid_place(x, y, index){
 		return false
 	if control.edificio_es_costero[index]{
 		for(var a = 0; a < control.edificio_width[index]; a++)
-			for(var b = 0; b < control.edificio_height[index]; b++)
-				if control.bool_edificio[a, b] or control.bosque[a, b]
+			for(var b = 0; b < control.edificio_height[index]; b++){
+				if control.bool_edificio[x + a, y + b] or control.bosque[x + a, y + b]
 					return false
+			}
 		var flag = true
 		for(var a = 0; a < control.edificio_width[index]; a++)
 			if control.mar[x + a, y] = control.mar[x + a, y + control.edificio_height[index] - 1] or (a > 0 and control.mar[x + a, y] != control.mar[x + a - 1, y]){
