@@ -21,7 +21,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		paro_motivo : 0,
 		paro_tiempo : 0,
 		exigencia : null_exigencia,
-		exigencia_fallida : false
+		exigencia_fallida : false,
+		privado : false
 	}
 	array_pop(edificio.familias)
 	array_pop(edificio.trabajadores)

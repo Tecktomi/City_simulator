@@ -1,5 +1,5 @@
 function string_struct(struct, b = 0){
-	if b >= 10
+	if b >= 3
 		return "..."
 	if not is_struct(struct){
 		if not is_array(struct){

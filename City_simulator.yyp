@@ -55,6 +55,7 @@
     {"id":{"name":"in","path":"scripts/in/in.yy",},},
     {"id":{"name":"name","path":"scripts/name/name.yy",},},
     {"id":{"name":"perlin","path":"scripts/perlin/perlin.yy",},},
+    {"id":{"name":"print_familia","path":"scripts/print_familia/print_familia.yy",},},
     {"id":{"name":"scr_color","path":"scripts/scr_color/scr_color.yy",},},
     {"id":{"name":"string_struct_begin","path":"scripts/string_struct_begin/string_struct_begin.yy",},},
     {"id":{"name":"string_struct","path":"scripts/string_struct/string_struct.yy",},},

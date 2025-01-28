@@ -57,6 +57,7 @@ for(a = 0; a < 365; a++){
 	array_pop(muerte[a])
 }
 //Familias
+familia_count = 0
 null_familia = {
 	padre : null_persona,
 	madre : null_persona,
@@ -66,7 +67,8 @@ null_familia = {
 	felicidad_vivienda : 0,
 	felicidad_alimento : 0,
 	riqueza : 0,
-	integrantes : 0
+	integrantes : 0,
+	index : familia_count
 }
 array_pop(null_familia.hijos)
 familias = [null_familia]
@@ -95,7 +97,8 @@ null_edificio = {
 	paro_motivo : 0,
 	paro_tiempo : 0,
 	exigencia : undefined,
-	exigencia_fallida : false
+	exigencia_fallida : false,
+	privado : false
 }
 array_pop(null_edificio.familias)
 array_pop(null_edificio.trabajadores)
@@ -176,6 +179,7 @@ edificio_height = [0, 0, 0, 0, 3, 2, 3, 3, 2, 1, 2, 2, 4, 6, 5, 4, 5, 5, 5, 5]
 edificio_color = [0, 0, 0, 0, 0, 10, 25, -10, 167, 177, 187, -15, 35, 80, -5, 30, 40, 45, 50, 55]
 edificio_precio = [0, 0, 0, 0, 400, 650, 300, 1500, 300, 200, 500, 250, 450, 2500, 800, 1000, 1500, 1800, 1200, 1400]
 edificio_mantenimiento = [0, 0, 0, 0, 4, 5, 6, 10, 3, 2, 10, 3, 6, 2, 8, 10, 12, 15, 10, 12]
+edificio_estatal = [true, true, true, true, false, false, true, true, false, false, false, false, false, true, false, false, true, true, true, true]
 edificio_categoria_nombre = ["Residencial", "Producción", "Servicios", "Infrastructura"]
 edificio_categoria = [[8, 9, 10], [4, 5, 14, 15], [6, 7, 11, 12, 16], [13]]
 edificios_ocio_index = []

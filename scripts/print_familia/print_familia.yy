@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"print_familia",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"print_familia",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
