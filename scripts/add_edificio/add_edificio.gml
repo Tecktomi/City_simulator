@@ -110,6 +110,13 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 					}
 				}
 		}
+		//Modificar contaminacion
+		if control.edificio_contaminacion[tipo] != 0{
+			var size = ceil(control.edificio_contaminacion[tipo] / 5)
+			for(var a = max(0, x - size); a < min(control.xsize, x + width + size); a++)
+				for(var b = max(0, y - size); b < min(control.ysize, y + height + size); b++)
+					array_set(control.contaminacion[a], b, min(100, max(0, round(control.contaminacion[a, b] + control.edificio_contaminacion[tipo] / (1 + distancia_punto(a, b, edificio))))))
+		}
 	}
 	return edificio
 }

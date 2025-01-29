@@ -101,6 +101,8 @@ edificio_precio = [0, 0, 0, 0, 400, 650, 300, 1500, 300, 200, 500, 250, 450, 250
 edificio_mantenimiento = [0, 0, 0, 0, 4, 5, 6, 10, 3, 2, 10, 3, 6, 2, 8, 10, 12, 15, 10, 12, 5, 2]
 edificio_estatal = [true, true, true, true, false, false, true, true, false, false, false, false, false, true, false, false, true, true, true, true, true, true]
 edificio_belleza = [0, 0, 0, 0, 40, 30, 40, 50, 40, 55, 75, 30, 30, 30, 20, 25, 60, 50, 50, 50, 40, 80]
+edificio_construccion_tiempo = [0, 0, 0, 0, 90, 120, 360, 360, 150, 90, 360, 120, 120, 720, 120, 240, 360, 360, 360, 360, 240, 90]
+edificio_contaminacion = [0, 0, 0, 0, -10, 10, 0, 0, 15, 5, 10, 0, 0, 20, 10, 30, 0, 10, 0, 0, 0, -10]
 edificio_categoria_nombre = ["Residencial", "Producción", "Servicios", "Infrastructura"]
 edificio_categoria = [[8, 9, 10], [4, 5, 14, 15], [6, 7, 11, 12, 16, 21], [13, 20]]
 null_edificio = {
@@ -157,13 +159,14 @@ for(a = 0; a < 28; a++){
 	dia_trabajo[a] = [null_edificio]
 	array_pop(dia_trabajo[a])
 }
-exigencia_nombre = [	"Abre un nuevo edificio médico",
-						"Abre un nuevo edificio educativo",
-						"Que nadie muera de inanición en 3 meses",
-						"Abre un nuevo edificio de ocio",
-						"Abre un nuevo edificio religioso",
-						"Trata a todos los enfermos",
-						"Aumenta la felicidad alimenticia a 50"]
+exigencia_nombre = [
+	"Abre un nuevo edificio médico",
+	"Abre un nuevo edificio educativo",
+	"Que nadie muera de inanición en 3 meses",
+	"Abre un nuevo edificio de ocio",
+	"Abre un nuevo edificio religioso",
+	"Trata a todos los enfermos",
+	"Aumenta la felicidad alimenticia a 50"]
 exigencia_siguiente = [5, 1, 6, 3, 4, 5, 6]
 null_exigencia = {
 	index : 0,
@@ -233,6 +236,7 @@ if not d3{
 		for(b = 0; b < ysize; b++){
 			bool_edificio[a, b] = false
 			id_edificio[a, b] = null_edificio
+			construccion_reservada[a, b] = -1
 			bosque[a, b] = grid[# a, b] > 0.6 and altura[# a, b] > 0.6
 			if bosque[a, b]
 				bosque_madera[a, b] = floor(160 * grid[# a, b])
@@ -246,7 +250,8 @@ if not d3{
 				mineral[c][a, b] = (mineral_grid[c][# a, b] > recurso_mineral_rareza[c])
 				mineral_cantidad[c][a, b] = round(320 * power(mineral_grid[c][# a, b], 3))
 			}
-			belleza[a, b] = 50
+			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, altura[# a, b])))
+			contaminacion[a, b] = 0
 		}
 }
 else{

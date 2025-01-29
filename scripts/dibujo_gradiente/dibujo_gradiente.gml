@@ -21,15 +21,29 @@ function dibujo_gradiente(tipo, modo){
 	if modo = 2{
 		draw_set_alpha(0.5)
 		for(var a = 0; a < control.xsize; a++)
+			for(var b = 0; b < control.ysize; b++)
+				if not control.mar[a, b]{
+					draw_set_color(make_color_rgb(2.55 * (100 - control.belleza[a, b]), 2.55 * control.belleza[a, b], 0))
+					draw_rectangle(a * 16 - control.xpos, b * 16 - control.ypos, a * 16 + 15 - control.xpos, b * 16 + 15 - control.ypos, false)
+				}
+		draw_set_alpha(1)
+		draw_set_color(c_white)
+		draw_text(0, 0, "Belleza")
+		if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height
+			if not control.mar[floor((mouse_x + control.xpos) / 16), floor((mouse_y + control.ypos) / 16)]
+				draw_text(0, 20, control.belleza[floor((mouse_x + control.xpos) / 16), floor((mouse_y + control.ypos) / 16)])
+	}
+	if modo = 3{
+		for(var a = 0; a < control.xsize; a++)
 			for(var b = 0; b < control.ysize; b++){
-				draw_set_color(make_color_rgb(2.55 * (100 - control.belleza[a, b]), 2.55 * control.belleza[a, b], 0))
+				draw_set_color(make_color_hsv(0, 0, 2.55 * (100 - control.contaminacion[a, b])))
+				draw_set_alpha(control.contaminacion[a, b] / 200)
 				draw_rectangle(a * 16 - control.xpos, b * 16 - control.ypos, a * 16 + 15 - control.xpos, b * 16 + 15 - control.ypos, false)
 			}
 		draw_set_alpha(1)
 		draw_set_color(c_white)
-		draw_text(0, 0, "Belleza")
-		if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height{
-			draw_text(0, 20, control.belleza[floor((mouse_x + control.xpos) / 16), floor((mouse_y + control.ypos) / 16)])
-		}
+		draw_text(0, 0, "Contaminación")
+		if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height
+			draw_text(0, 20, control.contaminacion[floor((mouse_x + control.xpos) / 16), floor((mouse_y + control.ypos) / 16)])
 	}
 }

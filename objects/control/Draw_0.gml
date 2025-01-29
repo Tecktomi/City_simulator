@@ -95,6 +95,8 @@ if keyboard_check(ord("M")) or (build_sel and edificio_nombre[build_index] = "Mi
 	dibujo_gradiente(build_type, 1)
 if keyboard_check(ord("B")) or (build_sel and (edificio_es_casa[build_index] or build_index = 21))
 	dibujo_gradiente(0, 2)
+if keyboard_check(ord("C"))
+	dibujo_gradiente(0, 3)
 //Dibujo de arboles
 if d3{
 	for(var a = 0; a < xsize; a++)
