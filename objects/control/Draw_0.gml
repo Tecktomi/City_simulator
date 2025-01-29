@@ -84,7 +84,7 @@ if keyboard_check(ord("G")){
 		build_type = (build_type + array_length(recurso_cultivo) - 1) mod array_length(recurso_cultivo)
 }
 if keyboard_check(ord("G")) or (build_sel and edificio_nombre[build_index] = "Granja")
-	dibujo_gradiente(build_type, true)
+	dibujo_gradiente(build_type, 0)
 if keyboard_check(ord("M")){
 	if mouse_wheel_up()
 		build_type = (build_type + 1) mod array_length(recurso_mineral)
@@ -92,7 +92,9 @@ if keyboard_check(ord("M")){
 		build_type = (build_type + array_length(recurso_mineral) - 1) mod array_length(recurso_mineral)
 }
 if keyboard_check(ord("M")) or (build_sel and edificio_nombre[build_index] = "Mina")
-	dibujo_gradiente(build_type, false)
+	dibujo_gradiente(build_type, 1)
+if keyboard_check(ord("B")) or (build_sel and (edificio_es_casa[build_index] or build_index = 21))
+	dibujo_gradiente(0, 2)
 //Dibujo de arboles
 if d3{
 	for(var a = 0; a < xsize; a++)
@@ -686,6 +688,7 @@ if sel_info{
 			draw_text_pos(room_width - 20, pos, "Esperando que cumplas " + exigencia_nombre[sel_edificio.paro_motivo])
 		//Información familias
 		if edificio_es_casa[sel_edificio.tipo]{
+			draw_text_pos(room_width - 20, pos, $"Calidad de vivienda {sel_edificio.vivienda_calidad}")
 			draw_text_pos(room_width - 20, pos, "Familias: " + string(array_length(sel_edificio.familias)) + "/" + string(edificio_familias_max[sel_edificio.tipo]))
 			for(var a = 0; a < array_length(sel_edificio.familias); a++)
 				if draw_boton(room_width - 40, pos, "Familia " + sel_edificio.familias[a].padre.apellido + " " + sel_edificio.familias[a].madre.apellido){
@@ -717,7 +720,7 @@ if sel_info{
 							if draw_boton(room_width - 40, pos, recurso_nombre[recurso_cultivo[a]])
 								sel_edificio.modo = a
 							if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
-								dibujo_gradiente(a, true)
+								dibujo_gradiente(a, 0)
 								draw_set_color(c_black)
 							}
 						}
@@ -738,7 +741,7 @@ if sel_info{
 							if draw_boton(room_width - 40, pos, recurso_nombre[recurso_mineral[a]])
 								sel_edificio.modo = a
 							if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
-								dibujo_gradiente(a, false)
+								dibujo_gradiente(a, 1)
 								draw_set_color(c_black)
 							}
 						}
@@ -917,18 +920,10 @@ if keyboard_check(vk_space)
 		current_mes = mes(dia)
 		for(var a = 0; a < array_length(exigencia_nombre); a++)
 			if exigencia_pedida[a] and dia = exigencia[a].expiracion{
-				var temp_exigencia = exigencia[a]
-				show_debug_message("Has fallado en " + exigencia_nombre[temp_exigencia.index])
-				for(var b = 0; b < array_length(temp_exigencia.edificios); b++){
-					var edificio = temp_exigencia.edificios[b]
-					edificio.paro = true
-					edificio.paro_tiempo = 24 + 6 * array_length(temp_exigencia.edificios)
-					edificio.paro_motivo = exigencia_siguiente[edificio.paro_motivo]
-					edificio.exigencia = null_exigencia
-					edificio.exigencia_fallida = true
-				}
-				exigencia_pedida[a] = false
-				exigencia[a] = null_exigencia
+				if a = 2
+					cumplir_exigencia(2)
+				else
+					fallar_exigencia(a)
 			}
 		//Eventos mensuales
 		if dia_mes(dia) = 0{
@@ -957,19 +952,12 @@ if keyboard_check(vk_space)
 			}
 			if ley_eneabled[1] and irandom(felicidad_total) > 25 or dia < 365
 				add_familia()
-			for(var a = 0; a < array_length(exigencia_nombre); a++)
+			for(var a = 0; a < array_length(exigencia_nombre); a++){
 				if exigencia_cumplida[a]{
 					exigencia_cumplida_time[a]--
 					if exigencia_cumplida_time[a] = 0
 						exigencia_cumplida[a] = false
 				}
-			//Reducir la inanición
-			if exigencia_pedida[2]{
-				var b = 0
-				for(var a = current_mes + 9; a < current_mes + 12; a++)
-					b += mes_inanicion[a mod 12]
-				if b = 0
-					cumplir_exigencia(2)
 			}
 			//Tratar a todos los enfermos
 			if exigencia_pedida[5] and array_length(desausiado.clientes) = 0
@@ -1184,7 +1172,7 @@ if keyboard_check(vk_space)
 				persona.felicidad_salud = floor(persona.felicidad_salud / 2)
 			else
 				persona.felicidad_salud = floor((persona.felicidad_salud + 3 * 50) / 4)
-			persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * edificio_familias_calidad[persona.familia.casa.tipo]) / 4)
+			persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
 			temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley]
 			if persona.es_hijo{
 				persona.felicidad_educacion = floor((persona.felicidad_educacion + 3 * edificio_clientes_calidad[persona.escuela.tipo]) / 4)
@@ -1486,16 +1474,22 @@ if keyboard_check(vk_space)
 						flag = false
 						if familia.padre != null_persona{
 							flag = destroy_persona(familia.padre)
+							if exigencia_pedida[2]
+								fallar_exigencia(2)
 							mes_inanicion[current_mes] ++
 						}
 						if not flag and familia.madre != null_persona{
 							flag = destroy_persona(familia.madre)
+							if exigencia_pedida[2]
+								fallar_exigencia(2)
 							mes_inanicion[current_mes]++
 						}
 						if not flag
 							for(var c = 0; not flag and c < array_length(familia.hijos); c++)
 								if brandom(){
 									flag = destroy_persona(familia.hijos[c])
+									if exigencia_pedida[2]
+										fallar_exigencia(2)
 									mes_inanicion[current_mes]++
 									c--
 								}

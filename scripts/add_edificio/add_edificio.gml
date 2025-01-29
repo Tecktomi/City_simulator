@@ -22,7 +22,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		paro_tiempo : 0,
 		exigencia : null_exigencia,
 		exigencia_fallida : false,
-		privado : false
+		privado : false,
+		vivienda_calidad : control.edificio_familias_calidad[tipo]
 	}
 	array_pop(edificio.familias)
 	array_pop(edificio.trabajadores)
@@ -33,6 +34,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 	array_pop(edificio.iglesias_cerca)
 	array_push(control.dia_trabajo[edificio.dia_factura], edificio)
 	if fisico{
+		var width = control.edificio_width[tipo], height = control.edificio_height[tipo]
 		array_push(control.edificios, edificio)
 		if control.edificio_es_trabajo[tipo]
 			array_push(control.trabajos, edificio)
@@ -61,15 +63,15 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		for(var a = 0; a < array_length(control.recurso_nombre); a++)
 			edificio.almacen[a] = 0
 		if control.edificio_nombre[tipo] = "Aserradero"
-			for(var a = max(0, x - 4); a < min(x + edificio_width[tipo] + 4, control.xsize); a++)
-				for(var b = max(0, y - 4); b < min(y + edificio_height[tipo] + 4, control.ysize); b++)
+			for(var a = max(0, x - 4); a < min(x + width + 4, control.xsize); a++)
+				for(var b = max(0, y - 4); b < min(y + height + 4, control.ysize); b++)
 					if control.bosque[a, b]{
 						array_push(edificio.array_real_1, a)
 						array_push(edificio.array_real_2, b)
 					}
 		//Buscar edificios cercanos
-		for(var a = max(0, x - 8); a < min(x + edificio_width[tipo] + 9, control.xsize); a++)
-			for(var b = max(0, y - 8); b < min(y + edificio_height[tipo] + 9, control.ysize); b++)
+		for(var a = max(0, x - 8); a < min(x + width + 9, control.xsize); a++)
+			for(var b = max(0, y - 8); b < min(y + height + 9, control.ysize); b++)
 				if control.bool_edificio[a, b]{
 					var temp_edificio = control.id_edificio[a, b]
 					if not array_contains(edificio.edificios_cerca, temp_edificio){
@@ -90,11 +92,24 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 					}
 				}
 		//Marcar terreno
-		for(var a = 0; a < control.edificio_width[tipo]; a++)
-			for(var b = 0; b < control.edificio_height[tipo]; b++){
+		for(var a = 0; a < width; a++)
+			for(var b = 0; b < height; b++){
 				array_set(control.bool_edificio[x + a], y + b, true)
 				array_set(control.id_edificio[x + a], y + b, edificio)
 			}
+		//Modificar belleza
+		if control.edificio_belleza[tipo] != 50{
+			var size = ceil(abs(control.edificio_belleza[tipo] - 50) / 5)
+			for(var a = max(0, x - size); a < min(control.xsize, x + width + size); a++)
+				for(var b = max(0, y - size); b < min(control.ysize, y + height + size); b++){
+					array_set(control.belleza[a], b, min(100, max(0, round(control.belleza[a, b] + (control.edificio_belleza[tipo] - 50) / (1 + distancia_punto(a, b, edificio))))))
+					if control.bool_edificio[a, b]{
+						var edificio_2 = control.id_edificio[a, b]
+						if control.edificio_es_casa[edificio_2.tipo]
+							edificio_2.vivienda_calidad = control.edificio_familias_calidad[edificio_2.tipo] + round((control.belleza[a, b] - 50) / 10)
+					}
+				}
+		}
 	}
 	return edificio
 }

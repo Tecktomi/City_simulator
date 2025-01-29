@@ -5,6 +5,8 @@ function add_exigencia(tipo, target = [control.null_edificio]){
 		value : 0,
 		edificios : target
 	}
+	if tipo = 2
+		exigencia.expiracion = control.dia + 100
 	control.exigencia_pedida[tipo] = true
 	control.exigencia[tipo] = exigencia
 	return exigencia

@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"edificio_costero_valid_place",
+  "%Name":"fallar_exigencia",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"edificio_costero_valid_place",
+  "name":"fallar_exigencia",
   "parent":{
     "name":"City_simulator",
     "path":"City_simulator.yyp",

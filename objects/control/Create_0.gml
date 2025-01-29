@@ -74,7 +74,35 @@ array_pop(null_familia.hijos)
 familias = [null_familia]
 array_pop(familias)
 null_persona.familia = null_familia
-//Trabajos
+//Edificios
+edificio_nombre = ["Sin trabajo", "Jubilado", "Sin atención médica", "Homeless", "Granja", "Aserradero", "Escuela", "Consultorio", "Chabola", "Cabaña", "Mansión", "Taberna", "Circo", "Muelle", "Pescadería", "Mina", "Capilla", "Hospicio", "Albergue", "Escuela parroquial", "Oficina de Construcción", "Plaza"]
+edificio_trabajadores_max = [0, 0, 0, 0, 10, 5, 4, 2, 0, 0, 2, 2, 8, 5, 6, 5, 4, 8, 4, 5, 8, 0]
+edificio_trabajo_calidad = [0, 10, 0, 0, 25, 30, 50, 60, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45, 30, 0]
+edificio_trabajo_sueldo = [0, 2, 0, 0, 4, 5, 8, 11, 0, 0, 4, 5, 3, 7, 6, 5, 6, 6, 5, 6, 6, 0]
+edificio_trabajo_educacion = [0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 1, 0, 1, 2, 1, 2, 1, 0]
+edificio_es_casa = [false, false, false, true, false, false, false, false, true, true, true, false, false, false, false, false, false, false, true, false, false, false]
+edificio_es_trabajo = [false, false, false, false, true, true, true, true, false, false, true, true, true, true, true, true, true, true, true, true, true, false]
+edificio_es_escuela = [false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false]
+edificio_es_medico = [false, false, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, true, false, false, false, false]
+edificio_es_ocio = [false, false, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, true]
+edificio_es_iglesia = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false]
+edificio_es_costero = [false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false]
+edificio_es_almacen = [false, false, false, false, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false]
+edificio_clientes_max = [0, 0, 0, 0, 0, 0, 20, 25, 0, 0, 0, 5, 16, 0, 0, 0, 20, 10, 10, 10, 0, 4]
+edificio_clientes_calidad = [0, 0, 0, 0, 0, 0, 50, 60, 0, 0, 0, 25, 20, 0, 0, 0, 50, 30, 30, 30, 0, 10]
+edificio_clientes_tarifa = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+edificio_familias_max = [0, 0, 0, 0, 0, 0, 0, 0, 5, 2, 1, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0]
+edificio_familias_calidad = [0, 0, 0, 0, 0, 0, 0, 0, 30, 40, 65, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0]
+edificio_familias_renta = [0, 0, 0, 0, 0, 0, 0, 0, 4, 6, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+edificio_width = [0, 0, 0, 0, 6, 3, 3, 1, 2, 2, 3, 1, 4, 6, 5, 3, 3, 3, 3, 3, 3, 2]
+edificio_height = [0, 0, 0, 0, 3, 2, 3, 3, 2, 1, 2, 2, 4, 6, 5, 4, 5, 5, 5, 5, 2, 2]
+edificio_color = [0, 0, 0, 0, 0, 10, 25, -10, 167, 177, 187, -15, 35, 80, -5, 30, 40, 45, 50, 55, 60, 65]
+edificio_precio = [0, 0, 0, 0, 400, 650, 300, 1500, 300, 200, 500, 250, 450, 2500, 800, 1000, 1500, 1800, 1200, 1400, 700, 200]
+edificio_mantenimiento = [0, 0, 0, 0, 4, 5, 6, 10, 3, 2, 10, 3, 6, 2, 8, 10, 12, 15, 10, 12, 5, 2]
+edificio_estatal = [true, true, true, true, false, false, true, true, false, false, false, false, false, true, false, false, true, true, true, true, true, true]
+edificio_belleza = [0, 0, 0, 0, 40, 30, 40, 50, 40, 55, 75, 30, 30, 30, 20, 25, 60, 50, 50, 50, 40, 80]
+edificio_categoria_nombre = ["Residencial", "Producción", "Servicios", "Infrastructura"]
+edificio_categoria = [[8, 9, 10], [4, 5, 14, 15], [6, 7, 11, 12, 16, 21], [13, 20]]
 null_edificio = {
 	familias : [null_familia],
 	trabajadores : [null_persona],
@@ -98,7 +126,8 @@ null_edificio = {
 	paro_tiempo : 0,
 	exigencia : undefined,
 	exigencia_fallida : false,
-	privado : false
+	privado : false,
+	vivienda_calidad : 0
 }
 array_pop(null_edificio.familias)
 array_pop(null_edificio.trabajadores)
@@ -155,33 +184,6 @@ desausiado = add_edificio(0, 0, 2, false)
 medicos = [desausiado]
 homeless = add_edificio(0, 0, 3, false)
 null_familia.casa = homeless
-edificio_nombre = ["Sin trabajo", "Jubilado", "Sin atención médica", "Homeless", "Granja", "Aserradero", "Escuela", "Consultorio", "Chabola", "Cabaña", "Mansión", "Taberna", "Circo", "Muelle", "Pescadería", "Mina", "Capilla", "Hospicio", "Albergue", "Escuela parroquial"]
-edificio_trabajadores_max = [0, 0, 0, 0, 10, 5, 4, 2, 0, 0, 2, 2, 8, 5, 6, 5, 4, 8, 4, 5]
-edificio_trabajo_calidad = [0, 10, 0, 0, 25, 30, 50, 60, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45]
-edificio_trabajo_sueldo = [0, 2, 0, 0, 4, 5, 8, 11, 0, 0, 4, 5, 3, 7, 6, 5, 6, 6, 5, 6]
-edificio_trabajo_educacion = [0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 1, 0, 1, 2, 1, 2]
-edificio_es_casa = [false, false, false, true, false, false, false, false, true, true, true, false, false, false, false, false, false, false, true, false]
-edificio_es_trabajo = [false, false, false, false, true, true, true, true, false, false, true, true, true, true, true, true, true, true, true, true]
-edificio_es_escuela = [false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, true]
-edificio_es_medico = [false, false, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, true, false, false]
-edificio_es_ocio = [false, false, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false]
-edificio_es_iglesia = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true]
-edificio_es_costero = [false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false]
-edificio_es_almacen = [false, false, false, false, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false]
-edificio_clientes_max = [0, 0, 0, 0, 0, 0, 20, 25, 0, 0, 0, 5, 16, 0, 0, 0, 20, 10, 10, 10]
-edificio_clientes_calidad = [0, 0, 0, 0, 0, 0, 50, 60, 0, 0, 0, 25, 20, 0, 0, 0, 50, 30, 30, 30]
-edificio_clientes_tarifa = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0]
-edificio_familias_max = [0, 0, 0, 0, 0, 0, 0, 0, 5, 2, 1, 0, 0, 0, 0, 0, 0, 0, 15, 0]
-edificio_familias_calidad = [0, 0, 0, 0, 0, 0, 0, 0, 30, 40, 65, 0, 0, 0, 0, 0, 0, 0, 15, 0]
-edificio_familias_renta = [0, 0, 0, 0, 0, 0, 0, 0, 4, 6, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-edificio_width = [0, 0, 0, 0, 6, 3, 3, 1, 2, 2, 3, 1, 4, 6, 5, 3, 3, 3, 3, 3]
-edificio_height = [0, 0, 0, 0, 3, 2, 3, 3, 2, 1, 2, 2, 4, 6, 5, 4, 5, 5, 5, 5]
-edificio_color = [0, 0, 0, 0, 0, 10, 25, -10, 167, 177, 187, -15, 35, 80, -5, 30, 40, 45, 50, 55]
-edificio_precio = [0, 0, 0, 0, 400, 650, 300, 1500, 300, 200, 500, 250, 450, 2500, 800, 1000, 1500, 1800, 1200, 1400]
-edificio_mantenimiento = [0, 0, 0, 0, 4, 5, 6, 10, 3, 2, 10, 3, 6, 2, 8, 10, 12, 15, 10, 12]
-edificio_estatal = [true, true, true, true, false, false, true, true, false, false, false, false, false, true, false, false, true, true, true, true]
-edificio_categoria_nombre = ["Residencial", "Producción", "Servicios", "Infrastructura"]
-edificio_categoria = [[8, 9, 10], [4, 5, 14, 15], [6, 7, 11, 12, 16], [13]]
 edificios_ocio_index = []
 edificio_almacen_index = []
 for(a = 0; a < array_length(edificio_nombre); a++){
@@ -244,6 +246,7 @@ if not d3{
 				mineral[c][a, b] = (mineral_grid[c][# a, b] > recurso_mineral_rareza[c])
 				mineral_cantidad[c][a, b] = round(320 * power(mineral_grid[c][# a, b], 3))
 			}
+			belleza[a, b] = 50
 		}
 }
 else{
@@ -325,7 +328,7 @@ dinero = 10000
 pos = 0
 deuda = false
 deuda_dia = 0
-repeat(10)
+while array_length(personas) < 50
 	add_familia(0)
 do{
 	a = irandom(xsize - edificio_width[13])
@@ -336,6 +339,27 @@ add_edificio(a, b, 13)
 edificios[0].almacen[0] = irandom_range(1000, 1500)
 xpos = min(max(0, 16 * a - room_width / 2), xsize * 16 - room_width)
 ypos = min(max(0, 16 * b - room_height / 2), ysize * 16 - room_height)
+do{
+	a = irandom_range(-10, 10)
+	b = irandom_range(-10, 10)
+}
+until edificio_valid_place(edificios[0].x + a, edificios[0].y + b, 20)
+add_edificio(edificios[0].x + a, edificios[0].y + b, 20)
+repeat(3){
+	do{
+		a = irandom_range(-15, 15)
+		b = irandom_range(-15, 15)
+	}
+	until edificio_valid_place(edificios[0].x + a, edificios[0].y + b, 8)
+	add_edificio(edificios[0].x + a, edificios[0].y + b, 8)
+}
+for(a = 0; a < array_length(personas); a++){
+	var persona = personas[a]
+	if not persona.es_hijo{
+		buscar_trabajo(persona)
+		buscar_casa(persona)
+	}
+}
 last_width = 0
 last_height = 0
 current_mes = 0

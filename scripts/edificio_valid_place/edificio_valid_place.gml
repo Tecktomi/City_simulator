@@ -23,9 +23,11 @@ function edificio_valid_place(x, y, index){
 		}
 		return flag
 	}
-	else
+	else{
 		for(var a = 0; a < control.edificio_width[index]; a++)
 			for(var b = 0; b < control.edificio_height[index]; b++)
-				if control.bool_edificio[a, b] or control.bosque[a, b] or control.mar[a, b]
+				if control.bool_edificio[x + a, y + b] or control.bosque[x + a, y + b] or control.mar[x + a, y + b]
 					return false
+		return true
+	}
 }

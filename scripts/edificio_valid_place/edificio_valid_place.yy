@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"edificio_valid_place",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"edificio_valid_place",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
