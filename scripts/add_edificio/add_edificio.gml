@@ -92,10 +92,11 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 					}
 				}
 		//Marcar terreno
-		for(var a = 0; a < width; a++)
-			for(var b = 0; b < height; b++){
-				array_set(control.bool_edificio[x + a], y + b, true)
-				array_set(control.id_edificio[x + a], y + b, edificio)
+		for(var a = x; a < x + width; a++)
+			for(var b = y; b < y + height; b++){
+				array_set(control.bool_edificio[a], b, true)
+				array_set(control.id_edificio[a], b, edificio)
+				array_set(control.construccion_reservada[a], b, false)
 			}
 		//Modificar belleza
 		if control.edificio_belleza[tipo] != 50{

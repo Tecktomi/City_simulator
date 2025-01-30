@@ -137,6 +137,11 @@ for(var a = 0; a < array_length(edificios); a++){
 		draw_text(b * 16 - xpos, c * 16 - ypos, "PARO")
 	}
 }
+for(var a = 0; a < array_length(cola_construccion); a++){
+	var next_build = cola_construccion[a], b = next_build.x, c = next_build.y
+	draw_set_color(make_color_hsv(edificio_color[next_build.id], 255, 255))
+	draw_rectangle(b * 16 - xpos, c * 16 - ypos, (b + edificio_width[next_build.id]) * 16 - 1 - xpos, (c + edificio_height[next_build.id]) * 16 - 1- ypos, true)
+}
 //Abrir menú de construcción
 if mouse_check_button_pressed(mb_right) and not build_sel{
 	sel_build = not sel_build
@@ -335,7 +340,9 @@ if sel_build{
 								sel_tipo = 0
 								sel_edificio = edificio_count[a, b]
 							}
-			
+			draw_text_pos(110, pos, $"{array_length(cola_construccion)} edificios en construcción")
+			for(var a = 0; a < array_length(cola_construccion); a++)
+				draw_text_pos(120, pos, $"{edificio_nombre[cola_construccion[a].id]} en {cola_construccion[a].x}, {cola_construccion[a].y}.  {cola_construccion[a].tiempo} [dias/hombre] restantes.")
 		}
 		//Ministerio de Salud
 		else if ministerio = 3{
@@ -611,23 +618,25 @@ if build_sel{
 			flag = edificio_valid_place(mx, my, build_index)
 	if not flag
 		draw_text(mx * 16 - xpos, (my - 2) * 16 - ypos, "Construcción bloqueada")
+	//Construir
 	if mouse_check_button_pressed(mb_left){
 		mouse_clear(mb_left)
 		if flag{
+			for(var a = 0; a < edificio_width[build_index]; a++)
+				for(var b = 0; b < edificio_height[build_index]; b++)
+					array_set(construccion_reservada[mx + a], my + b, true)
+			if array_length(cola_construccion) = 0 and ley_eneabled[6]
+				for(var a = 0; a < array_length(edificio_count[20]); a++)
+					edificio_count[20, a].paro = false
+			array_push(cola_construccion, {
+				x : mx,
+				y : my,
+				id : build_index,
+				tipo : build_type,
+				tiempo : edificio_construccion_tiempo[build_index]})
 			build_sel = keyboard_check(vk_lshift)
 			dinero -= edificio_precio[build_index]
 			mes_construccion[current_mes] += edificio_precio[build_index]
-			var edificio = add_edificio(mx, my, build_index)
-			if edificio_nombre[build_index] = "Granja"{
-				var c = 0
-				for(var a = 0; a < edificio_width[build_index]; a++)
-					for(var b = 0; b < edificio_height[build_index]; b++)
-						c += cultivo[build_type][# mx + a, my + b]
-				edificio.eficiencia = c / edificio_width[build_index] / edificio_height[build_index]
-				edificio.modo = build_type
-			}
-			else if edificio_nombre[build_index] = "Mina"
-				edificio.modo = build_type
 		}
 	}
 	if mouse_check_button_pressed(mb_right){
@@ -920,6 +929,7 @@ if keyboard_check(vk_space)
 	repeat(1 + 29 * keyboard_check(vk_lshift)){
 		dia++
 		current_mes = mes(dia)
+		//Actualizar exigencias
 		for(var a = 0; a < array_length(exigencia_nombre); a++)
 			if exigencia_pedida[a] and dia = exigencia[a].expiracion{
 				if a = 2
@@ -927,6 +937,37 @@ if keyboard_check(vk_space)
 				else
 					fallar_exigencia(a)
 			}
+		//Avanzar en construcciones
+		if array_length(cola_construccion) > 0{
+			var b = 0
+			for(var a = 0; a < array_length(edificio_count[20]); a++)
+				b += array_length(edificio_count[20, a].trabajadores)
+			var next_build = cola_construccion[0]
+			next_build.tiempo -= b
+			//Edificio_terminado
+			if next_build.tiempo <= 0{
+				array_shift(cola_construccion)
+				var edificio = add_edificio(next_build.x, next_build.y, next_build.id)
+				if edificio_nombre[build_index] = "Granja"{
+					var c = 0
+					for(var a = 0; a < edificio_width[build_index]; a++)
+						for(b = 0; b < edificio_height[build_index]; b++)
+							c += cultivo[build_type][# next_build.x + a, next_build.y + b]
+					edificio.eficiencia = c / edificio_width[build_index] / edificio_height[build_index]
+					edificio.modo = build_type
+				}
+				else if edificio_nombre[build_index] = "Mina"
+					edificio.modo = build_type
+				//Despedir a todos los trabajadores si la ley de trabajo temporal está habilitada
+				if array_length(cola_construccion) = 0 and ley_eneabled[6]
+					for(var a = 0; a < array_length(edificio_count[20]); a++){
+						edificio = edificio_count[20, a]
+						edificio.paro = true
+						for(b = 0; b < array_length(edificio.trabajadores); b++)
+							cambiar_trabajo(edificio.trabajadores[b], null_edificio)
+					}
+			}
+		}
 		//Eventos mensuales
 		if dia_mes(dia) = 0{
 			mes_enfermos[current_mes] = 0
@@ -1173,7 +1214,10 @@ if keyboard_check(vk_space)
 			if array_length(medicos) = 1
 				persona.felicidad_salud = floor(persona.felicidad_salud / 2)
 			else
-				persona.felicidad_salud = floor((persona.felicidad_salud + 3 * 50) / 4)
+				if persona.familia.casa != homeless
+					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * (50 - contaminacion[persona.familia.casa.x, persona.familia.casa.y] / 5)) / 4)
+				else
+					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * 30) / 4)
 			persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
 			temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley]
 			if persona.es_hijo{

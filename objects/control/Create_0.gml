@@ -199,6 +199,8 @@ for(a = 0; a < array_length(edificio_nombre); a++){
 	edificio_count[a] = [null_edificio]
 	array_pop(edificio_count[a])
 }
+cola_construccion = [{x : 0, y : 0, id : 0, tipo : 0, tiempo : 0}]
+array_delete(cola_construccion, 0, 1)
 //Recursos
 recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel"]
 recurso_precio = [1.2, 0.8, 1.4, 1.2, 1.6, 0.9, 0.8, 1.8, 1.3, 1.6, 1.8, 3.0, 2.0, 1.6, 1.8]
@@ -236,7 +238,7 @@ if not d3{
 		for(b = 0; b < ysize; b++){
 			bool_edificio[a, b] = false
 			id_edificio[a, b] = null_edificio
-			construccion_reservada[a, b] = -1
+			construccion_reservada[a, b] = false
 			bosque[a, b] = grid[# a, b] > 0.6 and altura[# a, b] > 0.6
 			if bosque[a, b]
 				bosque_madera[a, b] = floor(160 * grid[# a, b])
@@ -302,15 +304,15 @@ idioma_nombre = ["Español", "Francés", "Portugués", "Inglés"]
 ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Leyes"]
 ministerio = -1
 felicidad_total = 50
-ley_nombre = ["Legalizar divorcios", "Aceptar inmigrantes", "Trabajo infantil", "Jubilación", "Comida gratis", "Aceptar emigración"]
-ley_eneabled = [false, true, false, true, true, true]
+ley_nombre = ["Legalizar divorcios", "Aceptar inmigrantes", "Trabajo infantil", "Jubilación", "Comida gratis", "Aceptar emigración", "Trabajo temporal"]
+ley_eneabled = [false, true, false, true, true, true, false]
 ley_descripcion = [	"Permite a los ciudadanos separarse legalmente, molestará a los religiosos y agradará a los liberales",
 					"Permite la entrada de inmigrantes a Trópico, molestará a los nacionalistas",
 					"Permite trabajar a los niños mayores de 12 años, molestará a todo ciudadano con hijos",
 					"Permite jubilarse a los mayores de 65 años, mejora su condición de vida pero cuesta dinero",
 					"La comida es gratis, le permite a todos los habitantes acceder a alimentación",
-					"Le permite a los ciudadanos molestos irse del país si lo desean (y les alcanza)"]
-
+					"Le permite a los ciudadanos molestos irse del país si lo desean (y les alcanza)",
+					"Despide automáticamente a los trabajadores de las constructoras cuando no hay proyectos pendientes"]
 for(a = 0; a < 12; a++){
 	mes_enfermos[a] = 0
 	mes_emigrantes[a]  = 0
