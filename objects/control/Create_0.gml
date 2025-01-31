@@ -1,8 +1,7 @@
-d3 = false
 randomize()
-draw_set_font(Font1)
 var a, b
 //Personas
+#region Personas
 null_relacion = {
 	padre : undefined,
 	madre : undefined,
@@ -56,7 +55,9 @@ for(a = 0; a < 365; a++){
 	muerte[a] = [null_persona]
 	array_pop(muerte[a])
 }
+#endregion
 //Familias
+#region familias
 familia_count = 0
 null_familia = {
 	padre : null_persona,
@@ -74,7 +75,9 @@ array_pop(null_familia.hijos)
 familias = [null_familia]
 array_pop(familias)
 null_persona.familia = null_familia
+#endregion
 //Edificios
+#region edificios
 edificio_nombre = ["Sin trabajo", "Jubilado", "Sin atención médica", "Homeless", "Granja", "Aserradero", "Escuela", "Consultorio", "Chabola", "Cabaña", "Mansión", "Taberna", "Circo", "Muelle", "Pescadería", "Mina", "Capilla", "Hospicio", "Albergue", "Escuela parroquial", "Oficina de Construcción", "Plaza"]
 edificio_trabajadores_max = [0, 0, 0, 0, 10, 5, 4, 3, 0, 0, 2, 2, 8, 5, 6, 5, 4, 8, 4, 5, 8, 0]
 edificio_trabajo_calidad = [0, 10, 0, 0, 25, 30, 50, 60, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45, 30, 0]
@@ -159,6 +162,9 @@ for(a = 0; a < 28; a++){
 	dia_trabajo[a] = [null_edificio]
 	array_pop(dia_trabajo[a])
 }
+#endregion
+//Exigencia
+#region exigenicas
 exigencia_nombre = [
 	"Abre un nuevo edificio médico",
 	"Abre un nuevo edificio educativo",
@@ -182,6 +188,8 @@ for(a = 0; a < array_length(exigencia_nombre); a++){
 }
 array_pop(null_exigencia.edificios)
 null_edificio.exigencia = null_exigencia
+#endregion
+#region edificios
 jubilado = add_edificio(0, 0, 1, false)
 desausiado = add_edificio(0, 0, 2, false)
 medicos = [desausiado]
@@ -201,7 +209,9 @@ for(a = 0; a < array_length(edificio_nombre); a++){
 }
 cola_construccion = [{x : 0, y : 0, id : 0, tipo : 0, tiempo : 0}]
 array_delete(cola_construccion, 0, 1)
+#endregion
 //Recursos
+#region recursos
 recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel"]
 recurso_precio = [1.2, 0.8, 1.4, 1.2, 1.6, 0.9, 0.8, 1.8, 1.3, 1.6, 1.8, 3.0, 2.0, 1.6, 1.8]
 recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
@@ -218,7 +228,9 @@ for(a = 0; a < array_length(recurso_nombre); a++){
 	recurso_importado[a] = 0
 	recurso_exportado[a] = true
 }
+#endregion
 //Settings
+#region diseño del mundo
 dia = 0
 xsize = 160
 ysize = 160
@@ -228,62 +240,35 @@ var mineral_grid
 for(a = 0; a < array_length(recurso_mineral); a++)
 	mineral_grid[a] = perlin(xsize, ysize, 1, false, 6)
 var grid = perlin(xsize, ysize, 1, false)
-if not d3{
-	altura = perlin(xsize, ysize, 1, false)
-	for(a = 0; a < xsize / 2; a += 3)
-		ds_grid_add_disk(altura, floor(xsize / 2), floor(ysize / 2), a, 0.1)
-	a = ds_grid_get_max(altura, 0, 0, xsize, ysize)
-	ds_grid_multiply_region(altura, 0, 0, xsize, ysize, 1 / a)
-	for(a = 0; a < xsize; a++)
-		for(b = 0; b < ysize; b++){
-			bool_edificio[a, b] = false
-			id_edificio[a, b] = null_edificio
-			construccion_reservada[a, b] = false
-			bosque[a, b] = grid[# a, b] > 0.6 and altura[# a, b] > 0.6
-			if bosque[a, b]
-				bosque_madera[a, b] = floor(160 * grid[# a, b])
-			mar[a, b] = altura[# a, b] < 0.5
-			for(var c = 0; c < array_length(recurso_cultivo); c++)
-				if altura[# a, b] < cultivo_altura_minima[c]
-					ds_grid_set(cultivo[c], a, b, 0)
-				else if altura[# a, b] < cultivo_altura_minima[c] + 0.05
-					ds_grid_multiply(cultivo[c], a, b, 20 * (altura[# a, b] - cultivo_altura_minima[c]))
-			for(var c = 0; c < array_length(recurso_mineral); c++){
-				mineral[c][a, b] = (mineral_grid[c][# a, b] > recurso_mineral_rareza[c])
-				mineral_cantidad[c][a, b] = round(320 * power(mineral_grid[c][# a, b], 3))
-			}
-			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, altura[# a, b])))
-			contaminacion[a, b] = 0
+altura = perlin(xsize, ysize, 1, false)
+for(a = 0; a < xsize / 2; a += 3)
+	ds_grid_add_disk(altura, floor(xsize / 2), floor(ysize / 2), a, 0.1)
+a = ds_grid_get_max(altura, 0, 0, xsize, ysize)
+ds_grid_multiply_region(altura, 0, 0, xsize, ysize, 1 / a)
+for(a = 0; a < xsize; a++)
+	for(b = 0; b < ysize; b++){
+		bool_edificio[a, b] = false
+		id_edificio[a, b] = null_edificio
+		construccion_reservada[a, b] = false
+		bosque[a, b] = grid[# a, b] > 0.6 and altura[# a, b] > 0.6
+		if bosque[a, b]
+			bosque_madera[a, b] = floor(160 * grid[# a, b])
+		mar[a, b] = altura[# a, b] < 0.5
+		for(var c = 0; c < array_length(recurso_cultivo); c++)
+			if altura[# a, b] < cultivo_altura_minima[c]
+				ds_grid_set(cultivo[c], a, b, 0)
+			else if altura[# a, b] < cultivo_altura_minima[c] + 0.05
+				ds_grid_multiply(cultivo[c], a, b, 20 * (altura[# a, b] - cultivo_altura_minima[c]))
+		for(var c = 0; c < array_length(recurso_mineral); c++){
+			mineral[c][a, b] = (mineral_grid[c][# a, b] > recurso_mineral_rareza[c])
+			mineral_cantidad[c][a, b] = round(320 * power(mineral_grid[c][# a, b], 3))
 		}
-}
-else{
-	altura = perlin(xsize, ysize, 14, true)
-	for(a = 0; a < xsize / 2; a += 3)
-		ds_grid_add_disk(altura, floor(xsize / 2), floor(ysize / 2), a, 1)
-	a = ds_grid_get_max(altura, 0, 0, xsize, ysize)
-	ds_grid_multiply_region(altura, 0, 0, xsize, ysize, 14 / a)
-	ds_grid_add_region(altura, 0, 0, xsize, ysize, -4)
-	for(a = 0; a < xsize; a++)
-		for(b = 0; b < ysize; b++){
-			var h = altura[# a, b]
-			array_set(bool_edificio[a], b, false)
-			array_set(id_edificio[a], b, null_edificio)
-			mar[a, b] = (h <= 0)
-			array_set(bosque[a], b, (grid[# a, b] > 0.6 and h > 2))
-			if bosque[a, b]
-				array_set(bosque_madera[a], b, floor(160 * grid[# a, b]))
-			for(var c = 0; c < array_length(recurso_cultivo); c++)
-				if (h + 4) / 14 < cultivo_altura_minima[c]
-					ds_grid_set(cultivo[c], a, b, 0)
-				else if (h + 4) / 14 < cultivo_altura_minima[c] + 0.05
-					ds_grid_multiply(cultivo[c], a, b, 20 * ((h + 4) / 14 - cultivo_altura_minima[c]))
-			for(var c = 0; c < array_length(recurso_mineral); c++){
-				array_set(mineral[c, a], b, (mineral_grid[c][# a, b] > recurso_mineral_rareza[c]))
-				array_set(mineral_cantidad[c, a], b, round(320 * power(mineral_grid[c][# a, b], 3)))
-			}
-		}
-}
-var gg = mineral[0]
+		belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, altura[# a, b])))
+		contaminacion[a, b] = 0
+	}
+#endregion
+#region setings
+draw_set_font(Font1)
 sel_info = false
 sel_edificio = null_edificio
 sel_familia = null_familia
@@ -296,6 +281,9 @@ build_sel = false
 build_index = 0
 build_type = 0
 build_categoria = 0
+last_width = 0
+last_height = 0
+current_mes = 0
 educacion_nombre = ["Analfabeto", "Educación Básica", "Educación Media", "Educación Técnica", "Educación Profesional"]
 pais_nombre = ["Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana", "Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos"]
 pais_idioma = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 3, 3, 0, 3, 3]
@@ -337,6 +325,8 @@ deuda = false
 deuda_dia = 0
 while array_length(personas) < 50
 	add_familia(0)
+#endregion
+#region edificios iniciales
 do{
 	a = irandom(xsize - edificio_width[13])
 	b = irandom(ysize - edificio_height[13])
@@ -384,16 +374,4 @@ for(a = 0; a < array_length(personas); a++){
 		buscar_casa(persona)
 	}
 }
-last_width = 0
-last_height = 0
-current_mes = 0
-if d3{
-	vern_x = undefined;	vern_y = undefined
-	vers_x = undefined;	vers_y = undefined
-	vere_x = undefined; vere_y = undefined
-	vero_x = undefined; vero_y = undefined
-	zoom = 1
-	for(var c = 0; c < xsize / 40; c++)
-		for(var d = 0; d < ysize / 40; d++)
-			background[c, d] = spr_arbol
-}
+#endregion

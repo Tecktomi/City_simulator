@@ -12,7 +12,7 @@ function cumplir_exigencia(index){
 			exigencia[index] = null_exigencia
 			exigencia_cumplida[index] = true
 			exigencia_cumplida_time[index] = 24
-			show_debug_message("Has cumplido con " + exigencia_nombre[index])
+			show_debug_message($"Has cumplido con {exigencia_nombre[index]}")
 		}
 	}
 }

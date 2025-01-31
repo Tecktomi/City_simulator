@@ -1,7 +1,7 @@
 function fallar_exigencia(index){
 	with control{
 		var temp_exigencia = exigencia[index]
-		show_debug_message("Has fallado en " + exigencia_nombre[temp_exigencia.index])
+		show_debug_message($"Has fallado en {exigencia_nombre[temp_exigencia.index]}")
 		for(var a = 0; a < array_length(temp_exigencia.edificios); a++){
 			var edificio = temp_exigencia.edificios[a]
 			edificio.paro = true
