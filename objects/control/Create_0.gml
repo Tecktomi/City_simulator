@@ -76,7 +76,7 @@ array_pop(familias)
 null_persona.familia = null_familia
 //Edificios
 edificio_nombre = ["Sin trabajo", "Jubilado", "Sin atención médica", "Homeless", "Granja", "Aserradero", "Escuela", "Consultorio", "Chabola", "Cabaña", "Mansión", "Taberna", "Circo", "Muelle", "Pescadería", "Mina", "Capilla", "Hospicio", "Albergue", "Escuela parroquial", "Oficina de Construcción", "Plaza"]
-edificio_trabajadores_max = [0, 0, 0, 0, 10, 5, 4, 2, 0, 0, 2, 2, 8, 5, 6, 5, 4, 8, 4, 5, 8, 0]
+edificio_trabajadores_max = [0, 0, 0, 0, 10, 5, 4, 3, 0, 0, 2, 2, 8, 5, 6, 5, 4, 8, 4, 5, 8, 0]
 edificio_trabajo_calidad = [0, 10, 0, 0, 25, 30, 50, 60, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45, 30, 0]
 edificio_trabajo_sueldo = [0, 2, 0, 0, 4, 5, 8, 11, 0, 0, 4, 5, 3, 7, 6, 5, 6, 6, 5, 6, 6, 0]
 edificio_trabajo_educacion = [0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 1, 0, 1, 2, 1, 2, 1, 0]
@@ -101,7 +101,7 @@ edificio_precio = [0, 0, 0, 0, 400, 650, 300, 1500, 300, 200, 500, 250, 450, 250
 edificio_mantenimiento = [0, 0, 0, 0, 4, 5, 6, 10, 3, 2, 10, 3, 6, 2, 8, 10, 12, 15, 10, 12, 5, 2]
 edificio_estatal = [true, true, true, true, false, false, true, true, false, false, false, false, false, true, false, false, true, true, true, true, true, true]
 edificio_belleza = [0, 0, 0, 0, 40, 30, 40, 50, 40, 55, 75, 30, 30, 30, 20, 25, 60, 50, 50, 50, 40, 80]
-edificio_construccion_tiempo = [0, 0, 0, 0, 90, 120, 360, 360, 150, 90, 360, 120, 120, 720, 120, 240, 360, 360, 360, 360, 240, 90]
+edificio_construccion_tiempo = [0, 0, 0, 0, 180, 240, 720, 640, 300, 180, 720, 240, 240, 1080, 240, 480, 720, 720, 720, 720, 280, 180]
 edificio_contaminacion = [0, 0, 0, 0, -10, 10, 0, 0, 15, 5, 10, 0, 0, 20, 10, 30, 0, 10, 0, 0, 0, -10]
 edificio_categoria_nombre = ["Residencial", "Producción", "Servicios", "Infrastructura"]
 edificio_categoria = [[8, 9, 10], [4, 5, 14, 15], [6, 7, 11, 12, 16, 21], [13, 20]]
@@ -346,19 +346,36 @@ add_edificio(a, b, 13)
 edificios[0].almacen[0] = irandom_range(1000, 1500)
 xpos = min(max(0, 16 * a - room_width / 2), xsize * 16 - room_width)
 ypos = min(max(0, 16 * b - room_height / 2), ysize * 16 - room_height)
-do{
-	a = irandom_range(-10, 10)
-	b = irandom_range(-10, 10)
-}
-until edificio_valid_place(edificios[0].x + a, edificios[0].y + b, 20)
-add_edificio(edificios[0].x + a, edificios[0].y + b, 20)
-repeat(3){
-	do{
-		a = irandom_range(-15, 15)
-		b = irandom_range(-15, 15)
+var checked = [], coord;
+for(a = edificios[0].x - 15; a < edificios[0].x + 15; a++)
+	for(b = edificios[0].y - 15; b < edificios[0].y + 15; b++){
+		coord = {x : a, y : b}
+		array_push(checked, coord)
 	}
-	until edificio_valid_place(edificios[0].x + a, edificios[0].y + b, 8)
-	add_edificio(edificios[0].x + a, edificios[0].y + b, 8)
+checked = array_shuffle(checked)
+do
+	coord = array_shift(checked)
+until edificio_valid_place(coord.x, coord.y, 14) or array_length(checked) = 0
+add_edificio(coord.x, coord.y, 14)
+do
+	coord = array_shift(checked)
+until edificio_valid_place(coord.x, coord.y, 17) or array_length(checked) = 0
+add_edificio(coord.x, coord.y, 17)
+do
+	coord = array_shift(checked)
+until edificio_valid_place(coord.x, coord.y, 20) or array_length(checked) = 0
+add_edificio(coord.x, coord.y, 20)
+repeat(3){
+	do
+		coord = array_shift(checked)
+	until edificio_valid_place(coord.x, coord.y, 8) or array_length(checked) = 0
+	add_edificio(coord.x, coord.y, 8)
+}
+repeat(3){
+	do
+		coord = array_shift(checked)
+	until edificio_valid_place(coord.x, coord.y, 9) or array_length(checked) = 0
+	add_edificio(coord.x, coord.y, 9)
 }
 for(a = 0; a < array_length(personas); a++){
 	var persona = personas[a]

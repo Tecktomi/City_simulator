@@ -310,7 +310,7 @@ if sel_build{
 		}
 		//Ministerio de Trabajo
 		else if ministerio = 2{
-			var fel_tra= 0, num_tra = 0, temp_array, num_des = 0
+			var fel_tra= 0, num_tra = 0, temp_array, num_des = 0, num_temp = 0
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				temp_array[a] = 0
 			for(var a = 0; a < array_length(personas); a++)
@@ -324,8 +324,11 @@ if sel_build{
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				if edificio_es_trabajo[a]{
 					vacantes += edificio_trabajadores_max[a] * array_length(edificio_count[a])
-					for(b = 0; b < array_length(edificio_count[a]); b++)
+					for(b = 0; b < array_length(edificio_count[a]); b++){
 						vacantes -= array_length(edificio_count[a, b].trabajadores)
+						if ley_eneabled[6] and a = 20
+							num_temp += array_length(edificio_count[a, b].trabajadores)
+					}
 				}
 			draw_text_pos(110, pos, "Felicidad laboral: " + string(floor(fel_tra / num_tra)))
 			draw_text_pos(110, pos, "Desempleo: " + string(floor(100 * num_des / num_tra)) + "%")
@@ -342,7 +345,8 @@ if sel_build{
 							}
 			draw_text_pos(110, pos, $"{array_length(cola_construccion)} edificios en construcción")
 			for(var a = 0; a < array_length(cola_construccion); a++)
-				draw_text_pos(120, pos, $"{edificio_nombre[cola_construccion[a].id]} en {cola_construccion[a].x}, {cola_construccion[a].y}.  {cola_construccion[a].tiempo} [dias/hombre] restantes.")
+				draw_text_pos(120, pos, $"{edificio_nombre[cola_construccion[a].id]}")
+			draw_text_pos(110, pos, $"{num_temp} trabajadores temporales ({floor(100 * num_temp / num_tra)}%)")
 		}
 		//Ministerio de Salud
 		else if ministerio = 3{
@@ -516,6 +520,18 @@ if sel_build{
 								cambiar_trabajo(personas[a], null_edificio)
 								add_felicidad_ley(personas[a], -10)
 							}
+					//Aprobar trabajo temporal
+					if a = 6 and ley_eneabled[6] and array_length(cola_construccion) = 0
+						for(b = 0; b < array_length(edificio_count[20]); b++){
+							var edificio = edificio_count[20, b]
+							edificio.paro = true
+							while array_length(edificio.trabajadores) > 0
+								cambiar_trabajo(edificio.trabajadores[0], null_edificio)
+						}
+					//Prohibir trabajo temporal
+					if a = 6 and not ley_eneabled[6] and array_length(cola_construccion) = 0
+						for(b = 0; b < array_length(edificio_count[20]); b++)
+							edificio_count[20, b].paro = false
 				}
 		}
 	}
@@ -775,7 +791,7 @@ if sel_info{
 			if sel_edificio.almacen[a] > 0
 				draw_text_pos(room_width - 40, pos, recurso_nombre[a] + ": " + string(sel_edificio.almacen[a]))
 		//Edificios cercanos
-		if draw_menu(room_width - 20, pos, string(array_length(sel_edificio.edificios_cerca)) + " edificios cerca", 0)
+		if draw_menu(room_width - 20, pos, string(array_length(sel_edificio.edificios_cerca)) + " edificios cerca", 0, , false)
 			for(var a = 0; a < array_length(sel_edificio.edificios_cerca); a++){
 				var temp_edificio = sel_edificio.edificios_cerca[a]
 				if draw_boton(room_width - 40, pos, edificio_nombre[temp_edificio.tipo]){
@@ -798,7 +814,7 @@ if sel_info{
 		}
 		//Destruir edificio
 		pos += 40
-		if not sel_edificio.privado and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.paro) and (sel_edificio.tipo != 13 or array_length(edificio_count[13]) > 0){
+		if not sel_edificio.privado and ((sel_edificio.tipo != 13 and sel_edificio.tipo != 20) or array_length(edificio_count[sel_edificio.tipo]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.paro){
 			destroy_edificio(sel_edificio)
 			sel_info = false
 		}
@@ -963,8 +979,8 @@ if keyboard_check(vk_space)
 					for(var a = 0; a < array_length(edificio_count[20]); a++){
 						edificio = edificio_count[20, a]
 						edificio.paro = true
-						for(b = 0; b < array_length(edificio.trabajadores); b++)
-							cambiar_trabajo(edificio.trabajadores[b], null_edificio)
+						while array_length(edificio.trabajadores) > 0
+							cambiar_trabajo(edificio.trabajadores[0], null_edificio)
 					}
 			}
 		}
@@ -1558,7 +1574,7 @@ if keyboard_check(vk_space)
 			//Edificios médicos
 			if edificio_es_medico[edificio.tipo]{
 				//Curar pacientes
-				repeat(min(array_length(edificio.clientes), 2 * array_length(edificio.trabajadores))){
+				repeat(min(array_length(edificio.clientes), round(edificio_clientes_calidad[edificio.tipo] * array_length(edificio.trabajadores) / 50))){
 					var persona = array_shift(edificio.clientes)
 					persona.felicidad_salud = edificio_clientes_calidad[edificio.tipo]
 					persona.medico = null_edificio
