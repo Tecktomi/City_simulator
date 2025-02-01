@@ -103,11 +103,11 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			var size = ceil(abs(control.edificio_belleza[tipo] - 50) / 5)
 			for(var a = max(0, x - size); a < min(control.xsize, x + width + size); a++)
 				for(var b = max(0, y - size); b < min(control.ysize, y + height + size); b++){
-					array_set(control.belleza[a], b, min(100, max(0, round(control.belleza[a, b] + (control.edificio_belleza[tipo] - 50) / (1 + distancia_punto(a, b, edificio))))))
+					array_set(control.belleza[a], b, round(control.belleza[a, b] + (control.edificio_belleza[tipo] - 50) / (1 + distancia_punto(a, b, edificio))))
 					if control.bool_edificio[a, b]{
 						var edificio_2 = control.id_edificio[a, b]
 						if control.edificio_es_casa[edificio_2.tipo]
-							edificio_2.vivienda_calidad = control.edificio_familias_calidad[edificio_2.tipo] + round((control.belleza[a, b] - 50) / 10)
+							edificio_2.vivienda_calidad = control.edificio_familias_calidad[edificio_2.tipo] + round((min(100, max(0, control.belleza[a, b])) - 50) / 10)
 					}
 				}
 		}
@@ -116,7 +116,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			var size = ceil(control.edificio_contaminacion[tipo] / 5)
 			for(var a = max(0, x - size); a < min(control.xsize, x + width + size); a++)
 				for(var b = max(0, y - size); b < min(control.ysize, y + height + size); b++)
-					array_set(control.contaminacion[a], b, min(100, max(0, round(control.contaminacion[a, b] + control.edificio_contaminacion[tipo] / (1 + distancia_punto(a, b, edificio))))))
+					array_set(control.contaminacion[a], b, round(control.contaminacion[a, b] + control.edificio_contaminacion[tipo] / (1 + distancia_punto(a, b, edificio))))
 		}
 	}
 	return edificio

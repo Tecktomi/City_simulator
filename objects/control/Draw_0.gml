@@ -1267,7 +1267,7 @@ if keyboard_check(vk_space)
 				persona.felicidad_salud = floor(persona.felicidad_salud / 2)
 			else
 				if persona.familia.casa != homeless
-					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * (50 - contaminacion[persona.familia.casa.x, persona.familia.casa.y] / 5)) / 4)
+					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * (50 - min(100, max(0, contaminacion[persona.familia.casa.x, persona.familia.casa.y])) / 5)) / 4)
 				else
 					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * 30) / 4)
 			persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
