@@ -29,6 +29,7 @@
     {"id":{"name":"add_felicidad_ley","path":"scripts/add_felicidad_ley/add_felicidad_ley.yy",},},
     {"id":{"name":"add_paro","path":"scripts/add_paro/add_paro.yy",},},
     {"id":{"name":"add_persona","path":"scripts/add_persona/add_persona.yy",},},
+    {"id":{"name":"add_tratado","path":"scripts/add_tratado/add_tratado.yy",},},
     {"id":{"name":"ao","path":"scripts/ao/ao.yy",},},
     {"id":{"name":"array_remove","path":"scripts/array_remove/array_remove.yy",},},
     {"id":{"name":"brandom","path":"scripts/brandom/brandom.yy",},},

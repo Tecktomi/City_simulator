@@ -220,6 +220,9 @@ recurso_comida = [0, 2, 6, 8]
 recurso_mineral = [9, 10, 11, 12, 13, 14]
 recurso_mineral_color = [c_black, c_gray, c_yellow, c_orange, c_ltgray, c_dkgray]
 recurso_mineral_rareza = [0.8, 0.85, 0.95, 0.75, 0.85, 0.9]
+null_tratado = {pais : 0, recurso : 0, cantidad : 0, factor : 1, tiempo : 0}
+tratados_ofertas = [null_tratado]
+array_pop(tratados_ofertas)
 for(a = 0; a < array_length(recurso_nombre); a++){
 	null_edificio.almacen[a] = 0
 	jubilado.almacen[a] = 0
@@ -227,6 +230,8 @@ for(a = 0; a < array_length(recurso_nombre); a++){
 	homeless.almacen[a] = 0
 	recurso_importado[a] = 0
 	recurso_exportado[a] = true
+	recurso_tratados[a] = [null_tratado]
+	array_pop(recurso_tratados[a])
 }
 #endregion
 //Settings
@@ -285,11 +290,7 @@ last_width = 0
 last_height = 0
 current_mes = 0
 educacion_nombre = ["Analfabeto", "Educación Básica", "Educación Media", "Educación Técnica", "Educación Profesional"]
-pais_nombre = ["Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana", "Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos"]
-pais_idioma = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 3, 3, 0, 3, 3]
-pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88, 90, 92, 88, 88, 77, 86, 96, 78]
-idioma_nombre = ["Español", "Francés", "Portugués", "Inglés"]
-ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Leyes"]
+ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Leyes"]
 ministerio = -1
 felicidad_total = 50
 ley_nombre = ["Legalizar divorcios", "Aceptar inmigrantes", "Trabajo infantil", "Jubilación", "Comida gratis", "Aceptar emigración", "Trabajo temporal"]
@@ -326,6 +327,15 @@ deuda = false
 deuda_dia = 0
 encargos = [{recurso : 0, cantidad : 0, edificio : null_edificio}]
 array_pop(encargos)
+pais_nombre = ["Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana", "Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos"]
+pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88, 90, 92, 88, 88, 77, 86, 96, 78]
+pais_idioma = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 3, 3, 0, 3, 3]
+idioma_nombre = ["Español", "Francés", "Portugués", "Inglés"]
+pais_relacion = []
+for(a = 0; a < array_length(pais_nombre); a++)
+	array_push(pais_relacion, 0)
+repeat(10)
+	add_tratado_oferta()
 while array_length(personas) < 50
 	add_familia(0)
 #endregion

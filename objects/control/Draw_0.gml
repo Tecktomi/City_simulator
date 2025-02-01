@@ -440,8 +440,36 @@ if sel_build{
 					else
 						recurso_importado[a] += 100
 		}
+		//Ministerio de Exterior
+		else if ministerio = 6{
+			draw_text_pos(100, pos, "Relaciones Exteriores")
+			for(var a = 1; a < array_length(pais_nombre); a++){
+				draw_text_pos(110, pos, $"{pais_nombre[a]} ({pais_relacion[a]})")
+				var d = 0
+				for(b = 0; b < array_length(recurso_nombre); b++)
+					for(var c = 0; c < array_length(recurso_tratados[b]); c++)
+						if recurso_tratados[b, c].pais = a
+							d++
+				if d > 0 and draw_menu(120, pos, $"{d} tratados comerciales", a)
+					for(b = 0; b < array_length(recurso_nombre); b++)
+						for(var c = 0; c < array_length(recurso_tratados[b]); c++){
+							var tratado = recurso_tratados[b, c]
+							if tratado.pais = a
+								draw_text_pos(130, pos, $"{tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.")
+						}
+			}
+			pos = 200
+			draw_text_pos(480, pos, "Ofertas disponibles")
+			for(var a = 0; a < array_length(tratados_ofertas); a++){
+				var tratado = tratados_ofertas[a]
+				if draw_boton(500, pos, $"{tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]} (+ {floor(tratado.factor * 100) - 100}%, {floor(tratado.tiempo / 12)} años y {tratado.tiempo mod 12} meses)"){
+					add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+					array_delete(tratados_ofertas, a, 1)
+				}
+			}
+		}
 		//Leyes
-		else  if ministerio = 6{
+		else if ministerio = 7{
 			for(var a = 0; a < array_length(ley_nombre); a++)
 				if draw_boton(110, pos, $"{ley_nombre[a]}: {ley_eneabled[a]}", , , ley_descripcion[a]){
 					ley_eneabled[a] = not ley_eneabled[a]
@@ -979,8 +1007,25 @@ if keyboard_check(vk_space)
 			mes_herencia[current_mes] = 0
 			mes_construccion[current_mes] = 0
 			mes_exportaciones[current_mes] = 0
-			for(var a = 0; a < array_length(recurso_nombre); a++)
+			//Actualizar precios de recursos y tratados comerciales
+			for(var a = 0; a < array_length(recurso_nombre); a++){
 				recurso_precio[a] *= random_range(0.95, 1.05)
+				for(var b = 0; b < array_length(recurso_tratados[a]); b++){
+					var tratado = recurso_tratados[a, b]
+					tratado.tiempo--
+					if tratado.tiempo = 0{
+						show_debug_message($"No has podido cumplir el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
+						pais_relacion[tratado.pais]--
+						array_delete(recurso_tratados[a], b--, 1)
+					}
+				}
+			}
+			#region Nuevas ofertas de tratados
+			add_tratado_oferta()
+			if array_length(tratados_ofertas) > 15
+				array_shift(tratados_ofertas)
+			#endregion
+			//Cobrar mantenimiento
 			for(var a = 0; a < array_length(edificio_nombre); a++){
 				var c = 0
 				for(var b = 0; b < array_length(edificio_count[a]); b++)
@@ -988,6 +1033,7 @@ if keyboard_check(vk_space)
 				dinero -= edificio_mantenimiento[a] * c
 				mes_mantenimiento[current_mes] += edificio_mantenimiento[a] * c
 			}
+			//Inmigración
 			if ley_eneabled[1] and irandom(felicidad_total) > 25 or dia < 365{
 				var familia = add_familia()
 				if familia.padre != null_persona{
@@ -999,6 +1045,7 @@ if keyboard_check(vk_space)
 					buscar_casa(familia.madre)
 				}
 			}
+			//Cooldown exigencias cumplidas
 			for(var a = 0; a < array_length(exigencia_nombre); a++){
 				if exigencia_cumplida[a]{
 					exigencia_cumplida_time[a]--
@@ -1437,10 +1484,25 @@ if keyboard_check(vk_space)
 							for(var b = 0; b < array_length(recurso_nombre); b++){
 								//Exportaciones
 								if recurso_exportado[b]{
-									var d = min(c, edificio.almacen[b])
-									edificio.almacen[b] -= d
-									mes_exportaciones[current_mes] += floor(d * recurso_precio[b])
-									dinero += floor(d * recurso_precio[b])
+									var total = min(c, edificio.almacen[b])
+									edificio.almacen[b] -= total
+									while total > 0{
+										var d = total, temp_factor = 1
+										if array_length(recurso_tratados[b]) > 0{
+											var tratado = recurso_tratados[b, 0]
+											temp_factor = tratado.factor
+											d = min(total, tratado.cantidad)
+											tratado.cantidad -= d
+											if tratado.cantidad = 0{
+												show_debug_message($"Has cumplido el tratado comercial de {recurso_nombre[b]} con {pais_nombre[tratado.pais]}")
+												pais_relacion[tratado.pais]++
+												array_shift(recurso_tratados[b])
+											}
+										}
+										total -= d
+										mes_exportaciones[current_mes] += floor(temp_factor * d * recurso_precio[b])
+										dinero += floor(temp_factor * d * recurso_precio[b])
+									}
 								}
 								#region Importaciones
 								var d = min(c, recurso_importado[b])
