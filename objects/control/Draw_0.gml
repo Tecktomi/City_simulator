@@ -286,6 +286,25 @@ if sel_build{
 			for(var a = 0; a < array_length(cola_construccion); a++)
 				draw_text_pos(120, pos, $"{edificio_nombre[cola_construccion[a].id]}")
 			draw_text_pos(110, pos, $"{num_temp} trabajadores temporales ({floor(100 * num_temp / num_tra)}%)")
+			if draw_menu(110, pos, $"{array_length(encargos)} encargos", 0)
+				for(var a = 0; a < array_length(encargos); a++){
+					var encargo = encargos[a]
+					if encargo.cantidad > 0{
+						if draw_boton(120, pos, $"{encargo.cantidad} de {recurso_nombre[encargo.recurso]} de {edificio_nombre[encargo.edificio.tipo]}"){
+							sel_build = false
+							sel_info = true
+							sel_tipo = 0
+							sel_edificio = encargo.edificio
+						}
+					}
+					else
+						if draw_boton(120, pos, $"{-encargo.cantidad} de {recurso_nombre[encargo.recurso]} a {edificio_nombre[encargo.edificio.tipo]}"){
+							sel_build = false
+							sel_info = true
+							sel_tipo = 0
+							sel_edificio = encargo.edificio
+						}
+				}
 		}
 		//Ministerio de Salud
 		else if ministerio = 3{
@@ -356,6 +375,7 @@ if sel_build{
 			temp_grid[5] = mes_mantenimiento
 			temp_grid[6] = mes_construccion
 			temp_grid[7] = mes_importaciones
+			temp_grid[8] = mes_compra_interna
 			temp_text_array[0] = "Renta"
 			temp_text_array[1] = "Tarifas"
 			temp_text_array[2] = "Exportaciones"
@@ -364,7 +384,8 @@ if sel_build{
 			temp_text_array[5] = "Mantenimiento"
 			temp_text_array[6] = "Construcción"
 			temp_text_array[7] = "Importaciones"
-			for(var a = 0; a < 8; a++){
+			temp_text_array[8] = "Compra a Privados"
+			for(var a = 0; a <= 8; a++){
 				count[a] = 0
 				maxi[a] = 0
 			}
@@ -381,8 +402,8 @@ if sel_build{
 			draw_text_pos(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3]}")
 			for(b = 0; b < 4; b++)
 				draw_menu(120, pos, $"{temp_text_array[b]}: ${count[b]}", b, , false)
-			draw_text_pos(110, pos, $"Pérdidas: ${count[4] + count[5] + count[6]}")
-			for(b = 4; b < 8; b++)
+			draw_text_pos(110, pos, $"Pérdidas: ${count[4] + count[5] + count[6] + count[7]}")
+			for(b = 4; b <= 8; b++)
 				draw_menu(120, pos, $"{temp_text_array[b]}: ${count[b]}", b, , false)
 			if trab_total > 0{
 				pos += 20
@@ -391,7 +412,7 @@ if sel_build{
 			draw_line(400, 300, 500, 300)
 			draw_line(400, 300, 400, 200)
 			pos = 300
-			for(b = 0; b < 8; b++)
+			for(b = 0; b <= 8; b++)
 				if show[b]{
 					draw_set_color(make_color_hsv(b * 15, 255, 255))
 					draw_text_pos(400, pos, temp_text_array[b])
@@ -422,7 +443,7 @@ if sel_build{
 		//Leyes
 		else  if ministerio = 6{
 			for(var a = 0; a < array_length(ley_nombre); a++)
-				if draw_boton(110, pos, $"{ley_nombre[a]}: {ley_eneabled[a]}"){
+				if draw_boton(110, pos, $"{ley_nombre[a]}: {ley_eneabled[a]}", , , ley_descripcion[a]){
 					ley_eneabled[a] = not ley_eneabled[a]
 					//Permitir divorcios
 					if a = 0 and ley_eneabled[0]
@@ -729,9 +750,10 @@ if sel_info{
 				}
 		}
 		//Almacen
-		for(var a = 0; a < array_length(recurso_nombre); a++)
-			if sel_edificio.almacen[a] > 0
-				draw_text_pos(room_width - 40, pos, $"{recurso_nombre[a]}: {sel_edificio.almacen[a]}")
+		if draw_menu(room_width - 20, pos, "Almacen", 1)
+			for(var a = 0; a < array_length(recurso_nombre); a++)
+				if sel_edificio.almacen[a] > 0
+					draw_text_pos(room_width - 40, pos, $"{recurso_nombre[a]}: {sel_edificio.almacen[a]}")
 		//Edificios cercanos
 		if draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.edificios_cerca)} edificios cerca", 0, , false)
 			for(var a = 0; a < array_length(sel_edificio.edificios_cerca); a++){
@@ -907,10 +929,10 @@ if keyboard_check(vk_space)
 						for(b = 0; b < edificio_height[build_index]; b++)
 							c += cultivo[build_type][# next_build.x + a, next_build.y + b]
 					edificio.eficiencia = c / edificio_width[build_index] / edificio_height[build_index]
-					edificio.modo = build_type
+					edificio.modo = next_build.tipo
 				}
 				else if edificio_nombre[build_index] = "Mina"
-					edificio.modo = build_type
+					edificio.modo = next_build.tipo
 				//Despedir a todos los trabajadores si la ley de trabajo temporal está habilitada
 				if array_length(cola_construccion) = 0 and ley_eneabled[6]
 					for(var a = 0; a < array_length(edificio_count[20]); a++){
@@ -920,6 +942,26 @@ if keyboard_check(vk_space)
 							cambiar_trabajo(edificio.trabajadores[0], null_edificio)
 					}
 			}
+		}
+		//Mover recursos
+		if array_length(encargos) > 0{
+			var b = 0
+			for(var a = 0; a < array_length(edificio_count[22]); a++)
+				b += array_length(edificio_count[22, a].trabajadores)
+			var next_encargo = encargos[0], edificio = edificio_count[13, irandom(array_length(edificio_count[13]) - 1)]
+			if next_encargo.cantidad > 0{
+				b = min(b, next_encargo.cantidad)
+				next_encargo.cantidad -= b
+				edificio.almacen[next_encargo.recurso] += b
+			}
+			else{
+				b = min(b, next_encargo.cantidad, edificio.almacen[next_encargo.recurso])
+				next_encargo.cantidad += b
+				edificio.almacen[next_encargo.recurso] -= b
+				next_encargo.edificio.almacen[next_encargo.recurso] += b
+			}
+			if next_encargo.cantidad = 0
+				array_shift(encargos)
 		}
 		//Eventos mensuales
 		if dia_mes(dia) = 0{
@@ -946,8 +988,17 @@ if keyboard_check(vk_space)
 				dinero -= edificio_mantenimiento[a] * c
 				mes_mantenimiento[current_mes] += edificio_mantenimiento[a] * c
 			}
-			if ley_eneabled[1] and irandom(felicidad_total) > 25 or dia < 365
-				add_familia()
+			if ley_eneabled[1] and irandom(felicidad_total) > 25 or dia < 365{
+				var familia = add_familia()
+				if familia.padre != null_persona{
+					buscar_trabajo(familia.padre)
+					buscar_casa(familia.padre)
+				}
+				if familia.madre != null_persona{
+					buscar_trabajo(familia.madre)
+					buscar_casa(familia.madre)
+				}
+			}
 			for(var a = 0; a < array_length(exigencia_nombre); a++){
 				if exigencia_cumplida[a]{
 					exigencia_cumplida_time[a]--
@@ -967,6 +1018,7 @@ if keyboard_check(vk_space)
 					cumplir_exigencia(6)
 			}
 		}
+		#region Personas
 		//Ciclo normal de las personas
 		for(var a = 0; a < array_length(cumples[dia mod 365]); a++){
 			var persona = cumples[dia mod 365, a]
@@ -1281,6 +1333,7 @@ if keyboard_check(vk_space)
 			destroy_persona(persona)
 			mes_muertos[current_mes]++
 		}
+		#endregion
 		//Ciclo de los edificios
 		for(var a = 0; a < array_length(dia_trabajo[dia mod 28]); a++){
 			var edificio = dia_trabajo[dia mod 28, a]
@@ -1309,11 +1362,8 @@ if keyboard_check(vk_space)
 						else
 							edificio.count += array_length(edificio.trabajadores)
 						var b = 200 * array_contains(recurso_comida, recurso_cultivo[edificio.modo])
-						if (current_mes = 0 or current_mes = 6) and edificio.almacen[recurso_cultivo[edificio.modo]] > b and recurso_exportado[recurso_cultivo[edificio.modo]]{
-							if not edificio.privado{
-								dinero += floor(recurso_precio[recurso_cultivo[edificio.modo]] * (edificio.almacen[recurso_cultivo[edificio.modo]] - b))
-								mes_exportaciones[current_mes] += floor(recurso_precio[recurso_cultivo[edificio.modo]] * (edificio.almacen[recurso_cultivo[edificio.modo]] - b))
-							}
+						if (current_mes = 0 or current_mes = 6) and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
+							add_encargo(recurso_cultivo[edificio.modo], edificio.almacen[recurso_cultivo[edificio.modo]] - b, edificio, not edificio.privado)
 							edificio.almacen[recurso_cultivo[edificio.modo]] = b
 						}
 					
@@ -1339,10 +1389,7 @@ if keyboard_check(vk_space)
 							edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
 						}
 						if (current_mes = 0 or current_mes = 6) and recurso_exportado[1]{
-							if not sel_edificio.privado{
-								dinero += floor(recurso_precio[1] * edificio.almacen[1])
-								mes_exportaciones[current_mes] += floor(recurso_precio[1] * edificio.almacen[1])
-							}
+							add_encargo(1, edificio.almacen[1], edificio, not edificio.privado)
 							edificio.almacen[1] = 0
 						}
 					}
@@ -1350,10 +1397,7 @@ if keyboard_check(vk_space)
 					else if edificio_nombre[edificio.tipo] = "Pescadería"{
 						edificio.almacen[8] += 10 * array_length(edificio.trabajadores)
 						if (current_mes = 0 or current_mes = 6) and recurso_exportado[8] and edificio.almacen[8] > 200{
-							if not edificio.privado{
-								dinero += floor(recurso_precio[8] * (edificio.almacen[8] - 200))
-								mes_exportaciones[current_mes] += floor(recurso_precio[8] * (edificio.almacen[8] - 200))
-							}
+							add_encargo(8, edificio.almacen[8] - 200, edificio, not edificio.privado)
 							edificio.almacen[8] = 200
 						}
 					}
@@ -1381,24 +1425,30 @@ if keyboard_check(vk_space)
 						if b > 0
 							show_debug_message($"Mina agotada en {edificio.x} {edificio.y}")
 						edificio.almacen[recurso_mineral[edificio.modo]] += e - b
-						if (current_mes = 0 or current_mes = 6) and recurso_exportado[recurso_mineral[edificio.modo]]{
-							if not edificio.privado{
-								dinero += floor(recurso_precio[recurso_mineral[edificio.modo]] * edificio.almacen[recurso_mineral[edificio.modo]])
-								mes_exportaciones[current_mes] += floor(recurso_precio[recurso_mineral[edificio.modo]] * edificio.almacen[recurso_mineral[edificio.modo]])
-							}
+						if (current_mes = 0 or current_mes = 6){
+							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio, not edificio.privado)
 							edificio.almacen[recurso_mineral[edificio.modo]] = 0
 						}
 					}
 					//Muelle
 					else if edificio_nombre[edificio.tipo] = "Muelle"{
 						if current_mes = 0 or current_mes= 6{
-							var c = 50 * array_length(edificio.trabajadores)
+							var c = 100 * array_length(edificio.trabajadores)
 							for(var b = 0; b < array_length(recurso_nombre); b++){
+								//Exportaciones
+								if recurso_exportado[b]{
+									var d = min(c, edificio.almacen[b])
+									edificio.almacen[b] -= d
+									mes_exportaciones[current_mes] += floor(d * recurso_precio[b])
+									dinero += floor(d * recurso_precio[b])
+								}
+								#region Importaciones
 								var d = min(c, recurso_importado[b])
 								edificio.almacen[b] += d
 								dinero -= floor(d * recurso_precio[b] * 1.2)
 								mes_importaciones[current_mes] += floor(d * recurso_precio[b] * 1.2)
 								recurso_importado[b] -= d
+								#endregion
 							}
 						}
 					}
@@ -1556,6 +1606,7 @@ if keyboard_check(vk_space)
 			if edificio_es_ocio[edificio.tipo] or edificio_es_iglesia[edificio.tipo]
 				edificio.count = max(0, floor(edificio.count * (1 - array_length(edificio.trabajadores) / edificio_trabajadores_max[edificio.tipo])))
 		}
+		#region Bancarrota
 		//Entrar a bancarrota
 		if not deuda and dinero < 0{
 			deuda = true
@@ -1573,6 +1624,7 @@ if keyboard_check(vk_space)
 			else
 				game_end()
 		}
+		#endregion
 	}
 #region abreviatura
 //Añadir familia

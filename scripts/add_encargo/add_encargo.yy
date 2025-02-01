@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"add_encargo",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"add_encargo",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

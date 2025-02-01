@@ -1,4 +1,4 @@
-function draw_boton(x, y, text, borde = false, able = true){
+function draw_boton(x, y, text, borde = false, able = true, display = ""){
 	var c = draw_get_color()
 	var d = draw_get_halign()
 	if borde{
@@ -24,6 +24,8 @@ function draw_boton(x, y, text, borde = false, able = true){
 		if d = fa_left{
 			if mouse_x > x and mouse_y > y and mouse_x < x + string_width(text) and mouse_y < y + string_height(text){
 				window_set_cursor(cr_handpoint)
+				if display != ""
+					draw_text(mouse_x + 20, mouse_y, display)
 				if mouse_check_button_pressed(mb_left){
 					mouse_clear(mb_left)
 					return true
@@ -37,6 +39,8 @@ function draw_boton(x, y, text, borde = false, able = true){
 		else{
 			if mouse_x > x - string_width(text) and mouse_y > y and mouse_x < x and mouse_y < y + string_height(text){
 				window_set_cursor(cr_handpoint)
+				if display != ""
+					draw_text(mouse_x - 20, mouse_y, display)
 				if mouse_check_button_pressed(mb_left){
 					mouse_clear(mb_left)
 					return true
