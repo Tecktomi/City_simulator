@@ -973,23 +973,37 @@ if keyboard_check(vk_space)
 		}
 		//Mover recursos
 		if array_length(encargos) > 0{
-			var b = 0
+			var c = 0, rss_checked = []
 			for(var a = 0; a < array_length(edificio_count[22]); a++)
-				b += array_length(edificio_count[22, a].trabajadores)
-			var next_encargo = encargos[0], edificio = edificio_count[13, irandom(array_length(edificio_count[13]) - 1)]
-			if next_encargo.cantidad > 0{
-				b = min(b, next_encargo.cantidad)
-				next_encargo.cantidad -= b
-				edificio.almacen[next_encargo.recurso] += b
+				c += array_length(edificio_count[22, a].trabajadores)
+			for(var a = 0; a < array_length(recurso_nombre); a++)
+				array_push(rss_checked, false)
+			for(var a = 0; a < array_length(encargos); a++){
+				var next_encargo = encargos[a], edificio = edificio_count[13, irandom(array_length(edificio_count[13]) - 1)]
+				if not rss_checked[next_encargo.recurso]{
+					var b = 0
+					rss_checked[next_encargo.recurso] = true
+					//Encargos hacia el muelle
+					if next_encargo.cantidad > 0{
+						b = min(c, next_encargo.cantidad)
+						next_encargo.cantidad -= b
+						edificio.almacen[next_encargo.recurso] += b
+					}
+					//Encargos hacia la fábrica
+					else if next_encargo.cantidad < 0{
+						b = min(c, -next_encargo.cantidad, edificio.almacen[next_encargo.recurso])
+						next_encargo.cantidad += b
+						edificio.almacen[next_encargo.recurso] -= b
+						next_encargo.edificio.almacen[next_encargo.recurso] += b
+						next_encargo.edificio.pedido[next_encargo.recurso] -= b
+					}
+					if next_encargo.cantidad = 0
+						array_delete(encargos, a--, 1)
+					c -= b
+					if c = 0
+						break
+				}
 			}
-			else{
-				b = min(b, next_encargo.cantidad, edificio.almacen[next_encargo.recurso])
-				next_encargo.cantidad += b
-				edificio.almacen[next_encargo.recurso] -= b
-				next_encargo.edificio.almacen[next_encargo.recurso] += b
-			}
-			if next_encargo.cantidad = 0
-				array_shift(encargos)
 		}
 		//Eventos mensuales
 		if dia_mes(dia) = 0{
@@ -1514,6 +1528,20 @@ if keyboard_check(vk_space)
 							}
 						}
 					}
+					//Planta de Siderurgia
+					else if edificio_nombre[edificio.tipo] = "Planta de Siderurgia"{
+						var b = min(2 * edificio.almacen[9], 3 * edificio.almacen[10], array_length(edificio.trabajadores) / 5)
+						edificio.almacen[9] -= round(20 * b)
+						edificio.almacen[10] -= round(30 * b)
+						edificio.almacen[15] += round(20 * b)
+						add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 240, edificio, not edificio.privado)
+						add_encargo(10, edificio.almacen[10] + edificio.pedido[10] - 360, edificio, not edificio.privado)
+						add_encargo(15, edificio.almacen[15], edificio, not edificio.privado)
+						edificio.almacen[15] = 0
+						edificio.pedido[9] = 240 - edificio.almacen[9]
+						edificio.pedido[10] = 360 - edificio.almacen[10]
+						show_debug_message($"{edificio.almacen[9]}, {edificio.pedido[9]}__{edificio.almacen[10]}, {edificio.pedido[10]}")
+					}
 				}
 			}
 			//Casas
@@ -1701,4 +1729,7 @@ if keyboard_check_pressed(vk_escape)
 //Pantalla completa
 if keyboard_check_pressed(vk_f4)
 	window_set_fullscreen(not window_get_fullscreen())
+//Claves
+if keyboard_check(vk_lshift) and keyboard_check(ord("4"))
+	dinero += 100
 #endregion

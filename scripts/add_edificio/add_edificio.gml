@@ -13,6 +13,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		dia_factura : irandom(27),
 		count : 0,
 		almacen : undefined,
+		pedido : undefined,
 		eficiencia : 1,
 		modo : 0,
 		array_real_1 : [],
@@ -60,8 +61,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		if control.edificio_es_ocio[tipo]
 			cumplir_exigencia(3)
 		array_push(control.edificio_count[tipo], edificio)
-		for(var a = 0; a < array_length(control.recurso_nombre); a++)
+		for(var a = 0; a < array_length(control.recurso_nombre); a++){
 			edificio.almacen[a] = 0
+			edificio.pedido[a] = 0
+		}
 		if control.edificio_nombre[tipo] = "Aserradero"
 			for(var a = max(0, x - 4); a < min(x + width + 4, control.xsize); a++)
 				for(var b = max(0, y - 4); b < min(y + height + 4, control.ysize); b++)
