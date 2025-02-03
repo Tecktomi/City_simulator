@@ -24,7 +24,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		exigencia : null_exigencia,
 		exigencia_fallida : false,
 		privado : false,
-		vivienda_calidad : control.edificio_familias_calidad[tipo]
+		vivienda_calidad : control.edificio_familias_calidad[tipo],
+		trabajo_calidad : control.edificio_trabajo_calidad[tipo],
+		trabajo_sueldo : control.edificio_trabajo_sueldo[tipo],
+		presupuesto : 3
 	}
 	array_pop(edificio.familias)
 	array_pop(edificio.trabajadores)

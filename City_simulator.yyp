@@ -49,6 +49,7 @@
     {"id":{"name":"distancia","path":"scripts/distancia/distancia.yy",},},
     {"id":{"name":"draw_boton","path":"scripts/draw_boton/draw_boton.yy",},},
     {"id":{"name":"draw_menu","path":"scripts/draw_menu/draw_menu.yy",},},
+    {"id":{"name":"draw_sprite_boton","path":"scripts/draw_sprite_boton/draw_sprite_boton.yy",},},
     {"id":{"name":"draw_text_pos","path":"scripts/draw_text_pos/draw_text_pos.yy",},},
     {"id":{"name":"duplicate_struct","path":"scripts/duplicate_struct/duplicate_struct.yy",},},
     {"id":{"name":"edificio_valid_place","path":"scripts/edificio_valid_place/edificio_valid_place.yy",},},

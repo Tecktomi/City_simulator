@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"draw_sprite_boton",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"draw_sprite_boton",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

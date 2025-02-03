@@ -117,12 +117,23 @@ if sel_build{
 	pos = 100
 	//Menú de construcción
 	if ministerio = -1{
-		for(var a = 0; a < array_length(edificio_categoria[build_categoria]); a++)
-			if draw_boton(110, pos, $"{edificio_nombre[edificio_categoria[build_categoria, a]]} ${edificio_precio[edificio_categoria[build_categoria, a]]}") and dinero + 2500 >= edificio_precio[edificio_categoria[build_categoria, a]]{
-				build_index = edificio_categoria[build_categoria, a]
+		for(var a = 0; a < array_length(edificio_categoria[build_categoria]); a++){
+			b = edificio_categoria[build_categoria, a]
+			if draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}", , ,
+				function(b){
+					draw_set_valign(fa_bottom)
+					draw_text(100, room_height - 120, $"{edificio_es_casa[b] ? "Espacio para " + string(edificio_familias_max[b]) + " familias\n" : ""}{
+						edificio_es_trabajo[b] ? "Necesita " + string(edificio_trabajadores_max[b]) + " trabajadores " + ((edificio_trabajo_educacion[b] = 0) ? "sin educación" : "con " + educacion_nombre[edificio_trabajo_educacion[b]]) + "\n" : ""}{
+						edificio_es_escuela[b] ? "Enseña a " + string(edificio_clientes_max[b]) + " alumnos\n" : ""}{
+						edificio_es_medico[b] ? "Atiende a " + string(edificio_clientes_max[b]) + " pacientes\n" : ""}{
+						edificio_es_ocio[b] or edificio_es_iglesia[b] ? "Acepta " + string(edificio_clientes_max[b]) + " visitantes\n" : ""}{edificio_descripcion[b]}")
+					draw_set_valign(fa_top)
+				}, b) and dinero + 2500 >= edificio_precio[b]{
+				build_index = b
 				build_sel = true
 				sel_build = false
-			} 
+			}
+		}
 	}
 	//Ministerios
 	else{
@@ -404,7 +415,7 @@ if sel_build{
 					count[b] += temp_grid[b, (a + current_mes) mod 12]
 					maxi[b] = max(maxi[b], temp_grid[b, a])
 				}
-				for(var b = 0; b < array_length(recurso_nombre); b++){
+				for(b = 0; b < array_length(recurso_nombre); b++){
 					temp_exportaciones[b] += mes_exportaciones_recurso[a, b]
 					temp_importaciones[b] += mes_importaciones_recurso[a, b]
 				}
@@ -493,7 +504,8 @@ if sel_build{
 		//Leyes
 		else if ministerio = 7{
 			for(var a = 0; a < array_length(ley_nombre); a++)
-				if draw_boton(110, pos, $"{ley_nombre[a]}: {ley_eneabled[a]}", , , ley_descripcion[a]){
+				if draw_boton(110, pos, $"{ley_nombre[a]}: {ley_eneabled[a] ? "Legal" : "Ilegal"}", , , function(a){draw_text(100, room_height - 120, $"{ley_descripcion[a]} ($250)")}, a){
+					dinero -= 250
 					ley_eneabled[a] = not ley_eneabled[a]
 					//Permitir divorcios
 					if a = 0 and ley_eneabled[0]
@@ -726,6 +738,12 @@ if sel_info{
 		//Exigencia pendiente
 		else if sel_edificio.exigencia != null_exigencia
 			draw_text_pos(room_width - 20, pos, $"Esperando que cumplas {exigencia_nombre[sel_edificio.paro_motivo]}")
+		#region presupuesto
+		for(var a = 0; a < 5; a++)
+			if draw_sprite_boton(spr_icono, 3 - (a < sel_edificio.presupuesto - 1), room_width - (a + 1) * 40, pos, 40, 40)
+				sel_edificio.presupuesto = a + 1
+		pos += 40
+		#endregion
 		//Información familias
 		if edificio_es_casa[sel_edificio.tipo]{
 			draw_text_pos(room_width - 20, pos, $"Calidad de vivienda {sel_edificio.vivienda_calidad}")
@@ -1724,7 +1742,10 @@ if keyboard_check(vk_space)
 			}
 			//Edificios de ocio y religiosos
 			if edificio_es_ocio[edificio.tipo] or edificio_es_iglesia[edificio.tipo]
-				edificio.count = max(0, floor(edificio.count * (1 - array_length(edificio.trabajadores) / edificio_trabajadores_max[edificio.tipo])))
+				if edificio_trabajadores_max[edificio.tipo] = 0
+					edificio.count = 0
+				else
+					edificio.count = max(0, floor(edificio.count * (1 - array_length(edificio.trabajadores) / edificio_trabajadores_max[edificio.tipo])))
 		}
 		#region Bancarrota
 		//Entrar a bancarrota
