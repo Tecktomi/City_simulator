@@ -37,6 +37,12 @@ function destroy_edificio(edificio = null_edificio){
 	array_remove(control.edificios, edificio)
 	if edificio.exigencia != control.null_exigencia
 		array_remove(edificio.exigencia.edificios, edificio)
+	for(var a = 0; a < array_length(control.encargos); a++)
+		if control.encargos[a].edificio = edificio
+			if control.encargos[a].cantidad < 0
+				array_delete(control.encargos, a--, 1)
+			else
+				control.encargos[a].edificio = null_edificio
 	//Modificar belleza
 	if control.edificio_belleza[edificio.tipo] != 50{
 		var size = ceil(abs(control.edificio_belleza[edificio.tipo] - 50) / 5)

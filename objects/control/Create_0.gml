@@ -78,7 +78,7 @@ null_persona.familia = null_familia
 #endregion
 //Edificios
 #region edificios
-edificio_nombre = ["Sin trabajo", "Jubilado", "Sin atención médica", "Homeless", "Granja", "Aserradero", "Escuela", "Consultorio", "Chabola", "Cabaña", "Mansión", "Taberna", "Circo", "Muelle", "Pescadería", "Mina", "Capilla", "Hospicio", "Albergue", "Escuela parroquial", "Oficina de Construcción", "Plaza", "Oficina de Transporte", "Planta de Siderurgia"]
+edificio_nombre = ["Sin trabajo", "Jubilado", "Sin atención médica", "Homeless", "Granja", "Aserradero", "Escuela", "Consultorio", "Chabola", "Cabaña", "Mansión", "Taberna", "Circo", "Muelle", "Pescadería", "Mina", "Capilla", "Hospicio", "Albergue", "Escuela parroquial", "Oficina de Construcción", "Plaza", "Oficina de Transporte", "Planta Siderúrgica"]
 edificio_trabajadores_max = [0, 0, 0, 0, 10, 5, 4, 3, 0, 0, 2, 2, 8, 5, 6, 5, 4, 8, 4, 5, 8, 0, 4, 20]
 edificio_trabajo_calidad = [0, 10, 0, 0, 25, 30, 50, 60, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45, 30, 0, 35, 30]
 edificio_trabajo_sueldo = [0, 2, 0, 0, 4, 5, 8, 11, 0, 0, 4, 5, 3, 7, 6, 5, 6, 6, 5, 6, 6, 0, 5, 4]
@@ -323,6 +323,11 @@ for(a = 0; a < 12; a++){
 	mes_tarifas[a] = 0
 	mes_importaciones[a] = 0
 	mes_compra_interna[a] = 0
+	mes_venta_interna[a] = 0
+	for(var b = 0; b < array_length(recurso_nombre); b++){
+		mes_exportaciones_recurso[a, b] = 0
+		mes_importaciones_recurso[a, b] = 0
+	}
 }
 for(a = 0; a < array_length(edificio_nombre); a++)
 	show[a] = false

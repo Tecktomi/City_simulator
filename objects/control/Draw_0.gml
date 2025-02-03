@@ -290,12 +290,16 @@ if sel_build{
 				for(var a = 0; a < array_length(encargos); a++){
 					var encargo = encargos[a]
 					if encargo.cantidad > 0{
-						if draw_boton(120, pos, $"{encargo.cantidad} de {recurso_nombre[encargo.recurso]} de {edificio_nombre[encargo.edificio.tipo]}"){
-							sel_build = false
-							sel_info = true
-							sel_tipo = 0
-							sel_edificio = encargo.edificio
+						if encargo.edificio != null_edificio{
+							if draw_boton(120, pos, $"{encargo.cantidad} de {recurso_nombre[encargo.recurso]} de {edificio_nombre[encargo.edificio.tipo]}"){
+								sel_build = false
+								sel_info = true
+								sel_tipo = 0
+								sel_edificio = encargo.edificio
+							}
 						}
+						else
+							draw_text_pos(120, pos, $"{encargo.cantidad} de {recurso_nombre[encargo.recurso]}")
 					}
 					else
 						if draw_boton(120, pos, $"{-encargo.cantidad} de {recurso_nombre[encargo.recurso]} a {edificio_nombre[encargo.edificio.tipo]}"){
@@ -366,59 +370,77 @@ if sel_build{
 		}
 		//Ministerio de economía
 		else if ministerio = 5{
-			var temp_array, temp_grid, temp_text_array, count, maxi, trab_esta = 0, trab_total = 0
+			var temp_array, temp_grid, temp_text_array, count, maxi, trab_esta = 0, trab_total = 0, temp_exportaciones, temp_importaciones
 			temp_grid[0] = mes_renta
 			temp_grid[1] = mes_tarifas
-			temp_grid[2] = mes_exportaciones
-			temp_grid[3] = mes_herencia
+			temp_grid[2] = mes_herencia
+			temp_grid[3] = mes_exportaciones
 			temp_grid[4] = mes_sueldos
 			temp_grid[5] = mes_mantenimiento
 			temp_grid[6] = mes_construccion
 			temp_grid[7] = mes_importaciones
 			temp_grid[8] = mes_compra_interna
+			temp_grid[9] = mes_venta_interna
 			temp_text_array[0] = "Renta"
 			temp_text_array[1] = "Tarifas"
-			temp_text_array[2] = "Exportaciones"
-			temp_text_array[3] = "Herencia"
+			temp_text_array[2] = "Herencia"
+			temp_text_array[3] = "Exportaciones"
 			temp_text_array[4] = "Sueldos"
 			temp_text_array[5] = "Mantenimiento"
 			temp_text_array[6] = "Construcción"
 			temp_text_array[7] = "Importaciones"
 			temp_text_array[8] = "Compra a Privados"
-			for(var a = 0; a <= 8; a++){
+			temp_text_array[9] = "Venta a Privados"
+			for(var a = 0; a <= 9; a++){
 				count[a] = 0
 				maxi[a] = 0
 			}
-			for(var a = 0; a < 12; a++)
-				for(b = 0; b < 8; b++){
+			for(var a = 0; a < array_length(recurso_nombre); a++){
+				temp_exportaciones[a] = 0
+				temp_importaciones[a] = 0
+			}
+			for(var a = 0; a < 12; a++){
+				for(b = 0; b <= 9; b++){
 					count[b] += temp_grid[b, (a + current_mes) mod 12]
 					maxi[b] = max(maxi[b], temp_grid[b, a])
 				}
+				for(var b = 0; b < array_length(recurso_nombre); b++){
+					temp_exportaciones[b] += mes_exportaciones_recurso[a, b]
+					temp_importaciones[b] += mes_importaciones_recurso[a, b]
+				}
+			}
 			for(var a = 0; a < array_length(personas); a++)
 				if personas[a].trabajo != null_edificio{
 					trab_total++
 					trab_esta += not personas[a].trabajo.privado
-				}	
-			draw_text_pos(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3]}")
-			for(b = 0; b < 4; b++)
-				draw_menu(120, pos, $"{temp_text_array[b]}: ${count[b]}", b, , false)
+				}
+			#region Ingresos
+			draw_text_pos(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9]}")
+			draw_text_pos(120, pos, $"{temp_text_array[0]}: ${count[0]}")
+			draw_text_pos(120, pos, $"{temp_text_array[1]}: ${count[1]}")
+			draw_text_pos(120, pos, $"{temp_text_array[2]}: ${count[2]}")
+			if draw_menu(120, pos, $"{temp_text_array[3]}: ${count[3]}", 0, , false)
+				for(var c = 0; c < array_length(recurso_nombre); c++)
+					if temp_exportaciones[c] > 0
+						draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_exportaciones[c]}")
+			draw_text_pos(120, pos, $"{temp_text_array[9]}: ${count[9]}")
+			#endregion
+			#region Pérdidas
 			draw_text_pos(110, pos, $"Pérdidas: ${count[4] + count[5] + count[6] + count[7]}")
-			for(b = 4; b <= 8; b++)
-				draw_menu(120, pos, $"{temp_text_array[b]}: ${count[b]}", b, , false)
+			draw_text_pos(120, pos, $"{temp_text_array[4]}: ${count[4]}")
+			draw_text_pos(120, pos, $"{temp_text_array[5]}: ${count[5]}")
+			draw_text_pos(120, pos, $"{temp_text_array[6]}: ${count[6]}")
+			if draw_menu(120, pos, $"{temp_text_array[7]}: ${count[7]}", 1, , false)
+				for(var c = 0; c < array_length(recurso_nombre); c++)
+					if temp_importaciones[c] > 0
+						draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_importaciones[c]}")
+			draw_text_pos(120, pos, $"{temp_text_array[8]}: ${count[8]}")
+			#endregion
+			draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] - count[4] - count[5] - count[6] - count[7] - count[8]}")
 			if trab_total > 0{
 				pos += 20
 				draw_text_pos(100, pos, $"{floor(100 * trab_esta / trab_total)} % de trabajadores estatales.")
 			}
-			draw_line(400, 300, 500, 300)
-			draw_line(400, 300, 400, 200)
-			pos = 300
-			for(b = 0; b <= 8; b++)
-				if show[b]{
-					draw_set_color(make_color_hsv(b * 15, 255, 255))
-					draw_text_pos(400, pos, temp_text_array[b])
-					for(var a = 0; a < 11; a++)
-						draw_line(400 + a * 10, pos - 100 * temp_grid[b, a] / maxi[b], 400 + (a + 1) * 10, pos - 100 * temp_grid[b, a + 1] / maxi[b])
-					}
 			pos = 100
 			draw_set_color(c_black)
 			draw_text_pos(500, pos, "Mercado internacional")
@@ -1020,7 +1042,13 @@ if keyboard_check(vk_space)
 			mes_exportaciones[current_mes] = 0
 			mes_herencia[current_mes] = 0
 			mes_construccion[current_mes] = 0
-			mes_exportaciones[current_mes] = 0
+			mes_importaciones[current_mes] = 0
+			mes_compra_interna[current_mes] = 0
+			mes_venta_interna[current_mes] = 0
+			for(var a = 0; a < array_length(recurso_nombre); a++){
+				array_set(mes_exportaciones_recurso[current_mes], a, 0)
+				array_set(mes_importaciones_recurso[current_mes], a, 0)
+			}
 			//Actualizar precios de recursos y tratados comerciales
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				recurso_precio[a] *= random_range(0.95, 1.05)
@@ -1515,6 +1543,7 @@ if keyboard_check(vk_space)
 										}
 										total -= d
 										mes_exportaciones[current_mes] += floor(temp_factor * d * recurso_precio[b])
+										array_set(mes_exportaciones_recurso[current_mes], b, mes_exportaciones_recurso[current_mes, b] + floor(temp_factor * d * recurso_precio[b]))
 										dinero += floor(temp_factor * d * recurso_precio[b])
 									}
 								}
@@ -1523,13 +1552,14 @@ if keyboard_check(vk_space)
 								edificio.almacen[b] += d
 								dinero -= floor(d * recurso_precio[b] * 1.2)
 								mes_importaciones[current_mes] += floor(d * recurso_precio[b] * 1.2)
+								array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + floor(d * recurso_precio[b] * 1.2))
 								recurso_importado[b] -= d
 								#endregion
 							}
 						}
 					}
-					//Planta de Siderurgia
-					else if edificio_nombre[edificio.tipo] = "Planta de Siderurgia"{
+					//Planta Siderúrgica
+					else if edificio_nombre[edificio.tipo] = "Planta Siderúrgica"{
 						var b = min(2 * edificio.almacen[9], 3 * edificio.almacen[10], array_length(edificio.trabajadores) / 5)
 						edificio.almacen[9] -= round(20 * b)
 						edificio.almacen[10] -= round(30 * b)
@@ -1730,6 +1760,8 @@ if keyboard_check_pressed(vk_escape)
 if keyboard_check_pressed(vk_f4)
 	window_set_fullscreen(not window_get_fullscreen())
 //Claves
-if keyboard_check(vk_lshift) and keyboard_check(ord("4"))
+if keyboard_check(vk_lshift) and keyboard_check(ord("4")){
 	dinero += 100
+	mes_herencia[current_mes] += 100
+}
 #endregion
