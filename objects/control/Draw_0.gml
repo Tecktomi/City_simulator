@@ -740,28 +740,36 @@ if sel_info{
 			draw_text_pos(room_width - 20, pos, $"Esperando que cumplas {exigencia_nombre[sel_edificio.paro_motivo]}")
 		#region presupuesto
 		for(var a = 0; a < 5; a++)
-			if draw_sprite_boton(spr_icono, 3 - (a < sel_edificio.presupuesto - 1), room_width - (a + 1) * 40, pos, 40, 40)
-				sel_edificio.presupuesto = a + 1
+			if draw_sprite_boton(spr_icono, 3 - (a > sel_edificio.presupuesto), room_width - 200 + a * 40, pos, 40, 40){
+				sel_edificio.vivienda_calidad -= sel_edificio.presupuesto
+				sel_edificio.trabajo_calidad -= 4 * sel_edificio.presupuesto
+				sel_edificio.trabajo_sueldo -= sel_edificio.presupuesto
+				sel_edificio.presupuesto = a
+				sel_edificio.vivienda_calidad += sel_edificio.presupuesto
+				sel_edificio.trabajo_calidad += 4 * sel_edificio.presupuesto
+				sel_edificio.trabajo_sueldo += sel_edificio.presupuesto
+			}
 		pos += 40
+		draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[sel_edificio.tipo] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
+			edificio_es_casa[sel_edificio.tipo] ? "Calidad de vivienda: " + string(sel_edificio.vivienda_calidad) + "\n" : ""}")
 		#endregion
 		//Información familias
 		if edificio_es_casa[sel_edificio.tipo]{
-			draw_text_pos(room_width - 20, pos, $"Calidad de vivienda {sel_edificio.vivienda_calidad}")
-			draw_text_pos(room_width - 20, pos, $"Familias: {array_length(sel_edificio.familias)}/{edificio_familias_max[sel_edificio.tipo]}")
-			for(var a = 0; a < array_length(sel_edificio.familias); a++)
-				if draw_boton(room_width - 40, pos, $"Familia {sel_edificio.familias[a].padre.apellido} {sel_edificio.familias[a].madre.apellido}"){
-					sel_familia = sel_edificio.familias[a]
-					sel_tipo = 1
-				}
+			if draw_menu(room_width - 20, pos, $"Familias: {array_length(sel_edificio.familias)}/{edificio_familias_max[sel_edificio.tipo]}", 3, , false)
+				for(var a = 0; a < array_length(sel_edificio.familias); a++)
+					if draw_boton(room_width - 40, pos, $"Familia {sel_edificio.familias[a].padre.apellido} {sel_edificio.familias[a].madre.apellido}"){
+						sel_familia = sel_edificio.familias[a]
+						sel_tipo = 1
+					}
 		}
 		//Información trabajadores
 		if edificio_es_trabajo[sel_edificio.tipo]{
-			draw_text_pos(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{edificio_trabajadores_max[sel_edificio.tipo]}")
-			for(var a = 0; a < array_length(sel_edificio.trabajadores); a++)
-				if draw_boton(room_width - 40, pos, name(sel_edificio.trabajadores[a])){
-					sel_persona = sel_edificio.trabajadores[a]
-					sel_tipo = 2
-				}
+			if draw_menu(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{edificio_trabajadores_max[sel_edificio.tipo]}", 4, , false)
+				for(var a = 0; a < array_length(sel_edificio.trabajadores); a++)
+					if draw_boton(room_width - 40, pos, name(sel_edificio.trabajadores[a])){
+						sel_persona = sel_edificio.trabajadores[a]
+						sel_tipo = 2
+					}
 			if edificio_nombre[sel_edificio.tipo] = "Granja"{
 				if current_mes = 5 or current_mes = 10
 					draw_text_pos(room_width - 20, pos, "Consecha")
@@ -770,7 +778,7 @@ if sel_info{
 				draw_text_pos(room_width - 40, pos, $"Eficiencia: {floor(sel_edificio.eficiencia * 100)}%")
 				draw_text_pos(room_width - 40, pos, $"{sel_edificio.count} plantas")
 				draw_text_pos(room_width - 20, pos, $"\nProduciendo {recurso_nombre[recurso_cultivo[sel_edificio.modo]]}")
-				if not sel_edificio.privado and draw_boton(room_width - 20, pos, "Cambiar recurso", , not sel_edificio.paro)
+				if not sel_edificio.privado and draw_boton(room_width - 40, pos, "Cambiar recurso", , not sel_edificio.paro)
 					sel_modo = not sel_modo
 				if sel_modo
 					for(var a = 0; a < array_length(recurso_cultivo); a++)
@@ -807,21 +815,21 @@ if sel_info{
 		}
 		//Información escuelas / consultas
 		if edificio_es_escuela[sel_edificio.tipo] or edificio_es_medico[sel_edificio.tipo]{
-			if edificio_es_escuela[sel_edificio.tipo]
-				draw_text_pos(room_width - 20, pos, $"Estudiantes: {array_length(sel_edificio.clientes)}/{edificio_clientes_max[sel_edificio.tipo]}")
-			else
-				draw_text_pos(room_width - 20, pos, $"Pacientes: {array_length(sel_edificio.clientes)}/{edificio_clientes_max[sel_edificio.tipo]}")
-			for(var a = 0; a < array_length(sel_edificio.clientes); a++)
-				if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a])){
-					sel_persona = sel_edificio.clientes[a]
-					sel_tipo = 2
-				}
+			if draw_menu(room_width - 20, pos, $"{edificio_es_escuela[sel_edificio.tipo] ? "Estudientes" : "Clientes"}: {array_length(sel_edificio.clientes)}/{edificio_clientes_max[sel_edificio.tipo]}", 2, , false)
+				for(var a = 0; a < array_length(sel_edificio.clientes); a++)
+					if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a])){
+						sel_persona = sel_edificio.clientes[a]
+						sel_tipo = 2
+					}
 		}
 		//Almacen
-		if draw_menu(room_width - 20, pos, "Almacen", 1)
+		if draw_menu(room_width - 20, pos, "Almacen", 1, , false){
+			var text = ""
 			for(var a = 0; a < array_length(recurso_nombre); a++)
 				if sel_edificio.almacen[a] > 0
-					draw_text_pos(room_width - 40, pos, $"{recurso_nombre[a]}: {sel_edificio.almacen[a]}")
+					text += $"{text != "" ? "\n" : ""}{recurso_nombre[a]}: {sel_edificio.almacen[a]}"
+			draw_text_pos(room_width - 40, pos, text != "" ? text : "Sin recursos")
+		}
 		//Edificios cercanos
 		if draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.edificios_cerca)} edificios cerca", 0, , false)
 			for(var a = 0; a < array_length(sel_edificio.edificios_cerca); a++){
@@ -1338,7 +1346,7 @@ if keyboard_check(vk_space)
 			}
 			if persona.trabajo != null_edificio{
 				var b = 1 + real(persona.es_hijo and ley_eneabled[2])
-				persona.felicidad_trabajo = floor((persona.felicidad_trabajo + 3 * (edificio_trabajo_calidad[persona.trabajo.tipo] / (b + persona.trabajo.paro))) / 4)
+				persona.felicidad_trabajo = floor((persona.felicidad_trabajo + 3 * (persona.trabajo.trabajo_calidad / (b + persona.trabajo.paro))) / 4)
 				array_push(temp_array, persona.felicidad_trabajo)
 			}
 			if persona.religion{
@@ -1455,11 +1463,11 @@ if keyboard_check(vk_space)
 				}
 				else{
 					if not edificio.privado{
-						dinero -= edificio_trabajo_sueldo[edificio.tipo] * array_length(edificio.trabajadores)
-						mes_sueldos[current_mes] += edificio_trabajo_sueldo[edificio.tipo] * array_length(edificio.trabajadores)
+						dinero -= edificio.trabajo_sueldo * array_length(edificio.trabajadores)
+						mes_sueldos[current_mes] += edificio.trabajo_sueldo * array_length(edificio.trabajadores)
 					}
 					for(var b = 0; b < array_length(edificio.trabajadores); b++)
-						edificio.trabajadores[b].familia.riqueza += edificio_trabajo_sueldo[edificio.tipo]
+						edificio.trabajadores[b].familia.riqueza += edificio.trabajo_sueldo
 					//Granjas
 					if edificio_nombre[edificio.tipo] = "Granja"{
 						if current_mes = 5 or current_mes = 10{

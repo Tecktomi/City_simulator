@@ -5,7 +5,7 @@ function destroy_persona(persona = control.null_persona, muerte = true){
 	if persona.pareja != control.null_persona
 		persona.pareja = control.null_persona
 	var familia = persona.familia
-	familia.sueldo -= control.edificio_trabajo_sueldo[persona.trabajo.tipo]
+	familia.sueldo -= persona.trabajo.trabajo_sueldo
 	if familia.padre = persona
 		 familia.padre = control.null_persona
 	else if familia.madre = persona

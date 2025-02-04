@@ -27,7 +27,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		vivienda_calidad : control.edificio_familias_calidad[tipo],
 		trabajo_calidad : control.edificio_trabajo_calidad[tipo],
 		trabajo_sueldo : control.edificio_trabajo_sueldo[tipo],
-		presupuesto : 3
+		presupuesto : 2
 	}
 	array_pop(edificio.familias)
 	array_pop(edificio.trabajadores)
