@@ -211,6 +211,7 @@ for(a = 0; a < array_length(exigencia_nombre); a++){
 }
 array_pop(null_exigencia.edificios)
 null_edificio.exigencia = null_exigencia
+felicidad_minima = 17
 #endregion
 #region edificios
 jubilado = add_edificio(0, 0, 1, false)
@@ -279,23 +280,32 @@ a = ds_grid_get_max(altura, 0, 0, xsize, ysize)
 ds_grid_multiply_region(altura, 0, 0, xsize, ysize, 1 / a)
 for(a = 0; a < xsize; a++)
 	for(b = 0; b < ysize; b++){
+		var c = altura[# a, b]
 		bool_edificio[a, b] = false
 		id_edificio[a, b] = null_edificio
 		construccion_reservada[a, b] = false
-		bosque[a, b] = grid[# a, b] > 0.6 and altura[# a, b] > 0.6
+		bosque[a, b] = grid[# a, b] > 0.6 and c > 0.6
 		if bosque[a, b]
 			bosque_madera[a, b] = floor(160 * grid[# a, b])
-		mar[a, b] = altura[# a, b] < 0.5
-		for(var c = 0; c < array_length(recurso_cultivo); c++)
-			if altura[# a, b] < cultivo_altura_minima[c]
-				ds_grid_set(cultivo[c], a, b, 0)
-			else if altura[# a, b] < cultivo_altura_minima[c] + 0.05
-				ds_grid_multiply(cultivo[c], a, b, 20 * (altura[# a, b] - cultivo_altura_minima[c]))
-		for(var c = 0; c < array_length(recurso_mineral); c++){
-			mineral[c][a, b] = (mineral_grid[c][# a, b] > recurso_mineral_rareza[c])
-			mineral_cantidad[c][a, b] = round(320 * power(mineral_grid[c][# a, b], 3))
+		mar[a, b] = c < 0.5
+		#region altura color
+		if mar[a, b]
+			altura_color[a, b] = make_color_rgb(0, 0, 255 * c)
+		else if c < 0.6
+			altura_color[a, b] = make_color_rgb(255 / 0.6 * (1.1 - c), 255 / 0.6 * (1.1 - c), 127)
+		else
+			altura_color[a, b] = make_color_rgb(31 + 96 * c, 127, 31 + 96 * c)
+		#endregion
+		for(var d = 0; d < array_length(recurso_cultivo); d++)
+			if c < cultivo_altura_minima[d]
+				ds_grid_set(cultivo[d], a, b, 0)
+			else if c < cultivo_altura_minima[d] + 0.05
+				ds_grid_multiply(cultivo[d], a, b, 20 * (c - cultivo_altura_minima[d]))
+		for(var d = 0; d < array_length(recurso_mineral); d++){
+			mineral[d][a, b] = (mineral_grid[d][# a, b] > recurso_mineral_rareza[d])
+			mineral_cantidad[d][a, b] = round(320 * power(mineral_grid[d][# a, b], 3))
 		}
-		belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, altura[# a, b])))
+		belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 		contaminacion[a, b] = 0
 	}
 #endregion
@@ -384,6 +394,10 @@ recurso_exportado[0] = false
 #endregion
 xpos = min(max(0, 16 * a - room_width / 2), xsize * 16 - room_width)
 ypos = min(max(0, 16 * b - room_height / 2), ysize * 16 - room_height)
+min_camx = floor(xpos / 16)
+min_camy = floor(ypos / 16)
+max_camx = ceil((xpos + room_width) / 16)
+max_camy = ceil((ypos + room_height) / 16)
 var checked = [], coord;
 for(a = edificios[0].x - 15; a < edificios[0].x + 15; a++)
 	for(b = edificios[0].y - 15; b < edificios[0].y + 15; b++){

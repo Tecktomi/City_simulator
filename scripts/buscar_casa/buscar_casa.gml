@@ -1,14 +1,16 @@
 function buscar_casa(persona = control.null_persona){
-	if array_length(control.casas) > 0{
-		var casa = control.homeless
-		if (persona.familia.padre = control.null_persona or persona.familia.padre.trabajo = control.null_edificio or persona.familia.padre.trabajo = control.jubilado) and (persona.familia.madre = control.null_persona or persona.familia.madre.trabajo = control.null_edificio or persona.familia.madre.trabajo = control.jubilado)
-			casa = control.casas[irandom(array_length(control.casas) - 1)]
-		else if array_length(persona.trabajo.casas_cerca) > 0
-			casa = persona.trabajo.casas_cerca[irandom(array_length(persona.trabajo.casas_cerca) - 1)]
-		if casa != control.homeless and casa != persona.familia.casa and array_length(casa.familias) < control.edificio_familias_max[casa.tipo] and (persona.familia.sueldo - array_length(persona.familia.hijos)) >= control.edificio_familias_renta[casa.tipo] and casa.vivienda_calidad > persona.familia.casa.vivienda_calidad{
-			cambiar_casa(persona.familia, casa)
-			return true
+	with control{
+		if array_length(casas) > 0{
+			var casa = homeless
+			if (persona.familia.padre = null_persona or persona.familia.padre.trabajo = null_edificio or persona.familia.padre.trabajo = jubilado) and (persona.familia.madre = null_persona or persona.familia.madre.trabajo = null_edificio or persona.familia.madre.trabajo = jubilado)
+				casa = casas[irandom(array_length(casas) - 1)]
+			else if array_length(persona.trabajo.casas_cerca) > 0
+				casa = persona.trabajo.casas_cerca[irandom(array_length(persona.trabajo.casas_cerca) - 1)]
+			if casa != homeless and casa != persona.familia.casa and array_length(casa.familias) < edificio_familias_max[casa.tipo] and (persona.familia.sueldo - array_length(persona.familia.hijos)) >= edificio_familias_renta[casa.tipo] and casa.vivienda_calidad > persona.familia.casa.vivienda_calidad{
+				cambiar_casa(persona.familia, casa)
+				return true
+			}
 		}
+		return false
 	}
-	return false
 }

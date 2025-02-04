@@ -6,19 +6,11 @@ for(var a = 0; a <= xsize; a++)
 	draw_line(a * 16 - xpos, -ypos, a * 16 - xpos, ysize * 16 - ypos)
 for(var a = 0; a <= ysize; a++)
 	draw_line(-xpos, a * 16 - ypos, xsize * 16 - xpos, a * 16 - ypos)
-for(var a = floor(xpos / 16); a < ceil((xpos + room_width) / 16); a++)
-	for(var b = floor(ypos / 16); b < ceil((ypos + room_height) / 16); b++)
-		if mar[a, b]{
-			draw_set_color(make_color_rgb(0, 0, 255 * altura[# a, b]))
-			draw_rectangle(a * 16 - xpos, b * 16 - ypos, a * 16 + 15 - xpos, b * 16 + 15 - ypos, false)
-		}
-		else{
-			if altura[# a, b] < 0.6
-				draw_set_color(make_color_rgb(255 / 0.6 * (1.1 - altura[# a, b]), 255 / 0.6 * (1.1 - altura[# a, b]), 127))
-			else
-				draw_set_color(make_color_rgb(31 + 96 * altura[# a, b], 127, 31 + 96 * altura[# a, b]))
-			draw_rectangle(a * 16 - xpos, b * 16 - ypos, a * 16 + 15 - xpos, b * 16 + 15 - ypos, false)
-		}
+for(var a = min_camx; a < max_camx; a++)
+	for(var b = min_camy; b < max_camy; b++){
+		draw_set_color(altura_color[a, b])
+		draw_rectangle(a * 16 - xpos, b * 16 - ypos, a * 16 + 15 - xpos, b * 16 + 15 - ypos, false)
+	}
 #endregion
 #region vistas
 if keyboard_check(ord("G")){
@@ -28,7 +20,7 @@ if keyboard_check(ord("G")){
 		build_type = (build_type + array_length(recurso_cultivo) - 1) mod array_length(recurso_cultivo)
 }
 if keyboard_check(ord("G")) or (build_sel and edificio_nombre[build_index] = "Granja")
-	dibujo_gradiente(build_type, 0)
+	draw_gradiente(build_type, 0)
 if keyboard_check(ord("M")){
 	if mouse_wheel_up()
 		build_type = (build_type + 1) mod array_length(recurso_mineral)
@@ -36,15 +28,15 @@ if keyboard_check(ord("M")){
 		build_type = (build_type + array_length(recurso_mineral) - 1) mod array_length(recurso_mineral)
 }
 if keyboard_check(ord("M")) or (build_sel and edificio_nombre[build_index] = "Mina")
-	dibujo_gradiente(build_type, 1)
+	draw_gradiente(build_type, 1)
 if keyboard_check(ord("B")) or (build_sel and (edificio_es_casa[build_index] or build_index = 21))
-	dibujo_gradiente(0, 2)
+	draw_gradiente(0, 2)
 if keyboard_check(ord("C"))
-	dibujo_gradiente(0, 3)
+	draw_gradiente(0, 3)
 #endregion
 //Dibujo de arboles
-for(var a = floor(xpos / 16); a < min(xsize - 1, ceil((xpos + room_width) / 16)); a++)
-	for(var b = floor(ypos / 16); b < min(ysize - 1, ceil((ypos + room_height) / 16)); b++)
+for(var a = min_camx; a < max_camx; a++)
+	for(var b = min_camy; b < max_camy; b++)
 		if bosque[a, b]
 			draw_sprite(spr_arbol, 0, a * 16 - xpos, b * 16 - ypos)
 //Información general
@@ -122,7 +114,7 @@ if sel_build{
 			if draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}", , ,
 				function(b){
 					draw_set_valign(fa_bottom)
-					draw_text(100, room_height - 120, $"{edificio_es_casa[b] ? "Espacio para " + string(edificio_familias_max[b]) + " familias\n" : ""}{
+					draw_text(100, room_height - 100, $"{edificio_es_casa[b] ? "Espacio para " + string(edificio_familias_max[b]) + " familias\n" : ""}{
 						edificio_es_trabajo[b] ? "Necesita " + string(edificio_trabajadores_max[b]) + " trabajadores " + ((edificio_trabajo_educacion[b] = 0) ? "sin educación" : "con " + educacion_nombre[edificio_trabajo_educacion[b]]) + "\n" : ""}{
 						edificio_es_escuela[b] ? "Enseña a " + string(edificio_clientes_max[b]) + " alumnos\n" : ""}{
 						edificio_es_medico[b] ? "Atiende a " + string(edificio_clientes_max[b]) + " pacientes\n" : ""}{
@@ -786,7 +778,7 @@ if sel_info{
 							if draw_boton(room_width - 40, pos, recurso_nombre[recurso_cultivo[a]])
 								sel_edificio.modo = a
 							if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
-								dibujo_gradiente(a, 0)
+								draw_gradiente(a, 0)
 								draw_set_color(c_black)
 							}
 						}
@@ -807,7 +799,7 @@ if sel_info{
 							if draw_boton(room_width - 40, pos, recurso_nombre[recurso_mineral[a]])
 								sel_edificio.modo = a
 							if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
-								dibujo_gradiente(a, 1)
+								draw_gradiente(a, 1)
 								draw_set_color(c_black)
 							}
 						}
@@ -966,15 +958,20 @@ if sel_info{
 	}
 	draw_set_halign(fa_left)
 }
-//Movimiento de la cámara
-if mouse_x < 20
+#region Movimiento de la cámara
+if mouse_x < 20 or keyboard_check(ord("A"))
 	xpos = max(0, xpos - (1 + 7 * keyboard_check(vk_lshift)))
-if mouse_y < 20
+if mouse_y < 20 or keyboard_check(ord("W"))
 	ypos = max(0, ypos - (1 + 7 * keyboard_check(vk_lshift)))
-if mouse_x > room_width - 20
+if mouse_x > room_width - 20 or keyboard_check(ord("D"))
 	xpos = min(xsize * 16 - room_width, xpos + (1 + 7 * keyboard_check(vk_lshift)))
-if mouse_y > room_height - 20
+if mouse_y > room_height - 20 or keyboard_check(ord("S"))
 	ypos = min(ysize * 16 - room_height, ypos + (1 + 7 * keyboard_check(vk_lshift)))
+min_camx = floor(xpos / 16)
+min_camy = floor(ypos / 16)
+max_camx = ceil((xpos + room_width) / 16)
+max_camy = ceil((ypos + room_height) / 16)
+#endregion
 //Pasar día
 if keyboard_check(vk_space)
 	repeat(1 + 29 * keyboard_check(vk_lshift)){
@@ -1132,6 +1129,10 @@ if keyboard_check(vk_space)
 				if fel_ali / array_length(familias) >= 50
 					cumplir_exigencia(6)
 			}
+		}
+		//Eventos anuales
+		if (dia mod 365) = 0{
+			felicidad_minima = floor(17 + 3 * sqrt(floor(dia / 365)))
 		}
 		#region Personas
 		//Ciclo normal de las personas
@@ -1329,7 +1330,7 @@ if keyboard_check(vk_space)
 					persona.felicidad_religion = min(110, persona.felicidad_religion + edificio_clientes_calidad[iglesia.tipo])
 				}
 			}
-			//Calculo de felicidad
+			#region Calculo de felicidad
 			felicidad_total = felicidad_total * array_length(personas) - persona.felicidad
 			if array_length(medicos) = 1
 				persona.felicidad_salud = floor(persona.felicidad_salud / 2)
@@ -1357,8 +1358,9 @@ if keyboard_check(vk_space)
 				array_push(temp_array, persona.felicidad_transporte)
 			persona.felicidad = calcular_felicidad(temp_array)
 			felicidad_total = (felicidad_total + persona.felicidad) / array_length(personas)
+			#endregion
 			//Descontento
-			if persona.edad > 18 and persona.edad < 60 and irandom(20) >= persona.felicidad + 5 * (persona.nacionalidad = 0) and dia > 365{
+			if persona.edad > 18 and persona.edad < 60 and irandom(felicidad_minima) >= persona.felicidad + 5 * (persona.nacionalidad = 0) and dia > 365{
 				//Emigrar
 				if ley_eneabled[5] and persona.familia.riqueza >= 10 * real(persona.familia.integrantes) and brandom(){
 					var familia = persona.familia
