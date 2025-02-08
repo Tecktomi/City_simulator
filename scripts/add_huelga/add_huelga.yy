@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"add_paro",
+  "%Name":"add_huelga",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"add_paro",
+  "name":"add_huelga",
   "parent":{
     "name":"City_simulator",
     "path":"City_simulator.yyp",

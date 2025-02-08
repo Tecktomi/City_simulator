@@ -1,6 +1,8 @@
 function destroy_edificio(edificio = control.null_edificio){
 	with control{
 		var width = edificio_width[edificio.tipo], height = edificio_height[edificio.tipo]
+		if array_length(edificio.trabajadores) < edificio_trabajadores_max[edificio.tipo]
+			array_remove(trabajo_educacion[edificio_trabajo_educacion[edificio.tipo]], edificio)
 		for(var a = 0; a < array_length(edificio.trabajadores); a++)
 			cambiar_trabajo(edificio.trabajadores[a], null_edificio)
 		for(var a = 0; a < array_length(edificio.familias); a++)

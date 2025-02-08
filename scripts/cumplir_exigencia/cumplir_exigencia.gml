@@ -5,7 +5,8 @@ function cumplir_exigencia(index){
 			for(var a = 0; a < array_length(temp_exigencia.edificios); a++){
 				var edificio = temp_exigencia.edificios[a]
 				edificio.exigencia = null_exigencia
-				edificio.paro = false
+				set_paro(false, edificio)
+				edificio.huelga = false
 				edificio.exigencia_fallida = false
 			}
 			exigencia_pedida[index] = false

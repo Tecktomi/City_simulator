@@ -7,9 +7,10 @@ function buscar_escuela(persona = control.null_persona){
 				persona.escuela = escuela
 				if persona.familia.casa != homeless
 					persona.felicidad_transporte = 10000 / (100 + 3 * distancia(persona.familia.casa, escuela))
-				return
+				return true
 			}
 		}
 		persona.escuela = null_edificio
+		return false
 	}
 }

@@ -20,14 +20,16 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			array_real_1 : [],
 			array_real_2 : [],
 			paro : false,
-			paro_motivo : 0,
-			paro_tiempo : 0,
+			huelga : false,
+			huelga_motivo : 0,
+			huelga_tiempo : 0,
 			exigencia : null_exigencia,
 			exigencia_fallida : false,
 			privado : false,
 			vivienda_calidad : edificio_familias_calidad[tipo],
 			trabajo_calidad : edificio_trabajo_calidad[tipo],
 			trabajo_sueldo : edificio_trabajo_sueldo[tipo],
+			mantenimiento : edificio_mantenimiento[tipo],
 			presupuesto : 2
 		}
 		array_pop(edificio.familias)
@@ -41,8 +43,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		if fisico{
 			var width = edificio_width[tipo], height = edificio_height[tipo]
 			array_push(edificios, edificio)
-			if edificio_es_trabajo[tipo]
+			if edificio_es_trabajo[tipo]{
 				array_push(trabajos, edificio)
+				array_push(trabajo_educacion[edificio_trabajo_educacion[tipo]], edificio)
+			}
 			if edificio_es_escuela[tipo]{
 				array_push(escuelas, edificio)
 				cumplir_exigencia(1)

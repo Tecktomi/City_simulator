@@ -5,11 +5,11 @@ function buscar_atencion_medica(persona = control.null_persona){
 			if array_length(medico.clientes) < edificio_clientes_max[medico.tipo]{
 				array_push(medico.clientes, persona)
 				persona.medico = medico
+				return true
 			}
 		}
-		else{
-			array_push(desausiado.clientes, persona)
-			persona.medico = desausiado
-		}
+		array_push(desausiado.clientes, persona)
+		persona.medico = desausiado
+		return false
 	}
 }

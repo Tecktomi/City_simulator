@@ -1,4 +1,4 @@
-function destroy_persona(persona = control.null_persona, muerte = true){
+function destroy_persona(persona = null_persona, muerte = true){
 	with control{
 		var  flag = false
 		array_remove(personas, persona)
@@ -8,9 +8,9 @@ function destroy_persona(persona = control.null_persona, muerte = true){
 		var familia = persona.familia
 		familia.sueldo -= persona.trabajo.trabajo_sueldo
 		if familia.padre = persona
-			 familia.padre = null_persona
+				familia.padre = null_persona
 		else if familia.madre = persona
-			 familia.madre = null_persona
+				familia.madre = null_persona
 		else{
 			array_remove(familia.hijos, persona)
 			for(var a = 0; a < array_length(familia.hijos); a++)
@@ -57,5 +57,5 @@ function destroy_persona(persona = control.null_persona, muerte = true){
 		persona.relacion.vivo = false
 		persona.relacion.persona = undefined
 		return flag
-	}
+		}
 }

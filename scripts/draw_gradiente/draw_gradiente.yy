@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"dibujo_gradiente",
+  "%Name":"draw_gradiente",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"dibujo_gradiente",
+  "name":"draw_gradiente",
   "parent":{
     "name":"City_simulator",
     "path":"City_simulator.yyp",

@@ -147,14 +147,16 @@ null_edificio = {
 	array_real_1 : [],
 	array_real_2 : [],
 	paro : false,
-	paro_motivo : 0,
-	paro_tiempo : 0,
+	huelga : false,
+	huelga_motivo : 0,
+	huelga_tiempo : 0,
 	exigencia : undefined,
 	exigencia_fallida : false,
 	privado : false,
 	vivienda_calidad : 0,
 	trabajo_calidad : 0,
 	trabajo_sueldo : 0,
+	mantenimiento : 0,
 	presupuesto : 2
 }
 array_pop(null_edificio.familias)
@@ -237,7 +239,7 @@ array_delete(cola_construccion, 0, 1)
 //Recursos
 #region recursos
 recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero"]
-recurso_precio = [1.2, 0.8, 1.4, 1.2, 1.6, 0.9, 0.8, 1.8, 1.3, 1.4, 2.2, 3.0, 2.0, 1.6, 1.8, 8]
+recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12]
 recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 recurso_comida = [0, 2, 6, 8]
@@ -258,6 +260,7 @@ for(a = 0; a < array_length(recurso_nombre); a++){
 	homeless.pedido[a] = 0
 	recurso_importado[a] = 0
 	recurso_exportado[a] = true
+	recurso_importado_fijo[a] = 0
 	recurso_tratados[a] = [null_tratado]
 	array_pop(recurso_tratados[a])
 }
@@ -327,6 +330,8 @@ last_width = 0
 last_height = 0
 current_mes = 0
 educacion_nombre = ["Analfabeto", "Educación Básica", "Educación Media", "Educación Técnica", "Educación Profesional"]
+for(a = 0; a < array_length(educacion_nombre); a++)
+	trabajo_educacion[a] = []
 ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Leyes"]
 ministerio = -1
 felicidad_total = 50
@@ -363,7 +368,7 @@ for(a = 0; a < 12; a++){
 }
 for(a = 0; a < array_length(edificio_nombre); a++)
 	show[a] = false
-dinero = 10000
+dinero = 20000
 pos = 0
 deuda = false
 deuda_dia = 0
