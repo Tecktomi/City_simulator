@@ -868,8 +868,8 @@ if sel_info{
 		if draw_menu(room_width - 20, pos, "Almacen", 1, , false){
 			var text = ""
 			for(var a = 0; a < array_length(recurso_nombre); a++)
-				if sel_edificio.almacen[a] != 0
-					text += $"{text != "" ? "\n" : ""}{recurso_nombre[a]}: {sel_edificio.almacen[a]}"
+				if floor(sel_edificio.almacen[a]) != 0
+					text += $"{text != "" ? "\n" : ""}{recurso_nombre[a]}: {floor(sel_edificio.almacen[a])}"
 			draw_text_pos(room_width - 40, pos, text != "" ? text : "Sin recursos")
 		}
 		//Edificios cercanos
@@ -1348,7 +1348,7 @@ if keyboard_check(vk_space)
 			var temp_array = array_shuffle(edificios_ocio_index)
 			persona.felicidad_ocio = 0
 			for(var b = 0; b < array_length(temp_array); b++)
-				if array_length(edificio_count[temp_array[b]]) > 0 and (persona.edad > 12 or edificio_nombre[temp_array[b]] != "Taberna") and (array_length(persona.familia.hijos) > 0 or edificio_nombre[temp_array[b]] != "Circo"){
+				if array_length(edificio_count[temp_array[b]]) > 0 and (persona.edad > 12 or (edificio_nombre[temp_array[b]] != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (edificio_nombre[temp_array[b]] != "Circo")) and ((not persona.sexo and persona.edad > 15) or (edificio_nombre[temp_array[b]] != "Cabaret")){
 					var ocio = edificio_count[temp_array[b], irandom(array_length(edificio_count[temp_array[b]]) - 1)]
 					if ocio.count < edificio_clientes_max[temp_array[b]] and persona.familia.riqueza >= edificio_clientes_tarifa[temp_array[b]]{
 						persona.familia.riqueza -= edificio_clientes_tarifa[temp_array[b]]
@@ -1391,8 +1391,14 @@ if keyboard_check(vk_space)
 			if array_length(medicos) = 1
 				persona.felicidad_salud = floor(persona.felicidad_salud / 2)
 			else
-				if persona.familia.casa != homeless
-					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * (50 - min(100, max(0, contaminacion[persona.familia.casa.x, persona.familia.casa.y])) / 5)) / 4)
+				if persona.familia.casa != homeless{
+					if persona.trabajo != null_edificio
+						persona.felicidad_salud = floor((persona.felicidad_salud + 3 * (50 - min(100, max(0, contaminacion[persona.familia.casa.x, persona.familia.casa.y])) / 5) * (50 - min(100, max(0, contaminacion[persona.trabajo.x, persona.trabajo.y])) / 5)) / 4)
+					else if persona.escuela != null_edificio
+						persona.felicidad_salud = floor((persona.felicidad_salud + 3 * (50 - min(100, max(0, contaminacion[persona.familia.casa.x, persona.familia.casa.y])) / 5) * (50 - min(100, max(0, contaminacion[persona.escuela.x, persona.escuela.y])) / 5)) / 4)
+					else
+						persona.felicidad_salud = floor((persona.felicidad_salud + 3 * (50 - min(100, max(0, contaminacion[persona.familia.casa.x, persona.familia.casa.y])) / 5)) / 4)
+				}
 				else
 					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * 30) / 4)
 			persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
@@ -1662,6 +1668,36 @@ if keyboard_check(vk_space)
 						edificio.almacen[15] = 0
 						edificio.pedido[9] = 240 - edificio.almacen[9]
 						edificio.pedido[10] = 360 - edificio.almacen[10]
+					}
+					//Fábrica textil
+					else if edificio_nombre[edificio.tipo] = "Fábrica Textil"{
+						var b = max(0, min(floor(edificio.almacen[3] / 3), round(array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
+						edificio.almacen[3] -= b * 3
+						edificio.almacen[16] += b
+						add_encargo(3, edificio.almacen[3] + edificio.pedido[3] - 360, edificio, not edificio.privado)
+						add_encargo(16, edificio.almacen[16], edificio, not edificio.privado)
+						edificio.almacen[16] = 0
+						edificio.pedido[3] = 360 - edificio.almacen[3]
+					}
+					//Astillero
+					else if edificio_nombre[edificio.tipo] = "Astillero"{
+						var b = max(0, min(floor(edificio.almacen[1] / 4), edificio.almacen[7], edificio.almacen[12], edificio.almacen[16], round(array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto) / 5)))
+						edificio.almacen[1] -= b * 4
+						edificio.almacen[7] -= b
+						edificio.almacen[12] -= b
+						edificio.almacen[16] -= b
+						edificio.almacen[17] += b / 10
+						add_encargo(1, edificio.almacen[1] + edificio.pedido[1] - 200, edificio, not edificio.privado)
+						add_encargo(7, edificio.almacen[7] + edificio.pedido[7] - 50, edificio, not edificio.privado)
+						add_encargo(12, edificio.almacen[12] + edificio.pedido[12] - 50, edificio, not edificio.privado)
+						add_encargo(16, edificio.almacen[16] + edificio.pedido[16] - 50, edificio, not edificio.privado)
+						if edificio.almacen[17] >= 1
+							add_encargo(17, floor(edificio.almacen[17]), edificio, not edificio.privado)
+						edificio.almacen[17] -= floor(edificio.almacen[17])
+						edificio.pedido[1] = 200 - edificio.almacen[1]
+						edificio.pedido[7] = 50 - edificio.almacen[7]
+						edificio.pedido[12] = 50 - edificio.almacen[12]
+						edificio.pedido[16] = 50 - edificio.almacen[16]
 					}
 				}
 			}
