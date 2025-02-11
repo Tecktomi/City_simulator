@@ -75,7 +75,7 @@ for(var a = 0; a < array_length(cola_construccion); a++){
 	var next_build = cola_construccion[a], b = next_build.x, c = next_build.y
 	draw_set_color(make_color_hsv(edificio_color[next_build.id], 255, 255))
 	draw_rectangle(b * 16 - xpos, c * 16 - ypos, (b + edificio_width[next_build.id]) * 16 - 1 - xpos, (c + edificio_height[next_build.id]) * 16 - 1- ypos, true)
-	draw_text(b * 16 - xpos, c * 16 - ypos, $"{edificio_nombre[next_build.id]}{edificio_nombre[next_build.id] = "Mina" ? "\n" + recurso_nombre[recurso_mineral[next_build.tipo]] : ""}{edificio_nombre[next_build.id] = "Granja" ? "\n" + recurso_nombre[recurso_cultivo[next_build.tipo]] : ""}")
+	draw_text(b * 16 - xpos, c * 16 - ypos, $"{edificio_nombre[next_build.id]}{edificio_nombre[next_build.id] = "Mina" ? "\n" + recurso_nombre[recurso_mineral[next_build.tipo]] : ""}{edificio_nombre[next_build.id] = "Granja" ? "\n" + recurso_nombre[recurso_cultivo[next_build.tipo]] : ""}{edificio_nombre[next_build.id] = "Rancho" ? "\n" + ganado_nombre[next_build.tipo] : ""}")
 }
 #endregion
 //Abrir menú de construcción
@@ -634,17 +634,19 @@ if build_sel{
 		if flag
 			draw_text(mx * 16 - xpos, (my - 1) * 16 - ypos, $"Depósito: {c}")
 	}
+	//Ranchos
+	else if edificio_nombre[build_index] = "Rancho"{
+		for(var a = 0; a < array_length(ganado_nombre); a++)
+			draw_text(0, a * 20, (build_type = a ? ">" : "") + ganado_nombre[a])
+		if mouse_wheel_up()
+			build_type = (build_type + 1) mod array_length(ganado_nombre)
+		if mouse_wheel_down()
+			build_type = (build_type + array_length(ganado_nombre) - 1) mod array_length(ganado_nombre)
+	}
 	//Capilla
 	else if in(build_index, 16, 17, 18, 19){
-		pos = 0
-		for(var a = 16; a < 20; a++){
-			var b = 0
-			if a = build_index{
-				draw_text(0, pos, ">")
-				b = 20
-			}
-			draw_text_pos(b, pos, edificio_nombre[a])
-		}
+		for(var a = 0; a < 4; a++)
+			draw_text_pos(0, a * 20, (build_index = 16 + a ? ">" : "") + edificio_nombre[16 + a])
 		if mouse_wheel_up(){
 			build_index++
 			if build_index = 20
@@ -841,17 +843,28 @@ if sel_info{
 						if mineral[sel_edificio.modo][a, b]
 							c += mineral_cantidad[sel_edificio.modo][a, b]
 				draw_text_pos(room_width - 40, pos, $"Depósito: {c}")
-				if not sel_edificio.privado and draw_boton(room_width - 20, pos, "Cambiar recurso", , not sel_edificio.huelga)
-					sel_modo = not sel_modo
-				if sel_modo
+				if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Cambiar recurso", 3)
 					for(var a = 0; a < array_length(recurso_mineral); a++)
 						if a != sel_edificio.modo{
-							if draw_boton(room_width - 40, pos, recurso_nombre[recurso_mineral[a]])
+							if draw_boton(room_width - 40, pos, recurso_nombre[recurso_mineral[a]]){
 								sel_edificio.modo = a
+								show[3] = false
+							}
 							if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
 								draw_gradiente(a, 1)
 								draw_set_color(c_black)
 							}
+						}
+			}
+			if edificio_nombre[sel_edificio.tipo] = "Rancho"{
+				draw_text_pos(room_width - 20, pos, $"Produciendo {ganado_nombre[sel_edificio.modo]}")
+				if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Cambiar recurso", 3)
+					for(var a = 0; a < array_length(ganado_nombre); a++)
+						if a != sel_edificio.modo and draw_boton(room_width - 40, pos, ganado_nombre[a]){
+							for(var b = 0; b < array_length(ganado_produccion[sel_edificio.modo]); b++)
+								sel_edificio.almacen[ganado_produccion[sel_edificio.modo, b]] = 0
+							sel_edificio.modo = a
+							show[3] = false
 						}
 			}
 		}
@@ -1541,7 +1554,7 @@ if keyboard_check(vk_space)
 						else
 							edificio.count += array_length(edificio.trabajadores)
 						var b = 200 * array_contains(recurso_comida, recurso_cultivo[edificio.modo])
-						if (current_mes = 0 or current_mes = 6) and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
+						if current_mes = edificio.mes_creacion and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
 							add_encargo(recurso_cultivo[edificio.modo], edificio.almacen[recurso_cultivo[edificio.modo]] - b, edificio, not edificio.privado)
 							edificio.almacen[recurso_cultivo[edificio.modo]] = b
 						}
@@ -1567,7 +1580,7 @@ if keyboard_check(vk_space)
 							}
 							edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
 						}
-						if (current_mes = 0 or current_mes = 6) and recurso_exportado[1]{
+						if current_mes = edificio.mes_creacion{
 							add_encargo(1, edificio.almacen[1], edificio, not edificio.privado)
 							edificio.almacen[1] = 0
 						}
@@ -1575,7 +1588,7 @@ if keyboard_check(vk_space)
 					//Pescadería
 					else if edificio_nombre[edificio.tipo] = "Pescadería"{
 						edificio.almacen[8] += round(10 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))
-						if (current_mes = 0 or current_mes = 6) and recurso_exportado[8] and edificio.almacen[8] > 200{
+						if current_mes = edificio.mes_creacion and edificio.almacen[8] > 200{
 							add_encargo(8, edificio.almacen[8] - 200, edificio, not edificio.privado)
 							edificio.almacen[8] = 200
 						}
@@ -1604,14 +1617,14 @@ if keyboard_check(vk_space)
 						if b > 0
 							set_paro(true, edificio)
 						edificio.almacen[recurso_mineral[edificio.modo]] += e - b
-						if (current_mes = 0 or current_mes = 6){
+						if current_mes = edificio.mes_creacion{
 							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio, not edificio.privado)
 							edificio.almacen[recurso_mineral[edificio.modo]] = 0
 						}
 					}
 					//Muelle
 					else if edificio_nombre[edificio.tipo] = "Muelle"{
-						if current_mes = 0 or current_mes= 6{
+						if current_mes = edificio.mes_creacion or (current_mes + 6) mod 12 = edificio.mes_creacion{
 							var c = round(150 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))
 							for(var b = 0; b < array_length(recurso_nombre) and c > 0; b++){
 								//Exportaciones
@@ -1662,22 +1675,31 @@ if keyboard_check(vk_space)
 						edificio.almacen[9] -= b * 2
 						edificio.almacen[10] -= b * 3
 						edificio.almacen[15] += b * 2
-						add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 240, edificio, not edificio.privado)
-						add_encargo(10, edificio.almacen[10] + edificio.pedido[10] - 360, edificio, not edificio.privado)
-						add_encargo(15, edificio.almacen[15], edificio, not edificio.privado)
-						edificio.almacen[15] = 0
-						edificio.pedido[9] = 240 - edificio.almacen[9]
-						edificio.pedido[10] = 360 - edificio.almacen[10]
+						if current_mes = edificio.mes_creacion{
+							add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 240, edificio, not edificio.privado)
+							add_encargo(10, edificio.almacen[10] + edificio.pedido[10] - 360, edificio, not edificio.privado)
+							add_encargo(15, edificio.almacen[15], edificio, not edificio.privado)
+							edificio.almacen[15] = 0
+							edificio.pedido[9] = 240 - edificio.almacen[9]
+							edificio.pedido[10] = 360 - edificio.almacen[10]
+						}
 					}
 					//Fábrica textil
 					else if edificio_nombre[edificio.tipo] = "Fábrica Textil"{
-						var b = max(0, min(floor(edificio.almacen[3] / 3), round(array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
-						edificio.almacen[3] -= b * 3
+						var b = max(0, min(max(floor(edificio.almacen[3] / 3), floor(edificio.almacen[20] / 3)), round(array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
+						if edificio.almacen[3] > edificio.almacen[20]
+							edificio.almacen[3] -= b * 3
+						else
+							edificio.almacen[20] -= b * 3
 						edificio.almacen[16] += b
-						add_encargo(3, edificio.almacen[3] + edificio.pedido[3] - 360, edificio, not edificio.privado)
-						add_encargo(16, edificio.almacen[16], edificio, not edificio.privado)
-						edificio.almacen[16] = 0
-						edificio.pedido[3] = 360 - edificio.almacen[3]
+						if current_mes = edificio.mes_creacion{
+							add_encargo(3, edificio.almacen[3] + edificio.pedido[3] - 360, edificio, not edificio.privado)
+							add_encargo(20, edificio.almacen[20] + edificio.pedido[3] - 360, edificio, not edificio.privado)
+							add_encargo(16, edificio.almacen[16], edificio, not edificio.privado)
+							edificio.almacen[16] = 0
+							edificio.pedido[3] = 360 - edificio.almacen[3]
+							edificio.pedido[20] = 360 - edificio.almacen[20]
+						}
 					}
 					//Astillero
 					else if edificio_nombre[edificio.tipo] = "Astillero"{
@@ -1687,17 +1709,34 @@ if keyboard_check(vk_space)
 						edificio.almacen[12] -= b
 						edificio.almacen[16] -= b
 						edificio.almacen[17] += b / 10
-						add_encargo(1, edificio.almacen[1] + edificio.pedido[1] - 200, edificio, not edificio.privado)
-						add_encargo(7, edificio.almacen[7] + edificio.pedido[7] - 50, edificio, not edificio.privado)
-						add_encargo(12, edificio.almacen[12] + edificio.pedido[12] - 50, edificio, not edificio.privado)
-						add_encargo(16, edificio.almacen[16] + edificio.pedido[16] - 50, edificio, not edificio.privado)
-						if edificio.almacen[17] >= 1
-							add_encargo(17, floor(edificio.almacen[17]), edificio, not edificio.privado)
-						edificio.almacen[17] -= floor(edificio.almacen[17])
-						edificio.pedido[1] = 200 - edificio.almacen[1]
-						edificio.pedido[7] = 50 - edificio.almacen[7]
-						edificio.pedido[12] = 50 - edificio.almacen[12]
-						edificio.pedido[16] = 50 - edificio.almacen[16]
+						if current_mes = edificio.mes_creacion{
+							add_encargo(1, edificio.almacen[1] + edificio.pedido[1] - 200, edificio, not edificio.privado)
+							add_encargo(7, edificio.almacen[7] + edificio.pedido[7] - 50, edificio, not edificio.privado)
+							add_encargo(12, edificio.almacen[12] + edificio.pedido[12] - 50, edificio, not edificio.privado)
+							add_encargo(16, edificio.almacen[16] + edificio.pedido[16] - 50, edificio, not edificio.privado)
+							if edificio.almacen[17] >= 1
+								add_encargo(17, floor(edificio.almacen[17]), edificio, not edificio.privado)
+							edificio.almacen[17] -= floor(edificio.almacen[17])
+							edificio.pedido[1] = 200 - edificio.almacen[1]
+							edificio.pedido[7] = 50 - edificio.almacen[7]
+							edificio.pedido[12] = 50 - edificio.almacen[12]
+							edificio.pedido[16] = 50 - edificio.almacen[16]
+						}
+					}
+					//Rancho
+					else if edificio_nombre[edificio.tipo] = "Rancho"{
+						var b = array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto)
+						for(var c = 0; c < array_length(ganado_produccion[edificio.modo]); c++)
+							edificio.almacen[ganado_produccion[edificio.modo, c]] += 10 * b / array_length(ganado_produccion[edificio.modo])
+						if current_mes = edificio.mes_creacion
+							for(b = 0; b < array_length(ganado_produccion[edificio.modo]); b++){
+								var c = ganado_produccion[edificio.modo, b], d = 1 + 99 * array_contains(recurso_comida, c)
+								if edificio.almacen[c] >= d{
+									add_encargo(c, floor(edificio.almacen[c]), edificio, not edificio.privado)
+									edificio.almacen[c] -= floor(edificio.almacen[c])
+								}
+							}
+						
 					}
 				}
 			}
