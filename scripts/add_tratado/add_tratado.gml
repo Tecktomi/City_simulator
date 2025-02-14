@@ -18,7 +18,7 @@ function add_tratado_oferta(){
 		var tratado = {
 			pais: irandom_range(1, array_length(pais_nombre) - 1),
 			recurso : a,
-			cantidad : 100 * max(2, irandom_range(floor(15 / recurso_precio[a]), floor(40 / recurso_precio[a]))) / (1 + 9 * (recurso_precio[a] > 100)),
+			cantidad : floor(irandom_range(2500, 5000) / recurso_precio[a] / power(10, floor(log10(1000 / recurso_precio[a])))) * power(10, floor(log10(1000 / recurso_precio[a]))),
 			factor : random_range(1.1, 1.3),
 			tiempo : irandom_range(60, 96)
 		}

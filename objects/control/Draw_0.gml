@@ -481,7 +481,26 @@ if sel_build{
 			var max_width = 0
 			var last_pos = 140
 			for(var a = 0; a < array_length(recurso_nombre); a++){
-				draw_text_pos(420, last_pos + a * 20, recurso_nombre[a])
+				if draw_menu(420, last_pos + a * 20, recurso_nombre[a], a + 3, , true){
+					draw_line(700, 150, 700, 350)
+					draw_line(700, 350, 940, 350)
+					var mini = recurso_precio[a]
+					maxi = recurso_precio[a]
+					for(b = 0; b < 24; b++){
+						mini = min(mini, recurso_historial[a, b])
+						maxi = max(maxi, recurso_historial[a, b])
+					}
+					draw_set_halign(fa_right)
+					draw_text(700, 150, $"${maxi}")
+					draw_text(700, 350, $"${mini}")
+					draw_set_halign(fa_center)
+					draw_text(820, 350, $"{recurso_nombre[a]}")
+					draw_set_halign(fa_left)
+					maxi = maxi - mini
+					draw_text(940, 350 - 200 * (recurso_historial[a, 23] - mini) / maxi, $"${recurso_precio[a]}")
+					for(b = 0; b < 23; b++)
+						draw_line(700 + b * 10, 350 - 200 * (recurso_historial[a, b] - mini) / maxi, 700 + (b + 1) * 10, 350 - 200 * (recurso_historial[a, b + 1] - mini) / maxi)
+				}
 				max_width = max(max_width, last_width)
 			}
 			pos = 120
@@ -521,7 +540,7 @@ if sel_build{
 						for(var c = 0; c < array_length(recurso_tratados[b]); c++){
 							var tratado = recurso_tratados[b, c]
 							if tratado.pais = a
-								draw_text_pos(130, pos, $"{tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.")
+								draw_text_pos(130, pos, $"{tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+ {floor(tratado.factor * 100) - 100}%)")
 						}
 			}
 			pos = 120
@@ -1143,7 +1162,9 @@ if keyboard_check(vk_space)
 			}
 			//Actualizar precios de recursos y tratados comerciales
 			for(var a = 0; a < array_length(recurso_nombre); a++){
-				recurso_precio[a] *= random_range(0.95, 1.05)
+				recurso_precio[a] *= power(random_range(1, 1.05), 2 * irandom(1) - 1)
+				array_shift(recurso_historial[a])
+				array_push(recurso_historial[a], recurso_precio[a])
 				for(var b = 0; b < array_length(recurso_tratados[a]); b++){
 					var tratado = recurso_tratados[a, b]
 					tratado.tiempo--

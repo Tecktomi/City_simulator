@@ -271,6 +271,8 @@ for(a = 0; a < array_length(recurso_nombre); a++){
 	recurso_importado_fijo[a] = 0
 	recurso_tratados[a] = [null_tratado]
 	array_pop(recurso_tratados[a])
+	for(b = 0; b < 24; b++)
+		recurso_historial[a, b] = recurso_precio[a]
 }
 #endregion
 //Settings
