@@ -478,29 +478,9 @@ if sel_build{
 			pos = 100
 			draw_set_color(c_black)
 			draw_text_pos(500, pos, "Mercado internacional")
-			var max_width = 0
-			var last_pos = 140
+			var max_width = 0, last_pos = 140, max_width_2 = 0
 			for(var a = 0; a < array_length(recurso_nombre); a++){
-				if draw_menu(420, last_pos + a * 20, recurso_nombre[a], a + 3, , true){
-					draw_line(700, 150, 700, 350)
-					draw_line(700, 350, 940, 350)
-					var mini = recurso_precio[a]
-					maxi = recurso_precio[a]
-					for(b = 0; b < 24; b++){
-						mini = min(mini, recurso_historial[a, b])
-						maxi = max(maxi, recurso_historial[a, b])
-					}
-					draw_set_halign(fa_right)
-					draw_text(700, 150, $"${maxi}")
-					draw_text(700, 350, $"${mini}")
-					draw_set_halign(fa_center)
-					draw_text(820, 350, $"{recurso_nombre[a]}")
-					draw_set_halign(fa_left)
-					maxi = maxi - mini
-					draw_text(940, 350 - 200 * (recurso_historial[a, 23] - mini) / maxi, $"${recurso_precio[a]}")
-					for(b = 0; b < 23; b++)
-						draw_line(700 + b * 10, 350 - 200 * (recurso_historial[a, b] - mini) / maxi, 700 + (b + 1) * 10, 350 - 200 * (recurso_historial[a, b + 1] - mini) / maxi)
-				}
+				draw_text_pos(420, last_pos + a * 20, recurso_nombre[a])
 				max_width = max(max_width, last_width)
 			}
 			pos = 120
@@ -510,6 +490,7 @@ if sel_build{
 			max_width += last_width + 10
 			pos = 120
 			draw_text_pos(420 + max_width, pos, "Importar")
+			max_width_2 = last_width
 			last_pos = pos
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado[a]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Shift para reducir")})
@@ -517,13 +498,51 @@ if sel_build{
 						recurso_importado[a] += 100
 					else if recurso_importado[a] > 0
 						recurso_importado[a] -= 100
-				var max_width_2 = max_width + last_width
-				if draw_boton(420 + max_width_2, last_pos + a * 20, $"({recurso_importado_fijo[a]})", , , function() {draw_text(mouse_x + 20, mouse_y, "Importación fija mensual")})
+				max_width_2  = max(max_width_2, last_width)
+			}
+			max_width += max_width_2 + 10
+			pos = 120
+			draw_text_pos(420 + max_width, pos, "Importar")
+			max_width_2 = last_width
+			for(var a = 0; a < array_length(recurso_nombre); a++){
+				if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado_fijo[a]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Importación fija mensual")})
 					if not keyboard_check(vk_lshift)
 						recurso_importado_fijo[a] += 50
 					else if recurso_importado_fijo[a] > 0
 						recurso_importado_fijo[a] -= 50
+					max_width_2 = max(max_width_2, last_width)
 			}
+			max_width += max_width_2 + 10
+			pos = 120
+			draw_text_pos(420 + max_width, pos, "Balance")
+			for(var a = 0; a < array_length(recurso_nombre); a++){
+				if draw_sprite_boton(spr_icono, 4 + (recurso_historial[a, 23] < recurso_historial[a, 0]), 420 + max_width, pos + a * 20, 20, 20){
+					var flag = show[a + 3]
+					close_show()
+					show[a + 3] = not flag
+				}
+				draw_line(420, pos + a * 20, 460 + max_width, pos + a * 20)
+			}
+			for(var a = 0; a < array_length(recurso_nombre); a++)
+				if show[a + 3]{
+					draw_line(800, 150, 800, 350)
+					draw_line(800, 350, 1040, 350)
+					var mini = recurso_precio[a], maxa = recurso_precio[a]
+					for(b = 0; b < 24; b++){
+						mini = min(mini, recurso_historial[a, b])
+						maxa = max(maxa, recurso_historial[a, b])
+					}
+					draw_set_halign(fa_right)
+					draw_text(800, 150, $"${maxa}")
+					draw_text(800, 350, $"${mini}")
+					draw_set_halign(fa_center)
+					draw_text(920, 350, $"{recurso_nombre[a]}")
+					draw_set_halign(fa_left)
+					maxa = maxa - mini
+					draw_text(1040, 350 - 200 * (recurso_historial[a, 23] - mini) / maxa, $"${recurso_precio[a]}")
+					for(b = 0; b < 23; b++)
+						draw_line(800 + b * 10, 350 - 200 * (recurso_historial[a, b] - mini) / maxa, 800 + (b + 1) * 10, 350 - 200 * (recurso_historial[a, b + 1] - mini) / maxa)
+				}
 		}
 		//Ministerio de Exterior
 		else if ministerio = 6{
@@ -1576,7 +1595,7 @@ if keyboard_check(vk_space)
 							edificio.count += array_length(edificio.trabajadores)
 						var b = 200 * array_contains(recurso_comida, recurso_cultivo[edificio.modo])
 						if current_mes = edificio.mes_creacion and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
-							add_encargo(recurso_cultivo[edificio.modo], edificio.almacen[recurso_cultivo[edificio.modo]] - b, edificio, not edificio.privado)
+							add_encargo(recurso_cultivo[edificio.modo], edificio.almacen[recurso_cultivo[edificio.modo]] - b, edificio)
 							edificio.almacen[recurso_cultivo[edificio.modo]] = b
 						}
 					
@@ -1602,7 +1621,7 @@ if keyboard_check(vk_space)
 							edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
 						}
 						if current_mes = edificio.mes_creacion{
-							add_encargo(1, edificio.almacen[1], edificio, not edificio.privado)
+							add_encargo(1, edificio.almacen[1], edificio)
 							edificio.almacen[1] = 0
 						}
 					}
@@ -1610,7 +1629,7 @@ if keyboard_check(vk_space)
 					else if edificio_nombre[edificio.tipo] = "Pescadería"{
 						edificio.almacen[8] += round(10 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))
 						if current_mes = edificio.mes_creacion and edificio.almacen[8] > 200{
-							add_encargo(8, edificio.almacen[8] - 200, edificio, not edificio.privado)
+							add_encargo(8, edificio.almacen[8] - 200, edificio)
 							edificio.almacen[8] = 200
 						}
 					}
@@ -1639,7 +1658,7 @@ if keyboard_check(vk_space)
 							set_paro(true, edificio)
 						edificio.almacen[recurso_mineral[edificio.modo]] += e - b
 						if current_mes = edificio.mes_creacion{
-							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio, not edificio.privado)
+							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
 							edificio.almacen[recurso_mineral[edificio.modo]] = 0
 						}
 					}
@@ -1697,9 +1716,9 @@ if keyboard_check(vk_space)
 						edificio.almacen[10] -= b * 3
 						edificio.almacen[15] += b * 2
 						if current_mes = edificio.mes_creacion{
-							add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 240, edificio, not edificio.privado)
-							add_encargo(10, edificio.almacen[10] + edificio.pedido[10] - 360, edificio, not edificio.privado)
-							add_encargo(15, edificio.almacen[15], edificio, not edificio.privado)
+							add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 240, edificio)
+							add_encargo(10, edificio.almacen[10] + edificio.pedido[10] - 360, edificio)
+							add_encargo(15, edificio.almacen[15], edificio)
 							edificio.almacen[15] = 0
 							edificio.pedido[9] = 240 - edificio.almacen[9]
 							edificio.pedido[10] = 360 - edificio.almacen[10]
@@ -1714,9 +1733,9 @@ if keyboard_check(vk_space)
 							edificio.almacen[20] -= b * 3
 						edificio.almacen[16] += b
 						if current_mes = edificio.mes_creacion{
-							add_encargo(3, edificio.almacen[3] + edificio.pedido[3] - 360, edificio, not edificio.privado)
-							add_encargo(20, edificio.almacen[20] + edificio.pedido[3] - 360, edificio, not edificio.privado)
-							add_encargo(16, edificio.almacen[16], edificio, not edificio.privado)
+							add_encargo(3, edificio.almacen[3] + edificio.pedido[3] - 360, edificio)
+							add_encargo(20, edificio.almacen[20] + edificio.pedido[3] - 360, edificio)
+							add_encargo(16, edificio.almacen[16], edificio)
 							edificio.almacen[16] = 0
 							edificio.pedido[3] = 360 - edificio.almacen[3]
 							edificio.pedido[20] = 360 - edificio.almacen[20]
@@ -1731,12 +1750,12 @@ if keyboard_check(vk_space)
 						edificio.almacen[16] -= b
 						edificio.almacen[17] += b / 10
 						if current_mes = edificio.mes_creacion{
-							add_encargo(1, edificio.almacen[1] + edificio.pedido[1] - 200, edificio, not edificio.privado)
-							add_encargo(7, edificio.almacen[7] + edificio.pedido[7] - 50, edificio, not edificio.privado)
-							add_encargo(12, edificio.almacen[12] + edificio.pedido[12] - 50, edificio, not edificio.privado)
-							add_encargo(16, edificio.almacen[16] + edificio.pedido[16] - 50, edificio, not edificio.privado)
+							add_encargo(1, edificio.almacen[1] + edificio.pedido[1] - 200, edificio)
+							add_encargo(7, edificio.almacen[7] + edificio.pedido[7] - 50, edificio)
+							add_encargo(12, edificio.almacen[12] + edificio.pedido[12] - 50, edificio)
+							add_encargo(16, edificio.almacen[16] + edificio.pedido[16] - 50, edificio)
 							if edificio.almacen[17] >= 1
-								add_encargo(17, floor(edificio.almacen[17]), edificio, not edificio.privado)
+								add_encargo(17, floor(edificio.almacen[17]), edificio)
 							edificio.almacen[17] -= floor(edificio.almacen[17])
 							edificio.pedido[1] = 200 - edificio.almacen[1]
 							edificio.pedido[7] = 50 - edificio.almacen[7]
@@ -1753,7 +1772,7 @@ if keyboard_check(vk_space)
 							for(b = 0; b < array_length(ganado_produccion[edificio.modo]); b++){
 								var c = ganado_produccion[edificio.modo, b], d = 1 + 99 * array_contains(recurso_comida, c)
 								if edificio.almacen[c] >= d{
-									add_encargo(c, floor(edificio.almacen[c]), edificio, not edificio.privado)
+									add_encargo(c, floor(edificio.almacen[c]), edificio)
 									edificio.almacen[c] -= floor(edificio.almacen[c])
 								}
 							}
