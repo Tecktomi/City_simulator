@@ -40,7 +40,8 @@ function destroy_persona(persona = null_persona, muerte = true){
 		if persona.medico != null_edificio{
 			array_remove(persona.medico.clientes, persona)
 			if array_length(desausiado.clientes) > 0{
-				var temp_persona = array_shift(desausiado.clientes)
+				var temp_persona = null_persona
+				temp_persona = array_shift(desausiado.clientes)
 				array_push(persona.medico.clientes, temp_persona)
 				temp_persona.medico = persona.medico
 			}

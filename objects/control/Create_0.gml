@@ -129,8 +129,8 @@ edificio_estatal = [true, true, true, true, false, false, true, true, false, fal
 edificio_belleza = [0, 0, 0, 0, 40, 30, 40, 50, 40, 55, 75, 30, 30, 30, 20, 25, 60, 50, 50, 50, 40, 80, 40, 25, 30, 35, 40, 40]
 edificio_construccion_tiempo = [0, 0, 0, 0, 180, 240, 720, 640, 300, 180, 720, 240, 240, 1080, 240, 480, 720, 720, 720, 720, 600, 180, 720, 1800, 600, 1480, 2880, 360]
 edificio_contaminacion = [0, 0, 0, 0, -10, 10, 0, 0, 15, 5, 10, 0, 0, 20, 10, 30, 0, 10, 0, 0, 0, -10, 10, -30, 0, -25, 0, -10]
-edificio_categoria_nombre = ["Residencial", "Industria", "Servicios", "Infrastructura"]
-edificio_categoria = [[8, 9, 10], [4, 5, 14, 15, 27, 23, 25, 26], [6, 7, 11, 12, 16, 21, 24], [13, 20, 22]]
+edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
+edificio_categoria = [[8, 9, 10], [4, 5, 14, 15, 27], [6, 7, 11, 12, 16, 21, 24], [13, 20, 22], [23, 25, 26]]
 null_edificio = {
 	familias : [null_familia],
 	trabajadores : [null_persona],
@@ -321,6 +321,43 @@ for(a = 0; a < xsize; a++)
 		belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 		contaminacion[a, b] = 0
 	}
+var mar_checked, not_mar = [], yes_mar = [{a : 0, b : 0}]
+for(a = 0; a < xsize; a++)
+	for(b = 0; b < ysize; b++)
+		mar_checked[a, b] = false
+array_set(mar_checked[0], 0, true)
+while array_length(yes_mar) > 0{
+	var complex = array_shift(yes_mar)
+	a = complex.a
+	b = complex.b
+	var a1 = max(0, a - 1), b1 = max(0, b - 1), a2 = min(xsize - 1, a + 1), b2 = min(ysize - 1, b + 1)
+	if mar[a1, b] and not mar_checked[a1, b]{
+		array_set(mar_checked[a1], b, true)
+		array_push(yes_mar, {a : a1, b : b})
+	}
+	if mar[a, b1] and not mar_checked[a, b1]{
+		array_set(mar_checked[a], b1, true)
+		array_push(yes_mar, {a : a, b : b1})
+	}
+	if mar[a, b2] and not mar_checked[a, b2]{
+		array_set(mar_checked[a], b2, true)
+		array_push(yes_mar, {a : a, b : b2})
+	}
+	if mar[a2, b] and not mar_checked[a2, b]{
+		array_set(mar_checked[a2], b, true)
+		array_push(yes_mar, {a : a2, b : b})
+	}
+}
+for(a = 0; a < xsize; a++)
+	for(b = 0; b < ysize; b++)
+		if mar[a, b] and not mar_checked[a, b]
+			array_push(not_mar, {a : a, b : b})
+while array_length(not_mar) > 0{
+	var complex = array_shift(not_mar)
+	array_set(mar[complex.a], complex.b, false)
+	ds_grid_set(altura, complex.a, complex.b, 0.5)
+	array_set(altura_color[complex.a], complex.b, make_color_rgb(255, 255 ,127))
+}
 #endregion
 #region setings
 draw_set_font(Font1)
@@ -375,7 +412,7 @@ for(a = 0; a < 12; a++){
 		mes_importaciones_recurso[a, b] = 0
 	}
 }
-for(a = 0; a < array_length(edificio_nombre); a++)
+for(a = 0; a < array_length(edificio_nombre) * 2; a++)
 	show[a] = false
 dinero = 20000
 pos = 0

@@ -267,22 +267,23 @@ if sel_build{
 					temp_array[personas[a].trabajo.tipo]++
 					num_des += (personas[a].trabajo = null_edificio)
 				}
-			var vacantes = 0
+			var vacantes = 0, vacantes_tipo
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				if edificio_es_trabajo[a]{
-					vacantes += edificio_trabajadores_max[a] * array_length(edificio_count[a])
+					vacantes_tipo[a] = edificio_trabajadores_max[a] * array_length(edificio_count[a])
 					for(b = 0; b < array_length(edificio_count[a]); b++){
-						vacantes -= array_length(edificio_count[a, b].trabajadores)
+						vacantes_tipo[a] -= array_length(edificio_count[a, b].trabajadores)
 						if ley_eneabled[6] and a = 20
 							num_temp += array_length(edificio_count[a, b].trabajadores)
 					}
+					vacantes += vacantes_tipo[a]
 				}
 			draw_text_pos(110, pos, $"Felicidad laboral: {floor(fel_tra / num_tra)}")
 			draw_text_pos(110, pos, $"Desempleo: {floor(100 * num_des / num_tra)}%")
 			draw_text_pos(110, pos, $"{vacantes} puestos de trabajo disponibles")
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				if edificio_es_trabajo[a] and (edificio_nombre[a] = "Desempleado" or array_length(edificio_count[a]) > 0)
-					if draw_menu(120, pos, $"{edificio_nombre[a]}: {temp_array[a]} trabajadores", a)
+					if draw_menu(120, pos, $"{edificio_nombre[a]}: {temp_array[a]}/{vacantes_tipo[a] + temp_array[a]} trabajadores", a + 6)
 						for(b = 0; b < array_length(edificio_count[a]); b++)
 							if draw_boton(120, pos, $"{edificio_nombre[a]} {b + 1}"){
 								sel_build = false
@@ -318,7 +319,7 @@ if sel_build{
 				}
 			draw_text_pos(110, pos, $"{num_temp} trabajadores temporales ({floor(100 * num_temp / num_tra)}%)")
 			for(var a = 0; a < array_length(educacion_nombre); a++)
-				if array_length(trabajo_educacion[a]) > 0 and draw_menu(110, pos, educacion_nombre[a], 5 + a)
+				if array_length(trabajo_educacion[a]) > 0 and draw_menu(110, pos, educacion_nombre[a], a + 1)
 					for(b = 0; b < array_length(trabajo_educacion[a]); b++)
 						draw_text_pos(120, pos, edificio_nombre[trabajo_educacion[a, b].tipo])
 		}
@@ -702,38 +703,26 @@ if build_sel{
 		
 	}
 	//Detectar terreno inválido
-	if flag
-		if not edificio_es_costero[build_index]{
-			for(var a = 0; a < edificio_width[build_index]; a++){
-				for(var b = 0; b < edificio_height[build_index]; b++)
-					if bool_edificio[mx + a, my + b] or bosque[mx + a, my + b] or mar[mx + a, my + b]{
-						flag = false
-						break
+	if flag{
+		flag = edificio_valid_place(mx, my, build_index)
+		//Detectar árboles cerca
+		if flag and edificio_nombre[build_index] = "Aserradero"{
+			draw_rectangle(max(0, mx - 4) * 16 - xpos, max(0, my - 4) * 16 - ypos, min(mx + edificio_width[build_index] + 4, xsize) * 16 - 1 - xpos, min(my + edificio_height[build_index] + 4, ysize) * 16 - 1 - ypos, true)
+			var flag_2 = false, c = 0
+			for(var a = max(0, mx - 4); a < min(mx + edificio_width[build_index] + 4, xsize); a++)
+				for(var b = max(0, my - 4); b < min(my + edificio_height[build_index] + 4, ysize); b++)
+					if bosque[a, b]{
+						flag_2 = true
+						c += bosque_madera[a, b]
 					}
-				if not flag
-					break
+			if not flag_2{
+				flag = false
+				draw_text(mx * 16 - xpos, (my - 2) * 16 - ypos, "Se necesitan árboles cerca")
 			}
-			//Detectar árboles cerca
-			if flag and edificio_nombre[build_index] = "Aserradero"{
-				draw_rectangle(max(0, mx - 4) * 16 - xpos, max(0, my - 4) * 16 - ypos, min(mx + edificio_width[build_index] + 4, xsize) * 16 - 1 - xpos, min(my + edificio_height[build_index] + 4, ysize) * 16 - 1 - ypos, true)
-				var flag_2 = false, c = 0
-				for(var a = max(0, mx - 4); a < min(mx + edificio_width[build_index] + 4, xsize); a++)
-					for(var b = max(0, my - 4); b < min(my + edificio_height[build_index] + 4, ysize); b++)
-						if bosque[a, b]{
-							flag_2 = true
-							c += bosque_madera[a, b]
-						}
-				if not flag_2{
-					flag = false
-					draw_text(mx * 16 - xpos, (my - 2) * 16 - ypos, "Se necesitan árboles cerca")
-				}
-				else
-					draw_text(mx * 16 - xpos, (my - 2) * 16 - ypos, $"{c} madera disponible")
-			}
+			else
+				draw_text(mx * 16 - xpos, (my - 2) * 16 - ypos, $"{c} madera disponible")
 		}
-		//Construcción del muelle
-		else
-			flag = edificio_valid_place(mx, my, build_index)
+	}
 	if not flag
 		draw_text(mx * 16 - xpos, (my - 2) * 16 - ypos, "Construcción bloqueada")
 	//Construir
@@ -1598,7 +1587,7 @@ if keyboard_check(vk_space)
 						else
 							edificio.count += array_length(edificio.trabajadores)
 						var b = 200 * array_contains(recurso_comida, recurso_cultivo[edificio.modo])
-						if current_mes = edificio.mes_creacion and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
 							add_encargo(recurso_cultivo[edificio.modo], edificio.almacen[recurso_cultivo[edificio.modo]] - b, edificio)
 							edificio.almacen[recurso_cultivo[edificio.modo]] = b
 						}
@@ -1624,7 +1613,7 @@ if keyboard_check(vk_space)
 							}
 							edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
 						}
-						if current_mes = edificio.mes_creacion{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
 							add_encargo(1, edificio.almacen[1], edificio)
 							edificio.almacen[1] = 0
 						}
@@ -1632,7 +1621,7 @@ if keyboard_check(vk_space)
 					//Pescadería
 					else if edificio_nombre[edificio.tipo] = "Pescadería"{
 						edificio.almacen[8] += round(10 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))
-						if current_mes = edificio.mes_creacion and edificio.almacen[8] > 200{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[8] > 200{
 							add_encargo(8, edificio.almacen[8] - 200, edificio)
 							edificio.almacen[8] = 200
 						}
@@ -1661,14 +1650,14 @@ if keyboard_check(vk_space)
 						if b > 0
 							set_paro(true, edificio)
 						edificio.almacen[recurso_mineral[edificio.modo]] += e - b
-						if current_mes = edificio.mes_creacion{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
 							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
 							edificio.almacen[recurso_mineral[edificio.modo]] = 0
 						}
 					}
 					//Muelle
 					else if edificio_nombre[edificio.tipo] = "Muelle"{
-						if current_mes = edificio.mes_creacion or (current_mes + 6) mod 12 = edificio.mes_creacion{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
 							var c = round(150 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))
 							for(var b = 0; b < array_length(recurso_nombre) and c > 0; b++){
 								//Exportaciones
@@ -1719,7 +1708,7 @@ if keyboard_check(vk_space)
 						edificio.almacen[9] -= b * 2
 						edificio.almacen[10] -= b * 3
 						edificio.almacen[15] += b * 2
-						if current_mes = edificio.mes_creacion{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
 							add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 240, edificio)
 							add_encargo(10, edificio.almacen[10] + edificio.pedido[10] - 360, edificio)
 							add_encargo(15, edificio.almacen[15], edificio)
@@ -1736,7 +1725,7 @@ if keyboard_check(vk_space)
 						else
 							edificio.almacen[20] -= b * 3
 						edificio.almacen[16] += b
-						if current_mes = edificio.mes_creacion{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
 							add_encargo(3, edificio.almacen[3] + edificio.pedido[3] - 360, edificio)
 							add_encargo(20, edificio.almacen[20] + edificio.pedido[3] - 360, edificio)
 							add_encargo(16, edificio.almacen[16], edificio)
@@ -1753,7 +1742,7 @@ if keyboard_check(vk_space)
 						edificio.almacen[12] -= b
 						edificio.almacen[16] -= b
 						edificio.almacen[17] += b / 10
-						if current_mes = edificio.mes_creacion{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
 							add_encargo(1, edificio.almacen[1] + edificio.pedido[1] - 200, edificio)
 							add_encargo(7, edificio.almacen[7] + edificio.pedido[7] - 50, edificio)
 							add_encargo(12, edificio.almacen[12] + edificio.pedido[12] - 50, edificio)
@@ -1772,7 +1761,7 @@ if keyboard_check(vk_space)
 						var b = array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto)
 						for(var c = 0; c < array_length(ganado_produccion[edificio.modo]); c++)
 							edificio.almacen[ganado_produccion[edificio.modo, c]] += 10 * b / array_length(ganado_produccion[edificio.modo])
-						if current_mes = edificio.mes_creacion
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12
 							for(b = 0; b < array_length(ganado_produccion[edificio.modo]); b++){
 								var c = ganado_produccion[edificio.modo, b], d = 1 + 99 * array_contains(recurso_comida, c)
 								if edificio.almacen[c] >= d{

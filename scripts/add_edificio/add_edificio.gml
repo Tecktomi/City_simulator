@@ -55,7 +55,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			if edificio_es_medico[tipo]{
 				array_push(medicos, edificio)
 				repeat(min(edificio_clientes_max[tipo], array_length(desausiado.clientes))){
-					var persona = array_shift(desausiado.clientes)
+					var persona = null_persona
+					persona = array_shift(desausiado.clientes)
 					array_push(edificio.clientes, persona)
 					persona.medico = edificio
 				}
