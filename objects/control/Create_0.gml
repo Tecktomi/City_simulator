@@ -375,6 +375,9 @@ build_type = 0
 build_categoria = 0
 last_width = 0
 last_height = 0
+show_grid = false
+tile_width = 32
+tile_height = 16
 educacion_nombre = ["Analfabeto", "Educación Básica", "Educación Media", "Educación Técnica", "Educación Profesional"]
 for(a = 0; a < array_length(educacion_nombre); a++)
 	trabajo_educacion[a] = []
@@ -443,12 +446,13 @@ add_edificio(a, b, 13)
 edificios[0].almacen[0] = irandom_range(1000, 1500)
 recurso_exportado[0] = false
 #endregion
-xpos = min(max(0, 16 * a - room_width / 2), xsize * 16 - room_width)
-ypos = min(max(0, 16 * b - room_height / 2), ysize * 16 - room_height)
-min_camx = floor(xpos / 16)
-min_camy = floor(ypos / 16)
-max_camx = ceil((xpos + room_width) / 16)
-max_camy = ceil((ypos + room_height) / 16)
+xpos = (a - b) * tile_width - room_width / 2
+ypos = (a + b) * tile_height - room_height / 2
+min_camx = max(0, floor((xpos / tile_width + ypos / tile_height) / 2))
+min_camy = max(0, floor((ypos / tile_height - (xpos + room_width) / tile_width) / 2))
+max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
+max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
+show_debug_message($"{min_camx}, {min_camy} -> {max_camx}, {max_camy}")
 var checked = [], coord;
 for(a = edificios[0].x - 15; a < edificios[0].x + 15; a++)
 	for(b = edificios[0].y - 15; b < edificios[0].y + 15; b++){
