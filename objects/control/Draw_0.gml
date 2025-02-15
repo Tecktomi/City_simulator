@@ -62,6 +62,8 @@ for(var a = 0; a < array_length(edificios); a++){
 	if edificio.paro{
 		draw_set_color(c_red)
 		draw_circle(b* 16 - xpos + 4, c * 16 - ypos + 4, 3, false)
+		draw_set_color(c_white)
+		draw_circle(b* 16 - xpos + 4, c * 16 - ypos + 4, 3, true)
 		if edificio.huelga{
 			draw_set_color(c_white)
 			draw_rectangle(b * 16 - xpos, c * 16 - ypos, b * 16 - xpos + string_width("PARO"), c * 16 - ypos + string_height("PARO"), false)
@@ -707,10 +709,10 @@ if build_sel{
 		flag = edificio_valid_place(mx, my, build_index)
 		//Detectar árboles cerca
 		if flag and edificio_nombre[build_index] = "Aserradero"{
-			draw_rectangle(max(0, mx - 4) * 16 - xpos, max(0, my - 4) * 16 - ypos, min(mx + edificio_width[build_index] + 4, xsize) * 16 - 1 - xpos, min(my + edificio_height[build_index] + 4, ysize) * 16 - 1 - ypos, true)
+			draw_rectangle(max(0, mx - 5) * 16 - xpos, max(0, my - 5) * 16 - ypos, min(mx + edificio_width[build_index] + 5, xsize) * 16 - 1 - xpos, min(my + edificio_height[build_index] + 5, ysize) * 16 - 1 - ypos, true)
 			var flag_2 = false, c = 0
-			for(var a = max(0, mx - 4); a < min(mx + edificio_width[build_index] + 4, xsize); a++)
-				for(var b = max(0, my - 4); b < min(my + edificio_height[build_index] + 4, ysize); b++)
+			for(var a = max(0, mx - 5); a < min(mx + edificio_width[build_index] + 5, xsize); a++)
+				for(var b = max(0, my - 5); b < min(my + edificio_height[build_index] + 5, ysize); b++)
 					if bosque[a, b]{
 						flag_2 = true
 						c += bosque_madera[a, b]
@@ -1596,19 +1598,27 @@ if keyboard_check(vk_space)
 					//Aserradero
 					else if edificio_nombre[edificio.tipo] = "Aserradero"{
 						//Cortar árboles
-						if array_length(edificio.array_real_1) > 0{
+						if array_length(edificio.array_complex) > 0{
 							var b = round(10 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))
-							while b > 0 and array_length(edificio.array_real_1) > 0{
-								if b < bosque_madera[edificio.array_real_1[0], edificio.array_real_2[0]]{
-									array_set(bosque_madera[edificio.array_real_1[0]], edificio.array_real_2[0], bosque_madera[edificio.array_real_1[0], edificio.array_real_2[0]] - b)
+							while b > 0 and array_length(edificio.array_complex) > 0{
+								var complex = edificio.array_complex[0]
+								if b < bosque_madera[complex.a, complex.b]{
+									array_set(bosque_madera[complex.a], complex.b, bosque_madera[complex.a, complex.b] - b)
 									b = 0
 								}
 								else{
-									b -= bosque_madera[edificio.array_real_1[0], edificio.array_real_2[0]]
-									array_set(bosque_madera[edificio.array_real_1[0]], edificio.array_real_2[0], 0)
-									array_set(bosque[edificio.array_real_1[0]], edificio.array_real_2[0], false)
-									array_shift(edificio.array_real_1)
-									array_shift(edificio.array_real_2)
+									b -= bosque_madera[complex.a, complex.b]
+									array_set(bosque_madera[complex.a], complex.b, 0)
+									array_set(bosque[complex.a], complex.b, false)
+									array_shift(edificio.array_complex)
+									if array_length(edificio.array_complex) = 0{
+										edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
+										add_encargo(1, edificio.almacen[1], edificio)
+										edificio.almacen[1] = 0
+										show_debug_message($"Aserradero agotado en {edificio.x}, {edificio.y}")
+										set_paro(true, edificio)
+										continue
+									}
 								}
 							}
 							edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b

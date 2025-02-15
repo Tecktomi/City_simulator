@@ -17,8 +17,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			pedido : undefined,
 			eficiencia : 1,
 			modo : 0,
-			array_real_1 : [],
-			array_real_2 : [],
+			array_complex : [{a : 0, b : 0}],
 			paro : false,
 			huelga : false,
 			huelga_motivo : 0,
@@ -40,6 +39,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		array_pop(edificio.trabajos_cerca)
 		array_pop(edificio.casas_cerca)
 		array_pop(edificio.iglesias_cerca)
+		array_pop(edificio.array_complex)
 		array_push(dia_trabajo[edificio.dia_factura], edificio)
 		if fisico{
 			var width = edificio_width[tipo], height = edificio_height[tipo]
@@ -75,13 +75,13 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 				edificio.almacen[a] = 0
 				edificio.pedido[a] = 0
 			}
-			if edificio_nombre[tipo] = "Aserradero"
-				for(var a = max(0, x - 4); a < min(x + width + 4, xsize); a++)
-					for(var b = max(0, y - 4); b < min(y + height + 4, ysize); b++)
-						if bosque[a, b]{
-							array_push(edificio.array_real_1, a)
-							array_push(edificio.array_real_2, b)
-						}
+			if edificio_nombre[tipo] = "Aserradero"{
+				for(var a = max(0, x - 5); a < min(x + width + 5, xsize); a++)
+					for(var b = max(0, y - 5); b < min(y + height + 5, ysize); b++)
+						if bosque[a, b]
+							array_push(edificio.array_complex, {a : a, b : b})
+				edificio.array_complex = array_shuffle(edificio.array_complex)
+			}
 			//Buscar edificios cercanos
 			for(var a = max(0, x - 8); a < min(x + width + 9, xsize); a++)
 				for(var b = max(0, y - 8); b < min(y + height + 9, ysize); b++)

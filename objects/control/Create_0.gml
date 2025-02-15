@@ -148,8 +148,7 @@ null_edificio = {
 	pedido : undefined,
 	eficiencia : 1,
 	modo : 0,
-	array_real_1 : [],
-	array_real_2 : [],
+	array_complex : [{a : 0, b : 0}],
 	paro : false,
 	huelga : false,
 	huelga_motivo : 0,
@@ -167,6 +166,7 @@ null_edificio = {
 array_pop(null_edificio.familias)
 array_pop(null_edificio.trabajadores)
 array_pop(null_edificio.clientes)
+array_pop(null_edificio.array_complex)
 array_push(null_edificio.edificios_cerca, null_edificio)
 null_edificio.edificios_cerca = []
 array_push(null_edificio.trabajos_cerca, null_edificio)
@@ -299,7 +299,7 @@ for(a = 0; a < xsize; a++)
 		construccion_reservada[a, b] = false
 		bosque[a, b] = grid[# a, b] > 0.6 and c > 0.6
 		if bosque[a, b]
-			bosque_madera[a, b] = floor(160 * grid[# a, b])
+			bosque_madera[a, b] = floor(200 * grid[# a, b])
 		mar[a, b] = c < 0.5
 		#region altura color
 		if mar[a, b]
@@ -316,7 +316,7 @@ for(a = 0; a < xsize; a++)
 				ds_grid_multiply(cultivo[d], a, b, 20 * (c - cultivo_altura_minima[d]))
 		for(var d = 0; d < array_length(recurso_mineral); d++){
 			mineral[d][a, b] = (mineral_grid[d][# a, b] > recurso_mineral_rareza[d])
-			mineral_cantidad[d][a, b] = round(320 * power(mineral_grid[d][# a, b], 3))
+			mineral_cantidad[d][a, b] = round(400 * power(mineral_grid[d][# a, b], 3))
 		}
 		belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 		contaminacion[a, b] = 0
