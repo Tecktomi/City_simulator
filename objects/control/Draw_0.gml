@@ -478,19 +478,22 @@ if sel_build{
 			pos = 100
 			draw_set_color(c_black)
 			draw_text_pos(500, pos, "Mercado internacional")
-			var max_width = 0, last_pos = 140, max_width_2 = 0
+			var max_width = 0, last_pos = 160, max_width_2 = 0
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				draw_text_pos(420, last_pos + a * 20, recurso_nombre[a])
 				max_width = max(max_width, last_width)
 			}
 			pos = 120
 			draw_text_pos(420 + max_width, pos, "Exportar")
+			pos += 20
 			for(var a = 0; a < array_length(recurso_nombre); a++)
 				recurso_exportado[a] = draw_boton_rectangle(420 + max_width, pos + a * 20, 420 + max_width + 18, pos + a * 20 + 18, recurso_exportado[a])
 			max_width += last_width + 10
 			pos = 120
 			draw_text_pos(420 + max_width, pos, "Importar")
-			max_width_2 = last_width
+			pos = 140
+			draw_text_pos(420 + max_width, pos, "Única")
+			max_width_2 = max(max_width_2, last_width)
 			last_pos = pos
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado[a]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Shift para reducir")})
@@ -501,8 +504,8 @@ if sel_build{
 				max_width_2  = max(max_width_2, last_width)
 			}
 			max_width += max_width_2 + 10
-			pos = 120
-			draw_text_pos(420 + max_width, pos, "Importar")
+			pos = 140
+			draw_text_pos(420 + max_width, pos, "Mensual")
 			max_width_2 = last_width
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado_fijo[a]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Importación fija mensual")})
@@ -515,16 +518,17 @@ if sel_build{
 			max_width += max_width_2 + 10
 			pos = 120
 			draw_text_pos(420 + max_width, pos, "Balance")
+			pos += 20
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				if draw_sprite_boton(spr_icono, 4 + (recurso_historial[a, 23] < recurso_historial[a, 0]), 420 + max_width, pos + a * 20, 20, 20){
-					var flag = show[a + 3]
+					var flag = show[a + 5]
 					close_show()
-					show[a + 3] = not flag
+					show[a + 5] = not flag
 				}
 				draw_line(420, pos + a * 20, 460 + max_width, pos + a * 20)
 			}
 			for(var a = 0; a < array_length(recurso_nombre); a++)
-				if show[a + 3]{
+				if show[a + 5]{
 					draw_line(800, 150, 800, 350)
 					draw_line(800, 350, 1040, 350)
 					var mini = recurso_precio[a], maxa = recurso_precio[a]
@@ -1097,15 +1101,15 @@ if keyboard_check(vk_space)
 			if next_build.tiempo <= 0{
 				array_shift(cola_construccion)
 				var edificio = add_edificio(next_build.x, next_build.y, next_build.id)
-				if edificio_nombre[build_index] = "Granja"{
+				if edificio_nombre[next_build.id] = "Granja"{
 					var c = 0
-					for(var a = 0; a < edificio_width[build_index]; a++)
-						for(b = 0; b < edificio_height[build_index]; b++)
-							c += cultivo[build_type][# next_build.x + a, next_build.y + b]
-					edificio.eficiencia = c / edificio_width[build_index] / edificio_height[build_index]
+					for(var a = 0; a < edificio_width[next_build.id]; a++)
+						for(b = 0; b < edificio_height[next_build.id]; b++)
+							c += cultivo[next_build.tipo][# next_build.x + a, next_build.y + b]
+					edificio.eficiencia = c / edificio_width[next_build.id] / edificio_height[next_build.id]
 					edificio.modo = next_build.tipo
 				}
-				else if edificio_nombre[build_index] = "Mina"
+				else if in(edificio_nombre[next_build.id], "Mina", "Rancho")
 					edificio.modo = next_build.tipo
 				//Despedir a todos los trabajadores si la ley de trabajo temporal está habilitada
 				if array_length(cola_construccion) = 0 and ley_eneabled[6]
