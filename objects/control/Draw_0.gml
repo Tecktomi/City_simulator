@@ -43,7 +43,7 @@ if keyboard_check(ord("C"))
 //Dibujo de arboles
 for(var a = min_camx; a < max_camx; a++)
 	for(var b = min_camy; b < max_camy; b++)
-		if bosque[a, b] and (a - b) * tile_width - xpos > 0 and (a + b) * tile_height - ypos > 0 and (a - b) * tile_width - xpos < room_width and (a + b) * tile_height - ypos < room_height
+		if bosque[a, b]
 			draw_sprite(spr_arbol, 0, (a - b) * tile_width - xpos, (a + b) * tile_height - ypos)
 //Información general
 draw_set_alpha(0.5)
@@ -654,9 +654,9 @@ if sel_build{
 }
 //Colocar edificio
 if build_sel{
-	var width = edificio_width[build_index], height = edificio_height[build_index]
-	var mx = clamp(floor(((mouse_x + xpos) / 20 + (mouse_y + ypos) / 10) / 2), 0, xsize - width)
-	var my = clamp(floor(((mouse_y + ypos) / 10 - (mouse_x + xpos) / 20) / 2), 0, ysize - height)
+	var width = edificio_width[build_index], height = edificio_height[build_index], text = ""
+	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - width)
+	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - height)
 	draw_set_color(make_color_hsv(edificio_color[build_index], 255, 255))
 	draw_set_alpha(0.5)
 	draw_rombo((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, (mx - my - height) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height) * tile_height - ypos, (mx - my + width) * tile_width - xpos, (mx + my + width) * tile_height - ypos, false)
@@ -668,7 +668,7 @@ if build_sel{
 		for(var a = 0; a < edificio_width[build_index]; a++)
 			for(var b = 0; b < edificio_height[build_index]; b++)
 				c += cultivo[build_type][# mx + a, my + b]
-		draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, $"Eficiencia: {floor(c * 100 / edificio_width[build_index] / edificio_height[build_index])}%")
+		text += $"Eficiencia: {floor(c * 100 / edificio_width[build_index] / edificio_height[build_index])}%\n"
 		if mouse_wheel_up()
 			build_type = (build_type + 1) mod array_length(recurso_cultivo)
 		if mouse_wheel_down()
@@ -691,7 +691,7 @@ if build_sel{
 		if mouse_wheel_down()
 			build_type = (build_type + array_length(recurso_mineral) - 1) mod array_length(recurso_mineral)
 		if flag
-			draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, $"Depósito: {c}")
+			text += $"Depósito: {c}\n"
 	}
 	//Ranchos
 	else if edificio_nombre[build_index] = "Rancho"{
@@ -723,7 +723,7 @@ if build_sel{
 		flag = edificio_valid_place(mx, my, build_index)
 		//Detectar árboles cerca
 		if flag and edificio_nombre[build_index] = "Aserradero"{
-			draw_rombo((mx - my) * tile_width - xpos, (mx + my - 5) * tile_height - ypos, (mx - my - height - 5) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height + 5) * tile_height - ypos, (mx - my + width + 5) * tile_width - xpos, (mx + my + width) * tile_height - ypos, true)
+			draw_rombo((mx - my) * tile_width - xpos, (mx + my - 10) * tile_height - ypos, (mx - my - height - 10) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height + 10) * tile_height - ypos, (mx - my + width + 10) * tile_width - xpos, (mx + my + width) * tile_height - ypos, true)
 			var flag_2 = false, c = 0
 			for(var a = max(0, mx - 5); a < min(mx + edificio_width[build_index] + 5, xsize); a++)
 				for(var b = max(0, my - 5); b < min(my + edificio_height[build_index] + 5, ysize); b++)
@@ -733,14 +733,16 @@ if build_sel{
 					}
 			if not flag_2{
 				flag = false
-				draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, "Se necesitan árboles cerca")
+				text += "Se necesitan árboles cerca\n"
 			}
 			else
-				draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, $"{c} madera disponible")
+				text += $"{c} madera disponible\n"
 		}
 	}
 	if not flag
-		draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, "Construcción bloqueada")
+		text += "Construcción bloqueada\n"
+	if text != ""
+		draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, text)
 	//Construir
 	if mouse_check_button_pressed(mb_left){
 		mouse_clear(mb_left)
@@ -769,8 +771,8 @@ if build_sel{
 }
 //Seleccionar edificio
 if mouse_check_button_pressed(mb_left){
-	var mx = floor((mouse_x + xpos) / 16)
-	var my = floor((mouse_y + ypos) / 16)
+	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
+	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
 	if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build{
 		mouse_clear(mb_left)
 		sel_info = bool_edificio[mx, my]
@@ -1069,14 +1071,28 @@ if sel_info{
 	draw_set_halign(fa_left)
 }
 #region Movimiento de la cámara
+if keyboard_check(vk_lshift){
+	if mouse_wheel_up(){
+		tile_width *= power(2, 0.1)
+		tile_height *= power(2, 0.1)
+		xpos -= tile_width
+		ypos -= tile_height
+	}
+	if mouse_wheel_down(){
+		tile_width /= power(2, 0.1)
+		tile_height /= power(2, 0.1)
+		xpos += tile_width
+		ypos += tile_height
+	}
+}
 if mouse_x < 20 or keyboard_check(ord("A"))
-	xpos = max(-ysize * 20, xpos - (4 + 12 * keyboard_check(vk_lshift)))
+	xpos = max(-ysize * tile_width, xpos - (4 + 12 * keyboard_check(vk_lshift)))
 if mouse_y < 20 or keyboard_check(ord("W"))
 	ypos = max(0, ypos - (4 + 12 * keyboard_check(vk_lshift)))
 if mouse_x > room_width - 20 or keyboard_check(ord("D"))
-	xpos = min(xsize * 20 - room_width, xpos + (4 + 12 * keyboard_check(vk_lshift)))
+	xpos = min(xsize * tile_width - room_width, xpos + (4 + 12 * keyboard_check(vk_lshift)))
 if mouse_y > room_height - 20 or keyboard_check(ord("S"))
-	ypos = min((xsize + ysize) * 10 - room_height, ypos + (4 + 12 * keyboard_check(vk_lshift)))
+	ypos = min((xsize + ysize) * tile_height - room_height, ypos + (4 + 12 * keyboard_check(vk_lshift)))
 min_camx = max(0, floor((xpos / tile_width + ypos / tile_height) / 2))
 min_camy = max(0, floor((ypos / tile_height - (xpos + room_width) / tile_width) / 2))
 max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
@@ -1794,6 +1810,18 @@ if keyboard_check(vk_space)
 								}
 							}
 						
+					}
+					//Destilería de Ron
+					else if edificio_nombre[edificio.tipo] = "Destilería de Ron"{
+						var b = max(0, min(floor(edificio.almacen[5] / 3), round(array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
+						edificio.almacen[5] -= b * 3
+						edificio.almacen[22] += b
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
+							add_encargo(5, edificio.almacen[5] + edificio.pedido[5] - 360, edificio)
+							add_encargo(22, edificio.almacen[22], edificio)
+							edificio.almacen[22] = 0
+							edificio.pedido[5] = 360 - edificio.almacen[5]
+						}
 					}
 				}
 			}
