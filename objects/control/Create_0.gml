@@ -240,7 +240,14 @@ for(a = 0; a < array_length(edificio_nombre); a++){
 	edificio_count[a] = [null_edificio]
 	array_pop(edificio_count[a])
 }
-cola_construccion = [{x : 0, y : 0, id : 0, tipo : 0, tiempo : 0}]
+null_construccion = {
+	x : 0,
+	y : 0,
+	id : 0,
+	tipo : 0,
+	tiempo : 0
+}
+cola_construccion = [null_construccion]
 array_delete(cola_construccion, 0, 1)
 #endregion
 //Recursos
@@ -298,6 +305,10 @@ for(a = 0; a < xsize; a++)
 		bool_edificio[a, b] = false
 		id_edificio[a, b] = null_edificio
 		construccion_reservada[a, b] = false
+		bool_draw_edificio[a, b] = false
+		draw_edificio[a, b] = null_edificio
+		bool_draw_construccion[a, b] = false
+		draw_construccion[a, b] = null_construccion
 		bosque[a, b] = grid[# a, b] > 0.6 and c > 0.6
 		if bosque[a, b]
 			bosque_madera[a, b] = floor(200 * grid[# a, b])
@@ -321,6 +332,12 @@ for(a = 0; a < xsize; a++)
 		}
 		belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 		contaminacion[a, b] = 0
+	}
+world_update = true
+for(var a = 0; a < xsize / 16; a++)
+	for(var b = 0; b < ysize; b++){
+		chunk[a, b] = spr_arbol
+		chunk_update[a, b] = true
 	}
 var mar_checked, not_mar = [], yes_mar = [{a : 0, b : 0}]
 for(a = 0; a < xsize; a++)

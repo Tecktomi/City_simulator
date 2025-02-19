@@ -43,6 +43,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		array_push(dia_trabajo[edificio.dia_factura], edificio)
 		if fisico{
 			var width = edificio_width[tipo], height = edificio_height[tipo]
+			array_set(bool_draw_edificio[x], y, true)
+			array_set(draw_edificio[x], y, edificio)
 			array_push(edificios, edificio)
 			if edificio_es_trabajo[tipo]{
 				array_push(trabajos, edificio)

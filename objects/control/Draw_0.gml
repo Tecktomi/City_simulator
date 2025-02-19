@@ -1,13 +1,30 @@
 #region Visual
 window_set_cursor(cr_default)
 //Dibujar mundo
+if world_update{
+	for(var a = 0; a < xsize / 16; a++)
+		for(var b = 0; b < ysize / 16; b++)
+			if chunk_update[a, b]{
+				var surf = surface_create(tile_width * 32, tile_height * 32)
+				surface_set_target(surf)
+				draw_clear_alpha(c_black, 0)
+				for(var c = 0; c < 16; c++)
+					for(var d = 0; d < 16; d++){
+						draw_set_color(altura_color[a * 16 + c, b * 16 + d])
+						draw_rombo(tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, tile_width * 16 + (c - d - 1) * tile_width, (c + d + 1) * tile_height, tile_width * 16 + (c - d) * tile_width, (c + d + 2) * tile_height, tile_width * 16 + (c - d + 1) * tile_width, (c + d + 1) * tile_height, false)
+					}
+				var sprite = sprite_create_from_surface(surf, 0, 0, tile_width * 32, tile_height * 32, true, false, 0, 0)
+				array_set(chunk[a], b, sprite)
+				surface_reset_target()
+				surface_free(surf)
+				array_set(chunk_update[a], b, false)
+			}
+	world_update = false
+}
 #region Dibujo de mundo
-for(var a = min_camx; a < max_camx; a++)
-	for(var b = min_camy; b < max_camy; b++)
-		if (a + b) * tile_height - ypos < room_height and (a - b - 1) * tile_width - xpos < room_width and (a + b + 2) * tile_height - ypos > 0 and (a - b + 1) * tile_width - xpos > 0{
-			draw_set_color(altura_color[a, b])
-			draw_rombo((a - b) * tile_width - xpos, (a + b) * tile_height - ypos, (a - b - 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, (a - b) * tile_width - xpos, (a + b + 2) * tile_height - ypos, (a - b + 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, false)
-	}
+for(var a = 0; a < xsize / 16; a++)
+	for(var b = 0; b < ysize / 16; b++)
+		draw_sprite_stretched(chunk[a, b], 0, (a - b - 1) * 16 * tile_width - xpos, (a + b) * 16 * tile_height - ypos, 32 * tile_width, 32 * tile_height)
 if show_grid{
 	draw_set_color(c_ltgray)
 	for(var a = 0; a < xsize; a++)
@@ -17,15 +34,17 @@ if show_grid{
 }
 #endregion
 #region vistas
-if keyboard_check(ord("G")){
+if keyboard_check(ord("G")) and not keyboard_check(vk_lcontrol){
 	if mouse_wheel_up()
 		build_type = (build_type + 1) mod array_length(recurso_cultivo)
 	if mouse_wheel_down()
 		build_type = (build_type + array_length(recurso_cultivo) - 1) mod array_length(recurso_cultivo)
+	if build_type >= array_length(recurso_cultivo)
+		build_type = 0
 }
 if keyboard_check(ord("G")) or (build_sel and edificio_nombre[build_index] = "Granja")
 	draw_gradiente(build_type, 0)
-if keyboard_check(ord("M")){
+if keyboard_check(ord("M")) and not keyboard_check(vk_lcontrol){
 	if mouse_wheel_up()
 		build_type = (build_type + 1) mod array_length(recurso_mineral)
 	if mouse_wheel_down()
@@ -42,9 +61,39 @@ if keyboard_check(ord("C"))
 #endregion
 //Dibujo de arboles
 for(var a = min_camx; a < max_camx; a++)
-	for(var b = min_camy; b < max_camy; b++)
+	for(var b = min_camy; b < max_camy; b++){
 		if bosque[a, b]
-			draw_sprite(spr_arbol, 0, (a - b) * tile_width - xpos, (a + b) * tile_height - ypos)
+			draw_sprite_stretched(spr_arbol, 0, (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
+		if bool_draw_edificio[a, b]{
+			var edificio = draw_edificio[a, b], c = edificio.x, d = edificio.y, e = edificio.tipo, width = edificio_width[e], height = edificio_height[e]
+			draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
+			draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
+			draw_set_color(c_white)
+			draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, true)
+			if edificio.paro{
+				draw_set_color(c_red)
+				draw_circle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, 3, false)
+				draw_set_color(c_white)
+				draw_circle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, 3, true)
+				if edificio.huelga{
+					draw_set_color(c_white)
+					draw_rectangle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d) * tile_width - xpos + string_width("PARO"), (c + d) * tile_height - ypos + string_height("PARO"), false)
+					draw_set_color(c_red)
+					draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, "PARO")
+					}
+			}
+		}
+		if bool_draw_construccion[a, b]{
+			var next_build = draw_construccion[a, b], e = next_build.id, width = edificio_width[e], height = edificio_height[e], c = next_build.x, d = next_build.y
+			draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
+			draw_set_alpha(0.5)
+			draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d + width - height) * tile_width - xpos, (c + d + width + height) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
+			draw_set_alpha(1)
+			draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d + width - height) * tile_width - xpos, (c + d + width + height) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, true)
+			draw_set_color(c_white)
+			draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, $"{edificio_nombre[next_build.id]}{edificio_nombre[next_build.id] = "Mina" ? "\n" + recurso_nombre[recurso_mineral[next_build.tipo]] : ""}{edificio_nombre[next_build.id] = "Granja" ? "\n" + recurso_nombre[recurso_cultivo[next_build.tipo]] : ""}{edificio_nombre[next_build.id] = "Rancho" ? "\n" + ganado_nombre[next_build.tipo] : ""}")
+		}	
+	}
 //Información general
 draw_set_alpha(0.5)
 draw_set_color(c_ltgray)
@@ -58,40 +107,6 @@ for(var a = 0; a < array_length(exigencia_nombre); a++)
 		draw_text_pos(0, pos, $"{exigencia_nombre[a]} {exigencia[a].expiracion - dia} días restantes")
 draw_set_valign(fa_top)
 draw_set_alpha(1)
-//Dibujar contornos de edificios
-for(var a = 0; a < array_length(edificio_nombre); a++){
-	var width = edificio_width[a], height = edificio_height[a], color = make_color_hsv(edificio_color[a], 255, 255)
-	for(var b = 0; b < array_length(edificio_count[a]); b++){
-		var edificio = edificio_count[a, b], c = edificio.x, d = edificio.y
-		draw_set_color(color)
-		draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
-		draw_set_color(c_white)
-		draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, true)
-		if edificio.paro{
-			draw_set_color(c_red)
-			draw_circle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, 3, false)
-			draw_set_color(c_white)
-			draw_circle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, 3, true)
-			if edificio.huelga{
-				draw_set_color(c_white)
-				draw_rectangle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d) * tile_width - xpos + string_width("PARO"), (c + d) * tile_height - ypos + string_height("PARO"), false)
-				draw_set_color(c_red)
-				draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, "PARO")
-			}
-		}
-	}
-}
-//Edificios en construcción
-for(var a = 0; a < array_length(cola_construccion); a++){
-	var next_build = cola_construccion[a], b = next_build.id, width = edificio_width[b], height = edificio_height[b], c = next_build.x, d = next_build.y
-	draw_set_color(make_color_hsv(edificio_color[b], 255, 255))
-	draw_set_alpha(0.5)
-	draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d + width - height) * tile_width - xpos, (c + d + width + height) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
-	draw_set_alpha(1)
-	draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d + width - height) * tile_width - xpos, (c + d + width + height) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, true)
-	draw_set_color(c_white)
-	draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, $"{edificio_nombre[next_build.id]}{edificio_nombre[next_build.id] = "Mina" ? "\n" + recurso_nombre[recurso_mineral[next_build.tipo]] : ""}{edificio_nombre[next_build.id] = "Granja" ? "\n" + recurso_nombre[recurso_cultivo[next_build.tipo]] : ""}{edificio_nombre[next_build.id] = "Rancho" ? "\n" + ganado_nombre[next_build.tipo] : ""}")
-}
 #endregion
 //Abrir menú de construcción
 if mouse_check_button_pressed(mb_right) and not build_sel{
@@ -669,10 +684,12 @@ if build_sel{
 			for(var b = 0; b < edificio_height[build_index]; b++)
 				c += cultivo[build_type][# mx + a, my + b]
 		text += $"Eficiencia: {floor(c * 100 / edificio_width[build_index] / edificio_height[build_index])}%\n"
-		if mouse_wheel_up()
-			build_type = (build_type + 1) mod array_length(recurso_cultivo)
-		if mouse_wheel_down()
-			build_type = (build_type + array_length(recurso_cultivo) - 1) mod array_length(recurso_cultivo)
+		if not keyboard_check(vk_lcontrol){
+			if mouse_wheel_up()
+				build_type = (build_type + 1) mod array_length(recurso_cultivo)
+			if mouse_wheel_down()
+				build_type = (build_type + array_length(recurso_cultivo) - 1) mod array_length(recurso_cultivo)
+		}
 	}
 	//Minas
 	var flag = true
@@ -686,10 +703,12 @@ if build_sel{
 					flag = true
 					c += mineral_cantidad[build_type][a, b]
 				}
-		if mouse_wheel_up()
-			build_type = (build_type + 1) mod array_length(recurso_mineral)
-		if mouse_wheel_down()
-			build_type = (build_type + array_length(recurso_mineral) - 1) mod array_length(recurso_mineral)
+		if not keyboard_check(vk_lcontrol){
+			if mouse_wheel_up()
+				build_type = (build_type + 1) mod array_length(recurso_mineral)
+			if mouse_wheel_down()
+				build_type = (build_type + array_length(recurso_mineral) - 1) mod array_length(recurso_mineral)
+		}
 		if flag
 			text += $"Depósito: {c}\n"
 	}
@@ -697,24 +716,28 @@ if build_sel{
 	else if edificio_nombre[build_index] = "Rancho"{
 		for(var a = 0; a < array_length(ganado_nombre); a++)
 			draw_text(0, a * 20, (build_type = a ? ">" : "") + ganado_nombre[a])
-		if mouse_wheel_up()
-			build_type = (build_type + 1) mod array_length(ganado_nombre)
-		if mouse_wheel_down()
-			build_type = (build_type + array_length(ganado_nombre) - 1) mod array_length(ganado_nombre)
+		if not keyboard_check(vk_lcontrol){
+			if mouse_wheel_up()
+				build_type = (build_type + 1) mod array_length(ganado_nombre)
+			if mouse_wheel_down()
+				build_type = (build_type + array_length(ganado_nombre) - 1) mod array_length(ganado_nombre)
+		}
 	}
 	//Capilla
 	else if in(build_index, 16, 17, 18, 19){
 		for(var a = 0; a < 4; a++)
 			draw_text_pos(0, a * 20, (build_index = 16 + a ? ">" : "") + edificio_nombre[16 + a])
-		if mouse_wheel_up(){
-			build_index++
-			if build_index = 20
-				build_index = 16
-		}
-		if mouse_wheel_down(){
-			build_index--
-			if build_index = 15
-				build_index = 19
+		if not keyboard_check(vk_lcontrol){
+			if mouse_wheel_up(){
+				build_index++
+				if build_index = 20
+					build_index = 16
+			}
+			if mouse_wheel_down(){
+				build_index--
+				if build_index = 15
+					build_index = 19
+			}
 		}
 		
 	}
@@ -753,12 +776,15 @@ if build_sel{
 			if array_length(cola_construccion) = 0 and ley_eneabled[6]
 				for(var a = 0; a < array_length(edificio_count[20]); a++)
 					set_paro(false, edificio_count[20, a])
-			array_push(cola_construccion, {
+			var next_build = {
 				x : mx,
 				y : my,
 				id : build_index,
 				tipo : build_type,
-				tiempo : edificio_construccion_tiempo[build_index]})
+				tiempo : edificio_construccion_tiempo[build_index]}
+			array_push(cola_construccion, next_build)
+			array_set(bool_draw_construccion[mx], my, true)
+			array_set(draw_construccion[mx], my, next_build)
 			build_sel = keyboard_check(vk_lshift)
 			dinero -= edificio_precio[build_index]
 			mes_construccion[current_mes] += edificio_precio[build_index]
@@ -1071,18 +1097,22 @@ if sel_info{
 	draw_set_halign(fa_left)
 }
 #region Movimiento de la cámara
-if keyboard_check(vk_lshift){
+if keyboard_check(vk_lcontrol){
 	if mouse_wheel_up(){
+		var center_x = ((room_width / 2 + xpos) / tile_width + (room_height / 2 + ypos) / tile_height) / 2
+		var center_y = ((room_height / 2 + ypos) / tile_height - (room_width / 2 + xpos) / tile_width) / 2
 		tile_width *= power(2, 0.1)
 		tile_height *= power(2, 0.1)
-		xpos -= tile_width
-		ypos -= tile_height
+		xpos = (center_x - center_y) * tile_width - room_width / 2
+		ypos = (center_x + center_y) * tile_height - room_height / 2
 	}
 	if mouse_wheel_down(){
+		var center_x = ((room_width / 2 + xpos) / tile_width + (room_height / 2 + ypos) / tile_height) / 2
+		var center_y = ((room_height / 2 + ypos) / tile_height - (room_width / 2 + xpos) / tile_width) / 2
 		tile_width /= power(2, 0.1)
 		tile_height /= power(2, 0.1)
-		xpos += tile_width
-		ypos += tile_height
+		xpos = (center_x - center_y) * tile_width - room_width / 2
+		ypos = (center_x + center_y) * tile_height - room_height / 2
 	}
 }
 if mouse_x < 20 or keyboard_check(ord("A"))
@@ -1121,6 +1151,8 @@ if keyboard_check(vk_space)
 			//Edificio_terminado
 			if next_build.tiempo <= 0{
 				array_shift(cola_construccion)
+				array_set(bool_draw_construccion[next_build.x], next_build.y, false)
+				array_set(draw_construccion[next_build.x], next_build.y, null_construccion)
 				var edificio = add_edificio(next_build.x, next_build.y, next_build.id)
 				if edificio_nombre[next_build.id] = "Granja"{
 					var c = 0
