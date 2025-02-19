@@ -22,8 +22,8 @@ if world_update{
 	world_update = false
 }
 #region Dibujo de mundo
-for(var a = 0; a < xsize / 16; a++)
-	for(var b = 0; b < ysize / 16; b++)
+for(var a = floor(min_camx / 16); a < ceil(max_camx / 16); a++)
+	for(var b = floor(min_camy / 16); b < ceil(max_camy / 16); b++)
 		draw_sprite_stretched(chunk[a, b], 0, (a - b - 1) * 16 * tile_width - xpos, (a + b) * 16 * tile_height - ypos, 32 * tile_width, 32 * tile_height)
 if show_grid{
 	draw_set_color(c_ltgray)
@@ -1791,7 +1791,7 @@ if keyboard_check(vk_space)
 					}
 					//Fábrica textil
 					else if edificio_nombre[edificio.tipo] = "Fábrica Textil"{
-						var b = max(0, min(max(floor(edificio.almacen[3] / 3), floor(edificio.almacen[20] / 3)), round(array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
+						var b = max(0, min(max(floor(edificio.almacen[3] / 3), floor(edificio.almacen[20] / 3)), round(5 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
 						if edificio.almacen[3] > edificio.almacen[20]
 							edificio.almacen[3] -= b * 3
 						else
@@ -1845,7 +1845,7 @@ if keyboard_check(vk_space)
 					}
 					//Destilería de Ron
 					else if edificio_nombre[edificio.tipo] = "Destilería de Ron"{
-						var b = max(0, min(floor(edificio.almacen[5] / 3), round(array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
+						var b = max(0, min(floor(edificio.almacen[5] / 3), round(2 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[5] -= b * 3
 						edificio.almacen[22] += b
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
@@ -1853,6 +1853,33 @@ if keyboard_check(vk_space)
 							add_encargo(22, edificio.almacen[22], edificio)
 							edificio.almacen[22] = 0
 							edificio.pedido[5] = 360 - edificio.almacen[5]
+						}
+					}
+					//Quesería
+					else if edificio_nombre[edificio.tipo] = "Quesería"{
+						var b = max(0, min(edificio.almacen[19], round(3 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
+						edificio.almacen[19] -= b
+						edificio.almacen[23] += b
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
+							add_encargo(19, edificio.almacen[19] + edificio.pedido[19] - 120, edificio)
+							add_encargo(23, edificio.almacen[23], edificio)
+							edificio.almacen[23] = 0
+							edificio.pedido[19] = 120 - edificio.almacen[19]
+						}
+					}
+					//Herrería
+					else if edificio_nombre[edificio.tipo] = "Herrería"{
+						var b = max(0, min(edificio.almacen[1], edificio.almacen[15], round(array_length(edificio.trabajadores) / 2 * (0.8 + 0.1 * edificio.presupuesto))))
+						edificio.almacen[1] -= b
+						edificio.almacen[15] -= b
+						edificio.almacen[24] += b * 5
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
+							add_encargo(1, edificio.almacen[1] + edificio.pedido[1] - 120, edificio)
+							add_encargo(15, edificio.almacen[15] + edificio.pedido[15] - 120, edificio)
+							add_encargo(24, edificio.almacen[24], edificio)
+							edificio.almacen[24] = 0
+							edificio.pedido[1] = 120 - edificio.almacen[1]
+							edificio.pedido[15] = 120 - edificio.almacen[15]
 						}
 					}
 				}
