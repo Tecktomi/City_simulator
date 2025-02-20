@@ -30,8 +30,8 @@ function draw_gradiente(tipo, modo){
 			draw_set_alpha(1)
 			draw_set_color(c_white)
 			draw_text(0, 0, "Belleza")
-			var mx = clamp(floor(((mouse_x + xpos) / 20 + (mouse_y + ypos) / 10) / 2), 0, xsize - 1)
-			var my = clamp(floor(((mouse_y + ypos) / 10 - (mouse_x + xpos) / 20) / 2), 0, ysize - 1)
+			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
+			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
 			if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height
 				if not mar[mx, my]
 					draw_text(0, 20, clamp(belleza[mx, my], 0, 100))
@@ -46,8 +46,8 @@ function draw_gradiente(tipo, modo){
 			draw_set_alpha(1)
 			draw_set_color(c_white)
 			draw_text(0, 0, "Contaminación")
-			var mx = clamp(floor(((mouse_x + xpos) / 20 + (mouse_y + ypos) / 10) / 2), 0, xsize - 1)
-			var my = clamp(floor(((mouse_y + ypos) / 10 - (mouse_x + xpos) / 20) / 2), 0, ysize - 1)
+			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
+			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
 			if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height
 				draw_text(0, 20, clamp(contaminacion[mx, my], 0, 100))
 		}

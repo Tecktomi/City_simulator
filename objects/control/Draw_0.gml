@@ -1502,15 +1502,23 @@ if keyboard_check(vk_space)
 				persona.felicidad_salud = floor(persona.felicidad_salud / 2)
 			else
 				if persona.familia.casa != homeless{
-					if persona.trabajo != null_edificio
-						persona.felicidad_salud = floor((persona.felicidad_salud + 3 * (50 - min(100, max(0, contaminacion[persona.familia.casa.x, persona.familia.casa.y])) / 5) * (50 - min(100, max(0, contaminacion[persona.trabajo.x, persona.trabajo.y])) / 5)) / 4)
-					else if persona.escuela != null_edificio
-						persona.felicidad_salud = floor((persona.felicidad_salud + 3 * (50 - min(100, max(0, contaminacion[persona.familia.casa.x, persona.familia.casa.y])) / 5) * (50 - min(100, max(0, contaminacion[persona.escuela.x, persona.escuela.y])) / 5)) / 4)
-					else
-						persona.felicidad_salud = floor((persona.felicidad_salud + 3 * (50 - min(100, max(0, contaminacion[persona.familia.casa.x, persona.familia.casa.y])) / 5)) / 4)
+					if persona.trabajo != null_edificio{
+						persona.felicidad_salud = floor((persona.felicidad_salud + 0.03 * (1 - (1 - clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100)) * (1 - clamp(contaminacion[persona.trabajo.x, persona.trabajo.y], 0, 100)))) / 4)
+						show_debug_message(1)
+					}
+					else if persona.escuela != null_edificio{
+						persona.felicidad_salud = floor((persona.felicidad_salud + 0.03 * (1 - (1 - clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100)) * (1 - clamp(contaminacion[persona.escuela.x, persona.escuela.y], 0, 100)))) / 4)
+						show_debug_message(2)
+					}
+					else{
+						persona.felicidad_salud = floor((persona.felicidad_salud + 3 * clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100)) / 4)
+						show_debug_message(3)
+					}
 				}
-				else
+				else{
 					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * 30) / 4)
+					show_debug_message(4)
+				}
 			persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
 			temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley]
 			if persona.es_hijo{
@@ -1553,7 +1561,7 @@ if keyboard_check(vk_space)
 					}
 				}
 				//Protestas
-				else if persona.trabajo != null_edificio and not persona.trabajo.huelga and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado{
+				else if persona.trabajo != null_edificio and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado{
 					var edificio = persona.trabajo, fel_ali = 0, fel_sal = 0, fel_edu = 0, num_edu = 0, fel_div = 0, fel_rel = 0
 					for(var b = 0; b < array_length(edificio.trabajadores); b++){
 						var trabajador = edificio.trabajadores[b]

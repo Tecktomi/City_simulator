@@ -473,53 +473,19 @@ min_camy = max(0, floor((ypos / tile_height - (xpos + room_width) / tile_width) 
 max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
 max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
 show_debug_message($"{min_camx}, {min_camy} -> {max_camx}, {max_camy}")
-var checked = [], coord;
+var checked = [], coord
 for(a = edificios[0].x - 15; a < edificios[0].x + 15; a++)
 	for(b = edificios[0].y - 15; b < edificios[0].y + 15; b++){
 		coord = {x : a, y : b}
 		array_push(checked, coord)
 	}
 checked = array_shuffle(checked)
-#region Pescadería
-do
-	coord = array_shift(checked)
-until edificio_valid_place(coord.x, coord.y, 14) or array_length(checked) = 0
-add_edificio(coord.x, coord.y, 14)
-#endregion
-#region Oficina de Transporte
-do
-	coord = array_shift(checked)
-until edificio_valid_place(coord.x, coord.y, 22) or array_length(checked) = 0
-add_edificio(coord.x, coord.y, 22)
-#endregion
-#region Hospicio
-do
-	coord = array_shift(checked)
-until edificio_valid_place(coord.x, coord.y, 17) or array_length(checked) = 0
-add_edificio(coord.x, coord.y, 17)
-#endregion
-#region Oficina de construcción
-do
-	coord = array_shift(checked)
-until edificio_valid_place(coord.x, coord.y, 20) or array_length(checked) = 0
-add_edificio(coord.x, coord.y, 20)
-#endregion
-#region Chabolas
-repeat(3){
-	do
-		coord = array_shift(checked)
-	until edificio_valid_place(coord.x, coord.y, 8) or array_length(checked) = 0
-	add_edificio(coord.x, coord.y, 8)
-}
-#endregion
-#region Cabañas
-repeat(3){
-	do
-		coord = array_shift(checked)
-	until edificio_valid_place(coord.x, coord.y, 9) or array_length(checked) = 0
-	add_edificio(coord.x, coord.y, 9)
-}
-#endregion
+checked = spawn_build(checked, 14)
+checked = spawn_build(checked, 22)
+checked = spawn_build(checked, 17)
+checked = spawn_build(checked, 20)
+checked = spawn_build(checked, 8, 3)
+checked = spawn_build(checked, 9, 3)
 for(a = 0; a < array_length(personas); a++){
 	var persona = personas[a]
 	if not persona.es_hijo{

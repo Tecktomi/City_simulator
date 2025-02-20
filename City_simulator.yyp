@@ -64,6 +64,7 @@
     {"id":{"name":"print_familia","path":"scripts/print_familia/print_familia.yy",},},
     {"id":{"name":"scr_color","path":"scripts/scr_color/scr_color.yy",},},
     {"id":{"name":"set_paro","path":"scripts/set_paro/set_paro.yy",},},
+    {"id":{"name":"spawn_build","path":"scripts/spawn_build/spawn_build.yy",},},
     {"id":{"name":"string_struct_begin","path":"scripts/string_struct_begin/string_struct_begin.yy",},},
     {"id":{"name":"string_struct","path":"scripts/string_struct/string_struct.yy",},},
     {"id":{"name":"spr_arbol","path":"sprites/spr_arbol/spr_arbol.yy",},},
