@@ -895,6 +895,8 @@ if sel_info{
 				else
 					draw_text_pos(room_width - 20, pos, "Siembra")
 				draw_text_pos(room_width - 40, pos, $"Eficiencia: {floor(sel_edificio.eficiencia * 100)}%")
+				if contaminacion[sel_edificio.x, sel_edificio.y] > 0
+					draw_text_pos(room_width - 60, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
 				draw_text_pos(room_width - 40, pos, $"{sel_edificio.count} plantas")
 				draw_text_pos(room_width - 20, pos, $"\nProduciendo {recurso_nombre[recurso_cultivo[sel_edificio.modo]]}")
 				if not sel_edificio.privado and draw_boton(room_width - 40, pos, "Cambiar recurso", , not sel_edificio.huelga)
@@ -910,6 +912,9 @@ if sel_info{
 							}
 						}
 			}
+			if edificio_nombre[sel_edificio.tipo] = "Pescadería"
+				if contaminacion[sel_edificio.x, sel_edificio.y] > 0
+					draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
 			if edificio_nombre[sel_edificio.tipo] = "Mina"{
 				draw_text_pos(room_width - 20, pos, $"Extrayendo {recurso_nombre[recurso_mineral[sel_edificio.modo]]}")
 				var c = 0
@@ -932,6 +937,8 @@ if sel_info{
 						}
 			}
 			if edificio_nombre[sel_edificio.tipo] = "Rancho"{
+				if contaminacion[sel_edificio.x, sel_edificio.y] > 0
+					draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
 				draw_text_pos(room_width - 20, pos, $"Produciendo {ganado_nombre[sel_edificio.modo]}")
 				if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Cambiar recurso", 3)
 					for(var a = 0; a < array_length(ganado_nombre); a++)
@@ -1500,25 +1507,17 @@ if keyboard_check(vk_space)
 			felicidad_total = felicidad_total * array_length(personas) - persona.felicidad
 			if array_length(medicos) = 1
 				persona.felicidad_salud = floor(persona.felicidad_salud / 2)
-			else
-				if persona.familia.casa != homeless{
-					if persona.trabajo != null_edificio{
-						persona.felicidad_salud = floor((persona.felicidad_salud + 0.03 * (1 - (1 - clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100)) * (1 - clamp(contaminacion[persona.trabajo.x, persona.trabajo.y], 0, 100)))) / 4)
-						show_debug_message(1)
-					}
-					else if persona.escuela != null_edificio{
-						persona.felicidad_salud = floor((persona.felicidad_salud + 0.03 * (1 - (1 - clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100)) * (1 - clamp(contaminacion[persona.escuela.x, persona.escuela.y], 0, 100)))) / 4)
-						show_debug_message(2)
-					}
-					else{
-						persona.felicidad_salud = floor((persona.felicidad_salud + 3 * clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100)) / 4)
-						show_debug_message(3)
-					}
-				}
-				else{
-					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * 30) / 4)
-					show_debug_message(4)
-				}
+			else{
+				var temp_contaminacion = 0.25;
+				if persona.familia.casa != homeless
+					temp_contaminacion = (1 - clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100) / 100)
+				if persona.trabajo != null_edificio
+					temp_contaminacion *= (1 - clamp(contaminacion[persona.trabajo.x, persona.trabajo.y], 0, 100) / 100)
+				if persona.escuela != null_edificio
+					temp_contaminacion *= (1 - clamp(contaminacion[persona.escuela.x, persona.escuela.y], 0, 100) / 100)
+				temp_contaminacion = 100 * temp_contaminacion
+				persona.felicidad_salud = floor((persona.felicidad_salud + 3 * temp_contaminacion) / 4)
+			}
 			persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
 			temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley]
 			if persona.es_hijo{
@@ -1653,7 +1652,7 @@ if keyboard_check(vk_space)
 					//Granjas
 					if edificio_nombre[edificio.tipo] = "Granja"{
 						if current_mes = 5 or current_mes = 10{
-							edificio.almacen[recurso_cultivo[edificio.modo]] += round(15 * min(edificio.count, 5 * array_length(edificio.trabajadores)) * edificio.eficiencia * (0.8 + 0.1 * edificio.presupuesto))
+							edificio.almacen[recurso_cultivo[edificio.modo]] += round(15 * min(edificio.count, 5 * array_length(edificio.trabajadores)) * edificio.eficiencia * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
 							edificio.count = 0
 						}
 						else
@@ -1700,7 +1699,7 @@ if keyboard_check(vk_space)
 					}
 					//Pescadería
 					else if edificio_nombre[edificio.tipo] = "Pescadería"{
-						edificio.almacen[8] += round(10 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))
+						edificio.almacen[8] += round(10 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[8] > 200{
 							add_encargo(8, edificio.almacen[8] - 200, edificio)
 							edificio.almacen[8] = 200
@@ -1838,7 +1837,7 @@ if keyboard_check(vk_space)
 					}
 					//Rancho
 					else if edificio_nombre[edificio.tipo] = "Rancho"{
-						var b = array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto)
+						var b = array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200)
 						for(var c = 0; c < array_length(ganado_produccion[edificio.modo]); c++)
 							edificio.almacen[ganado_produccion[edificio.modo, c]] += 10 * b / array_length(ganado_produccion[edificio.modo])
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12
