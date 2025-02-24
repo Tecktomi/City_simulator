@@ -423,6 +423,8 @@ if sel_build{
 			temp_grid[7] = mes_importaciones
 			temp_grid[8] = mes_compra_interna
 			temp_grid[9] = mes_venta_interna
+			temp_grid[10] = mes_privatizacion
+			temp_grid[11] = mes_estatizacion
 			temp_text_array[0] = "Renta"
 			temp_text_array[1] = "Tarifas"
 			temp_text_array[2] = "Herencia"
@@ -433,8 +435,10 @@ if sel_build{
 			temp_text_array[7] = "Importaciones"
 			temp_text_array[8] = "Compra a Privados"
 			temp_text_array[9] = "Venta a Privados"
+			temp_text_array[10] = "Privatización"
+			temp_text_array[11] = "Estatización"
 			#endregion
-			for(var a = 0; a <= 9; a++){
+			for(var a = 0; a <= 11; a++){
 				count[a] = 0
 				maxi[a] = 0
 			}
@@ -443,7 +447,7 @@ if sel_build{
 				temp_importaciones[a] = 0
 			}
 			for(var a = 0; a < 12; a++){
-				for(b = 0; b <= 9; b++){
+				for(b = 0; b <= 11; b++){
 					count[b] += temp_grid[b, (a + current_mes) mod 12]
 					maxi[b] = max(maxi[b], temp_grid[b, a])
 				}
@@ -458,7 +462,7 @@ if sel_build{
 					trab_esta += not personas[a].trabajo.privado
 				}
 			#region Ingresos
-			if draw_menu(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9]}", 0){
+			if draw_menu(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9] + count[10]}", 0){
 				draw_text_pos(120, pos, $"{temp_text_array[0]}: ${count[0]}")
 				draw_text_pos(120, pos, $"{temp_text_array[1]}: ${count[1]}")
 				draw_text_pos(120, pos, $"{temp_text_array[2]}: ${count[2]}")
@@ -467,8 +471,9 @@ if sel_build{
 						if temp_exportaciones[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_exportaciones[c]}")
 				draw_text_pos(120, pos, $"{temp_text_array[9]}: ${count[9]}")
+				draw_text_pos(120, pos, $"{temp_text_array[10]}: ${count[10]}")
 			}
-			if draw_menu(110, pos, $"Pérdidas: ${count[4] + count[5] + count[6] + count[7]}", 2){
+			if draw_menu(110, pos, $"Pérdidas: ${count[4] + count[5] + count[6] + count[7] + count[8] + count[11]}", 2){
 				draw_text_pos(120, pos, $"{temp_text_array[4]}: ${count[4]}")
 				draw_text_pos(120, pos, $"{temp_text_array[5]}: ${count[5]}")
 				draw_text_pos(120, pos, $"{temp_text_array[6]}: ${count[6]}")
@@ -477,8 +482,9 @@ if sel_build{
 						if temp_importaciones[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_importaciones[c]}")
 				draw_text_pos(120, pos, $"{temp_text_array[8]}: ${count[8]}")
+				draw_text_pos(120, pos, $"{temp_text_array[11]}: ${count[11]}")
 			}
-			draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] - count[4] - count[5] - count[6] - count[7] - count[8]}")
+			draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] + count[10] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11]}")
 			if trab_total > 0
 				draw_text_pos(100, pos, $"{floor(100 * trab_esta / trab_total)} % de trabajadores estatales.")
 			if draw_menu(110, pos, $"{array_length(encargos)} encargos", 4)
@@ -974,14 +980,16 @@ if sel_info{
 		//Privatizar / Estatizar
 		if not edificio_estatal[sel_edificio.tipo] and not sel_edificio.huelga{
 			pos += 20
-			var temp_precio = edificio_precio[sel_edificio.tipo]
+			var temp_precio = edificio_precio[sel_edificio.tipo], temp_text = $"Edificio base: ${temp_precio}"
 			if edificio_nombre[sel_edificio.tipo] = "Mina"{
 				var c = 0
 				for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + edificio_width[sel_edificio.tipo] + 1); a++)
 					for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + edificio_height[sel_edificio.tipo] + 1); b++)
 						if mineral[sel_edificio.modo][a, b]
 							c += mineral_cantidad[sel_edificio.modo][a, b]
-				temp_precio += c * recurso_precio[recurso_mineral[sel_edificio.modo]]
+				c = floor(c * recurso_precio[recurso_mineral[sel_edificio.modo]] * 0.2)
+				temp_precio += c
+				temp_text += $"\nDerechos mineros: ${c}"
 			}
 			else if edificio_nombre[sel_edificio.tipo] = "Aserradero"{
 				var c = 0
@@ -989,22 +997,36 @@ if sel_info{
 					for(var b = max(0, sel_edificio.y - 5); b < min(sel_edificio.y + edificio_height[build_index] + 5, ysize); b++)
 						if bosque[a, b]
 							c += bosque_madera[a, b]
-				temp_precio += c * recurso_precio[1]
+				c = floor(c * recurso_precio[1] * 0.2)
+				temp_precio += c
+				temp_text += $"\nDerechos madereros: ${c}"
+			}
+			var b = 0
+			for(var a = 0; a < array_length(recurso_nombre); a++)
+				if sel_edificio.almacen[a] > 0
+					b += sel_edificio.almacen[a] * recurso_precio[a]
+			if b > 0{
+				temp_text += $"\nInventario: ${floor(b)}"
+				temp_precio += floor(b)
 			}
 			if sel_edificio.privado{
 				temp_precio = floor(temp_precio * 1.1)
 				if draw_boton(room_width, pos, $"Estatizar Edificio -${temp_precio}") and dinero >= temp_precio{
+					mes_estatizacion[current_mes] += temp_precio
 					dinero -= temp_precio
 					sel_edificio.privado = false
 				}
+				draw_text_pos(room_width - 20, pos, temp_text + "\n+10%")
 			}
 			else{
 				temp_precio = floor(temp_precio * 0.9)
 				if draw_boton(room_width, pos, $"Privatizar Edificio +${temp_precio}"){
+					mes_privatizacion[current_mes] += temp_precio
 					dinero += temp_precio
 					sel_edificio.privado = true
 					set_presupuesto(0, sel_edificio)
 				}
+				draw_text_pos(room_width - 20, pos, temp_text + "\n-10%")
 			}
 		}
 		//Abrir ministerio de economía
@@ -1258,6 +1280,8 @@ if keyboard_check(vk_space)
 			mes_importaciones[current_mes] = 0
 			mes_compra_interna[current_mes] = 0
 			mes_venta_interna[current_mes] = 0
+			mes_privatizacion[current_mes] = 0
+			mes_estatizacion[current_mes] = 0
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				array_set(mes_exportaciones_recurso[current_mes], a, 0)
 				array_set(mes_importaciones_recurso[current_mes], a, 0)
