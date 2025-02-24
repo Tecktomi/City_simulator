@@ -76,6 +76,36 @@ familias = [null_familia]
 array_pop(familias)
 null_persona.familia = null_familia
 #endregion
+//Recursos
+#region recursos
+recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas"]
+recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 7, 250, 2.2, 1.2, 1.4, 2.2, 12, 8, 15]
+recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
+cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
+recurso_comida = [0, 2, 6, 8, 18, 19, 23]
+recurso_mineral = [9, 10, 11, 12, 13, 14]
+recurso_mineral_color = [c_black, c_gray, c_yellow, c_orange, c_ltgray, c_dkgray]
+recurso_mineral_rareza = [0.8, 0.85, 0.95, 0.75, 0.85, 0.9]
+ganado_nombre = ["Vacas", "Cabras", "Ovejas", "Cerdos"]
+ganado_produccion = [[18, 21], [19], [20], [18]]
+null_tratado = {
+	pais : 0,
+	recurso : 0,
+	cantidad : 0,
+	factor : 1,
+	tiempo : 0}
+tratados_ofertas = [null_tratado]
+array_pop(tratados_ofertas)
+for(a = 0; a < array_length(recurso_nombre); a++){
+	recurso_importado[a] = 0
+	recurso_exportado[a] = true
+	recurso_importado_fijo[a] = 0
+	recurso_tratados[a] = [null_tratado]
+	array_pop(recurso_tratados[a])
+	for(b = 0; b < 24; b++)
+		recurso_historial[a, b] = recurso_precio[a]
+}
+#endregion
 //Edificios
 #region edificios
 edificio_nombre = ["Sin trabajo", "Jubilado", "Sin atención médica", "Homeless", "Granja", "Aserradero", "Escuela", "Consultorio", "Chabola", "Cabaña", "Parcela", "Taberna", "Circo", "Muelle", "Pescadería", "Mina", "Capilla", "Hospicio", "Albergue", "Escuela parroquial", "Oficina de Construcción", "Plaza", "Oficina de Transporte", "Planta Siderúrgica", "Cabaret", "Fábrica Textil", "Astillero", "Rancho", "Destilería de Ron", "Quesería", "Herrería"]
@@ -105,7 +135,7 @@ edificio_descripcion = ["", "", "", "",
 	"Consume azúcar para producir ron",
 	"Consume leche para producir queso",
 	"Usa madera y acero para producir herramientas"]
-edificio_trabajadores_max = [0, 0, 0, 0, 10, 5, 4, 3, 0, 0, 2, 2, 8, 5, 6, 5, 4, 4, 4, 5, 8, 0, 4, 20, 6, 15, 25, 3, 6, 3, 10]
+edificio_trabajadores_max = [0, 0, 0, 0, 10, 5, 4, 3, 0, 0, 1, 2, 8, 5, 6, 5, 4, 4, 4, 5, 8, 0, 4, 20, 6, 15, 25, 3, 6, 3, 10]
 edificio_trabajo_calidad = [0, 10, 0, 0, 25, 30, 50, 60, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45, 30, 0, 35, 30, 25, 25, 35, 30, 35, 40, 30]
 edificio_trabajo_sueldo = [0, 2, 0, 0, 4, 5, 8, 11, 0, 0, 4, 5, 3, 7, 6, 5, 6, 6, 5, 6, 6, 0, 5, 4, 5, 4, 5, 5, 5, 6, 4]
 edificio_trabajo_educacion = [0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 1, 0, 0, 1, 2, 1, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
@@ -147,8 +177,8 @@ null_edificio = {
 	tipo : 0,
 	dia_factura : 0,
 	count : 0,
-	almacen : undefined,
-	pedido : undefined,
+	almacen : [],
+	pedido : [],
 	eficiencia : 1,
 	modo : 0,
 	array_complex : [{a : 0, b : 0}],
@@ -164,7 +194,9 @@ null_edificio = {
 	trabajo_sueldo : 0,
 	mantenimiento : 0,
 	presupuesto : 2,
-	mes_creacion : 0
+	mes_creacion : 0,
+	gasto : [],
+	ganancia : []
 }
 array_pop(null_edificio.familias)
 array_pop(null_edificio.trabajadores)
@@ -194,6 +226,14 @@ null_persona.medico = null_edificio
 for(a = 0; a < 28; a++){
 	dia_trabajo[a] = [null_edificio]
 	array_pop(dia_trabajo[a])
+}
+for(a = 0; a < array_length(recurso_nombre); a++){
+	array_push(null_edificio.almacen, 0)
+	array_push(null_edificio.pedido, 0)
+}
+for(a = 0; a < 12; a++){
+	array_push(null_edificio.gasto, 0)
+	array_push(null_edificio.ganancia, 0)
 }
 current_mes = 0
 #endregion
@@ -251,39 +291,6 @@ null_construccion = {
 }
 cola_construccion = [null_construccion]
 array_delete(cola_construccion, 0, 1)
-#endregion
-//Recursos
-#region recursos
-recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas"]
-recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 7, 250, 2.2, 1.2, 1.4, 2.2, 12, 8, 15]
-recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
-cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
-recurso_comida = [0, 2, 6, 8, 18, 19, 23]
-recurso_mineral = [9, 10, 11, 12, 13, 14]
-recurso_mineral_color = [c_black, c_gray, c_yellow, c_orange, c_ltgray, c_dkgray]
-recurso_mineral_rareza = [0.8, 0.85, 0.95, 0.75, 0.85, 0.9]
-ganado_nombre = ["Vacas", "Cabras", "Ovejas", "Cerdos"]
-ganado_produccion = [[18, 21], [19], [20], [18]]
-null_tratado = {pais : 0, recurso : 0, cantidad : 0, factor : 1, tiempo : 0}
-tratados_ofertas = [null_tratado]
-array_pop(tratados_ofertas)
-for(a = 0; a < array_length(recurso_nombre); a++){
-	null_edificio.almacen[a] = 0
-	null_edificio.pedido[a] = 0
-	jubilado.almacen[a] = 0
-	jubilado.pedido[a] = 0
-	desausiado.almacen[a] = 0
-	desausiado.pedido[a] = 0
-	homeless.almacen[a] = 0
-	homeless.pedido[a] = 0
-	recurso_importado[a] = 0
-	recurso_exportado[a] = true
-	recurso_importado_fijo[a] = 0
-	recurso_tratados[a] = [null_tratado]
-	array_pop(recurso_tratados[a])
-	for(b = 0; b < 24; b++)
-		recurso_historial[a, b] = recurso_precio[a]
-}
 #endregion
 //Settings
 #region diseño del mundo

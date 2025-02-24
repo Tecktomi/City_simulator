@@ -13,8 +13,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			tipo : tipo,
 			dia_factura : irandom(27),
 			count : 0,
-			almacen : undefined,
-			pedido : undefined,
+			almacen : [],
+			pedido : [],
 			eficiencia : 1,
 			modo : 0,
 			array_complex : [{a : 0, b : 0}],
@@ -30,7 +30,9 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			trabajo_sueldo : edificio_trabajo_sueldo[tipo],
 			mantenimiento : edificio_mantenimiento[tipo],
 			presupuesto : 2,
-			mes_creacion : control.current_mes
+			mes_creacion : control.current_mes,
+			gasto : [],
+			ganancia : []
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
@@ -41,6 +43,14 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		array_pop(edificio.iglesias_cerca)
 		array_pop(edificio.array_complex)
 		array_push(dia_trabajo[edificio.dia_factura], edificio)
+		for(var a = 0; a < array_length(recurso_nombre); a++){
+			array_push(edificio.almacen, 0)
+			array_push(edificio.pedido, 0)
+		}
+		for(var a = 0; a < 12; a++){
+			array_push(edificio.gasto, 0)
+			array_push(edificio.ganancia, 0)
+		}
 		if fisico{
 			var width = edificio_width[tipo], height = edificio_height[tipo]
 			array_set(bool_draw_edificio[x], y, true)
@@ -73,10 +83,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			if edificio_es_ocio[tipo]
 				cumplir_exigencia(3)
 			array_push(edificio_count[tipo], edificio)
-			for(var a = 0; a < array_length(recurso_nombre); a++){
-				edificio.almacen[a] = 0
-				edificio.pedido[a] = 0
-			}
 			if edificio_nombre[tipo] = "Aserradero"{
 				for(var a = max(0, x - 5); a < min(x + width + 5, xsize); a++)
 					for(var b = max(0, y - 5); b < min(y + height + 5, ysize); b++)
