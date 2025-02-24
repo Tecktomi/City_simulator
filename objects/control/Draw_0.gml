@@ -9,10 +9,8 @@ if world_update{
 				surface_set_target(surf)
 				draw_clear_alpha(c_black, 0)
 				for(var c = 0; c < 16; c++)
-					for(var d = 0; d < 16; d++){
-						draw_set_color(altura_color[a * 16 + c, b * 16 + d])
-						draw_rombo(tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, tile_width * 16 + (c - d - 1) * tile_width, (c + d + 1) * tile_height, tile_width * 16 + (c - d) * tile_width, (c + d + 2) * tile_height, tile_width * 16 + (c - d + 1) * tile_width, (c + d + 1) * tile_height, false)
-					}
+					for(var d = 0; d < 16; d++)
+						draw_sprite_ext(spr_tile, 0, tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, 1, 1, 0, altura_color[a * 16 + c, b * 16 + d], 1)
 				var sprite = sprite_create_from_surface(surf, 0, 0, tile_width * 32, tile_height * 32, true, false, 0, 0)
 				array_set(chunk[a], b, sprite)
 				surface_reset_target()
@@ -59,7 +57,7 @@ if keyboard_check(ord("B")) or (build_sel and (edificio_es_casa[build_index] or 
 if keyboard_check(ord("C"))
 	draw_gradiente(0, 3)
 #endregion
-//Dibujo de arboles
+//Dibujo de arboles y edificios
 for(var a = min_camx; a < max_camx; a++)
 	for(var b = min_camy; b < max_camy; b++){
 		if bosque[a, b]
@@ -849,25 +847,22 @@ if sel_info{
 		else if sel_edificio.exigencia != null_exigencia
 			draw_text_pos(room_width - 20, pos, $"Esperando que cumplas {exigencia_nombre[sel_edificio.huelga_motivo]}")
 		#region presupuesto
-		for(var a = 0; a < 5; a++)
-			if draw_sprite_boton(spr_icono, 3 - (a > sel_edificio.presupuesto), room_width - 200 + a * 40, pos, 40, 40)
-				for(var b = 0; b < array_length(edificio_count[sel_edificio.tipo]); b++){
-					if keyboard_check(vk_lshift)
-						var edificio = edificio_count[sel_edificio.tipo, b]
-					else{
-						b = array_length(edificio_count[sel_edificio.tipo])
-						edificio = sel_edificio
+		if not sel_edificio.privado
+			for(var a = 0; a < 5; a++)
+				if draw_sprite_boton(spr_icono, 3 - (a > sel_edificio.presupuesto), room_width - 200 + a * 40, pos, 40, 40)
+					for(var b = 0; b < array_length(edificio_count[sel_edificio.tipo]); b++){
+						var edificio = undefined
+						if keyboard_check(vk_lshift){
+							edificio = edificio_count[sel_edificio.tipo, b]
+							if edificio.privado
+								continue
+						}
+						else{
+							b = array_length(edificio_count[sel_edificio.tipo])
+							edificio = sel_edificio
+						}
+						set_presupuesto(a, edificio)
 					}
-					edificio.vivienda_calidad -= edificio.presupuesto
-					edificio.trabajo_calidad -= 4 * edificio.presupuesto
-					edificio.trabajo_sueldo -= edificio.presupuesto
-					edificio.mantenimiento -= edificio.presupuesto
-					edificio.presupuesto = a
-					edificio.vivienda_calidad += edificio.presupuesto
-					edificio.trabajo_calidad += 4 * edificio.presupuesto
-					edificio.trabajo_sueldo += edificio.presupuesto
-					edificio.mantenimiento += edificio.presupuesto
-				}
 		pos += 40
 		draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[sel_edificio.tipo] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
 			edificio_es_casa[sel_edificio.tipo] ? "Calidad de vivienda: " + string(sel_edificio.vivienda_calidad) + "\n" : ""}")
@@ -976,19 +971,43 @@ if sel_info{
 					break
 				}
 			}
+		//Privatizar / Estatizar
 		if not edificio_estatal[sel_edificio.tipo] and not sel_edificio.huelga{
 			pos += 20
+			var temp_precio = edificio_precio[sel_edificio.tipo]
+			if edificio_nombre[sel_edificio.tipo] = "Mina"{
+				var c = 0
+				for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + edificio_width[sel_edificio.tipo] + 1); a++)
+					for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + edificio_height[sel_edificio.tipo] + 1); b++)
+						if mineral[sel_edificio.modo][a, b]
+							c += mineral_cantidad[sel_edificio.modo][a, b]
+				temp_precio += c * recurso_precio[recurso_mineral[sel_edificio.modo]]
+			}
+			else if edificio_nombre[sel_edificio.tipo] = "Aserradero"{
+				var c = 0
+				for(var a = max(0, sel_edificio.x - 5); a < min(sel_edificio.x + edificio_width[build_index] + 5, xsize); a++)
+					for(var b = max(0, sel_edificio.y - 5); b < min(sel_edificio.y + edificio_height[build_index] + 5, ysize); b++)
+						if bosque[a, b]
+							c += bosque_madera[a, b]
+				temp_precio += c * recurso_precio[1]
+			}
 			if sel_edificio.privado{
-				if draw_boton(room_width, pos, $"Estatizar Edificio -${floor(edificio_precio[sel_edificio.tipo] * 1.1)}") and dinero >= floor(edificio_precio[sel_edificio.tipo] * 1.1){
-					dinero -= floor(edificio_precio[sel_edificio.tipo] * 1.1)
+				temp_precio = floor(temp_precio * 1.1)
+				if draw_boton(room_width, pos, $"Estatizar Edificio -${temp_precio}") and dinero >= temp_precio{
+					dinero -= temp_precio
 					sel_edificio.privado = false
 				}
 			}
-			else if draw_boton(room_width, pos, $"Privatizar Edificio +${floor(edificio_precio[sel_edificio.tipo] * 0.9)}"){
-				dinero += floor(edificio_precio[sel_edificio.tipo] * 0.9)
-				sel_edificio.privado = true
+			else{
+				temp_precio = floor(temp_precio * 0.9)
+				if draw_boton(room_width, pos, $"Privatizar Edificio +${temp_precio}"){
+					dinero += temp_precio
+					sel_edificio.privado = true
+					set_presupuesto(0, sel_edificio)
+				}
 			}
 		}
+		//Abrir ministerio de economía
 		if edificio_nombre[sel_edificio.tipo] = "Muelle"{
 			if draw_boton(room_width - 20, pos, "Abrir ministerio de economía"){
 				sel_build = true
@@ -1588,8 +1607,10 @@ if keyboard_check(vk_space)
 							add_huelga(5, edificio)
 					}
 					//Exigencia de educación
-					else if fel_edu / num_edu < 25 and brandom() and not exigencia_cumplida[1]
+					else if fel_edu / num_edu < 25 and brandom() and not exigencia_cumplida[1]{
+						show_debug_message($"{dia}, {edificio_nombre[edificio.tipo]}")
 						add_huelga(1, edificio)
+					}
 					//Exigencia de diversión
 					else if fel_div / array_length(edificio.trabajadores) < 25 and brandom() and not exigencia_cumplida[3]
 						add_huelga(3, edificio)
