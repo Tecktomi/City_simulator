@@ -29,8 +29,12 @@ function destroy_persona(persona = null_persona, muerte = true){
 			destroy_familia(familia, muerte)
 			flag = true
 		}
-		if persona.trabajo != null_edificio
-			array_remove(persona.trabajo.trabajadores, persona)
+		if persona.trabajo != null_edificio{
+			var trabajo = persona.trabajo
+			array_remove(trabajo.trabajadores, persona)
+			if not trabajo.paro and not array_contains(trabajo_educacion[edificio_trabajo_educacion[trabajo.tipo]], trabajo)
+				array_push(trabajo_educacion[edificio_trabajo_educacion[trabajo.tipo]], trabajo)
+		}
 		if persona.embarazo != -1
 			array_remove(embarazo[persona.embarazo], persona)
 		if persona.muerte != -1 and persona.muerte != (dia mod 365)

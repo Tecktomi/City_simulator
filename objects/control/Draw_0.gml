@@ -655,6 +655,14 @@ if sel_build{
 								cambiar_trabajo(personas[a], null_edificio)
 								add_felicidad_ley(personas[a], -10)
 							}
+					//Permitir emigración
+					if a = 5 and ley_eneabled[5]
+						for(b = 0; b < array_length(personas); b++)
+							add_felicidad_ley(personas[b], 10)
+					//Prohibir emigración
+					if a = 5 and not ley_eneabled[5]
+						for(b = 0; b < array_length(personas); b++)
+							add_felicidad_ley(personas[b], -10)
 					//Aprobar trabajo temporal
 					if a = 6 and ley_eneabled[6] and array_length(cola_construccion) = 0
 						for(b = 0; b < array_length(edificio_count[20]); b++){
@@ -1112,7 +1120,9 @@ if sel_info{
 			}
 		}
 		else
-			draw_text_pos(room_width - 20, pos, $"San{ao(sel_persona)}")	
+			draw_text_pos(room_width - 20, pos, $"San{ao(sel_persona)}")
+		draw_text_pos(room_width, pos, $"Felicidad: {sel_persona.felicidad}")
+		draw_text_pos(room_width - 20, pos, $"Legislación: {sel_persona.felicidad_ley}")
 		function draw_relacion(xx, yy, relacion = null_relacion, iter = 0){
 			if iter = 5
 				return
@@ -1348,7 +1358,7 @@ if keyboard_check(vk_space)
 		}
 		//Eventos anuales
 		if (dia mod 365) = 0{
-			felicidad_minima = floor(17 + 3 * sqrt(floor(dia / 365)))
+			felicidad_minima = floor(17 + floor(dia / 365))
 		}
 		#region Personas
 		//Ciclo normal de las personas
@@ -1427,6 +1437,10 @@ if keyboard_check(vk_space)
 					persona.familia = familia
 					persona.es_hijo = false
 				}
+				if persona.religion and ley_eneabled[0]
+					add_felicidad_ley(persona, -10)
+				if ley_eneabled[5]
+					add_felicidad_ley(persona, -10)
 			}
 			//Adultez
 			else if persona.edad > 24 and persona.edad < 60{
@@ -1618,6 +1632,7 @@ if keyboard_check(vk_space)
 					}
 					//Exigencia de alimento
 					if fel_ali / array_length(edificio.trabajadores) < 30{
+						show_debug_message($"{dia}, {edificio_nombre[edificio.tipo]}")
 						if not exigencia_cumplida[2] and (not edificio.exigencia_fallida or exigencia_cumplida[6])
 							add_huelga(2, edificio)
 						else if not exigencia_cumplida[6]
@@ -1625,6 +1640,7 @@ if keyboard_check(vk_space)
 					}
 					//Exigencia de salud
 					else if fel_sal / array_length(edificio.trabajadores) < 30{
+						show_debug_message($"{dia}, {edificio_nombre[edificio.tipo]}")
 						if not exigencia_cumplida[0] and (not edificio.exigencia_fallida or exigencia_cumplida[5])
 							add_huelga(0, edificio)
 						else if not exigencia_cumplida[5]
@@ -1636,11 +1652,15 @@ if keyboard_check(vk_space)
 						add_huelga(1, edificio)
 					}
 					//Exigencia de diversión
-					else if fel_div / array_length(edificio.trabajadores) < 25 and brandom() and not exigencia_cumplida[3]
+					else if fel_div / array_length(edificio.trabajadores) < 25 and brandom() and not exigencia_cumplida[3]{
+						show_debug_message($"{dia}, {edificio_nombre[edificio.tipo]}")
 						add_huelga(3, edificio)
+					}
 					//Exigencia de religión
-					else if fel_rel / array_length(edificio.trabajadores) < 30 and not exigencia_cumplida[4]
+					else if fel_rel / array_length(edificio.trabajadores) < 30 and not exigencia_cumplida[4]{
+						show_debug_message($"{dia}, {edificio_nombre[edificio.tipo]}")
 						add_huelga(4, edificio)
+					}
 				}
 			}
 		}
@@ -1973,7 +1993,7 @@ if keyboard_check(vk_space)
 				}
 				//Demanda satisfecha
 				if comida_total >= poblacion{
-					fel_comida = min(100, 20 + 20 * comida_variedad)
+					fel_comida = min(100, 20 + 15 * comida_variedad)
 					for(var b = 0; b < array_length(recurso_comida); b++)
 						edificio.almacen[recurso_comida[b]] = floor(edificio.almacen[recurso_comida[b]] * (comida_total - poblacion) / comida_total)
 					if not ley_eneabled[4]
@@ -1986,7 +2006,7 @@ if keyboard_check(vk_space)
 				}
 				//Demanda insatisfecha
 				else{
-					fel_comida = min(100, 20 + 20 * comida_variedad) * comida_total / poblacion
+					fel_comida = min(100, 20 + 15 * comida_variedad) * comida_total / poblacion
 					for(var b = 0; b < array_length(recurso_comida); b++)
 						edificio.almacen[recurso_comida[b]] = 0
 					if not ley_eneabled[4]
