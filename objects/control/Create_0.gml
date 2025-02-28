@@ -340,15 +340,20 @@ for(a = 0; a < xsize; a++)
 	}
 world_update = true
 for(a = 0; a < xsize / 16; a++)
-	for(b = 0; b < ysize; b++){
+	for(b = 0; b < ysize / 16; b++){
 		chunk[a, b] = spr_arbol
 		chunk_update[a, b] = true
 	}
-var mar_checked, not_mar = [], yes_mar = [{a : 0, b : 0}]
+var mar_checked, land_checked, land_matrix, not_mar = [], yes_mar = [{a : 0, b : 0}], yes_land = [{a : floor(xsize / 2), b : floor(ysize / 2)}]
 for(a = 0; a < xsize; a++)
-	for(b = 0; b < ysize; b++)
+	for(b = 0; b < ysize; b++){
 		mar_checked[a, b] = false
+		land_checked[a, b] = false
+		land_matrix[a, b] = false
+	}
 array_set(mar_checked[0], 0, true)
+array_set(land_checked[floor(xsize / 2)], floor(ysize / 2), true)
+array_set(land_matrix[floor(xsize / 2)], floor(ysize / 2), true)
 while array_length(yes_mar) > 0{
 	var complex = array_shift(yes_mar)
 	a = complex.a
@@ -380,6 +385,29 @@ while array_length(not_mar) > 0{
 	array_set(mar[complex.a], complex.b, false)
 	ds_grid_set(altura, complex.a, complex.b, 0.5)
 	array_set(altura_color[complex.a], complex.b, make_color_rgb(255, 255 ,127))
+}
+while array_length(yes_land) > 0{
+	var complex = array_shift(yes_land)
+	a = complex.a
+	b = complex.b
+	array_set(land_matrix[a], b, true)
+	var a1 = max(0, a - 1), b1 = max(0, b - 1), a2 = min(xsize - 1, a + 1), b2 = min(ysize - 1, b + 1)
+	if not mar[a1, b] and not land_checked[a1, b]{
+		array_set(land_checked[a1], b, true)
+		array_push(yes_land, {a : a1, b : b})
+	}
+	if not mar[a, b1] and not land_checked[a, b1]{
+		array_set(land_checked[a], b1, true)
+		array_push(yes_land, {a : a, b : b1})
+	}
+	if not mar[a2, b] and not land_checked[a2, b]{
+		array_set(land_checked[a2], b, true)
+		array_push(yes_land, {a : a2, b : b})
+	}
+	if not mar[a, b2] and not land_checked[a, b2]{
+		array_set(land_checked[a], b2, true)
+		array_push(yes_land, {a : a, b : b2})
+	}
 }
 #endregion
 #region setings
@@ -468,7 +496,7 @@ do{
 	a = irandom(xsize - edificio_width[13])
 	b = irandom(ysize - edificio_height[13])
 }
-until edificio_valid_place(a, b, 13)
+until land_matrix[a, b] and edificio_valid_place(a, b, 13)
 add_edificio(a, b, 13)
 edificios[0].almacen[0] = irandom_range(1000, 1500)
 recurso_exportado[0] = false
@@ -479,20 +507,26 @@ min_camx = max(0, floor((xpos / tile_width + ypos / tile_height) / 2))
 min_camy = max(0, floor((ypos / tile_height - (xpos + room_width) / tile_width) / 2))
 max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
 max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
-show_debug_message($"{min_camx}, {min_camy} -> {max_camx}, {max_camy}")
-var checked = [], coord
+var coord, checked = []
 for(a = edificios[0].x - 15; a < edificios[0].x + 15; a++)
 	for(b = edificios[0].y - 15; b < edificios[0].y + 15; b++){
 		coord = {x : a, y : b}
 		array_push(checked, coord)
 	}
 checked = array_shuffle(checked)
-checked = spawn_build(checked, 14)
-checked = spawn_build(checked, 22)
-checked = spawn_build(checked, 17)
-checked = spawn_build(checked, 20)
-checked = spawn_build(checked, 8, 3)
-checked = spawn_build(checked, 9, 3)
+spawn_build(checked, 14)
+checked = []
+for(a = edificios[0].x - 15; a < edificios[0].x + 15; a++)
+	for(b = edificios[0].y - 15; b < edificios[0].y + 15; b++)
+		if land_matrix[a, b]{
+			coord = {x : a, y : b}
+			array_push(checked, coord)
+		}
+spawn_build(checked, 22)
+spawn_build(checked, 17)
+spawn_build(checked, 20)
+spawn_build(checked, 8, 3)
+spawn_build(checked, 9, 3)
 for(a = 0; a < array_length(personas); a++){
 	var persona = personas[a]
 	if not persona.es_hijo{
