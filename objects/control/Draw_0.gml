@@ -100,11 +100,12 @@ for(var a = min_camx; a < max_camx; a++)
 //Información general
 draw_set_alpha(0.5)
 draw_set_color(c_ltgray)
-draw_rectangle(0, room_height, string_width($"FPS: {fps}\n{fecha(dia)}\n{array_length(personas)} habitantes\n$ {dinero}"), room_height - string_height($"FPS: {fps}\n{fecha(dia)}\n{array_length(personas)} habitantes\n$ {dinero}"), false)
+var text = $"FPS: {fps}\n{fecha(dia)}\n{array_length(personas)} habitantes\n$ {dinero}"
+draw_rectangle(0, room_height, string_width(text), room_height - string_height(text), false)
 draw_set_color(c_black)
 draw_set_valign(fa_bottom)
 pos = room_height
-draw_text_pos(0, pos, $"FPS: {fps}\n{fecha(dia)}\n{array_length(personas)} habitantes\n$ {dinero}")
+draw_text_pos(0, pos, text)
 for(var a = 0; a < array_length(exigencia_nombre); a++)
 	if exigencia_pedida[a]
 		draw_text_pos(0, pos, $"{exigencia_nombre[a]} {exigencia[a].expiracion - dia} días restantes")
@@ -216,11 +217,11 @@ if sel_build{
 				draw_set_font(font_small)
 				for(var a = 0; a <= 16; a++){
 					draw_set_color(c_fuchsia)
-					draw_rectangle(400, 300 - a * 10, 400 - 100 * temp_edad[true, a] / maxi, 309 - a * 10, false)
+					draw_rectangle(800, 300 - a * 10, 800 - 100 * temp_edad[true, a] / maxi, 309 - a * 10, false)
 					draw_set_color(c_aqua)
-					draw_rectangle(440, 300 - a * 10, 440 + 100 * temp_edad[false, a] / maxi, 309 - a * 10, false)
+					draw_rectangle(840, 300 - a * 10, 840 + 100 * temp_edad[false, a] / maxi, 309 - a * 10, false)
 					draw_set_color(c_black)
-					draw_text(420, 300 - a * 10, string(a * 5) + "-" + string(a * 5 + 4))
+					draw_text(820, 300 - a * 10, string(a * 5) + "-" + string(a * 5 + 4))
 				}
 				draw_set_halign(fa_left)
 				draw_set_font(Font1)
@@ -266,7 +267,25 @@ if sel_build{
 				draw_text_pos(130, pos, $"Religión: {floor(fel_rel / num_rel)}")
 				draw_text_pos(130, pos, $"Legislación: {floor(fel_ley / len)}")
 			}
-		
+			pos = 120
+			if mouse_wheel_up()
+				show_scroll--
+			if mouse_wheel_down()
+				show_scroll++
+			show_scroll = clamp(show_scroll, 0, array_length(personas) - 20)
+			var max_width = 0
+			for(var a = 0; a < 20; a++){
+				if draw_boton(400, pos, name(personas[a + show_scroll])){
+					sel_build = false
+					sel_info = true
+					sel_tipo = 2
+					sel_persona = personas[a + show_scroll]
+				}
+				max_width = max(max_width, string_width(name(personas[a + show_scroll])))
+			}
+			pos = 120
+			for(var a = 0; a < 20; a++)
+				draw_text_pos(410 + max_width, pos, $"{personas[a + show_scroll].edad} años")
 		}
 		//Ministerio de Vivienda
 		else if ministerio = 1{
@@ -291,15 +310,17 @@ if sel_build{
 		}
 		//Ministerio de Trabajo
 		else if ministerio = 2{
-			var fel_tra= 0, num_tra = 0, temp_array, num_des = 0, num_temp = 0
+			var fel_tra= 0, num_tra = 0, temp_array, num_des = 0, num_temp = 0, trab_esta = 0, num_nin = 0
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				temp_array[a] = 0
 			for(var a = 0; a < array_length(personas); a++)
-				if not personas[a].es_hijo{
+				if personas[a].trabajo != null_edificio{
+					num_nin += personas[a].es_hijo
 					fel_tra += personas[a].felicidad_trabajo
 					num_tra++
 					temp_array[personas[a].trabajo.tipo]++
 					num_des += (personas[a].trabajo = null_edificio)
+					trab_esta += not personas[a].trabajo.privado
 				}
 			var vacantes = 0, vacantes_tipo
 			for(var a = 0; a < array_length(edificio_nombre); a++)
@@ -352,6 +373,10 @@ if sel_build{
 					}
 				}
 			draw_text_pos(110, pos, $"{num_temp} trabajadores temporales ({floor(100 * num_temp / num_tra)}%)")
+			if num_tra > 0
+				draw_text_pos(110, pos, $"{floor(100 * trab_esta / num_tra)} % de trabajadores estatales.")
+			if ley_eneabled[2] and num_tra > 0
+				draw_text_pos(110, pos, $"{floor(100 * num_nin / num_tra)} % de trabajores son niños.")
 			for(var a = 0; a < array_length(educacion_nombre); a++)
 				if array_length(trabajo_educacion[a]) > 0 and draw_menu(110, pos, educacion_nombre[a], a + 1)
 					for(b = 0; b < array_length(trabajo_educacion[a]); b++)
@@ -417,7 +442,7 @@ if sel_build{
 		}
 		//Ministerio de Economía
 		else if ministerio = 5{
-			var temp_array, temp_grid, temp_text_array, count, maxi, trab_esta = 0, trab_total = 0, temp_exportaciones, temp_importaciones
+			var temp_array, temp_grid, temp_text_array, count, maxi, temp_exportaciones, temp_importaciones
 			#region Definición de variables
 			temp_grid[0] = mes_renta
 			temp_grid[1] = mes_tarifas
@@ -444,7 +469,7 @@ if sel_build{
 			temp_text_array[10] = "Privatización"
 			temp_text_array[11] = "Estatización"
 			#endregion
-			for(var a = 0; a <= 11; a++){
+			for(var a = 0; a < 12; a++){
 				count[a] = 0
 				maxi[a] = 0
 			}
@@ -462,11 +487,6 @@ if sel_build{
 					temp_importaciones[b] += mes_importaciones_recurso[a, b]
 				}
 			}
-			for(var a = 0; a < array_length(personas); a++)
-				if personas[a].trabajo != null_edificio{
-					trab_total++
-					trab_esta += not personas[a].trabajo.privado
-				}
 			#region Ingresos
 			if draw_menu(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9] + count[10]}", 0){
 				draw_text_pos(120, pos, $"{temp_text_array[0]}: ${count[0]}")
@@ -491,8 +511,6 @@ if sel_build{
 				draw_text_pos(120, pos, $"{temp_text_array[11]}: ${count[11]}")
 			}
 			draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] + count[10] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11]}")
-			if trab_total > 0
-				draw_text_pos(100, pos, $"{floor(100 * trab_esta / trab_total)} % de trabajadores estatales.")
 			if draw_menu(110, pos, $"{array_length(encargos)} encargos", 4)
 				for(var a = 0; a < array_length(encargos); a++){
 					var encargo = encargos[a]
@@ -521,9 +539,10 @@ if sel_build{
 			draw_text_pos(500, pos, "Mercado internacional")
 			var max_width = 0, last_pos = 160, max_width_2 = 0
 			if mouse_wheel_up()
-				show_scroll = max(0, show_scroll - 1)
+				show_scroll--
 			if mouse_wheel_down()
-				show_scroll = min(array_length(recurso_nombre) - 20, show_scroll + 1)
+				show_scroll++
+			show_scroll = clamp(show_scroll, 0, array_length(recurso_nombre) - 20)
 			for(var a = 0; a < 20; a++){
 				draw_text_pos(420, last_pos + a * 20, recurso_nombre[a + show_scroll])
 				max_width = max(max_width, last_width)
@@ -1054,6 +1073,7 @@ if sel_info{
 					mes_estatizacion[current_mes] += temp_precio
 					dinero -= temp_precio
 					dinero_privado += temp_precio
+					inversion_privada -= temp_precio
 					sel_edificio.privado = false
 				}
 			}
@@ -1063,6 +1083,7 @@ if sel_info{
 					mes_privatizacion[current_mes] += temp_precio
 					dinero += temp_precio
 					dinero_privado -= temp_precio
+					inversion_privada += temp_precio
 					sel_edificio.privado = true
 					set_presupuesto(0, sel_edificio)
 				}

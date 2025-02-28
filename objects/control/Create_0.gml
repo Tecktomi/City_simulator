@@ -472,6 +472,7 @@ for(a = 0; a < 12; a++){
 for(a = 0; a < array_length(edificio_nombre) * 2; a++)
 	show[a] = false
 dinero = 20000
+inversion_privada = 0
 dinero_privado = 0
 pos = 0
 deuda = false
@@ -522,6 +523,7 @@ for(a = edificios[0].x - 15; a < edificios[0].x + 15; a++)
 			coord = {x : a, y : b}
 			array_push(checked, coord)
 		}
+checked  = array_shuffle(checked)
 spawn_build(checked, 22)
 spawn_build(checked, 17)
 spawn_build(checked, 20)
