@@ -31,8 +31,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			mantenimiento : edificio_mantenimiento[tipo],
 			presupuesto : 2,
 			mes_creacion : control.current_mes,
-			gasto : [],
-			ganancia : []
+			ganancia : 0
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
@@ -46,10 +45,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		for(var a = 0; a < array_length(recurso_nombre); a++){
 			array_push(edificio.almacen, 0)
 			array_push(edificio.pedido, 0)
-		}
-		for(var a = 0; a < 12; a++){
-			array_push(edificio.gasto, 0)
-			array_push(edificio.ganancia, 0)
 		}
 		if fisico{
 			var width = edificio_width[tipo], height = edificio_height[tipo]

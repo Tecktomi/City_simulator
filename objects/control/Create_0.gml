@@ -195,8 +195,7 @@ null_edificio = {
 	mantenimiento : 0,
 	presupuesto : 2,
 	mes_creacion : 0,
-	gasto : [],
-	ganancia : []
+	ganancia : 0
 }
 array_pop(null_edificio.familias)
 array_pop(null_edificio.trabajadores)
@@ -230,10 +229,6 @@ for(a = 0; a < 28; a++){
 for(a = 0; a < array_length(recurso_nombre); a++){
 	array_push(null_edificio.almacen, 0)
 	array_push(null_edificio.pedido, 0)
-}
-for(a = 0; a < 12; a++){
-	array_push(null_edificio.gasto, 0)
-	array_push(null_edificio.ganancia, 0)
 }
 current_mes = 0
 #endregion
@@ -287,7 +282,8 @@ null_construccion = {
 	y : 0,
 	id : 0,
 	tipo : 0,
-	tiempo : 0
+	tiempo : 0,
+	altura : 0
 }
 cola_construccion = [null_construccion]
 array_delete(cola_construccion, 0, 1)
@@ -403,6 +399,7 @@ build_categoria = 0
 last_width = 0
 last_height = 0
 show_grid = false
+show_scroll = 0
 tile_width = 32
 tile_height = 16
 educacion_nombre = ["Analfabeto", "Educación Básica", "Educación Media", "Educación Técnica", "Educación Profesional"]
@@ -447,6 +444,7 @@ for(a = 0; a < 12; a++){
 for(a = 0; a < array_length(edificio_nombre) * 2; a++)
 	show[a] = false
 dinero = 20000
+dinero_privado = 0
 pos = 0
 deuda = false
 deuda_dia = 0
