@@ -2,6 +2,9 @@
 window_set_cursor(cr_default)
 //Dibujar mundo
 if world_update{
+	var prev_tile_width = tile_width
+	tile_width = 32
+	tile_height = 16
 	for(var a = 0; a < xsize / 16; a++)
 		for(var b = 0; b < ysize / 16; b++)
 			if chunk_update[a, b]{
@@ -18,6 +21,8 @@ if world_update{
 				array_set(chunk_update[a], b, false)
 			}
 	world_update = false
+	tile_width = prev_tile_width
+	tile_height = prev_tile_width / 2
 }
 #region Dibujo de mundo
 for(var a = floor(min_camx / 16); a < ceil(max_camx / 16); a++)
