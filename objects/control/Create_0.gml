@@ -101,6 +101,7 @@ for(a = 0; a < array_length(recurso_nombre); a++){
 	recurso_exportado[a] = true
 	recurso_importado_fijo[a] = 0
 	recurso_tratados[a] = [null_tratado]
+	recurso_construccion[a] = 0
 	array_pop(recurso_tratados[a])
 	for(b = 0; b < 24; b++)
 		recurso_historial[a, b] = recurso_precio[a]
@@ -109,6 +110,8 @@ for(a = 0; a < array_length(recurso_nombre); a++){
 //Edificios
 #region edificios
 edificio_nombre = ["Sin trabajo", "Jubilado", "Sin atención médica", "Homeless", "Granja", "Aserradero", "Escuela", "Consultorio", "Chabola", "Cabaña", "Parcela", "Taberna", "Circo", "Muelle", "Pescadería", "Mina", "Capilla", "Hospicio", "Albergue", "Escuela parroquial", "Oficina de Construcción", "Plaza", "Oficina de Transporte", "Planta Siderúrgica", "Cabaret", "Fábrica Textil", "Astillero", "Rancho", "Destilería de Ron", "Quesería", "Herrería"]
+edificio_recursos_num = [[], [], [], [], [10, 2], [8, 2], [30, 5], [25, 5, 5], [10, 2], [6, 1], [15, 3], [10, 1], [10, 15], [40, 10, 5], [20, 1], [20], [25, 5], [25, 5], [25, 5], [25, 5], [20, 3], [], [20, 3], [20, 15, 5], [15, 5], [40, 10], [50, 5, 5], [20, 2], [15, 10], [15, 10], [20, 10, 5]]
+edificio_recursos_id = [[], [], [], [], [1, 10], [1, 10], [1, 10], [1, 10, 24], [1, 10], [1, 10], [1, 10], [1, 10], [1, 16], [1, 10, 24], [1, 10], [1], [1, 10], [1, 10], [1, 10], [1, 10], [1, 10], [], [1, 10], [1, 10, 24], [1, 12], [1, 24], [1, 10, 24], [1, 10], [1, 24], [1, 24], [1, 10, 24]]
 edificio_descripcion = ["", "", "", "",
 	"Produce diversos cultivos dependiendo de la fertilidad del terreno",
 	"Corta áboles cercanos para extraer madera",
@@ -135,7 +138,7 @@ edificio_descripcion = ["", "", "", "",
 	"Consume azúcar para producir ron",
 	"Consume leche para producir queso",
 	"Usa madera y acero para producir herramientas"]
-edificio_trabajadores_max = [0, 0, 0, 0, 10, 5, 4, 3, 0, 0, 1, 2, 8, 5, 6, 5, 4, 4, 4, 5, 8, 0, 4, 20, 6, 15, 25, 3, 6, 3, 10]
+edificio_trabajadores_max = [0, 0, 0, 0, 10, 10, 4, 3, 0, 0, 1, 2, 8, 5, 6, 5, 4, 4, 4, 5, 8, 0, 4, 20, 6, 15, 25, 3, 6, 3, 10]
 edificio_trabajo_calidad = [0, 10, 0, 0, 25, 30, 50, 60, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45, 30, 0, 35, 30, 25, 25, 35, 30, 35, 40, 30]
 edificio_trabajo_sueldo = [0, 2, 0, 0, 4, 5, 8, 11, 0, 0, 4, 5, 3, 7, 6, 5, 6, 6, 5, 6, 6, 0, 5, 4, 5, 4, 5, 5, 5, 6, 4]
 edificio_trabajo_educacion = [0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 1, 0, 0, 1, 2, 1, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
@@ -525,7 +528,6 @@ for(a = edificios[0].x - 15; a < edificios[0].x + 15; a++)
 			array_push(checked, coord)
 		}
 checked  = array_shuffle(checked)
-spawn_build(checked, 22)
 spawn_build(checked, 17)
 spawn_build(checked, 20)
 spawn_build(checked, 8, 3)

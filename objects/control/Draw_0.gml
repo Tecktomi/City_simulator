@@ -154,7 +154,10 @@ if sel_build{
 			if draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}", , ,
 				function(b){
 					draw_set_valign(fa_bottom)
-					draw_text(100, room_height - 100, $"{edificio_es_casa[b] ? "Espacio para " + string(edificio_familias_max[b]) + " familias\n" : ""}{
+					var text = ""
+					for(var a = 0; a < array_length(edificio_recursos_id[b]); a++)
+						text += $"{recurso_nombre[edificio_recursos_id[b, a]]}: {edificio_recursos_num[b, a]}   "
+					draw_text(100, room_height - 100, text + $"\n{edificio_es_casa[b] ? "Espacio para " + string(edificio_familias_max[b]) + " familias\n" : ""}{
 						edificio_es_trabajo[b] ? "Necesita " + string(edificio_trabajadores_max[b]) + " trabajadores " + ((edificio_trabajo_educacion[b] = 0) ? "sin educación" : "con " + educacion_nombre[edificio_trabajo_educacion[b]]) + "\n" : ""}{
 						edificio_es_escuela[b] ? "Enseña a " + string(edificio_clientes_max[b]) + " alumnos\n" : ""}{
 						edificio_es_medico[b] ? "Atiende a " + string(edificio_clientes_max[b]) + " pacientes\n" : ""}{
@@ -826,12 +829,14 @@ if build_sel{
 	if mouse_check_button_pressed(mb_left){
 		mouse_clear(mb_left)
 		if flag{
-			for(var a = mx; a < mx + height; a++)
-				for(var b = my; b < my + width; b++)
+			for(var a = mx; a < mx + width; a++)
+				for(var b = my; b < my + height; b++)
 					array_set(construccion_reservada[a], b, true)
 			if array_length(cola_construccion) = 0 and ley_eneabled[6]
 				for(var a = 0; a < array_length(edificio_count[20]); a++)
 					set_paro(false, edificio_count[20, a])
+			for(var a = 0; a < array_length(edificio_recursos_id[build_index]); a++)
+				recurso_construccion[edificio_recursos_id[build_index, a]] += edificio_recursos_num[build_index, a]
 			var next_build = {
 				x : mx,
 				y : my,
@@ -1317,7 +1322,10 @@ if keyboard_check(vk_space)
 		if array_length(encargos) > 0{
 			var c = 0, rss_in = [], rss_out = []
 			for(var a = 0; a < array_length(edificio_count[22]); a++)
-				c += edificio_count[22, a].trabajo_mes / 25 * (0.8 + 0.1 * edificio_count[22, a].presupuesto)
+				c += edificio_count[22, a].trabajo_mes / 30 * (0.8 + 0.1 * edificio_count[22, a].presupuesto)
+			for(var a = 0; a < array_length(edificio_count[13]); a++)
+				if not (current_mes = edificio_count[13, a].mes_creacion or current_mes = (edificio_count[13, a].mes_creacion + 6) mod 12)
+					c += edificio_count[13, a].trabajo_mes / 50 * (0.8 + 0.1 * edificio_count[13, a].presupuesto)
 			c = round(c)
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				array_push(rss_in, false)
@@ -1330,6 +1338,14 @@ if keyboard_check(vk_space)
 					rss_in[next_encargo.recurso] = true
 					b = min(c, next_encargo.cantidad)
 					next_encargo.cantidad -= b
+					if b >= recurso_construccion[next_encargo.recurso]{
+						b -= recurso_construccion[next_encargo.recurso]
+						recurso_construccion[next_encargo.recurso] = 0
+					}
+					else{
+						recurso_construccion[next_encargo.recurso] -= b
+						b = 0
+					}
 					edificio.almacen[next_encargo.recurso] += b
 					if next_encargo.cantidad = 0
 						array_delete(encargos, a--, 1)
@@ -1791,7 +1807,7 @@ if keyboard_check(vk_space)
 						edificio.count = 0
 				}
 				else if not edificio.paro{
-					var b = edificio.trabajo_sueldo * edificio.trabajo_mes / 28
+					var b = floor(edificio.trabajo_sueldo * edificio.trabajo_mes / 28)
 					edificio.ganancia -= b
 					if edificio.privado
 						dinero_privado -= b
@@ -1821,7 +1837,7 @@ if keyboard_check(vk_space)
 					else if edificio_nombre[edificio.tipo] = "Aserradero"{
 						//Cortar árboles
 						if array_length(edificio.array_complex) > 0{
-							b = round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto))
+							b = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))
 							while b > 0 and array_length(edificio.array_complex) > 0{
 								var complex = edificio.array_complex[0]
 								if b < bosque_madera[complex.a, complex.b]{
@@ -1845,19 +1861,19 @@ if keyboard_check(vk_space)
 							}
 							edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
 						}
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[1] > 0{
 							edificio.ganancia += recurso_precio[1] * edificio.almacen[1]
 							add_encargo(1, edificio.almacen[1], edificio)
-							edificio.almacen[1] = 0
+							edificio.almacen[1] = edificio.almacen[1]
 						}
 					}
 					//Pescadería
 					else if edificio_nombre[edificio.tipo] = "Pescadería"{
 						edificio.almacen[8] += round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[8] > 200{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[8] > 200 and edificio.almacen[8] > 0{
 							edificio.ganancia += recurso_precio[8] + edificio.almacen[8]
 							add_encargo(8, edificio.almacen[8] - 200, edificio)
-							edificio.almacen[8] = 200
+							edificio.almacen[8] = 200 + edificio.almacen[8]
 						}
 					}
 					//Minas
@@ -1885,7 +1901,7 @@ if keyboard_check(vk_space)
 						if b > 0
 							set_paro(true, edificio)
 						edificio.almacen[recurso_mineral[edificio.modo]] += e - b
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[recurso_mineral[edificio.modo]] > 0{
 							edificio.ganancia += edificio.almacen[recurso_mineral[edificio.modo]] * recurso_precio[recurso_mineral[edificio.modo]]
 							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
 							edificio.almacen[recurso_mineral[edificio.modo]] = 0
@@ -1896,6 +1912,14 @@ if keyboard_check(vk_space)
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
 							var c = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))
 							for(b = 0; b < array_length(recurso_nombre) and c > 0; b++){
+								//Importacion por construccion
+								if recurso_construccion[b] > 0{
+									var total = min(c, recurso_construccion[b]), d = floor(total * recurso_precio[b] * 1.2)
+									dinero -= d
+									mes_importaciones[current_mes] += d
+									array_set(mes_importaciones_recurso[current_mes], b, d)
+									recurso_construccion[b] -= total
+								}
 								//Exportaciones
 								if recurso_exportado[b]{
 									var total = min(c, edificio.almacen[b])
@@ -1914,25 +1938,28 @@ if keyboard_check(vk_space)
 											}
 										}
 										total -= d
-										mes_exportaciones[current_mes] += floor(temp_factor * d * recurso_precio[b])
-										array_set(mes_exportaciones_recurso[current_mes], b, mes_exportaciones_recurso[current_mes, b] + floor(temp_factor * d * recurso_precio[b]))
-										dinero += floor(temp_factor * d * recurso_precio[b])
+										d = floor(temp_factor * d * recurso_precio[b])
+										mes_exportaciones[current_mes] += d
+										array_set(mes_exportaciones_recurso[current_mes], b, mes_exportaciones_recurso[current_mes, b] + d)
+										dinero += d
 									}
 									c -= total
 								}
 								#region Importaciones
 								var total = min(c, recurso_importado[b])
 								edificio.almacen[b] += total
-								dinero -= floor(total * recurso_precio[b] * 1.2)
-								mes_importaciones[current_mes] += floor(total * recurso_precio[b] * 1.2)
-								array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + floor(total * recurso_precio[b] * 1.2))
+								var d = floor(total * recurso_precio[b] * 1.2)
+								dinero -= d
+								mes_importaciones[current_mes] += d
+								array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
 								recurso_importado[b] -= total
 								c -= total
 								total = min(c, recurso_importado_fijo[b])
 								edificio.almacen[b] += total
-								dinero -= floor(total * recurso_precio[b] * 1.2)
-								mes_importaciones[current_mes] += floor(total * recurso_precio[b] * 1.2)
-								array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + floor(total * recurso_precio[b] * 1.2))
+								d = floor(total * recurso_precio[b] * 1.2)
+								dinero -= d
+								mes_importaciones[current_mes] += d
+								array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
 								c -= total
 								#endregion
 							}
