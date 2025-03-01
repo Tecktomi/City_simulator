@@ -100,7 +100,7 @@ for(var a = min_camx; a < max_camx; a++)
 //Información general
 draw_set_alpha(0.5)
 draw_set_color(c_ltgray)
-var text = $"FPS: {fps}\n{fecha(dia)}\n{array_length(personas)} habitantes\n$ {dinero}"
+var text = $"FPS: {fps}\n{fecha(dia)}\n{array_length(personas)} habitantes\n$ {floor(dinero)}"
 draw_rectangle(0, room_height, string_width(text), room_height - string_height(text), false)
 draw_set_color(c_black)
 draw_set_valign(fa_bottom)
@@ -710,7 +710,8 @@ if sel_build{
 }
 //Colocar edificio
 if build_sel{
-	var width = edificio_width[build_index], height = edificio_height[build_index], text = "", d = 0, temp_altura = 0
+	var width = edificio_width[build_index], height = edificio_height[build_index], d = 0, temp_altura = 0
+	text = ""
 	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - width)
 	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - height)
 	draw_set_color(make_color_hsv(edificio_color[build_index], 255, 255))
@@ -1020,7 +1021,7 @@ if sel_info{
 		//Almacen / edificios cercanos
 		if not sel_edificio.privado{
 			if draw_menu(room_width - 20, pos, "Almacen", 1, , false){
-				var text = ""
+				text = ""
 				for(var a = 0; a < array_length(recurso_nombre); a++)
 					if floor(sel_edificio.almacen[a]) != 0
 						text += $"{text != "" ? "\n" : ""}{recurso_nombre[a]}: {floor(sel_edificio.almacen[a])}"
@@ -1260,7 +1261,7 @@ if keyboard_check(vk_space)
 		if array_length(cola_construccion) > 0{
 			var b = 0
 			for(var a = 0; a < array_length(edificio_count[20]); a++)
-				b += array_length(edificio_count[20, a].trabajadores) * (0.8 + 0.1 * edificio_count[20, a].presupuesto)
+				b += edificio_count[20, a].trabajo_mes / 25 * (0.8 + 0.1 * edificio_count[20, a].presupuesto)
 			var next_build = cola_construccion[0]
 			next_build.tiempo -= b
 			//Edificio_terminado
@@ -1316,7 +1317,7 @@ if keyboard_check(vk_space)
 		if array_length(encargos) > 0{
 			var c = 0, rss_in = [], rss_out = []
 			for(var a = 0; a < array_length(edificio_count[22]); a++)
-				c += array_length(edificio_count[22, a].trabajadores) * (0.8 + 0.1 * edificio_count[22, a].presupuesto)
+				c += edificio_count[22, a].trabajo_mes / 25 * (0.8 + 0.1 * edificio_count[22, a].presupuesto)
 			c = round(c)
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				array_push(rss_in, false)
@@ -1445,7 +1446,7 @@ if keyboard_check(vk_space)
 				if persona.escuela = null_edificio
 					buscar_escuela(persona)
 				else{
-					persona.educacion += random(edificio_clientes_calidad[persona.escuela.tipo] * array_length(persona.escuela.trabajadores) / edificio_trabajadores_max[persona.escuela.tipo])
+					persona.educacion += random(edificio_clientes_calidad[persona.escuela.tipo] * persona.escuela.trabajo_mes / 25 / edificio_trabajadores_max[persona.escuela.tipo])
 					if persona.educacion >= 2{
 						persona.educacion = 2
 						array_remove(persona.escuela.clientes, persona)
@@ -1790,24 +1791,25 @@ if keyboard_check(vk_space)
 						edificio.count = 0
 				}
 				else if not edificio.paro{
-					edificio.ganancia -= edificio.trabajo_sueldo * array_length(edificio.trabajadores)
+					var b = edificio.trabajo_sueldo * edificio.trabajo_mes / 28
+					edificio.ganancia -= b
 					if edificio.privado
-						dinero_privado -= edificio.trabajo_sueldo * array_length(edificio.trabajadores)
+						dinero_privado -= b
 					else{
-						dinero -= edificio.trabajo_sueldo * array_length(edificio.trabajadores)
-						mes_sueldos[current_mes] += edificio.trabajo_sueldo * array_length(edificio.trabajadores)
+						dinero -= b
+						mes_sueldos[current_mes] += b
 					}
-					for(var b = 0; b < array_length(edificio.trabajadores); b++)
+					for(b = 0; b < array_length(edificio.trabajadores); b++)
 						edificio.trabajadores[b].familia.riqueza += edificio.trabajo_sueldo
 					//Granjas
 					if edificio_nombre[edificio.tipo] = "Granja"{
 						if current_mes = 5 or current_mes = 10{
-							edificio.almacen[recurso_cultivo[edificio.modo]] += round(15 * min(edificio.count, 5 * array_length(edificio.trabajadores)) * edificio.eficiencia * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
+							edificio.almacen[recurso_cultivo[edificio.modo]] += round(15 * min(edificio.count, edificio.trabajo_mes / 5) * edificio.eficiencia * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
 							edificio.count = 0
 						}
 						else
 							edificio.count += array_length(edificio.trabajadores)
-						var b = 200 * array_contains(recurso_comida, recurso_cultivo[edificio.modo])
+						b = 200 * array_contains(recurso_comida, recurso_cultivo[edificio.modo])
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
 							edificio.ganancia += recurso_precio[recurso_cultivo[edificio.modo]] * (edificio.almacen[recurso_cultivo[edificio.modo]] - b)
 							add_encargo(recurso_cultivo[edificio.modo], edificio.almacen[recurso_cultivo[edificio.modo]] - b, edificio)
@@ -1819,7 +1821,7 @@ if keyboard_check(vk_space)
 					else if edificio_nombre[edificio.tipo] = "Aserradero"{
 						//Cortar árboles
 						if array_length(edificio.array_complex) > 0{
-							var b = round(10 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))
+							b = round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto))
 							while b > 0 and array_length(edificio.array_complex) > 0{
 								var complex = edificio.array_complex[0]
 								if b < bosque_madera[complex.a, complex.b]{
@@ -1851,7 +1853,7 @@ if keyboard_check(vk_space)
 					}
 					//Pescadería
 					else if edificio_nombre[edificio.tipo] = "Pescadería"{
-						edificio.almacen[8] += round(10 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
+						edificio.almacen[8] += round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[8] > 200{
 							edificio.ganancia += recurso_precio[8] + edificio.almacen[8]
 							add_encargo(8, edificio.almacen[8] - 200, edificio)
@@ -1860,7 +1862,8 @@ if keyboard_check(vk_space)
 					}
 					//Minas
 					else if edificio_nombre[edificio.tipo] = "Mina"{
-						var b = round(12 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto)), e = b
+						b = round(edificio.trabajo_mes / 2 * (0.8 + 0.1 * edificio.presupuesto))
+						var e = b
 						for(var c = max(0, edificio.x - 1); c < min(xsize - 1, edificio.x + edificio_width[edificio.tipo] + 1); c++){
 							for(var d = max(0, edificio.y - 1); d < min(ysize - 1, edificio.y + edificio_height[edificio.tipo] + 1); d++)
 								if mineral[edificio.modo][c, d]{
@@ -1891,8 +1894,8 @@ if keyboard_check(vk_space)
 					//Muelle
 					else if edificio_nombre[edificio.tipo] = "Muelle"{
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
-							var c = round(150 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))
-							for(var b = 0; b < array_length(recurso_nombre) and c > 0; b++){
+							var c = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))
+							for(b = 0; b < array_length(recurso_nombre) and c > 0; b++){
 								//Exportaciones
 								if recurso_exportado[b]{
 									var total = min(c, edificio.almacen[b])
@@ -1937,7 +1940,7 @@ if keyboard_check(vk_space)
 					}
 					//Planta Siderúrgica
 					else if edificio_nombre[edificio.tipo] = "Planta Siderúrgica"{
-						var b = max(0, min(floor(edificio.almacen[9] / 2), floor(edificio.almacen[10] / 3), round(array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
+						b = max(0, min(floor(edificio.almacen[9] / 2), floor(edificio.almacen[10] / 3), round(edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[9] -= b * 2
 						edificio.almacen[10] -= b * 3
 						edificio.almacen[15] += b * 2
@@ -1955,7 +1958,7 @@ if keyboard_check(vk_space)
 					}
 					//Fábrica textil
 					else if edificio_nombre[edificio.tipo] = "Fábrica Textil"{
-						var b = max(0, min(max(floor(edificio.almacen[3] / 3), floor(edificio.almacen[20] / 3)), round(5 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
+						b = max(0, min(max(floor(edificio.almacen[3] / 3), floor(edificio.almacen[20] / 3)), round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))))
 						if edificio.almacen[3] > edificio.almacen[20]
 							edificio.almacen[3] -= b * 3
 						else
@@ -1975,7 +1978,7 @@ if keyboard_check(vk_space)
 					}
 					//Astillero
 					else if edificio_nombre[edificio.tipo] = "Astillero"{
-						var b = max(0, min(floor(edificio.almacen[1] / 4), edificio.almacen[7], edificio.almacen[12], edificio.almacen[16], round(array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto) / 5)))
+						b = max(0, min(floor(edificio.almacen[1] / 4), edificio.almacen[7], edificio.almacen[12], edificio.almacen[16], round(edificio.trabajo_mes / 125 * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[1] -= b * 4
 						edificio.almacen[7] -= b
 						edificio.almacen[12] -= b
@@ -2002,7 +2005,7 @@ if keyboard_check(vk_space)
 					}
 					//Rancho
 					else if edificio_nombre[edificio.tipo] = "Rancho"{
-						var b = array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200)
+						b = edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200)
 						for(var c = 0; c < array_length(ganado_produccion[edificio.modo]); c++)
 							edificio.almacen[ganado_produccion[edificio.modo, c]] += 10 * b / array_length(ganado_produccion[edificio.modo])
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12
@@ -2018,7 +2021,7 @@ if keyboard_check(vk_space)
 					}
 					//Destilería de Ron
 					else if edificio_nombre[edificio.tipo] = "Destilería de Ron"{
-						var b = max(0, min(floor(edificio.almacen[5] / 3), round(2 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
+						b = max(0, min(floor(edificio.almacen[5] / 3), round(edificio.trabajo_mes / 12 * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[5] -= b * 3
 						edificio.almacen[22] += b
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
@@ -2032,7 +2035,7 @@ if keyboard_check(vk_space)
 					}
 					//Quesería
 					else if edificio_nombre[edificio.tipo] = "Quesería"{
-						var b = max(0, min(edificio.almacen[19], round(3 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto))))
+						b = max(0, min(edificio.almacen[19], round(edificio.trabajo_mes / 9 * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[19] -= b
 						edificio.almacen[23] += b
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
@@ -2046,7 +2049,7 @@ if keyboard_check(vk_space)
 					}
 					//Herrería
 					else if edificio_nombre[edificio.tipo] = "Herrería"{
-						var b = max(0, min(edificio.almacen[1], edificio.almacen[15], round(array_length(edificio.trabajadores) / 2 * (0.8 + 0.1 * edificio.presupuesto))))
+						b = max(0, min(edificio.almacen[1], edificio.almacen[15], round(edificio.trabajo_mes / 50 * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[1] -= b
 						edificio.almacen[15] -= b
 						edificio.almacen[24] += b * 5
@@ -2192,7 +2195,7 @@ if keyboard_check(vk_space)
 			//Edificios médicos
 			if edificio_es_medico[edificio.tipo]{
 				//Curar pacientes
-				repeat(min(array_length(edificio.clientes), round(edificio_clientes_calidad[edificio.tipo] * array_length(edificio.trabajadores) / 50 * (0.8 + 0.1 * edificio.presupuesto)))){
+				repeat(min(array_length(edificio.clientes), round(edificio_clientes_calidad[edificio.tipo] * edificio.trabajo_mes / 1400 * (0.8 + 0.1 * edificio.presupuesto)))){
 					var persona = array_shift(edificio.clientes)
 					persona.felicidad_salud = edificio_clientes_calidad[edificio.tipo]
 					persona.medico = null_edificio
@@ -2238,7 +2241,8 @@ if keyboard_check(vk_space)
 				if edificio_trabajadores_max[edificio.tipo] = 0
 					edificio.count = 0
 				else
-					edificio.count = max(0, floor(edificio.count * (1 - array_length(edificio.trabajadores) / edificio_trabajadores_max[edificio.tipo])))
+					edificio.count = max(0, floor(edificio.count * (1 - edificio.trabajo_mes / 28 / edificio_trabajadores_max[edificio.tipo])))
+			edificio.trabajo_mes = 28 * array_length(edificio.trabajadores)
 		}
 		#region Bancarrota
 		//Entrar a bancarrota

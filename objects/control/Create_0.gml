@@ -195,7 +195,8 @@ null_edificio = {
 	mantenimiento : 0,
 	presupuesto : 2,
 	mes_creacion : 0,
-	ganancia : 0
+	ganancia : 0,
+	trabajo_mes : 0
 }
 array_pop(null_edificio.familias)
 array_pop(null_edificio.trabajadores)

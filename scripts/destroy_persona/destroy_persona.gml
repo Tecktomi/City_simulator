@@ -34,6 +34,7 @@ function destroy_persona(persona = null_persona, muerte = true){
 			array_remove(trabajo.trabajadores, persona)
 			if not trabajo.paro and not array_contains(trabajo_educacion[edificio_trabajo_educacion[trabajo.tipo]], trabajo)
 				array_push(trabajo_educacion[edificio_trabajo_educacion[trabajo.tipo]], trabajo)
+			trabajo.trabajo_mes -= abs(trabajo.dia_factura - (dia mod 28))
 		}
 		if persona.embarazo != -1
 			array_remove(embarazo[persona.embarazo], persona)
