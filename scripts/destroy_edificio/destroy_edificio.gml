@@ -36,6 +36,10 @@ function destroy_edificio(edificio = control.null_edificio){
 			array_remove(edificio.edificios_cerca[a].edificios_cerca, edificio)
 		array_remove(dia_trabajo[edificio.dia_factura], edificio)
 		array_remove(edificio_count[tipo], edificio)
+		if edificio_nombre[tipo] = "Muelle"
+			for(var a = 0; a < array_length(edificios); a++)
+				if edificios[a].muelle_cercano = edificio
+					buscar_muelle_cercano(edificios[a])
 		for(var a = edificio.x; a < edificio.x + width; a++)
 			for(var b = edificio.y; b < edificio.y + height; b++)
 				array_set(bool_edificio[a], b, false)

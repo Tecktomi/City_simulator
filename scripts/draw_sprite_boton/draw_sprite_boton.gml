@@ -1,4 +1,8 @@
-function draw_sprite_boton(sprite, subsprite, x, y, w, h){
+function draw_sprite_boton(sprite, subsprite, x, y, w = 0, h = 0){
+	if w = 0
+		w = sprite_get_width(sprite)
+	if h = 0
+		h = sprite_get_height(sprite)
 	draw_sprite_stretched(sprite, subsprite, x, y, w, h)
 	if mouse_x > x and mouse_y > y and mouse_x < x + w and mouse_y < y + h{
 		window_set_cursor(cr_handpoint)

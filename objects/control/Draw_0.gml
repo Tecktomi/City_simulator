@@ -101,17 +101,69 @@ for(var a = min_camx; a < max_camx; a++)
 draw_set_alpha(0.5)
 draw_set_color(c_ltgray)
 var text = $"FPS: {fps}\n{fecha(dia)}\n{array_length(personas)} habitantes\n$ {floor(dinero)}"
-draw_rectangle(0, room_height, string_width(text), room_height - string_height(text), false)
+draw_rectangle(0, room_height, string_width(text), room_height - string_height(text) - 25, false)
 draw_set_color(c_black)
 draw_set_valign(fa_bottom)
 pos = room_height
 draw_text_pos(0, pos, text)
+if draw_sprite_boton(spr_icono, 6, 10, room_height - last_height - 20)
+	velocidad = 0
+if draw_sprite_boton(spr_icono, 7, 40, room_height - last_height - 20)
+	velocidad = 1
+if draw_sprite_boton(spr_icono, 8, 70, room_height - last_height - 20)
+	velocidad = 2.5
 for(var a = 0; a < array_length(exigencia_nombre); a++)
 	if exigencia_pedida[a]
 		draw_text_pos(0, pos, $"{exigencia_nombre[a]} {exigencia[a].expiracion - dia} días restantes")
 draw_set_valign(fa_top)
 draw_set_alpha(1)
 #endregion
+//Menú principal
+if menu{
+	mouse_clear(mb_right)
+	draw_set_alpha(0.5)
+	draw_set_color(c_black)
+	draw_rectangle(0, 0, room_width, room_height, false)
+	draw_set_alpha(1)
+	draw_set_color(c_ltgray)
+	draw_rectangle(300, 100, room_width - 300, room_height - 100, false)
+	draw_set_color(c_black)
+	draw_set_halign(fa_center)
+	draw_set_font(font_big)
+	pos = 100
+	draw_text_pos(room_width / 2, pos, "Isla Latina")
+	draw_set_font(Font1)
+	pos += 40
+	if draw_boton(room_width / 2, pos, "Salir"){
+		game_end()
+	}
+	pos += 20
+	if draw_boton(room_width / 2, pos, "Continuar")
+		menu = false
+	pos += 20
+	if draw_menu(room_width / 2, pos, $"Resolucion: {window_get_width()} x {window_get_height()}", 0){
+		if draw_boton(room_width / 2, pos, "1280 x 720"){
+			window_set_size(1280, 720)
+			window_center()
+		}
+		if draw_boton(room_width / 2, pos, "1366 x 768"){
+			window_set_size(1366, 768)
+			window_center()
+		}
+		if draw_boton(room_width / 2, pos, "1600 x 900"){
+			window_set_size(1600, 900)
+			window_center()
+		}
+		if draw_boton(room_width / 2, pos, "1920 x 1080"){
+			window_set_size(1920, 1080)
+			window_center()
+		}
+	}
+	if draw_boton(room_width / 2, pos, "Pantalla completa")
+		window_set_fullscreen(not window_get_fullscreen())
+	draw_set_halign(fa_left)
+	mouse_clear(mb_left)
+}
 //Abrir menú de construcción
 if mouse_check_button_pressed(mb_right) and not build_sel{
 	close_show()
@@ -809,7 +861,7 @@ if build_sel{
 	}
 	if not flag
 		text += "Construcción bloqueada\n"
-	else{
+	else if edificio_nombre[build_index] != "Rancho"{
 		//Altura promedio
 		for(var a = mx; a < mx + width; a++)
 			for(var b = my; b < my + height; b++)
@@ -884,7 +936,7 @@ if sel_info{
 	pos = 0
 	//Información edificios
 	if sel_tipo = 0 and sel_edificio != null_edificio{
-		draw_text_pos(room_width, pos, edificio_nombre[sel_edificio.tipo])
+		draw_text_pos(room_width, pos, $"{edificio_nombre[sel_edificio.tipo]} {sel_edificio.number}")
 		if sel_edificio.privado
 			draw_text_pos(room_width - 20, pos, "PRIVADO")
 		//Paro
@@ -1108,6 +1160,8 @@ if sel_info{
 				ministerio = 5
 			}
 		}
+		else if draw_boton(room_width, pos, $"Muelle más cercano a {round(sel_edificio.distancia_muelle_cercano)}")
+			sel_edificio = sel_edificio.muelle_cercano
 		//Destruir edificio
 		pos += 40
 		if not sel_edificio.privado and ((sel_edificio.tipo != 13 and sel_edificio.tipo != 20) or array_length(edificio_count[sel_edificio.tipo]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.huelga){
@@ -1219,7 +1273,7 @@ if sel_info{
 }
 #region Movimiento de la cámara
 if keyboard_check(vk_lcontrol){
-	if mouse_wheel_up(){
+	if mouse_wheel_up() and tile_width < 64{
 		var center_x = ((room_width / 2 + xpos) / tile_width + (room_height / 2 + ypos) / tile_height) / 2
 		var center_y = ((room_height / 2 + ypos) / tile_height - (room_width / 2 + xpos) / tile_width) / 2
 		tile_width *= power(2, 0.1)
@@ -1227,7 +1281,7 @@ if keyboard_check(vk_lcontrol){
 		xpos = (center_x - center_y) * tile_width - room_width / 2
 		ypos = (center_x + center_y) * tile_height - room_height / 2
 	}
-	if mouse_wheel_down(){
+	if mouse_wheel_down() and tile_width > 8{
 		var center_x = ((room_width / 2 + xpos) / tile_width + (room_height / 2 + ypos) / tile_height) / 2
 		var center_y = ((room_height / 2 + ypos) / tile_height - (room_width / 2 + xpos) / tile_width) / 2
 		tile_width /= power(2, 0.1)
@@ -1250,8 +1304,10 @@ max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + yp
 max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
 #endregion
 //Pasar día
-if keyboard_check(vk_space)
-	repeat(1 + 29 * keyboard_check(vk_lshift)){
+step += velocidad
+if keyboard_check(vk_space) or step >= 60{
+	step -= 60
+	repeat(1 + 29 * (keyboard_check(vk_space) and keyboard_check(vk_lshift))){
 		dia++
 		current_mes = mes(dia)
 		//Actualizar exigencias
@@ -1277,7 +1333,7 @@ if keyboard_check(vk_space)
 				array_set(draw_construccion[c], d, null_construccion)
 				var edificio = add_edificio(c, d, tipo)
 				#region Aplanar terreno
-				if not edificio_es_costero[tipo]{
+				if not edificio_es_costero[tipo] and edificio_nombre[build_index] != "Rancho"{
 					var e = next_build.altura
 					world_update = true
 					if e < 0.6{
@@ -1322,21 +1378,21 @@ if keyboard_check(vk_space)
 		if array_length(encargos) > 0{
 			var c = 0, rss_in = [], rss_out = []
 			for(var a = 0; a < array_length(edificio_count[22]); a++)
-				c += edificio_count[22, a].trabajo_mes / 30 * (0.8 + 0.1 * edificio_count[22, a].presupuesto)
+				c += 3 * array_length(edificio_count[22, a].trabajadores) * (0.8 + 0.1 * edificio_count[22, a].presupuesto)
 			for(var a = 0; a < array_length(edificio_count[13]); a++)
 				if not (current_mes = edificio_count[13, a].mes_creacion or current_mes = (edificio_count[13, a].mes_creacion + 6) mod 12)
-					c += edificio_count[13, a].trabajo_mes / 50 * (0.8 + 0.1 * edificio_count[13, a].presupuesto)
+					c += 2 * array_length(edificio_count[13, a].trabajadores) * (0.8 + 0.1 * edificio_count[13, a].presupuesto)
 			c = round(c)
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				array_push(rss_in, false)
 				array_push(rss_out, false)
 			}
 			for(var a = 0; a < array_length(encargos); a++){
-				var next_encargo = encargos[a], edificio = edificio_count[13, irandom(array_length(edificio_count[13]) - 1)], b = 0
+				var next_encargo = encargos[a], edificio = next_encargo.edificio.muelle_cercano, b = 0, distance = (10 + next_encargo.edificio.distancia_muelle_cercano) / 10
 				//Encargo hacia el Muelle
 				if next_encargo.cantidad > 0 and not rss_in[next_encargo.recurso]{
 					rss_in[next_encargo.recurso] = true
-					b = min(c, next_encargo.cantidad)
+					b = min(floor(c / distance), next_encargo.cantidad)
 					next_encargo.cantidad -= b
 					if b >= recurso_construccion[next_encargo.recurso]{
 						b -= recurso_construccion[next_encargo.recurso]
@@ -1349,8 +1405,8 @@ if keyboard_check(vk_space)
 					edificio.almacen[next_encargo.recurso] += b
 					if next_encargo.cantidad = 0
 						array_delete(encargos, a--, 1)
-					c -= b
-					if c = 0
+					c -= b * distance
+					if c < 1
 						break
 				}
 				//Encargo hacia la Fábrica
@@ -1724,7 +1780,6 @@ if keyboard_check(vk_space)
 					}
 					//Exigencia de alimento
 					if fel_ali / array_length(edificio.trabajadores) < 30{
-						show_debug_message($"{dia}, {edificio_nombre[edificio.tipo]}")
 						if not exigencia_cumplida[2] and (not edificio.exigencia_fallida or exigencia_cumplida[6])
 							add_huelga(2, edificio)
 						else if not exigencia_cumplida[6]
@@ -1732,7 +1787,6 @@ if keyboard_check(vk_space)
 					}
 					//Exigencia de salud
 					else if fel_sal / array_length(edificio.trabajadores) < 30{
-						show_debug_message($"{dia}, {edificio_nombre[edificio.tipo]}")
 						if not exigencia_cumplida[0] and (not edificio.exigencia_fallida or exigencia_cumplida[5])
 							add_huelga(0, edificio)
 						else if not exigencia_cumplida[5]
@@ -1740,17 +1794,14 @@ if keyboard_check(vk_space)
 					}
 					//Exigencia de educación
 					else if fel_edu / num_edu < 25 and brandom() and not exigencia_cumplida[1]{
-						show_debug_message($"{dia}, {edificio_nombre[edificio.tipo]}")
 						add_huelga(1, edificio)
 					}
 					//Exigencia de diversión
 					else if fel_div / array_length(edificio.trabajadores) < 25 and brandom() and not exigencia_cumplida[3]{
-						show_debug_message($"{dia}, {edificio_nombre[edificio.tipo]}")
 						add_huelga(3, edificio)
 					}
 					//Exigencia de religión
 					else if fel_rel / array_length(edificio.trabajadores) < 30 and not exigencia_cumplida[4]{
-						show_debug_message($"{dia}, {edificio_nombre[edificio.tipo]}")
 						add_huelga(4, edificio)
 					}
 				}
@@ -1826,7 +1877,7 @@ if keyboard_check(vk_space)
 						else
 							edificio.count += array_length(edificio.trabajadores)
 						b = 200 * array_contains(recurso_comida, recurso_cultivo[edificio.modo])
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
+						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
 							edificio.ganancia += recurso_precio[recurso_cultivo[edificio.modo]] * (edificio.almacen[recurso_cultivo[edificio.modo]] - b)
 							add_encargo(recurso_cultivo[edificio.modo], edificio.almacen[recurso_cultivo[edificio.modo]] - b, edificio)
 							edificio.almacen[recurso_cultivo[edificio.modo]] = b
@@ -1853,7 +1904,7 @@ if keyboard_check(vk_space)
 										edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
 										add_encargo(1, edificio.almacen[1], edificio)
 										edificio.almacen[1] = 0
-										show_debug_message($"Aserradero agotado en {edificio.x}, {edificio.y}")
+										show_debug_message($"Aserradero {edificio.number} agotado en {edificio.x}, {edificio.y}")
 										set_paro(true, edificio)
 										continue
 									}
@@ -1861,19 +1912,19 @@ if keyboard_check(vk_space)
 							}
 							edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
 						}
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[1] > 0{
+						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[1] > 0{
 							edificio.ganancia += recurso_precio[1] * edificio.almacen[1]
 							add_encargo(1, edificio.almacen[1], edificio)
-							edificio.almacen[1] = edificio.almacen[1]
+							edificio.almacen[1] = 0
 						}
 					}
 					//Pescadería
 					else if edificio_nombre[edificio.tipo] = "Pescadería"{
 						edificio.almacen[8] += round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[8] > 200 and edificio.almacen[8] > 0{
-							edificio.ganancia += recurso_precio[8] + edificio.almacen[8]
+						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[8] > 200{
+							edificio.ganancia += recurso_precio[8] * edificio.almacen[8]
 							add_encargo(8, edificio.almacen[8] - 200, edificio)
-							edificio.almacen[8] = 200 + edificio.almacen[8]
+							edificio.almacen[8] = 200
 						}
 					}
 					//Minas
@@ -1901,7 +1952,7 @@ if keyboard_check(vk_space)
 						if b > 0
 							set_paro(true, edificio)
 						edificio.almacen[recurso_mineral[edificio.modo]] += e - b
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12 and edificio.almacen[recurso_mineral[edificio.modo]] > 0{
+						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[recurso_mineral[edificio.modo]] > 0{
 							edificio.ganancia += edificio.almacen[recurso_mineral[edificio.modo]] * recurso_precio[recurso_mineral[edificio.modo]]
 							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
 							edificio.almacen[recurso_mineral[edificio.modo]] = 0
@@ -1910,7 +1961,7 @@ if keyboard_check(vk_space)
 					//Muelle
 					else if edificio_nombre[edificio.tipo] = "Muelle"{
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
-							var c = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))
+							var c = round(edificio.trabajo_mes * 5 * (0.8 + 0.1 * edificio.presupuesto))
 							for(b = 0; b < array_length(recurso_nombre) and c > 0; b++){
 								//Importacion por construccion
 								if recurso_construccion[b] > 0{
@@ -2034,14 +2085,14 @@ if keyboard_check(vk_space)
 					else if edificio_nombre[edificio.tipo] = "Rancho"{
 						b = edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200)
 						for(var c = 0; c < array_length(ganado_produccion[edificio.modo]); c++)
-							edificio.almacen[ganado_produccion[edificio.modo, c]] += 10 * b / array_length(ganado_produccion[edificio.modo])
+							edificio.almacen[ganado_produccion[edificio.modo, c]] += floor(10 * b / array_length(ganado_produccion[edificio.modo]))
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12
 							for(b = 0; b < array_length(ganado_produccion[edificio.modo]); b++){
-								var c = ganado_produccion[edificio.modo, b], d = 1 + 99 * array_contains(recurso_comida, c)
-								if edificio.almacen[c] >= d{
+								var c = ganado_produccion[edificio.modo, b], d = 100 * array_contains(recurso_comida, c)
+								if edificio.almacen[c] > d{
 									edificio.ganancia += recurso_precio[c] * edificio.almacen[c]
-									add_encargo(c, floor(edificio.almacen[c]), edificio)
-									edificio.almacen[c] -= floor(edificio.almacen[c])
+									add_encargo(c, edificio.almacen[c], edificio)
+									edificio.almacen[c] -= edificio.almacen[c]
 								}
 							}
 						
@@ -2291,6 +2342,7 @@ if keyboard_check(vk_space)
 		}
 		#endregion
 	}
+}
 #region abreviatura
 //Añadir familia
 if keyboard_check(vk_lcontrol) and (keyboard_check_pressed(ord("F")) or (keyboard_check(ord("F")) and keyboard_check(vk_lshift)))
@@ -2299,8 +2351,13 @@ if keyboard_check(vk_lcontrol) and (keyboard_check_pressed(ord("F")) or (keyboar
 if keyboard_check_pressed(ord("R")) and keyboard_check(vk_lcontrol)
 	game_restart()
 //Salir
-if keyboard_check_pressed(vk_escape)
-	game_end()
+if keyboard_check_pressed(vk_escape){
+	menu = not menu
+	close_show()
+	build_sel = false
+	sel_build = false
+	sel_info = false
+}
 //Pantalla completa
 if keyboard_check_pressed(vk_f4)
 	window_set_fullscreen(not window_get_fullscreen())

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"buscar_muelle_cercano",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"buscar_muelle_cercano",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

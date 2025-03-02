@@ -1,49 +1,28 @@
 function draw_boton(x, y, text, borde = false, able = true, display = undefined, display_arguments = undefined){
 	with control{
-		var c = draw_get_color()
-		var d = draw_get_halign()
+		var c = draw_get_color(), d = draw_get_halign(), e = (d = fa_left ? 1 : (d = fa_center ? 0.5 : 0))
+		var f = draw_get_valign(), g = (f = fa_top ? 1 : (f = fa_middle ? 0.5 : 0)), width = string_width(text), height = string_height(text)
 		if borde{
 			draw_set_color(c_ltgray)
-			if d = fa_left
-				draw_rectangle(x, y, x + string_width(text), y + string_height(text), false)
-			else
-				draw_rectangle(x, y, x - string_width(text), y + string_height(text), false)
+			draw_rectangle(x + (e - 1) * width, y + (1 - g) * height, x + e * width, y + g * height, false)
 			draw_set_color(c_black)
-			if d = fa_left
-				draw_rectangle(x, y, x + string_width(text), y + string_height(text), true)
-			else
-				draw_rectangle(x, y, x - string_width(text), y + string_height(text), true)
+			draw_rectangle(x + (e - 1) * width, y + (1 - g) * height, x + e * width, y + g * height, true)
 		}
 		draw_text(x, y, text)
-		last_width = string_width(text)
-		last_height = string_height(text)
-		if draw_get_valign() = fa_top
-			pos += last_height
-		else
-			pos -= last_height
-		if able
-			if d = fa_left{
-				if mouse_x > x and mouse_y > y and mouse_x < x + string_width(text) and mouse_y < y + string_height(text){
-					window_set_cursor(cr_handpoint)
-					if display != undefined
-						display(display_arguments)
-					if mouse_check_button_pressed(mb_left){
-						mouse_clear(mb_left)
-						return true
-					}
+		last_width = width
+		last_height = height
+		pos += (2 * g - 1) * height
+		if able{
+			if mouse_x > x + (e - 1) * width and mouse_y > y + (1 - g) * height and mouse_x < x + e * width and mouse_y < y + g * height{
+				window_set_cursor(cr_handpoint)
+				if display != undefined
+					display(display_arguments)
+				if mouse_check_button_pressed(mb_left){
+					mouse_clear(mb_left)
+					return true
 				}
 			}
-			else{
-				if mouse_x > x - string_width(text) and mouse_y > y and mouse_x < x and mouse_y < y + string_height(text){
-					window_set_cursor(cr_handpoint)
-					if display != undefined
-						display(display_arguments)
-					if mouse_check_button_pressed(mb_left){
-						mouse_clear(mb_left)
-						return true
-					}
-				}
-			}
+		}
 		return false
 	}
 }

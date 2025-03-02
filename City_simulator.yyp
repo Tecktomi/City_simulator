@@ -18,6 +18,7 @@
   },
   "name":"City_simulator",
   "resources":[
+    {"id":{"name":"font_big","path":"fonts/font_big/font_big.yy",},},
     {"id":{"name":"font_small","path":"fonts/font_small/font_small.yy",},},
     {"id":{"name":"Font1","path":"fonts/Font1/Font1.yy",},},
     {"id":{"name":"control","path":"objects/control/control.yy",},},
@@ -36,6 +37,7 @@
     {"id":{"name":"buscar_atencion_medica","path":"scripts/buscar_atencion_medica/buscar_atencion_medica.yy",},},
     {"id":{"name":"buscar_casa","path":"scripts/buscar_casa/buscar_casa.yy",},},
     {"id":{"name":"buscar_escuela","path":"scripts/buscar_escuela/buscar_escuela.yy",},},
+    {"id":{"name":"buscar_muelle_cercano","path":"scripts/buscar_muelle_cercano/buscar_muelle_cercano.yy",},},
     {"id":{"name":"buscar_trabajo","path":"scripts/buscar_trabajo/buscar_trabajo.yy",},},
     {"id":{"name":"calcular_felicidad","path":"scripts/calcular_felicidad/calcular_felicidad.yy",},},
     {"id":{"name":"cambiar_casa","path":"scripts/cambiar_casa/cambiar_casa.yy",},},

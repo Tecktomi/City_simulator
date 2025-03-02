@@ -1,5 +1,16 @@
 randomize()
 var a, b
+#region Save
+roaming = game_save_id
+directory_create(roaming + "Personas")
+directory_create(roaming + "Edificios")
+directory_create(roaming + "Construcciones")
+directory_create(roaming + "Terreno")
+directory_create(roaming + "Familias")
+directory_create(roaming + "Relaciones")
+directory_create(roaming + "Exigencias")
+directory_create(roaming + "Tratados")
+#endregion
 //Personas
 #region Personas
 null_relacion = {
@@ -199,7 +210,10 @@ null_edificio = {
 	presupuesto : 2,
 	mes_creacion : 0,
 	ganancia : 0,
-	trabajo_mes : 0
+	trabajo_mes : 0,
+	muelle_cercano : undefined,
+	distancia_muelle_cercano : 0,
+	number : 0
 }
 array_pop(null_edificio.familias)
 array_pop(null_edificio.trabajadores)
@@ -213,6 +227,7 @@ array_push(null_edificio.casas_cerca, null_edificio)
 null_edificio.casas_cerca = []
 array_push(null_edificio.iglesias_cerca, null_edificio)
 null_edificio.iglesias_cerca = []
+null_edificio.muelle_cercano = null_edificio
 edificios = [null_edificio]
 array_pop(edificios)
 escuelas = [null_edificio]
@@ -264,11 +279,6 @@ null_edificio.exigencia = null_exigencia
 felicidad_minima = 17
 #endregion
 #region edificios ficticios
-jubilado = add_edificio(0, 0, 1, false)
-desausiado = add_edificio(0, 0, 2, false)
-medicos = [desausiado]
-homeless = add_edificio(0, 0, 3, false)
-null_familia.casa = homeless
 edificios_ocio_index = []
 edificio_almacen_index = []
 for(a = 0; a < array_length(edificio_nombre); a++){
@@ -279,8 +289,15 @@ for(a = 0; a < array_length(edificio_nombre); a++){
 	if edificio_es_almacen[a]
 		array_push(edificio_almacen_index, a)
 	edificio_count[a] = [null_edificio]
+	edificio_number[a] = 0
 	array_pop(edificio_count[a])
 }
+jubilado = add_edificio(0, 0, 1, false)
+desausiado = add_edificio(0, 0, 2, false)
+medicos = [desausiado]
+homeless = add_edificio(0, 0, 3, false)
+null_familia.casa = homeless
+
 null_construccion = {
 	x : 0,
 	y : 0,
@@ -434,6 +451,9 @@ show_grid = false
 show_scroll = 0
 tile_width = 32
 tile_height = 16
+menu = false
+step = 0
+velocidad = 0
 educacion_nombre = ["Analfabeto", "Educación Básica", "Educación Media", "Educación Técnica", "Educación Profesional"]
 for(a = 0; a < array_length(educacion_nombre); a++)
 	trabajo_educacion[a] = []
@@ -502,7 +522,7 @@ do{
 	b = irandom(ysize - edificio_height[13])
 }
 until land_matrix[a, b] and edificio_valid_place(a, b, 13)
-add_edificio(a, b, 13)
+null_edificio.muelle_cercano = add_edificio(a, b, 13)
 edificios[0].almacen[0] = irandom_range(1000, 1500)
 recurso_exportado[0] = false
 #endregion

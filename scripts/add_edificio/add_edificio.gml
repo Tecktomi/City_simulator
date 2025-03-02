@@ -32,7 +32,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			presupuesto : 2,
 			mes_creacion : control.current_mes,
 			ganancia : 0,
-			trabajo_mes : 0
+			trabajo_mes : 0,
+			muelle_cercano : null_edificio,
+			distancia_muelle_cercano : 0,
+			number : ++control.edificio_number[tipo]
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
@@ -85,6 +88,21 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 						if bosque[a, b]
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
+			}
+			if edificio_nombre[tipo] != "Muelle"{
+				buscar_muelle_cercano(edificio)
+			}
+			else{
+				for(var a = 0; a < array_length(edificios); a++){
+					var edificio_2 = edificios[a]
+					if edificio_2.distancia_muelle_cercano = 0
+						continue
+					var b = distancia(edificio, edificio_2)
+					if edificio_2.muelle_cercano = null_edificio or b < edificio_2.distancia_muelle_cercano{
+						edificio_2.muelle_cercano = edificio
+						edificio_2.distancia_muelle_cercano = b
+					}
+				}
 			}
 			//Buscar edificios cercanos
 			for(var a = max(0, x - 8); a < min(x + width + 9, xsize); a++)

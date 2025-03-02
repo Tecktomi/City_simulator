@@ -8,9 +8,9 @@ function destroy_persona(persona = null_persona, muerte = true){
 		var familia = persona.familia
 		familia.sueldo -= persona.trabajo.trabajo_sueldo
 		if familia.padre = persona
-				familia.padre = null_persona
+			familia.padre = null_persona
 		else if familia.madre = persona
-				familia.madre = null_persona
+			familia.madre = null_persona
 		else{
 			array_remove(familia.hijos, persona)
 			for(var a = 0; a < array_length(familia.hijos); a++)
@@ -28,18 +28,33 @@ function destroy_persona(persona = null_persona, muerte = true){
 		if familia.integrantes = 0{
 			destroy_familia(familia, muerte)
 			flag = true
+			var b = 0
+			for(var a = 0; a < array_length(persona.relacion.hijos); a++){
+				var hijo = persona.relacion.hijos[a]
+				if hijo.vivo
+					b++
+			}
+			if b > 0{
+				var text = name(persona) + " ha muero, y sus hijos "
+				for(var a = 0; a < array_length(persona.relacion.hijos); a++){
+					var hijo = persona.relacion.hijos[a]
+					if hijo.vivo{
+						hijo.persona.familia.dinero += persona.familia.dinero / b
+						text += name(hijo.persona) + ", "
+					}
+				}
+				persona.familia.dinero = 0
+				show_debug_message(text + " han recibido una herencia")
+			}
 		}
 		if persona.trabajo != null_edificio{
-			var trabajo = persona.trabajo
-			array_remove(trabajo.trabajadores, persona)
-			if not trabajo.paro and not array_contains(trabajo_educacion[edificio_trabajo_educacion[trabajo.tipo]], trabajo)
-				array_push(trabajo_educacion[edificio_trabajo_educacion[trabajo.tipo]], trabajo)
-			trabajo.trabajo_mes -= abs(trabajo.dia_factura - (dia mod 28))
+			cambiar_trabajo(persona, null_edificio)
+			array_remove(null_edificio.trabajadores, persona)
 		}
 		if persona.embarazo != -1
 			array_remove(embarazo[persona.embarazo], persona)
 		if persona.muerte != -1 and persona.muerte != (dia mod 365)
-			array_remove(muerte[persona.muerte], persona)
+			array_remove(control.muerte[persona.muerte], persona)
 		if persona.escuela != null_edificio
 			array_remove(persona.escuela.clientes, persona)
 		if persona.medico != null_edificio{
