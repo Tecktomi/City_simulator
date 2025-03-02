@@ -203,7 +203,7 @@ if sel_build{
 	if ministerio = -1{
 		for(var a = 0; a < array_length(edificio_categoria[build_categoria]); a++){
 			b = edificio_categoria[build_categoria, a]
-			if draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}", , ,
+			if floor(dia / 365) >= edificio_anno[b] and draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}", , ,
 				function(b){
 					draw_set_valign(fa_bottom)
 					var text = ""
@@ -368,15 +368,17 @@ if sel_build{
 			var fel_tra= 0, num_tra = 0, temp_array, num_des = 0, num_temp = 0, trab_esta = 0, num_nin = 0
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				temp_array[a] = 0
-			for(var a = 0; a < array_length(personas); a++)
-				if personas[a].trabajo != null_edificio{
-					num_nin += personas[a].es_hijo
-					fel_tra += personas[a].felicidad_trabajo
+			for(var a = 0; a < array_length(personas); a++){
+				var persona = personas[a]
+				if not persona.es_hijo{
+					fel_tra += persona.felicidad_trabajo
 					num_tra++
-					temp_array[personas[a].trabajo.tipo]++
-					num_des += (personas[a].trabajo = null_edificio)
-					trab_esta += not personas[a].trabajo.privado
+					temp_array[persona.trabajo.tipo]++
+					num_des += (persona.trabajo = null_edificio)
+					trab_esta += not persona.trabajo.privado
 				}
+				num_nin += (persona.es_hijo and persona.trabajo != null_edificio)
+			}
 			var vacantes = 0, vacantes_tipo
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				if edificio_es_trabajo[a]{
@@ -1306,7 +1308,7 @@ max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_wid
 //Pasar día
 step += velocidad
 if keyboard_check(vk_space) or step >= 60{
-	step -= 60
+	step = 0
 	repeat(1 + 29 * (keyboard_check(vk_space) and keyboard_check(vk_lshift))){
 		dia++
 		current_mes = mes(dia)
@@ -1904,9 +1906,12 @@ if keyboard_check(vk_space) or step >= 60{
 										edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
 										add_encargo(1, edificio.almacen[1], edificio)
 										edificio.almacen[1] = 0
-										show_debug_message($"Aserradero {edificio.number} agotado en {edificio.x}, {edificio.y}")
 										set_paro(true, edificio)
-										continue
+										for(b = 0; b < array_length(edificio.trabajadores); b++){
+											cambiar_trabajo(edificio.trabajadores[b], null_edificio)
+											buscar_trabajo(edificio.trabajadores[b])
+										}
+										break
 									}
 								}
 							}
@@ -1949,9 +1954,16 @@ if keyboard_check(vk_space) or step >= 60{
 							if b = 0
 								break
 						}
-						if b > 0
-							set_paro(true, edificio)
 						edificio.almacen[recurso_mineral[edificio.modo]] += e - b
+						if b > 0{
+							set_paro(true, edificio)
+							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
+							edificio.almacen[recurso_mineral[edificio.modo]] = 0
+							for(b = 0; b < array_length(edificio.trabajadores); b++){
+								cambiar_trabajo(edificio.trabajadores[b], null_edificio)
+								buscar_trabajo(edificio.trabajadores[b])
+							}
+						}
 						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[recurso_mineral[edificio.modo]] > 0{
 							edificio.ganancia += edificio.almacen[recurso_mineral[edificio.modo]] * recurso_precio[recurso_mineral[edificio.modo]]
 							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
@@ -2230,8 +2242,8 @@ if keyboard_check(vk_space) or step >= 60{
 				//Actualizar felicidad por alimentación y pagar renta
 				for(var b = 0; b < array_length(edificio.familias); b++){
 					var familia = edificio.familias[b]
-					familia.felicidad_alimento = floor((familia.felicidad_alimento + fel_comida) / 2)
-					if irandom(10) > familia.felicidad_alimento{
+					familia.felicidad_alimento = floor((familia.felicidad_alimento * 2 + fel_comida) / 3)
+					if irandom(15) > familia.felicidad_alimento{
 						flag = false
 						if familia.padre != null_persona{
 							flag = destroy_persona(familia.padre)

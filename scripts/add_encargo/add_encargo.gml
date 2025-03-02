@@ -3,7 +3,7 @@ function add_encargo(recurso, cantidad, edificio = control.null_edificio){
 		if cantidad != 0{
 			var encargo = {
 				recurso : real(recurso),
-				cantidad : real(cantidad),
+				cantidad : floor(cantidad),
 				edificio : edificio
 			}
 			array_push(encargos, encargo)
