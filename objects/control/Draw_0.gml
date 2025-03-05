@@ -884,8 +884,11 @@ if build_sel{
 		mouse_clear(mb_left)
 		if flag{
 			for(var a = mx; a < mx + width; a++)
-				for(var b = my; b < my + height; b++)
+				for(var b = my; b < my + height; b++){
 					array_set(construccion_reservada[a], b, true)
+					if bool_edificio[a, b] and id_edificio[a, b].tipo = 32
+						destroy_edificio(id_edificio[a, b])
+				}
 			if array_length(cola_construccion) = 0 and ley_eneabled[6]
 				for(var a = 0; a < array_length(edificio_count[20]); a++)
 					set_paro(false, edificio_count[20, a])
@@ -938,6 +941,12 @@ if sel_info{
 	pos = 0
 	//Información edificios
 	if sel_tipo = 0 and sel_edificio != null_edificio{
+		x = sel_edificio.x
+		y = sel_edificio.y
+		var tipo =sel_edificio.tipo, width = edificio_width[tipo], height = edificio_height[tipo]
+		draw_set_color(c_white)
+		draw_rombo((x - y) * tile_width - xpos, (x + y) * tile_height - ypos - 1, (x - y - height) * tile_width - xpos - 1, (x + y + height) * tile_height - ypos, (x - y + width - height) * tile_width - xpos, (x + y + width + height) * tile_height - ypos + 1, (x - y + width) * tile_width - xpos + 1, (x + y + width) * tile_height - ypos, true)
+		draw_set_color(c_black)
 		draw_text_pos(room_width, pos, $"{edificio_nombre[sel_edificio.tipo]} {sel_edificio.number}")
 		if sel_edificio.privado
 			draw_text_pos(room_width - 20, pos, "PRIVADO")
@@ -970,7 +979,7 @@ if sel_info{
 		else if sel_edificio.exigencia != null_exigencia
 			draw_text_pos(room_width - 20, pos, $"Esperando que cumplas {exigencia_nombre[sel_edificio.huelga_motivo]}")
 		#region presupuesto
-		if not sel_edificio.privado
+		if not sel_edificio.privado and edificio_nombre[sel_edificio.tipo] != "Toma"
 			for(var a = 0; a < 5; a++)
 				if draw_sprite_boton(spr_icono, 3 - (a > sel_edificio.presupuesto), room_width - 200 + a * 40, pos, 40, 40)
 					for(var b = 0; b < array_length(edificio_count[sel_edificio.tipo]); b++){
@@ -1646,7 +1655,16 @@ if keyboard_check(vk_space) or step >= 60{
 					array_push(embarazo[persona.familia.madre.embarazo], persona.familia.madre)
 				}
 				buscar_trabajo(persona)
-				buscar_casa(persona)
+				if not buscar_casa(persona) and ley_eneabled[7] and persona.trabajo != null_edificio{
+					var temp_array_coord = []
+					for(var b = persona.trabajo.x - 2; b < persona.trabajo.x + edificio_width[persona.trabajo.tipo] + 2; b++)
+						for(var c = persona.trabajo.y - 2; c < persona.trabajo.y + edificio_height[persona.trabajo.tipo] + 2; c++)
+							if not bool_edificio[b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c]
+								array_push(temp_array_coord, {x : b, y : c})
+					temp_array_coord = array_shuffle(temp_array_coord)
+					var edificio = spawn_build(temp_array_coord, 32)
+					cambiar_casa(persona.familia, edificio)
+				}
 			}
 			//Vejez
 			else if persona.edad > 60{
@@ -2158,7 +2176,11 @@ if keyboard_check(vk_space) or step >= 60{
 				}
 			}
 			//Casas
-			if edificio_es_casa[edificio.tipo] and array_length(edificio.familias) > 0{
+			if edificio_es_casa[edificio.tipo] and (array_length(edificio.familias) > 0 or edificio.tipo = 32){
+				if edificio.tipo = 32 and array_length(edificio.familias) = 0{
+					destroy_edificio(edificio)
+					continue
+				}
 				edificio.ganancia += edificio_familias_renta[edificio.tipo] * array_length(edificio.familias)
 				if edificio.privado
 					dinero_privado += edificio_familias_renta[edificio.tipo] * array_length(edificio.familias)
