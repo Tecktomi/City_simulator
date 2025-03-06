@@ -67,27 +67,40 @@ for(var a = min_camx; a < max_camx; a++)
 	for(var b = min_camy; b < max_camy; b++){
 		if bosque[a, b]
 			draw_sprite_stretched(spr_arbol, 0, (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
-		if bool_draw_edificio[a, b]{
-			var edificio = draw_edificio[a, b], c = edificio.x, d = edificio.y, e = edificio.tipo, width = edificio_width[e], height = edificio_height[e]
-			draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
-			draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
-			draw_set_color(c_white)
-			draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, true)
-			if edificio.paro{
-				draw_set_color(c_red)
-				draw_circle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, 3, false)
+		if bool_draw_edificio[a, b]
+			if edificio_sprite[id_edificio[a, b].tipo]
+				draw_sprite_stretched(edificio_sprite_id[id_edificio[a, b].tipo], draw_edificio_flip[a, b], (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
+			else{
+				var edificio = draw_edificio[a, b], c = edificio.x, d = edificio.y, e = edificio.tipo, width = edificio_width[e], height = edificio_height[e], temp_rotado = edificio.rotado
+				if temp_rotado{
+					var f = width
+					width = height
+					height = f
+				}
+				draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
+				draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
 				draw_set_color(c_white)
-				draw_circle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, 3, true)
-				if edificio.huelga{
-					draw_set_color(c_white)
-					draw_rectangle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d) * tile_width - xpos + string_width("PARO"), (c + d) * tile_height - ypos + string_height("PARO"), false)
+				draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, true)
+				if edificio.paro{
 					draw_set_color(c_red)
-					draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, "PARO")
-					}
-			}
+					draw_circle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, 3, false)
+					draw_set_color(c_white)
+					draw_circle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, 3, true)
+					if edificio.huelga{
+						draw_set_color(c_white)
+						draw_rectangle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d) * tile_width - xpos + string_width("PARO"), (c + d) * tile_height - ypos + string_height("PARO"), false)
+						draw_set_color(c_red)
+						draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, "PARO")
+						}
+				}
 		}
 		if bool_draw_construccion[a, b]{
-			var next_build = draw_construccion[a, b], e = next_build.id, width = edificio_width[e], height = edificio_height[e], c = next_build.x, d = next_build.y
+			var next_build = draw_construccion[a, b], e = next_build.id, width = edificio_width[e], height = edificio_height[e], c = next_build.x, d = next_build.y, temp_rotado = next_build.rotado
+			if temp_rotado{
+				var f = width
+				width = height
+				height = f
+			}
 			draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
 			draw_set_alpha(0.5)
 			draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d + width - height) * tile_width - xpos, (c + d + width + height) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
@@ -412,13 +425,18 @@ if sel_build{
 					var next_build = cola_construccion[a]
 					if draw_boton(120, pos, $"{edificio_nombre[next_build.id]} ({edificio_precio[next_build.id]})") and dinero >= edificio_precio[next_build.id]{
 						array_delete(cola_construccion, a, 1)
-						var edificio = add_edificio(next_build.x, next_build.y, next_build.id)
+						var edificio = add_edificio(next_build.x, next_build.y, next_build.id), index = next_build.index, width = edificio_width[index], height = edificio_height[index]
+						if next_build.rotado{
+							b = width
+							width = height
+							height = b
+						}
 						if edificio_nombre[build_index] = "Granja"{
 							var d = 0
-							for(b = 0; b < edificio_width[build_index]; b++)
-								for(var c = 0; c < edificio_height[build_index]; c++)
+							for(b = 0; b < width; b++)
+								for(var c = 0; c < height; c++)
 									d += cultivo[build_type][# next_build.x + b, next_build.y + c]
-							edificio.eficiencia = d / edificio_width[build_index] / edificio_height[build_index]
+							edificio.eficiencia = d / width / height
 							edificio.modo = next_build.tipo
 						}
 						else if edificio_nombre[build_index] = "Mina"
@@ -776,6 +794,13 @@ if build_sel{
 	text = ""
 	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - width)
 	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - height)
+	if keyboard_check_pressed(ord("R"))
+		rotado = not rotado
+	if rotado{
+		var a = width
+		width = height
+		height = a
+	}
 	draw_set_color(make_color_hsv(edificio_color[build_index], 255, 255))
 	draw_set_alpha(0.5)
 	draw_rombo((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, (mx - my - height) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height) * tile_height - ypos, (mx - my + width) * tile_width - xpos, (mx + my + width) * tile_height - ypos, false)
@@ -784,10 +809,10 @@ if build_sel{
 	//Calcular la eficiencia de las granjas
 	if edificio_nombre[build_index] = "Granja"{
 		var c = 0
-		for(var a = 0; a < edificio_width[build_index]; a++)
-			for(var b = 0; b < edificio_height[build_index]; b++)
+		for(var a = 0; a < width; a++)
+			for(var b = 0; b < height; b++)
 				c += cultivo[build_type][# mx + a, my + b]
-		text += $"Eficiencia: {floor(c * 100 / edificio_width[build_index] / edificio_height[build_index])}%\n"
+		text += $"Eficiencia: {floor(c * 100 / width / height)}%\n"
 		if not keyboard_check(vk_lcontrol){
 			if mouse_wheel_up()
 				build_type = (build_type + 1) mod array_length(recurso_cultivo)
@@ -801,8 +826,8 @@ if build_sel{
 		draw_rombo((mx - my) * tile_width - xpos, (mx + my - 2) * tile_height - ypos, (mx - my - height - 2) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height + 2) * tile_height - ypos, (mx - my + width + 2) * tile_width - xpos, (mx + my + width) * tile_height - ypos, true)
 		flag = false
 		var c = 0
-		for(var a = max(0, mx - 1); a < min(xsize - 1, mx + edificio_width[build_index] + 1); a++)
-			for(var b = max(0, my - 1); b < min(ysize - 1, my + edificio_height[build_index] + 1); b++)
+		for(var a = max(0, mx - 1); a < min(xsize - 1, mx + width + 1); a++)
+			for(var b = max(0, my - 1); b < min(ysize - 1, my + height + 1); b++)
 				if mineral[build_type][a, b]{
 					flag = true
 					c += mineral_cantidad[build_type][a, b]
@@ -847,13 +872,13 @@ if build_sel{
 	}
 	//Detectar terreno inválido
 	if flag{
-		flag = edificio_valid_place(mx, my, build_index)
+		flag = edificio_valid_place(mx, my, build_index, rotado)
 		//Detectar árboles cerca
 		if flag and edificio_nombre[build_index] = "Aserradero"{
 			draw_rombo((mx - my) * tile_width - xpos, (mx + my - 10) * tile_height - ypos, (mx - my - height - 10) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height + 10) * tile_height - ypos, (mx - my + width + 10) * tile_width - xpos, (mx + my + width) * tile_height - ypos, true)
 			var flag_2 = false, c = 0
-			for(var a = max(0, mx - 5); a < min(mx + edificio_width[build_index] + 5, xsize); a++)
-				for(var b = max(0, my - 5); b < min(my + edificio_height[build_index] + 5, ysize); b++)
+			for(var a = max(0, mx - 5); a < min(mx + width + 5, xsize); a++)
+				for(var b = max(0, my - 5); b < min(my + height + 5, ysize); b++)
 					if bosque[a, b]{
 						flag_2 = true
 						c += bosque_madera[a, b]
@@ -905,7 +930,8 @@ if build_sel{
 				id : build_index,
 				tipo : build_type,
 				tiempo : edificio_construccion_tiempo[build_index],
-				altura : temp_altura
+				altura : temp_altura,
+				rotado : rotado
 			}
 			array_push(cola_construccion, next_build)
 			array_set(bool_draw_construccion[mx], my, true)
@@ -948,7 +974,12 @@ if sel_info{
 	if sel_tipo = 0 and sel_edificio != null_edificio{
 		x = sel_edificio.x
 		y = sel_edificio.y
-		var tipo =sel_edificio.tipo, width = edificio_width[tipo], height = edificio_height[tipo]
+		var tipo = sel_edificio.tipo, width = edificio_width[tipo], height = edificio_height[tipo]
+		if sel_edificio.rotado{
+			var a = width
+			width = height
+			height = a
+		}
 		draw_set_color(c_white)
 		draw_rombo((x - y) * tile_width - xpos, (x + y) * tile_height - ypos - 1, (x - y - height) * tile_width - xpos - 1, (x + y + height) * tile_height - ypos, (x - y + width - height) * tile_width - xpos, (x + y + width + height) * tile_height - ypos + 1, (x - y + width) * tile_width - xpos + 1, (x + y + width) * tile_height - ypos, true)
 		draw_set_color(c_black)
@@ -1050,8 +1081,8 @@ if sel_info{
 			if edificio_nombre[sel_edificio.tipo] = "Mina"{
 				draw_text_pos(room_width - 20, pos, $"Extrayendo {recurso_nombre[recurso_mineral[sel_edificio.modo]]}")
 				var c = 0
-				for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + edificio_width[sel_edificio.tipo] + 1); a++)
-					for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + edificio_height[sel_edificio.tipo] + 1); b++)
+				for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + width + 1); a++)
+					for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + height + 1); b++)
 						if mineral[sel_edificio.modo][a, b]
 							c += mineral_cantidad[sel_edificio.modo][a, b]
 				draw_text_pos(room_width - 40, pos, $"Depósito: {c}")
@@ -1115,8 +1146,8 @@ if sel_info{
 			var temp_precio = edificio_precio[sel_edificio.tipo], temp_text = $"Edificio base: ${temp_precio}"
 			if edificio_nombre[sel_edificio.tipo] = "Mina"{
 				var c = 0
-				for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + edificio_width[sel_edificio.tipo] + 1); a++)
-					for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + edificio_height[sel_edificio.tipo] + 1); b++)
+				for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + width + 1); a++)
+					for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + height + 1); b++)
 						if mineral[sel_edificio.modo][a, b]
 							c += mineral_cantidad[sel_edificio.modo][a, b]
 				c = floor(c * recurso_precio[recurso_mineral[sel_edificio.modo]] * 0.2)
@@ -1125,8 +1156,8 @@ if sel_info{
 			}
 			else if edificio_nombre[sel_edificio.tipo] = "Aserradero"{
 				var c = 0
-				for(var a = max(0, sel_edificio.x - 5); a < min(sel_edificio.x + edificio_width[build_index] + 5, xsize); a++)
-					for(var b = max(0, sel_edificio.y - 5); b < min(sel_edificio.y + edificio_height[build_index] + 5, ysize); b++)
+				for(var a = max(0, sel_edificio.x - 5); a < min(sel_edificio.x + width + 5, xsize); a++)
+					for(var b = max(0, sel_edificio.y - 5); b < min(sel_edificio.y + height + 5, ysize); b++)
 						if bosque[a, b]
 							c += bosque_madera[a, b]
 				c = floor(c * recurso_precio[1] * 0.2)
@@ -1344,10 +1375,15 @@ if keyboard_check(vk_space) or step >= 60{
 			//Edificio_terminado
 			if next_build.tiempo <= 0{
 				var tipo = next_build.id, width = edificio_width[tipo], height = edificio_height[tipo], c = next_build.x, d = next_build.y
+				if next_build.rotado{
+					var e = width
+					width = height
+					height = e
+				}
 				array_shift(cola_construccion)
 				array_set(bool_draw_construccion[c], d, false)
 				array_set(draw_construccion[c], d, null_construccion)
-				var edificio = add_edificio(c, d, tipo)
+				var edificio = add_edificio(c, d, tipo, , next_build.rotado)
 				#region Aplanar terreno
 				if not edificio_es_costero[tipo] and edificio_nombre[build_index] != "Rancho"{
 					var e = next_build.altura
@@ -1680,9 +1716,14 @@ if keyboard_check(vk_space) or step >= 60{
 					}
 					//Mudarse
 					if not buscar_casa(persona) and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente){
-						var temp_array_coord = []
-						for(var b = persona.trabajo.x - 2; b < persona.trabajo.x + edificio_width[persona.trabajo.tipo] + 2; b++)
-							for(var c = persona.trabajo.y - 2; c < persona.trabajo.y + edificio_height[persona.trabajo.tipo] + 2; c++)
+						var temp_array_coord = [], index = persona.trabajo.tipo, width = edificio_width[index], height = edificio_height[index]
+						if persona.trabajo.rotado{
+							var b = width
+							width = height
+							height = b
+						}
+						for(var b = persona.trabajo.x - 2; b < persona.trabajo.x + width + 2; b++)
+							for(var c = persona.trabajo.y - 2; c < persona.trabajo.y + height + 2; c++)
 								if not bool_edificio[b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c]
 									array_push(temp_array_coord, {x : b, y : c})
 						temp_array_coord = array_shuffle(temp_array_coord)
@@ -1885,9 +1926,14 @@ if keyboard_check(vk_space) or step >= 60{
 		#endregion
 		//Ciclo de los edificios
 		for(var a = 0; a < array_length(dia_trabajo[dia mod 28]); a++){
-			var edificio = dia_trabajo[dia mod 28, a]
+			var edificio = dia_trabajo[dia mod 28, a], index = edificio.tipo, width = edificio_width[index], height = edificio_height[index]
 			if edificio = delincuente
 				continue
+			if edificio.rotado{
+				var b = width
+				width = height
+				height = b
+			}
 			edificio.ganancia -= edificio.mantenimiento
 			if edificio.privado
 				dinero_privado -= edificio.mantenimiento
@@ -1981,8 +2027,8 @@ if keyboard_check(vk_space) or step >= 60{
 					else if edificio_nombre[edificio.tipo] = "Mina"{
 						b = round(edificio.trabajo_mes / 2 * (0.8 + 0.1 * edificio.presupuesto))
 						var e = b
-						for(var c = max(0, edificio.x - 1); c < min(xsize - 1, edificio.x + edificio_width[edificio.tipo] + 1); c++){
-							for(var d = max(0, edificio.y - 1); d < min(ysize - 1, edificio.y + edificio_height[edificio.tipo] + 1); d++)
+						for(var c = max(0, edificio.x - 1); c < min(xsize - 1, edificio.x + width + 1); c++){
+							for(var d = max(0, edificio.y - 1); d < min(ysize - 1, edificio.y + height + 1); d++)
 								if mineral[edificio.modo][c, d]{
 									if mineral_cantidad[edificio.modo][c, d] <= b{
 										b -= mineral_cantidad[edificio.modo][c, d]

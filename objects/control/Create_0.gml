@@ -165,6 +165,8 @@ edificio_es_ocio = [false, false, true, false, false, false, false, false, false
 edificio_es_iglesia = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
 edificio_es_costero = [false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false]
 edificio_es_almacen = [false, false, false, false, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false]
+edificio_sprite = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false]
+edificio_sprite_id = [spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1]
 edificio_clientes_max = [0, 0, 0, 0, 0, 0, 20, 25, 0, 0, 0, 5, 16, 0, 0, 0, 20, 10, 10, 10, 0, 4, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 edificio_clientes_calidad = [0, 0, 0, 0, 0, 0, 50, 60, 0, 0, 0, 25, 20, 0, 0, 0, 50, 30, 30, 30, 0, 10, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 edificio_clientes_tarifa = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -218,7 +220,8 @@ null_edificio = {
 	trabajo_mes : 0,
 	muelle_cercano : undefined,
 	distancia_muelle_cercano : 0,
-	number : 0
+	number : 0,
+	rotado : false
 }
 array_pop(null_edificio.familias)
 array_pop(null_edificio.trabajadores)
@@ -309,7 +312,8 @@ null_construccion = {
 	id : 0,
 	tipo : 0,
 	tiempo : 0,
-	altura : 0
+	altura : 0,
+	rotado : false
 }
 cola_construccion = [null_construccion]
 array_delete(cola_construccion, 0, 1)
@@ -340,6 +344,7 @@ for(a = 0; a < xsize; a++)
 		draw_edificio[a, b] = null_edificio
 		bool_draw_construccion[a, b] = false
 		draw_construccion[a, b] = null_construccion
+		draw_edificio_flip[a, b] = brandom()
 		bosque[a, b] = grid[# a, b] > 0.6 and c > 0.6
 		if bosque[a, b]
 			bosque_madera[a, b] = floor(200 * grid[# a, b])
@@ -459,6 +464,7 @@ tile_height = 16
 menu = false
 step = 0
 velocidad = 1
+rotado = false
 educacion_nombre = ["Analfabeto", "Educación Básica", "Educación Media", "Educación Técnica", "Educación Profesional"]
 for(a = 0; a < array_length(educacion_nombre); a++)
 	trabajo_educacion[a] = []

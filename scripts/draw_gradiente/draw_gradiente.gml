@@ -3,7 +3,7 @@ function draw_gradiente(tipo, modo){
 		if modo = 0{
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
-					if not bosque[a, b] and not mar[a, b]{
+					if not bosque[a, b] and not mar[a, b] and not bool_edificio[a, b]{
 						draw_set_color(make_color_rgb(255 * (1 - cultivo[tipo][# a, b]), 255 * cultivo[tipo][# a, b], 0))
 						draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height / 2, false)
 					}
@@ -14,7 +14,7 @@ function draw_gradiente(tipo, modo){
 			draw_set_color(recurso_mineral_color[tipo])
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
-					if mineral[tipo][a, b]
+					if not bosque[a, b] and not bool_edificio[a, b] and mineral[tipo][a, b]
 						draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height / 2, false)
 			draw_set_color(c_white)
 			draw_text(0, 0, recurso_nombre[recurso_mineral[tipo]])

@@ -1,6 +1,11 @@
 function destroy_edificio(edificio = control.null_edificio){
 	with control{
 		var tipo = edificio.tipo, width = edificio_width[tipo], height = edificio_height[tipo]
+		if edificio.rotado{
+			var a = width
+			width = height
+			height = a
+		}
 		array_set(bool_draw_edificio[edificio.x], edificio.y, false)
 		array_set(draw_edificio[edificio.x], edificio.y, null_edificio)
 		if array_length(edificio.trabajadores) < edificio_trabajadores_max[tipo]

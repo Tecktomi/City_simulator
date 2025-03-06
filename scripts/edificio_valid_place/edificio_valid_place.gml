@@ -1,13 +1,18 @@
-function edificio_valid_place(x, y, index){
+function edificio_valid_place(x, y, index, rotado = false){
 	with control{
 		var width = edificio_width[index], height = edificio_height[index]
+		if rotado{
+			var a = width
+			width = height
+			height = a
+		}
 		if x + width >= xsize or y + height >= ysize
 			return false
-		for(var a = x; a < x + width; a++)
-			for(var b = y; b < y + height; b++)
-				if bosque[a, b] or construccion_reservada[a, b] or (bool_edificio[a, b] and (index = 32 or id_edificio[a, b].tipo != 32))
-					return false
 		if edificio_es_costero[index]{
+			for(var a = x; a < x + width; a++)
+				for(var b = y; b < y + height; b++)
+					if bosque[a, b] or construccion_reservada[a, b] or (bool_edificio[a, b] and (index = 32 or id_edificio[a, b].tipo != 32))
+						return false
 			var flag = true
 			for(var a = x; a < x + width; a++)
 				if mar[a, y] = mar[a, y + height - 1] or (a - x > 0 and mar[a, y] != mar[a - 1, y]){
@@ -21,6 +26,12 @@ function edificio_valid_place(x, y, index){
 						break
 					}
 			return flag
+		}
+		else{
+			for(var a = x; a < x + width; a++)
+				for(var b = y; b < y + height; b++)
+					if mar[a, b] or bosque[a, b] or construccion_reservada[a, b] or (bool_edificio[a, b] and (index = 32 or id_edificio[a, b].tipo != 32))
+						return false
 		}
 		return true
 	}

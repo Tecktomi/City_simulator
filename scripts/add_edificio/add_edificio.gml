@@ -1,4 +1,4 @@
-function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
+function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 	with control{
 		var edificio = {
 			familias : [null_familia],
@@ -35,7 +35,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 			trabajo_mes : 0,
 			muelle_cercano : null_edificio,
 			distancia_muelle_cercano : 0,
-			number : ++control.edificio_number[tipo]
+			number : ++control.edificio_number[tipo],
+			rotado : rotado
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
@@ -52,6 +53,11 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true){
 		}
 		if fisico{
 			var width = edificio_width[tipo], height = edificio_height[tipo]
+			if rotado{
+				var a = width
+				width = height
+				height = a
+			}
 			array_set(bool_draw_edificio[x], y, true)
 			array_set(draw_edificio[x], y, edificio)
 			array_push(edificios, edificio)
