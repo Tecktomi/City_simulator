@@ -283,28 +283,30 @@ if sel_build{
 			}
 			//Felicidad
 			if draw_menu(120, pos, $"Felicidad: {floor(felicidad_total)}", 3, , true){
-				var fel_tra = 0, fel_edu = 0, fel_viv = 0, fel_sal = 0, num_tra = 0, num_edu = 0, fel_oci = 0, fel_ali = 0, c = 0, fel_tran = 0, num_tran = 0, fel_rel = 0, num_rel = 0, fel_ley = 0, len = array_length(personas)
+				var fel_tra = 0, fel_edu = 0, fel_viv = 0, fel_sal = 0, num_tra = 0, num_edu = 0, fel_oci = 0, fel_ali = 0, c = 0, fel_tran = 0, num_tran = 0, fel_rel = 0, num_rel = 0, fel_ley = 0, fel_cri = 0, len = array_length(personas)
 				b = 0
 				for(var a = 0; a < array_length(personas); a++){
-					fel_sal += personas[a].felicidad_salud
-					fel_viv += personas[a].familia.felicidad_vivienda
-					fel_ali += personas[a].familia.felicidad_alimento
-					fel_oci += personas[a].felicidad_ocio
-					fel_ley += personas[a].felicidad_ley
-					if personas[a].familia.casa != homeless and (personas[a].trabajo != null_edificio or personas[a].escuela != null_edificio){
-						fel_tran += personas[a].felicidad_transporte
+					var persona = personas[a]
+					fel_sal += persona.felicidad_salud
+					fel_viv += persona.familia.felicidad_vivienda
+					fel_ali += persona.familia.felicidad_alimento
+					fel_oci += persona.felicidad_ocio
+					fel_ley += persona.felicidad_ley
+					fel_cri += persona.felicidad_crimen
+					if persona.familia.casa != homeless and (personas[a].escuela != null_edificio or not in(persona.trabajo, null_edificio, jubilado, delincuente)){
+						fel_tran += persona.felicidad_transporte
 						num_tran++
 					}
-					if personas[a].es_hijo{
-						fel_edu += personas[a].felicidad_educacion
+					if persona.es_hijo{
+						fel_edu += persona.felicidad_educacion
 						num_edu++
 					}
-					if not personas[a].es_hijo or (ley_eneabled[2] and personas[a].trabajo != null_edificio){
+					if not persona.es_hijo or (ley_eneabled[2] and persona.trabajo != null_edificio){
 						fel_tra += personas[a].felicidad_trabajo
 						num_tra++
 					}
-					if personas[a].religion{
-						fel_rel += personas[a].felicidad_religion
+					if persona.religion{
+						fel_rel += persona.felicidad_religion
 						num_rel++
 					}
 				}
@@ -321,6 +323,7 @@ if sel_build{
 				draw_text_pos(130, pos, $"Transporte: {floor(fel_tran / num_tran)}")
 				draw_text_pos(130, pos, $"Religión: {floor(fel_rel / num_rel)}")
 				draw_text_pos(130, pos, $"Legislación: {floor(fel_ley / len)}")
+				draw_text_pos(130, pos, $"Delincuencia: {floor(fel_cri / len)}")
 			}
 			pos = 120
 			if mouse_wheel_up()
@@ -365,7 +368,7 @@ if sel_build{
 		}
 		//Ministerio de Trabajo
 		else if ministerio = 2{
-			var fel_tra= 0, num_tra = 0, temp_array, num_des = 0, num_temp = 0, trab_esta = 0, num_nin = 0
+			var fel_tra= 0, num_tra = 0, temp_array, num_des = 0, num_temp = 0, trab_esta = 0, num_nin = 0, num_del = 0
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				temp_array[a] = 0
 			for(var a = 0; a < array_length(personas); a++){
@@ -376,6 +379,7 @@ if sel_build{
 					temp_array[persona.trabajo.tipo]++
 					num_des += (persona.trabajo = null_edificio)
 					trab_esta += not persona.trabajo.privado
+					num_del += persona.trabajo = delincuente
 				}
 				num_nin += (persona.es_hijo and persona.trabajo != null_edificio)
 			}
@@ -430,6 +434,7 @@ if sel_build{
 					}
 				}
 			draw_text_pos(110, pos, $"{num_temp} trabajadores temporales ({floor(100 * num_temp / num_tra)}%)")
+			draw_text_pos(110, pos, $"{floor(100 * num_del / num_tra)}% de delincuencia")
 			if num_tra > 0
 				draw_text_pos(110, pos, $"{floor(100 * trab_esta / num_tra)} % de trabajadores estatales.")
 			if ley_eneabled[2] and num_tra > 0
@@ -875,7 +880,7 @@ if build_sel{
 				d += 25 * sqrt(abs(altura[# a, b] - temp_altura))
 		d = round(d)
 		if d > 0
-			text += "Coste aplanar: $" + string(round(d))
+			text += "Coste aplanar: $ " + string(round(d))
 	}
 	if text != ""
 		draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, text)
@@ -1190,16 +1195,15 @@ if sel_info{
 			sel_edificio = sel_familia.casa
 			sel_tipo = 0
 		}
-		if sel_familia.padre != null_persona and draw_boton(room_width - 20, pos, $"Padre: {sel_familia.padre}"){
+		if sel_familia.padre != null_persona and draw_boton(room_width - 20, pos, $"Padre: {name(sel_familia.padre)}"){
 			sel_persona = sel_familia.padre
 			sel_tipo = 2
 		}
-		if sel_familia.madre != null_persona and draw_boton(room_width - 20, pos, $"Madre: {sel_familia.madre}"){
+		if sel_familia.madre != null_persona and draw_boton(room_width - 20, pos, $"Madre: {name(sel_familia.madre)}"){
 			sel_persona = sel_familia.madre
 			sel_tipo = 2
 		}
-		if array_length(sel_familia.hijos) > 0
-			draw_text_pos(room_width - 20, pos, "Hijos")
+		draw_text_pos(room_width - 20, pos, (array_length(sel_familia.hijos) > 0) ? "Hijos" : "Sin hijos")
 		for(var a = 0; a < array_length(sel_familia.hijos); a++)
 			if draw_boton(room_width - 40, pos, name(sel_familia.hijos[a])){
 				sel_persona = sel_familia.hijos[a]
@@ -1251,6 +1255,7 @@ if sel_info{
 			draw_text_pos(room_width - 20, pos, $"San{ao(sel_persona)}")
 		draw_text_pos(room_width, pos, $"Felicidad: {sel_persona.felicidad}")
 		draw_text_pos(room_width - 20, pos, $"Legislación: {sel_persona.felicidad_ley}")
+		draw_text_pos(room_width - 20, pos, $"Delincuencia: {sel_persona.felicidad_crimen}")
 		function draw_relacion(xx, yy, relacion = null_relacion, iter = 0){
 			if iter = 5
 				return
@@ -1315,7 +1320,7 @@ max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + yp
 max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
 #endregion
 //Pasar día
-step += velocidad
+step += velocidad * (not menu)
 if keyboard_check(vk_space) or step >= 60{
 	step = 0
 	repeat(1 + 29 * (keyboard_check(vk_space) and keyboard_check(vk_lshift))){
@@ -1517,342 +1522,362 @@ if keyboard_check(vk_space) or step >= 60{
 			felicidad_minima = floor(17 + floor(dia / 365))
 		}
 		#region Personas
-		//Ciclo normal de las personas
-		for(var a = 0; a < array_length(cumples[dia mod 365]); a++){
-			var persona = cumples[dia mod 365, a]
-			persona.edad++
-			//Enfermar
-			if random(1) < 0.2 and persona.medico = null_edificio
-				buscar_atencion_medica(persona)
-			//Estudiar
-			if persona.edad > 4 and persona.edad < 18{
-				if persona.escuela = null_edificio
-					buscar_escuela(persona)
-				else{
-					persona.educacion += random(edificio_clientes_calidad[persona.escuela.tipo] * persona.escuela.trabajo_mes / 25 / edificio_trabajadores_max[persona.escuela.tipo])
-					if persona.educacion >= 2{
-						persona.educacion = 2
-						array_remove(persona.escuela.clientes, persona)
-						persona.escuela = null_edificio
-					}
-					else if random(1) < 0.1{
-						array_remove(persona.escuela.clientes, persona)
+			//Ciclo normal de las personas
+			for(var a = 0; a < array_length(cumples[dia mod 365]); a++){
+				var persona = cumples[dia mod 365, a]
+				persona.edad++
+				//Enfermar
+				if random(1) < 0.2 and persona.medico = null_edificio
+					buscar_atencion_medica(persona)
+				//Estudiar
+				if persona.edad > 4 and persona.edad < 18{
+					if persona.escuela = null_edificio
 						buscar_escuela(persona)
+					else{
+						persona.educacion += random(edificio_clientes_calidad[persona.escuela.tipo] * persona.escuela.trabajo_mes / 25 / edificio_trabajadores_max[persona.escuela.tipo])
+						if persona.educacion >= 2{
+							persona.educacion = 2
+							array_remove(persona.escuela.clientes, persona)
+							persona.escuela = null_edificio
+						}
+						else if random(1) < 0.1{
+							array_remove(persona.escuela.clientes, persona)
+							buscar_escuela(persona)
+						}
 					}
-				}
-				//Mudarse a un albergue
-				if persona.familia.padre = null_persona and persona.familia.madre = null_persona and edificio_nombre[persona.familia.casa.tipo] != "Albergue" and array_length(edificio_count[18]) > 0{
-					var edificio = edificio_count[18, irandom(array_length(edificio_count[18]) - 1)]
-					var b = 0
-					if array_length(edificio.familias) = edificio_familias_max[18]{
-						for(b = 0; b < array_length(edificio.familias); b++)
-							if edificio.familias[b].padre != null_persona or edificio.familias[b].madre != null_persona
-								break
+					//Mudarse a un albergue
+					if persona.familia.padre = null_persona and persona.familia.madre = null_persona and edificio_nombre[persona.familia.casa.tipo] != "Albergue" and array_length(edificio_count[18]) > 0{
+						var edificio = edificio_count[18, irandom(array_length(edificio_count[18]) - 1)]
+						var b = 0
+						if array_length(edificio.familias) = edificio_familias_max[18]{
+							for(b = 0; b < array_length(edificio.familias); b++)
+								if edificio.familias[b].padre != null_persona or edificio.familias[b].madre != null_persona
+									break
+							if b < edificio_familias_max[18]
+								cambiar_casa(edificio.familias[b], homeless)
+						}
 						if b < edificio_familias_max[18]
-							cambiar_casa(edificio.familias[b], homeless)
+							cambiar_casa(persona.familia, edificio)
 					}
-					if b < edificio_familias_max[18]
-						cambiar_casa(persona.familia, edificio)
 				}
-			}
-			//Dejar de estudiar
-			if persona.edad = 18 and persona.escuela != null_edificio{
-				array_remove(persona.escuela.clientes, persona)
-				persona.escuela = null_edificio
-			}
-			//Trabajo infantil :D
-			if ley_eneabled[2] and persona.es_hijo and persona.edad > 12
-				if buscar_trabajo(persona){
-					var flag = false
-					for(var b = 0; b < array_length(persona.familia.hijos); b++)
-						if persona != persona.familia.hijos[b] and persona.familia.hijos[b].trabajo != null_edificio{
-							flag = true
-							break
+				//Dejar de estudiar
+				if persona.edad = 18 and persona.escuela != null_edificio{
+					array_remove(persona.escuela.clientes, persona)
+					persona.escuela = null_edificio
+				}
+				//Trabajo infantil :D
+				if ley_eneabled[2] and persona.es_hijo and persona.edad > 12
+					if buscar_trabajo(persona){
+						var flag = false
+						for(var b = 0; b < array_length(persona.familia.hijos); b++)
+							if persona != persona.familia.hijos[b] and persona.familia.hijos[b].trabajo != null_edificio{
+								flag = true
+								break
+							}
+						if not flag{
+							add_felicidad_ley(persona.familia.padre, -10)
+							add_felicidad_ley(persona.familia.madre, -10)
 						}
-					if not flag{
-						add_felicidad_ley(persona.familia.padre, -10)
-						add_felicidad_ley(persona.familia.madre, -10)
 					}
-				}
-			//Independizarse
-			if persona.edad > 18 and (irandom_range(persona.edad, 24) = 24 or persona.edad > 24) and persona.es_hijo{
-				buscar_trabajo(persona)
-				if persona.trabajo != null_edificio or persona.edad > 24{
-					var prev_familia = persona.familia, herencia = 0, b = prev_familia.felicidad_vivienda, c = prev_familia.felicidad_alimento
-					array_remove(prev_familia.hijos, persona)
-					if prev_familia.padre = null_persona and prev_familia.madre = null_persona and array_length(prev_familia.hijos) = 0{
-						if prev_familia.riqueza > 0
-							herencia = prev_familia.riqueza
-						destroy_familia(prev_familia, true)
-					}
-					var familia = add_familia(, false)
-					if persona.sexo
-						familia.madre = persona
-					else
-						familia.padre = persona
-					persona.familia = familia
-					persona.es_hijo = false
-				}
-				if persona.religion and ley_eneabled[0]
-					add_felicidad_ley(persona, -10)
-				if ley_eneabled[5]
-					add_felicidad_ley(persona, -10)
-			}
-			//Adultez
-			else if persona.edad > 24 and persona.edad < 60{
-				//Casarse
-				if persona.pareja = null_persona{
-					var persona_2 = personas[irandom(array_length(personas) - 1)]
-					if persona.sexo != persona_2.sexo and persona_2.edad > 18 and abs(persona.edad - persona_2.edad) < 8 and persona_2.pareja = null_persona and (persona_2.familia.padre = persona_2 or persona_2.familia.madre = persona_2) and persona.familia != persona_2.familia{
-						persona.pareja = persona_2
-						persona_2.pareja = persona
-						//Transferir hijos
-						for(var b = 0; b < array_length(persona_2.familia.hijos); b++){
-							var hijo = persona_2.familia.hijos[b]
-							hijo.familia = persona.familia
-							array_push(persona.familia.hijos, hijo)
+				//Independizarse
+				if persona.edad > 18 and (irandom_range(persona.edad, 24) = 24 or persona.edad > 24) and persona.es_hijo{
+					buscar_trabajo(persona)
+					if persona.trabajo != null_edificio or persona.edad > 24{
+						var prev_familia = persona.familia, herencia = 0, b = prev_familia.felicidad_vivienda, c = prev_familia.felicidad_alimento
+						array_remove(prev_familia.hijos, persona)
+						if prev_familia.padre = null_persona and prev_familia.madre = null_persona and array_length(prev_familia.hijos) = 0{
+							if prev_familia.riqueza > 0
+								herencia = prev_familia.riqueza
+							destroy_familia(prev_familia, true)
 						}
-						persona.familia.integrantes += persona_2.familia.integrantes
-						destroy_familia(persona_2.familia)
-						persona_2.familia = persona.familia
+						var familia = add_familia(, false)
 						if persona.sexo
-							persona.familia.padre = persona_2
+							familia.madre = persona
 						else
-							persona.familia.madre = persona_2
+							familia.padre = persona
+						persona.familia = familia
+						persona.es_hijo = false
+					}
+					if persona.religion and ley_eneabled[0]
+						add_felicidad_ley(persona, -10)
+					if ley_eneabled[5]
+						add_felicidad_ley(persona, -10)
+				}
+				//Adultez
+				else if persona.edad > 24 and persona.edad < 60{
+					//Casarse
+					if persona.pareja = null_persona{
+						var persona_2 = personas[irandom(array_length(personas) - 1)]
+						if persona.sexo != persona_2.sexo and persona_2.edad > 18 and abs(persona.edad - persona_2.edad) < 8 and persona_2.pareja = null_persona and (persona_2.familia.padre = persona_2 or persona_2.familia.madre = persona_2) and persona.familia != persona_2.familia{
+							persona.pareja = persona_2
+							persona_2.pareja = persona
+							//Transferir hijos
+							for(var b = 0; b < array_length(persona_2.familia.hijos); b++){
+								var hijo = persona_2.familia.hijos[b]
+								hijo.familia = persona.familia
+								array_push(persona.familia.hijos, hijo)
+							}
+							persona.familia.integrantes += persona_2.familia.integrantes
+							destroy_familia(persona_2.familia)
+							persona_2.familia = persona.familia
+							if persona.sexo
+								persona.familia.padre = persona_2
+							else
+								persona.familia.madre = persona_2
+						}
+					}
+					//Divorcio
+					else if ley_eneabled[0] and random(1) < 0.01{
+						var persona_2 = persona.pareja, old_familia = persona.familia, familia = add_familia(, false)
+						familia.riqueza = floor(old_familia.riqueza / 2)
+						old_familia.riqueza = ceil(old_familia.riqueza / 2)
+						if persona.sexo{
+							old_familia.madre = null_persona
+							familia.madre = persona
+						}
+						else{
+							old_familia.padre = null_persona
+							familia.padre = persona
+						}
+						persona.familia = familia
+						persona.pareja = null_persona
+						persona_2.pareja = null_persona
+						for(var b = 0; b < array_length(old_familia.hijos); b++)
+							if brandom(){
+								var hijo = old_familia.hijos[b]
+								array_delete(old_familia.hijos, b, 1)
+								array_push(familia.hijos, hijo)
+								hijo.familia = familia
+								familia.integrantes++
+								b--
+							}
+						buscar_trabajo(persona)
+						buscar_casa(persona)
+					}
+					//Tener hijos
+					else if irandom(3 + 2 * array_length(persona.familia.hijos)) = 0 and persona.familia.madre != null_persona and persona.familia.madre.edad < 40 and persona.familia.madre.embarazo = -1{
+						persona.familia.madre.embarazo = (dia + irandom_range(240, 280)) mod 365
+						array_push(embarazo[persona.familia.madre.embarazo], persona.familia.madre)
+					}
+					//Buscar trabajo
+					if not buscar_trabajo(persona) and irandom(persona.educacion) = 0 and irandom(persona.edad) < 10
+						cambiar_trabajo(persona, delincuente)
+					if persona.trabajo = delincuente{
+						var familia = familias[irandom(array_length(familias) - 1)]
+						if familia != persona.familia{
+							var b = clamp(irandom(familia.riqueza), 0, 24)
+							if b > 0{
+								familia.riqueza -= b
+								persona.familia.riqueza += b
+								if familia.padre != null_persona
+									familia.padre.felicidad_crimen = max(0, familia.padre.felicidad_crimen - 2 * b - 5)
+								if familia.madre != null_persona
+									familia.madre.felicidad_crimen = max(0, familia.madre.felicidad_crimen - 2 * b - 5)
+								for(var c = 0; c < array_length(familia.hijos); c++)
+									familia.hijos[c].felicidad_crimen = max(0, familia.hijos[c].felicidad_crimen - b - 5)
+							}
+						}
+					}
+					//Mudarse
+					if not buscar_casa(persona) and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente){
+						var temp_array_coord = []
+						for(var b = persona.trabajo.x - 2; b < persona.trabajo.x + edificio_width[persona.trabajo.tipo] + 2; b++)
+							for(var c = persona.trabajo.y - 2; c < persona.trabajo.y + edificio_height[persona.trabajo.tipo] + 2; c++)
+								if not bool_edificio[b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c]
+									array_push(temp_array_coord, {x : b, y : c})
+						temp_array_coord = array_shuffle(temp_array_coord)
+						var edificio = spawn_build(temp_array_coord, 32)
+						cambiar_casa(persona.familia, edificio)
 					}
 				}
-				//Divorcio
-				else if ley_eneabled[0] and random(1) < 0.01{
-					var persona_2 = persona.pareja, old_familia = persona.familia, familia = add_familia(, false)
-					familia.riqueza = floor(old_familia.riqueza / 2)
-					old_familia.riqueza = ceil(old_familia.riqueza / 2)
-					if persona.sexo{
-						old_familia.madre = null_persona
-						familia.madre = persona
+				//Vejez
+				else if persona.edad > 60{
+					//Jubilarse
+					if ley_eneabled[3] and persona.edad >= 65 - 5 * persona.sexo{
+						cambiar_trabajo(persona, jubilado)
+						add_felicidad_ley(persona, 10)
 					}
 					else{
-						old_familia.padre = null_persona
-						familia.padre = persona
+						buscar_trabajo(persona)
+						buscar_casa(persona)
 					}
-					persona.familia = familia
-					persona.pareja = null_persona
-					persona_2.pareja = null_persona
-					for(var b = 0; b < array_length(old_familia.hijos); b++)
-						if brandom(){
-							var hijo = old_familia.hijos[b]
-							array_delete(old_familia.hijos, b, 1)
-							array_push(familia.hijos, hijo)
-							hijo.familia = familia
-							familia.integrantes++
-							b--
+					//Morir
+					if irandom(persona.edad) > 60{
+						persona.muerte = irandom(364)
+						array_push(muerte[persona.muerte], persona)
+					}
+				}
+				//Acudir a edificios de ocio
+				var temp_array = array_shuffle(edificios_ocio_index)
+				persona.felicidad_ocio = 0
+				for(var b = 0; b < array_length(temp_array); b++)
+					if array_length(edificio_count[temp_array[b]]) > 0 and (persona.edad > 12 or (edificio_nombre[temp_array[b]] != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (edificio_nombre[temp_array[b]] != "Circo")) and ((not persona.sexo and persona.edad > 15) or (edificio_nombre[temp_array[b]] != "Cabaret")){
+						var ocio = edificio_count[temp_array[b], irandom(array_length(edificio_count[temp_array[b]]) - 1)]
+						if ocio.count < edificio_clientes_max[temp_array[b]] and persona.familia.riqueza >= edificio_clientes_tarifa[temp_array[b]]{
+							persona.familia.riqueza -= edificio_clientes_tarifa[temp_array[b]]
+							ocio.ganancia += edificio_clientes_tarifa[temp_array[b]]
+							if ocio.privado
+								dinero_privado += edificio_clientes_tarifa[temp_array[b]]
+							else{
+								dinero += edificio_clientes_tarifa[temp_array[b]]
+								mes_tarifas[current_mes] += edificio_clientes_tarifa[temp_array[b]]
+							}
+							ocio.count++
+							persona.ocios[b] = edificio_clientes_calidad[temp_array[b]]
+							persona.felicidad_ocio += persona.ocios[b]
 						}
-					buscar_trabajo(persona)
-					buscar_casa(persona)
-				}
-				//Tener hijos
-				else if irandom(3 + 2 * array_length(persona.familia.hijos)) = 0 and persona.familia.madre != null_persona and persona.familia.madre.edad < 40 and persona.familia.madre.embarazo = -1{
-					persona.familia.madre.embarazo = (dia + irandom_range(240, 280)) mod 365
-					array_push(embarazo[persona.familia.madre.embarazo], persona.familia.madre)
-				}
-				buscar_trabajo(persona)
-				if not buscar_casa(persona) and ley_eneabled[7] and persona.trabajo != null_edificio{
-					var temp_array_coord = []
-					for(var b = persona.trabajo.x - 2; b < persona.trabajo.x + edificio_width[persona.trabajo.tipo] + 2; b++)
-						for(var c = persona.trabajo.y - 2; c < persona.trabajo.y + edificio_height[persona.trabajo.tipo] + 2; c++)
-							if not bool_edificio[b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c]
-								array_push(temp_array_coord, {x : b, y : c})
-					temp_array_coord = array_shuffle(temp_array_coord)
-					var edificio = spawn_build(temp_array_coord, 32)
-					cambiar_casa(persona.familia, edificio)
-				}
-			}
-			//Vejez
-			else if persona.edad > 60{
-				//Jubilarse
-				if ley_eneabled[3] and persona.edad >= 65 - 5 * persona.sexo{
-					cambiar_trabajo(persona, jubilado)
-					add_felicidad_ley(persona, 10)
-				}
-				else{
-					buscar_trabajo(persona)
-					buscar_casa(persona)
-				}
-				//Morir
-				if irandom(persona.edad) > 60{
-					persona.muerte = irandom(364)
-					array_push(muerte[persona.muerte], persona)
-				}
-			}
-			//Acudir a edificios de ocio
-			var temp_array = array_shuffle(edificios_ocio_index)
-			persona.felicidad_ocio = 0
-			for(var b = 0; b < array_length(temp_array); b++)
-				if array_length(edificio_count[temp_array[b]]) > 0 and (persona.edad > 12 or (edificio_nombre[temp_array[b]] != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (edificio_nombre[temp_array[b]] != "Circo")) and ((not persona.sexo and persona.edad > 15) or (edificio_nombre[temp_array[b]] != "Cabaret")){
-					var ocio = edificio_count[temp_array[b], irandom(array_length(edificio_count[temp_array[b]]) - 1)]
-					if ocio.count < edificio_clientes_max[temp_array[b]] and persona.familia.riqueza >= edificio_clientes_tarifa[temp_array[b]]{
-						persona.familia.riqueza -= edificio_clientes_tarifa[temp_array[b]]
-						ocio.ganancia += edificio_clientes_tarifa[temp_array[b]]
-						if ocio.privado
-							dinero_privado += edificio_clientes_tarifa[temp_array[b]]
 						else{
-							dinero += edificio_clientes_tarifa[temp_array[b]]
-							mes_tarifas[current_mes] += edificio_clientes_tarifa[temp_array[b]]
+							persona.ocios[b] = floor(persona.ocios[b] / 2)
+							persona.felicidad_ocio += persona.ocios[b]
 						}
-						ocio.count++
-						persona.ocios[b] = edificio_clientes_calidad[temp_array[b]]
-						persona.felicidad_ocio += persona.ocios[b]
 					}
 					else{
 						persona.ocios[b] = floor(persona.ocios[b] / 2)
 						persona.felicidad_ocio += persona.ocios[b]
 					}
+				if persona.felicidad_ocio > 100
+					persona.felicidad_ocio = 100
+				//Ir a la iglesia
+				if array_length(iglesias) > 0 and (persona.religion or (persona.edad < 12 and random(1) < 0.1)){
+					persona.religion = true
+					var iglesia= null_edificio
+					if persona.familia.casa != homeless{
+						if array_length(persona.familia.casa.iglesias_cerca) > 0
+							iglesia = persona.familia.casa.iglesias_cerca[irandom(array_length(persona.familia.casa.iglesias_cerca) - 1)]
+					}
+					else
+						iglesia = iglesias[irandom(array_length(iglesias) - 1)]
+					if iglesia.count < edificio_clientes_max[iglesia.tipo]{
+						iglesia.count++
+						persona.felicidad_religion = min(110, persona.felicidad_religion + edificio_clientes_calidad[iglesia.tipo])
+					}
 				}
+				#region Calculo de felicidad
+				felicidad_total = felicidad_total * array_length(personas) - persona.felicidad
+				if array_length(medicos) = 1
+					persona.felicidad_salud = floor(persona.felicidad_salud / 2)
 				else{
-					persona.ocios[b] = floor(persona.ocios[b] / 2)
-					persona.felicidad_ocio += persona.ocios[b]
+					var temp_contaminacion = 0.25;
+					if persona.familia.casa != homeless
+						temp_contaminacion = (1 - clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100) / 100)
+					if not in(persona.trabajo, null_edificio, jubilado, delincuente)
+						temp_contaminacion *= (1 - clamp(contaminacion[persona.trabajo.x, persona.trabajo.y], 0, 100) / 100)
+					if persona.escuela != null_edificio
+						temp_contaminacion *= (1 - clamp(contaminacion[persona.escuela.x, persona.escuela.y], 0, 100) / 100)
+					temp_contaminacion = 100 * temp_contaminacion
+					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * temp_contaminacion) / 4)
 				}
-			if persona.felicidad_ocio > 100
-				persona.felicidad_ocio = 100
-			//Ir a la iglesia
-			if array_length(iglesias) > 0 and (persona.religion or (persona.edad < 12 and random(1) < 0.1)){
-				persona.religion = true
-				var iglesia= null_edificio
-				if persona.familia.casa != homeless{
-					if array_length(persona.familia.casa.iglesias_cerca) > 0
-						iglesia = persona.familia.casa.iglesias_cerca[irandom(array_length(persona.familia.casa.iglesias_cerca) - 1)]
+				persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
+				temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley, persona.felicidad_crimen]
+				persona.felicidad_crimen = min(persona.felicidad_crimen + 5, 100)
+				if persona.es_hijo{
+					persona.felicidad_educacion = floor((persona.felicidad_educacion + 3 * edificio_clientes_calidad[persona.escuela.tipo]) / 4)
+					array_push(temp_array, persona.felicidad_educacion)
 				}
-				else
-					iglesia = iglesias[irandom(array_length(iglesias) - 1)]
-				if iglesia.count < edificio_clientes_max[iglesia.tipo]{
-					iglesia.count++
-					persona.felicidad_religion = min(110, persona.felicidad_religion + edificio_clientes_calidad[iglesia.tipo])
+				if persona.trabajo != null_edificio{
+					var b = 1 + real(persona.es_hijo and ley_eneabled[2])
+					persona.felicidad_trabajo = floor((persona.felicidad_trabajo + 3 * (persona.trabajo.trabajo_calidad / (b + persona.trabajo.huelga))) / 4)
+					array_push(temp_array, persona.felicidad_trabajo)
 				}
-			}
-			#region Calculo de felicidad
-			felicidad_total = felicidad_total * array_length(personas) - persona.felicidad
-			if array_length(medicos) = 1
-				persona.felicidad_salud = floor(persona.felicidad_salud / 2)
-			else{
-				var temp_contaminacion = 0.25;
-				if persona.familia.casa != homeless
-					temp_contaminacion = (1 - clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100) / 100)
-				if persona.trabajo != null_edificio
-					temp_contaminacion *= (1 - clamp(contaminacion[persona.trabajo.x, persona.trabajo.y], 0, 100) / 100)
-				if persona.escuela != null_edificio
-					temp_contaminacion *= (1 - clamp(contaminacion[persona.escuela.x, persona.escuela.y], 0, 100) / 100)
-				temp_contaminacion = 100 * temp_contaminacion
-				persona.felicidad_salud = floor((persona.felicidad_salud + 3 * temp_contaminacion) / 4)
-			}
-			persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
-			temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley]
-			if persona.es_hijo{
-				persona.felicidad_educacion = floor((persona.felicidad_educacion + 3 * edificio_clientes_calidad[persona.escuela.tipo]) / 4)
-				array_push(temp_array, persona.felicidad_educacion)
-			}
-			if persona.trabajo != null_edificio{
-				var b = 1 + real(persona.es_hijo and ley_eneabled[2])
-				persona.felicidad_trabajo = floor((persona.felicidad_trabajo + 3 * (persona.trabajo.trabajo_calidad / (b + persona.trabajo.huelga))) / 4)
-				array_push(temp_array, persona.felicidad_trabajo)
-			}
-			if persona.religion{
-				persona.felicidad_religion = floor(persona.felicidad_religion * 0.9)
-				array_push(temp_array, persona.felicidad_religion)
-			}
-			if persona.familia.casa != homeless and (persona.trabajo != null_edificio or persona.escuela != null_edificio)
-				array_push(temp_array, persona.felicidad_transporte)
-			persona.felicidad = calcular_felicidad(temp_array)
-			felicidad_total = (felicidad_total + persona.felicidad) / array_length(personas)
-			#endregion
-			//Descontento
-			if persona.edad > 18 and persona.edad < 60 and irandom(felicidad_minima) >= persona.felicidad + 5 * (persona.nacionalidad = 0) and dia > 365{
-				//Emigrar
-				if ley_eneabled[5] and persona.familia.riqueza >= 10 * real(persona.familia.integrantes) and brandom(){
-					var familia = persona.familia
-					if familia.padre.felicidad < 15 and familia.madre.felicidad < 15{
-						if familia.padre != null_persona{
-							destroy_persona(familia.padre, false)
-							mes_emigrantes[current_mes]++
-						}
-						if array_contains(familias, familia) and familia.madre != null_persona{
-							destroy_persona(familia.madre, false)
-							mes_emigrantes[current_mes]++
-						}
-						if array_contains(familias, familia)
-							for(var b = 0; b < array_length(familia.hijos); b++){
-								destroy_persona(familia.hijos[b], false)
+				if persona.religion{
+					persona.felicidad_religion = floor(persona.felicidad_religion * 0.9)
+					array_push(temp_array, persona.felicidad_religion)
+				}
+				if persona.familia.casa != homeless and (persona.escuela != null_edificio or not in(persona.trabajo, null_edificio, jubilado, delincuente))
+					array_push(temp_array, persona.felicidad_transporte)
+				persona.felicidad = calcular_felicidad(temp_array)
+				felicidad_total = (felicidad_total + persona.felicidad) / array_length(personas)
+				#endregion
+				//Descontento
+				if persona.edad > 18 and persona.edad < 60 and irandom(felicidad_minima) >= persona.felicidad + 5 * (persona.nacionalidad = 0) and dia > 365{
+					//Emigrar
+					if ley_eneabled[5] and persona.familia.riqueza >= 10 * real(persona.familia.integrantes) and brandom(){
+						var familia = persona.familia
+						if familia.padre.felicidad < 15 and familia.madre.felicidad < 15{
+							if familia.padre != null_persona{
+								destroy_persona(familia.padre, false)
 								mes_emigrantes[current_mes]++
 							}
+							if array_contains(familias, familia) and familia.madre != null_persona{
+								destroy_persona(familia.madre, false)
+								mes_emigrantes[current_mes]++
+							}
+							if array_contains(familias, familia)
+								for(var b = 0; b < array_length(familia.hijos); b++){
+									destroy_persona(familia.hijos[b], false)
+									mes_emigrantes[current_mes]++
+								}
+						}
 					}
-				}
-				//Protestas
-				else if persona.trabajo != null_edificio and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado{
-					var edificio = persona.trabajo, fel_ali = 0, fel_sal = 0, fel_edu = 0, num_edu = 0, fel_div = 0, fel_rel = 0
-					for(var b = 0; b < array_length(edificio.trabajadores); b++){
-						var trabajador = edificio.trabajadores[b]
-						fel_ali += trabajador.familia.felicidad_alimento
-						fel_sal += trabajador.felicidad_salud
-						num_edu += array_length(trabajador.familia.hijos)
-						for(var c = 0; c < array_length(trabajador.familia.hijos); c++)
-							fel_edu += trabajador.familia.hijos[c].felicidad_educacion
-						fel_div += trabajador.felicidad_ocio
-						if trabajador.religion
-							fel_rel += trabajador.felicidad_religion
-					}
-					//Exigencia de alimento
-					if fel_ali / array_length(edificio.trabajadores) < 30{
-						if not exigencia_cumplida[2] and (not edificio.exigencia_fallida or exigencia_cumplida[6])
-							add_huelga(2, edificio)
-						else if not exigencia_cumplida[6]
-							add_huelga(6, edificio)
-					}
-					//Exigencia de salud
-					else if fel_sal / array_length(edificio.trabajadores) < 30{
-						if not exigencia_cumplida[0] and (not edificio.exigencia_fallida or exigencia_cumplida[5])
-							add_huelga(0, edificio)
-						else if not exigencia_cumplida[5]
-							add_huelga(5, edificio)
-					}
-					//Exigencia de educación
-					else if fel_edu / num_edu < 25 and brandom() and not exigencia_cumplida[1]{
-						add_huelga(1, edificio)
-					}
-					//Exigencia de diversión
-					else if fel_div / array_length(edificio.trabajadores) < 25 and brandom() and not exigencia_cumplida[3]{
-						add_huelga(3, edificio)
-					}
-					//Exigencia de religión
-					else if fel_rel / array_length(edificio.trabajadores) < 30 and not exigencia_cumplida[4]{
-						add_huelga(4, edificio)
+					//Protestas
+					else if not in(persona.trabajo, null_edificio, jubilado, delincuente) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado{
+						var edificio = persona.trabajo, fel_ali = 0, fel_sal = 0, fel_edu = 0, num_edu = 0, fel_div = 0, fel_rel = 0
+						for(var b = 0; b < array_length(edificio.trabajadores); b++){
+							var trabajador = edificio.trabajadores[b]
+							fel_ali += trabajador.familia.felicidad_alimento
+							fel_sal += trabajador.felicidad_salud
+							num_edu += array_length(trabajador.familia.hijos)
+							for(var c = 0; c < array_length(trabajador.familia.hijos); c++)
+								fel_edu += trabajador.familia.hijos[c].felicidad_educacion
+							fel_div += trabajador.felicidad_ocio
+							if trabajador.religion
+								fel_rel += trabajador.felicidad_religion
+						}
+						//Exigencia de alimento
+						if fel_ali / array_length(edificio.trabajadores) < 30{
+							if not exigencia_cumplida[2] and (not edificio.exigencia_fallida or exigencia_cumplida[6])
+								add_huelga(2, edificio)
+							else if not exigencia_cumplida[6]
+								add_huelga(6, edificio)
+						}
+						//Exigencia de salud
+						else if fel_sal / array_length(edificio.trabajadores) < 30{
+							if not exigencia_cumplida[0] and (not edificio.exigencia_fallida or exigencia_cumplida[5])
+								add_huelga(0, edificio)
+							else if not exigencia_cumplida[5]
+								add_huelga(5, edificio)
+						}
+						//Exigencia de educación
+						else if fel_edu / num_edu < 25 and brandom() and not exigencia_cumplida[1]{
+							add_huelga(1, edificio)
+						}
+						//Exigencia de diversión
+						else if fel_div / array_length(edificio.trabajadores) < 25 and brandom() and not exigencia_cumplida[3]{
+							add_huelga(3, edificio)
+						}
+						//Exigencia de religión
+						else if fel_rel / array_length(edificio.trabajadores) < 30 and not exigencia_cumplida[4]{
+							add_huelga(4, edificio)
+						}
 					}
 				}
 			}
-		}
-		//Nacimientos
-		while array_length(embarazo[dia mod 365]) > 0{
-			var persona = array_pop(embarazo[dia mod 365])
-			persona.embarazo = -1
-			var hijo = add_persona()
-			hijo.familia = persona.familia
-			if persona.familia.padre != null_persona
-				hijo.apellido = persona.familia.padre.apellido
-			else
-				hijo.apellido = persona.familia.madre.apellido
-			hijo.edad = 0
-			array_pop(cumples[hijo.cumple])
-			hijo.cumple = (dia mod 365)
-			array_push(cumples[hijo.cumple], hijo)
-			array_push(persona.familia.hijos, hijo)
-			mes_nacimientos[current_mes]++
-			hijo.es_hijo = true
-			hijo.relacion.padre = persona.pareja.relacion
-			hijo.relacion.madre = persona.relacion
-			array_push(persona.relacion.hijos, hijo)
-			if persona.pareja != null_persona
-				array_push(persona.pareja.relacion.hijos, hijo)
-			persona.familia.integrantes++
-		}
-		//Muertes
-		while array_length(muerte[dia mod 365]) > 0{
+			//Nacimientos
+			while array_length(embarazo[dia mod 365]) > 0{
+				var persona = array_pop(embarazo[dia mod 365])
+				persona.embarazo = -1
+				var hijo = add_persona()
+				hijo.familia = persona.familia
+				if persona.familia.padre != null_persona
+					hijo.apellido = persona.familia.padre.apellido
+				else
+					hijo.apellido = persona.familia.madre.apellido
+				hijo.edad = 0
+				array_pop(cumples[hijo.cumple])
+				hijo.cumple = (dia mod 365)
+				array_push(cumples[hijo.cumple], hijo)
+				array_push(persona.familia.hijos, hijo)
+				mes_nacimientos[current_mes]++
+				hijo.es_hijo = true
+				hijo.relacion.padre = persona.pareja.relacion
+				hijo.relacion.madre = persona.relacion
+				array_push(persona.relacion.hijos, hijo)
+				if persona.pareja != null_persona
+					array_push(persona.pareja.relacion.hijos, hijo)
+				persona.familia.integrantes++
+			}
+			//Muertes
+			while array_length(muerte[dia mod 365]) > 0{
 			var persona = array_shift(muerte[dia mod 365])
 			destroy_persona(persona)
 			mes_muertos[current_mes]++
@@ -1861,6 +1886,8 @@ if keyboard_check(vk_space) or step >= 60{
 		//Ciclo de los edificios
 		for(var a = 0; a < array_length(dia_trabajo[dia mod 28]); a++){
 			var edificio = dia_trabajo[dia mod 28, a]
+			if edificio = delincuente
+				continue
 			edificio.ganancia -= edificio.mantenimiento
 			if edificio.privado
 				dinero_privado -= edificio.mantenimiento
@@ -2328,7 +2355,7 @@ if keyboard_check(vk_space) or step >= 60{
 							persona.familia.madre.felicidad_salud= floor(persona.familia.madre.felicidad_salud / 2)
 						for(var c = 0; c < array_length(persona.familia.hijos); c++)
 							persona.familia.hijos[c].felicidad_salud = floor(persona.familia.hijos[c].felicidad_salud / 2)
-						if persona.trabajo != null_edificio and persona.trabajo != jubilado
+						if not in(persona.trabajo, null_edificio, jubilado, delincuente)
 							for(var c = 0; c < array_length(persona.trabajo.trabajadores); c++)
 								persona.trabajo.trabajadores[c].felicidad_salud = floor(persona.trabajo.trabajadores[c].felicidad_salud * 0.75)
 						if persona.escuela != null_edificio{

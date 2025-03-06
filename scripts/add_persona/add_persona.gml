@@ -20,6 +20,7 @@ function add_persona(){
 			felicidad_transporte : 50,
 			felicidad_religion : 50,
 			felicidad_ley : 50,
+			felicidad_crimen : 50,
 			educacion : 0,
 			escuela : null_edificio,
 			medico : null_edificio,
