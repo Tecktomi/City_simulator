@@ -242,6 +242,8 @@ escuelas = [null_edificio]
 array_pop(escuelas)
 casas = [null_edificio]
 array_pop(casas)
+casas_libres = [null_edificio]
+array_pop(casas_libres)
 trabajos = [null_edificio]
 array_pop(trabajos)
 iglesias = [null_edificio]

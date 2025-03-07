@@ -1,8 +1,12 @@
 function cambiar_casa(familia = control.null_familia, casa = control.null_edificio){
 	with control{
+		if familia.casa != homeless and array_length(familia.casa.familias) = edificio_familias_max[familia.casa.tipo]
+			array_push(casas_libres, familia.casa)
 		array_remove(familia.casa.familias, familia)
 		array_push(casa.familias, familia)
 		familia.casa = casa
+		if familia.casa != homeless and array_length(familia.casa.familias) = edificio_familias_max[familia.casa.tipo]
+			array_remove(casas_libres, familia.casa)
 		if familia.casa != homeless{
 			if familia.padre != null_persona and not in(familia.padre.trabajo, null_edificio, jubilado, delincuente)
 				familia.padre.felicidad_transporte = 10000 / (100 + 3 * distancia(familia.casa, familia.padre.trabajo))

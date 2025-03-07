@@ -362,7 +362,8 @@ if sel_build{
 		else if ministerio = 1{
 			var temp_array, fel_viv = 0
 			for(var a = 0; a < array_length(edificio_nombre); a++)
-				temp_array[a] = 0
+				if edificio_es_casa[a]
+					temp_array[a] = 0
 			for(var a = 0; a < array_length(personas); a++){
 				fel_viv += personas[a].familia.felicidad_vivienda
 				temp_array[personas[a].familia.casa.tipo]++
@@ -372,12 +373,20 @@ if sel_build{
 				if edificio_es_casa[a] and (edificio_nombre[a] = "Homeless" or array_length(edificio_count[a]) > 0)
 					if draw_menu(110, pos, $"{edificio_nombre[a]}: {temp_array[a]} habitantes ({floor(temp_array[a] * 100 / array_length(personas))}%)", a)
 						for(b = 0; b < array_length(edificio_count[a]); b++)
-							if draw_boton(120, pos, $"{edificio_nombre[a]} {b + 1} (espacio para {edificio_familias_max[a] - array_length(edificio_count[a, b].familias)} familias)"){
+							if draw_boton(120, pos, $"{edificio_nombre[a]} {edificio_count[a, b].number}"){
 								sel_build = false
 								sel_info = true
 								sel_tipo = 0
 								sel_edificio = edificio_count[a, b]
 							}
+			if draw_menu(110, pos, $"Viviendas libres: {array_length(casas_libres)}", 0)
+				for(var a = 0; a < array_length(casas_libres); a++)
+					if draw_boton(120, pos, $"{edificio_nombre[casas_libres[a].tipo]} {casas_libres[a].number}"){
+						sel_build = false
+						sel_info = true
+						sel_tipo = 0
+						sel_edificio = casas_libres[a]
+					}
 		}
 		//Ministerio de Trabajo
 		else if ministerio = 2{
@@ -409,10 +418,9 @@ if sel_build{
 				}
 			draw_text_pos(110, pos, $"Felicidad laboral: {floor(fel_tra / num_tra)}")
 			draw_text_pos(110, pos, $"Desempleo: {floor(100 * num_des / num_tra)}%")
-			draw_text_pos(110, pos, $"{vacantes} puestos de trabajo disponibles")
-			for(var a = 0; a < array_length(edificio_nombre); a++)
-				if edificio_es_trabajo[a] and (edificio_nombre[a] = "Desempleado" or array_length(edificio_count[a]) > 0)
-					if draw_menu(120, pos, $"{edificio_nombre[a]}: {temp_array[a]}/{vacantes_tipo[a] + temp_array[a]} trabajadores", a + 6)
+			if draw_menu(110, pos, $"{vacantes} puestos de trabajo disponibles", 1)
+				for(var a = 0; a < array_length(edificio_nombre); a++)
+					if edificio_es_trabajo[a] and (edificio_nombre[a] = "Desempleado" or array_length(edificio_count[a]) > 0) and draw_menu(120, pos, $"{edificio_nombre[a]}: {temp_array[a]}/{vacantes_tipo[a] + temp_array[a]} trabajadores", a + 7)
 						for(b = 0; b < array_length(edificio_count[a]); b++)
 							if draw_boton(120, pos, $"{edificio_nombre[a]} {b + 1}"){
 								sel_build = false
@@ -458,7 +466,7 @@ if sel_build{
 			if ley_eneabled[2] and num_tra > 0
 				draw_text_pos(110, pos, $"{floor(100 * num_nin / num_tra)} % de trabajores son niños.")
 			for(var a = 0; a < array_length(educacion_nombre); a++)
-				if array_length(trabajo_educacion[a]) > 0 and draw_menu(110, pos, educacion_nombre[a], a + 1)
+				if array_length(trabajo_educacion[a]) > 0 and draw_menu(110, pos, educacion_nombre[a], a + 2)
 					for(b = 0; b < array_length(trabajo_educacion[a]); b++)
 						draw_text_pos(120, pos, edificio_nombre[trabajo_educacion[a, b].tipo])
 		}

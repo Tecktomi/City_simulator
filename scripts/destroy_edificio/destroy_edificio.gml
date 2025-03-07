@@ -12,8 +12,6 @@ function destroy_edificio(edificio = control.null_edificio){
 			array_remove(trabajo_educacion[edificio_trabajo_educacion[tipo]], edificio)
 		for(var a = 0; a < array_length(edificio.trabajadores); a++)
 			cambiar_trabajo(edificio.trabajadores[a], null_edificio)
-		for(var a = 0; a < array_length(edificio.familias); a++)
-			cambiar_casa(edificio.familias[a], homeless)
 		if edificio_es_medico[tipo]{
 			array_remove(medicos, edificio)
 			for(var a = 0; a < array_length(edificio.clientes); a++)
@@ -33,7 +31,11 @@ function destroy_edificio(edificio = control.null_edificio){
 			array_remove(casas, edificio)
 			for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
 				array_remove(edificio.edificios_cerca[a].casas_cerca, edificio)
+			if array_length(edificio.familias) != edificio_familias_max[tipo]
+				array_remove(casas_libres, edificio)
 		}
+		for(var a = 0; a < array_length(edificio.familias); a++)
+			cambiar_casa(edificio.familias[a], homeless)
 		if edificio_es_iglesia[tipo]
 			for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
 				array_remove(edificio.edificios_cerca[a].iglesias_cerca, edificio)

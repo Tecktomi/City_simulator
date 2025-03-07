@@ -79,8 +79,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 				}
 				cumplir_exigencia(0)
 			}
-			if edificio_es_casa[tipo]
+			if edificio_es_casa[tipo]{
 				array_push(casas, edificio)
+				array_push(casas_libres, edificio)
+			}
 			if edificio_es_iglesia[tipo]{
 				array_push(iglesias, edificio)
 				cumplir_exigencia(4)
