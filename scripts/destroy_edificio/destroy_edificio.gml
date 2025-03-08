@@ -29,10 +29,12 @@ function destroy_edificio(edificio = control.null_edificio){
 		}
 		if edificio_es_casa[tipo]{
 			array_remove(casas, edificio)
-			for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
-				array_remove(edificio.edificios_cerca[a].casas_cerca, edificio)
-			if array_length(edificio.familias) != edificio_familias_max[tipo]
-				array_remove(casas_libres, edificio)
+			if edificio_nombre[tipo] != "Toma"{
+				for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
+					array_remove(edificio.edificios_cerca[a].casas_cerca, edificio)
+				if array_length(edificio.familias) != edificio_familias_max[tipo]
+					array_remove(casas_libres, edificio)
+			}
 		}
 		for(var a = 0; a < array_length(edificio.familias); a++)
 			cambiar_casa(edificio.familias[a], homeless)
@@ -59,6 +61,8 @@ function destroy_edificio(edificio = control.null_edificio){
 					array_delete(encargos, a--, 1)
 				else
 					encargos[a].edificio = null_edificio
+		if edificio.ladron != null_persona
+			edificio.ladron.ladron = null_edificio
 		//Modificar belleza
 		if edificio_belleza[tipo] != 50{
 			var size = ceil(abs(edificio_belleza[tipo] - 50) / 5)

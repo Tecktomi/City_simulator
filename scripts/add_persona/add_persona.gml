@@ -37,7 +37,9 @@ function add_persona(){
 				nombre : "",
 				sexo : a
 			
-			}
+			},
+			ladron : null_edificio,
+			preso : false
 		}
 	
 		array_push(null_edificio.trabajadores, persona)

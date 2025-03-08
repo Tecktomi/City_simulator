@@ -66,6 +66,8 @@ function destroy_persona(persona = null_persona, muerte = true){
 				temp_persona.medico = persona.medico
 			}
 		}
+		if persona.ladron != null_edificio
+			persona.ladron.ladron = null_persona
 		if array_length(personas) > 0
 			felicidad_total = (felicidad_total * (array_length(personas) + 1) - persona.felicidad) / array_length(personas)
 		else{

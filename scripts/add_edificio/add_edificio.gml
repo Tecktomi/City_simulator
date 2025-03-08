@@ -36,7 +36,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			muelle_cercano : null_edificio,
 			distancia_muelle_cercano : 0,
 			number : ++control.edificio_number[tipo],
-			rotado : rotado
+			rotado : rotado,
+			ladron : null_persona
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
@@ -47,6 +48,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 		array_pop(edificio.iglesias_cerca)
 		array_pop(edificio.array_complex)
 		array_push(dia_trabajo[edificio.dia_factura], edificio)
+		var var_edificio_nombre = edificio_nombre[tipo]
 		for(var a = 0; a < array_length(recurso_nombre); a++){
 			array_push(edificio.almacen, 0)
 			array_push(edificio.pedido, 0)
@@ -90,16 +92,15 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			if edificio_es_ocio[tipo]
 				cumplir_exigencia(3)
 			array_push(edificio_count[tipo], edificio)
-			if edificio_nombre[tipo] = "Aserradero"{
+			if var_edificio_nombre = "Aserradero"{
 				for(var a = max(0, x - 5); a < min(x + width + 5, xsize); a++)
 					for(var b = max(0, y - 5); b < min(y + height + 5, ysize); b++)
 						if bosque[a, b]
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
 			}
-			if edificio_nombre[tipo] != "Muelle"{
+			if var_edificio_nombre != "Muelle"
 				buscar_muelle_cercano(edificio)
-			}
 			else{
 				for(var a = 0; a < array_length(edificios); a++){
 					var edificio_2 = edificios[a]
@@ -120,15 +121,15 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 						if not array_contains(edificio.edificios_cerca, temp_edificio){
 							array_push(edificio.edificios_cerca, temp_edificio)
 							array_push(temp_edificio.edificios_cerca, edificio)
-							if edificio_es_trabajo[edificio.tipo]
+							if edificio_es_trabajo[tipo]
 								array_push(temp_edificio.trabajos_cerca, edificio)
 							if edificio_es_trabajo[temp_edificio.tipo]
 								array_push(edificio.trabajos_cerca, temp_edificio)
-							if edificio_es_casa[edificio.tipo]
+							if edificio_es_casa[tipo] and var_edificio_nombre != "Toma"
 								array_push(temp_edificio.casas_cerca, edificio)
-							if edificio_es_casa[temp_edificio.tipo]
+							if edificio_es_casa[temp_edificio.tipo] and edificio_nombre[temp_edificio.tipo] != "Toma"
 								array_push(edificio.casas_cerca, temp_edificio)
-							if edificio_es_iglesia[edificio.tipo]
+							if edificio_es_iglesia[tipo]
 								array_push(temp_edificio.iglesias_cerca, edificio)
 							if edificio_es_iglesia[temp_edificio.tipo]
 								array_push(edificio.iglesias_cerca, temp_edificio)

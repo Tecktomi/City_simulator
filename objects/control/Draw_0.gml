@@ -982,7 +982,7 @@ if sel_info{
 	if sel_tipo = 0 and sel_edificio != null_edificio{
 		x = sel_edificio.x
 		y = sel_edificio.y
-		var tipo = sel_edificio.tipo, width = edificio_width[tipo], height = edificio_height[tipo]
+		var index = sel_edificio.tipo, width = edificio_width[index], height = edificio_height[index], var_edificio_nombre = edificio_nombre[index]
 		if sel_edificio.rotado{
 			var a = width
 			width = height
@@ -991,7 +991,7 @@ if sel_info{
 		draw_set_color(c_white)
 		draw_rombo((x - y) * tile_width - xpos, (x + y) * tile_height - ypos - 1, (x - y - height) * tile_width - xpos - 1, (x + y + height) * tile_height - ypos, (x - y + width - height) * tile_width - xpos, (x + y + width + height) * tile_height - ypos + 1, (x - y + width) * tile_width - xpos + 1, (x + y + width) * tile_height - ypos, true)
 		draw_set_color(c_black)
-		draw_text_pos(room_width, pos, $"{edificio_nombre[sel_edificio.tipo]} {sel_edificio.number}")
+		draw_text_pos(room_width, pos, $"{var_edificio_nombre} {sel_edificio.number}")
 		if sel_edificio.privado
 			draw_text_pos(room_width - 20, pos, "PRIVADO")
 		//Paro
@@ -1023,29 +1023,39 @@ if sel_info{
 		else if sel_edificio.exigencia != null_exigencia
 			draw_text_pos(room_width - 20, pos, $"Esperando que cumplas {exigencia_nombre[sel_edificio.huelga_motivo]}")
 		#region presupuesto
-		if not sel_edificio.privado and edificio_nombre[sel_edificio.tipo] != "Toma"
+		if not sel_edificio.privado and var_edificio_nombre != "Toma"
 			for(var a = 0; a < 5; a++)
 				if draw_sprite_boton(spr_icono, 3 - (a > sel_edificio.presupuesto), room_width - 200 + a * 40, pos, 40, 40)
-					for(var b = 0; b < array_length(edificio_count[sel_edificio.tipo]); b++){
+					for(var b = 0; b < array_length(edificio_count[index]); b++){
 						var edificio = undefined
 						if keyboard_check(vk_lshift){
-							edificio = edificio_count[sel_edificio.tipo, b]
+							edificio = edificio_count[index, b]
 							if edificio.privado
 								continue
 						}
 						else{
-							b = array_length(edificio_count[sel_edificio.tipo])
+							b = array_length(edificio_count[index])
 							edificio = sel_edificio
 						}
 						set_presupuesto(a, edificio)
 					}
 		pos += 40
-		draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[sel_edificio.tipo] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
-			edificio_es_casa[sel_edificio.tipo] ? "Calidad de vivienda: " + string(sel_edificio.vivienda_calidad) + "\n" : ""}")
+		draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[index] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
+			edificio_es_casa[index] ? "Calidad de vivienda: " + string(sel_edificio.vivienda_calidad) + "\n" : ""}")
 		#endregion
+		//Prisiones
+		if var_edificio_nombre = "Comisaría"
+			if draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.clientes)} presxs.", 2)
+				for(var a = 0; a < array_length(sel_edificio.clientes); a++)
+					if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a])){
+						sel_persona = sel_edificio.clientes[a]
+						sel_edificio = null_edificio
+						sel_tipo = 2
+						close_show()
+					}
 		//Información familias
-		if edificio_es_casa[sel_edificio.tipo]{
-			if draw_menu(room_width - 20, pos, $"Familias: {array_length(sel_edificio.familias)}/{edificio_familias_max[sel_edificio.tipo]}", 3)
+		if edificio_es_casa[index]{
+			if draw_menu(room_width - 20, pos, $"Familias: {array_length(sel_edificio.familias)}/{edificio_familias_max[index]}", 3)
 				for(var a = 0; a < array_length(sel_edificio.familias); a++)
 					if draw_boton(room_width - 40, pos, $"Familia {sel_edificio.familias[a].padre.apellido} {sel_edificio.familias[a].madre.apellido}"){
 						sel_familia = sel_edificio.familias[a]
@@ -1053,14 +1063,14 @@ if sel_info{
 					}
 		}
 		//Información trabajadores
-		if edificio_es_trabajo[sel_edificio.tipo]{
-			if draw_menu(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{edificio_trabajadores_max[sel_edificio.tipo]}", 4)
+		if edificio_es_trabajo[index]{
+			if draw_menu(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{edificio_trabajadores_max[index]}", 4)
 				for(var a = 0; a < array_length(sel_edificio.trabajadores); a++)
 					if draw_boton(room_width - 40, pos, name(sel_edificio.trabajadores[a])){
 						sel_persona = sel_edificio.trabajadores[a]
 						sel_tipo = 2
 					}
-			if edificio_nombre[sel_edificio.tipo] = "Granja"{
+			if var_edificio_nombre = "Granja"{
 				if current_mes = 5 or current_mes = 10
 					draw_text_pos(room_width - 20, pos, "Consecha")
 				else
@@ -1083,10 +1093,10 @@ if sel_info{
 							}
 						}
 			}
-			if edificio_nombre[sel_edificio.tipo] = "Pescadería"
+			if var_edificio_nombre = "Pescadería"
 				if contaminacion[sel_edificio.x, sel_edificio.y] > 0
 					draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
-			if edificio_nombre[sel_edificio.tipo] = "Mina"{
+			if var_edificio_nombre = "Mina"{
 				draw_text_pos(room_width - 20, pos, $"Extrayendo {recurso_nombre[recurso_mineral[sel_edificio.modo]]}")
 				var c = 0
 				for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + width + 1); a++)
@@ -1107,7 +1117,7 @@ if sel_info{
 							}
 						}
 			}
-			if edificio_nombre[sel_edificio.tipo] = "Rancho"{
+			if var_edificio_nombre = "Rancho"{
 				if contaminacion[sel_edificio.x, sel_edificio.y] > 0
 					draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
 				draw_text_pos(room_width - 20, pos, $"Produciendo {ganado_nombre[sel_edificio.modo]}")
@@ -1122,8 +1132,8 @@ if sel_info{
 			}
 		}
 		//Información escuelas / consultas
-		if edificio_es_escuela[sel_edificio.tipo] or edificio_es_medico[sel_edificio.tipo]{
-			if draw_menu(room_width - 20, pos, $"{edificio_es_escuela[sel_edificio.tipo] ? "Estudientes" : "Clientes"}: {array_length(sel_edificio.clientes)}/{edificio_clientes_max[sel_edificio.tipo]}", 2)
+		if edificio_es_escuela[index] or edificio_es_medico[index]{
+			if draw_menu(room_width - 20, pos, $"{edificio_es_escuela[index] ? "Estudientes" : "Clientes"}: {array_length(sel_edificio.clientes)}/{edificio_clientes_max[index]}", 2)
 				for(var a = 0; a < array_length(sel_edificio.clientes); a++)
 					if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a])){
 						sel_persona = sel_edificio.clientes[a]
@@ -1149,10 +1159,10 @@ if sel_info{
 				}
 		}
 		//Privatizar / Estatizar
-		if not edificio_estatal[sel_edificio.tipo] and not sel_edificio.huelga{
+		if not edificio_estatal[index] and not sel_edificio.huelga{
 			pos += 20
-			var temp_precio = edificio_precio[sel_edificio.tipo], temp_text = $"Edificio base: ${temp_precio}"
-			if edificio_nombre[sel_edificio.tipo] = "Mina"{
+			var temp_precio = edificio_precio[index], temp_text = $"Edificio base: ${temp_precio}"
+			if var_edificio_nombre = "Mina"{
 				var c = 0
 				for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + width + 1); a++)
 					for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + height + 1); b++)
@@ -1162,7 +1172,7 @@ if sel_info{
 				temp_precio += c
 				temp_text += $"\nDerechos mineros: ${c}"
 			}
-			else if edificio_nombre[sel_edificio.tipo] = "Aserradero"{
+			else if var_edificio_nombre = "Aserradero"{
 				var c = 0
 				for(var a = max(0, sel_edificio.x - 5); a < min(sel_edificio.x + width + 5, xsize); a++)
 					for(var b = max(0, sel_edificio.y - 5); b < min(sel_edificio.y + height + 5, ysize); b++)
@@ -1208,7 +1218,7 @@ if sel_info{
 			draw_text_pos(room_width, pos, $"Balance: ${floor(sel_edificio.ganancia)}")
 		}
 		//Abrir ministerio de economía
-		if edificio_nombre[sel_edificio.tipo] = "Muelle"{
+		if var_edificio_nombre = "Muelle"{
 			if draw_boton(room_width, pos, "Abrir ministerio de economía"){
 				sel_build = true
 				sel_info = false
@@ -1219,7 +1229,7 @@ if sel_info{
 			sel_edificio = sel_edificio.muelle_cercano
 		//Destruir edificio
 		pos += 40
-		if not sel_edificio.privado and ((sel_edificio.tipo != 13 and sel_edificio.tipo != 20) or array_length(edificio_count[sel_edificio.tipo]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.huelga){
+		if not sel_edificio.privado and ((var_edificio_nombre != "Muelle" and var_edificio_nombre != "Oficina de Construcción") or array_length(edificio_count[index]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.huelga){
 			destroy_edificio(sel_edificio)
 			sel_info = false
 		}
@@ -1574,7 +1584,7 @@ if keyboard_check(vk_space) or step >= 60{
 				if random(1) < 0.2 and persona.medico = null_edificio
 					buscar_atencion_medica(persona)
 				//Estudiar
-				if persona.edad > 4 and persona.edad < 18{
+				if persona.edad > 4 and persona.edad < 18 and not persona.preso{
 					if persona.escuela = null_edificio
 						buscar_escuela(persona)
 					else{
@@ -1610,7 +1620,7 @@ if keyboard_check(vk_space) or step >= 60{
 					persona.escuela = null_edificio
 				}
 				//Trabajo infantil :D
-				if ley_eneabled[2] and persona.es_hijo and persona.edad > 12
+				if ley_eneabled[2] and persona.es_hijo and persona.edad > 12 and not persona.preso
 					if buscar_trabajo(persona){
 						var flag = false
 						for(var b = 0; b < array_length(persona.familia.hijos); b++)
@@ -1624,7 +1634,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 				//Independizarse
-				if persona.edad > 18 and (irandom_range(persona.edad, 24) = 24 or persona.edad > 24) and persona.es_hijo{
+				if persona.edad > 18 and (irandom_range(persona.edad, 24) = 24 or persona.edad > 24) and persona.es_hijo and not persona.preso{
 					buscar_trabajo(persona)
 					if persona.trabajo != null_edificio or persona.edad > 24{
 						var prev_familia = persona.familia, herencia = 0, b = prev_familia.felicidad_vivienda, c = prev_familia.felicidad_alimento
@@ -1648,7 +1658,7 @@ if keyboard_check(vk_space) or step >= 60{
 						add_felicidad_ley(persona, -10)
 				}
 				//Adultez
-				else if persona.edad > 24 and persona.edad < 60{
+				else if persona.edad > 24 and persona.edad < 60 and not persona.preso{
 					//Casarse
 					if persona.pareja = null_persona{
 						var persona_2 = personas[irandom(array_length(personas) - 1)]
@@ -1706,9 +1716,14 @@ if keyboard_check(vk_space) or step >= 60{
 					//Buscar trabajo
 					if not buscar_trabajo(persona) and irandom(persona.educacion) = 0 and irandom(persona.edad) < 10
 						cambiar_trabajo(persona, delincuente)
+					//Delinquir
 					if persona.trabajo = delincuente{
 						var familia = familias[irandom(array_length(familias) - 1)]
-						if familia != persona.familia{
+						if familia != persona.familia and (familia.casa = homeless or familia.casa.ladron = null_persona){
+							if familia.casa != homeless{
+								familia.casa.ladron = persona
+								persona.ladron = familia.casa
+							}
 							var b = clamp(irandom(familia.riqueza), 0, 24)
 							if b > 0{
 								familia.riqueza -= b
@@ -1723,7 +1738,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Mudarse
-					if not buscar_casa(persona) and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente){
+					if not buscar_casa(persona) and persona.familia.casa = homeless and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente){
 						var temp_array_coord = [], index = persona.trabajo.tipo, width = edificio_width[index], height = edificio_height[index]
 						if persona.trabajo.rotado{
 							var b = width
@@ -1742,14 +1757,15 @@ if keyboard_check(vk_space) or step >= 60{
 				//Vejez
 				else if persona.edad > 60{
 					//Jubilarse
-					if ley_eneabled[3] and persona.edad >= 65 - 5 * persona.sexo{
-						cambiar_trabajo(persona, jubilado)
-						add_felicidad_ley(persona, 10)
-					}
-					else{
-						buscar_trabajo(persona)
-						buscar_casa(persona)
-					}
+					if not persona.preso
+						if ley_eneabled[3] and persona.edad >= 65 - 5 * persona.sexo{
+							cambiar_trabajo(persona, jubilado)
+							add_felicidad_ley(persona, 10)
+						}
+						else{
+							buscar_trabajo(persona)
+							buscar_casa(persona)
+						}
 					//Morir
 					if irandom(persona.edad) > 60{
 						persona.muerte = irandom(364)
@@ -1757,37 +1773,39 @@ if keyboard_check(vk_space) or step >= 60{
 					}
 				}
 				//Acudir a edificios de ocio
-				var temp_array = array_shuffle(edificios_ocio_index)
-				persona.felicidad_ocio = 0
-				for(var b = 0; b < array_length(temp_array); b++)
-					if array_length(edificio_count[temp_array[b]]) > 0 and (persona.edad > 12 or (edificio_nombre[temp_array[b]] != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (edificio_nombre[temp_array[b]] != "Circo")) and ((not persona.sexo and persona.edad > 15) or (edificio_nombre[temp_array[b]] != "Cabaret")){
-						var ocio = edificio_count[temp_array[b], irandom(array_length(edificio_count[temp_array[b]]) - 1)]
-						if ocio.count < edificio_clientes_max[temp_array[b]] and persona.familia.riqueza >= edificio_clientes_tarifa[temp_array[b]]{
-							persona.familia.riqueza -= edificio_clientes_tarifa[temp_array[b]]
-							ocio.ganancia += edificio_clientes_tarifa[temp_array[b]]
-							if ocio.privado
-								dinero_privado += edificio_clientes_tarifa[temp_array[b]]
-							else{
-								dinero += edificio_clientes_tarifa[temp_array[b]]
-								mes_tarifas[current_mes] += edificio_clientes_tarifa[temp_array[b]]
+				if not persona.preso{
+					var temp_array = array_shuffle(edificios_ocio_index)
+					persona.felicidad_ocio = 0
+					for(var b = 0; b < array_length(temp_array); b++)
+						if array_length(edificio_count[temp_array[b]]) > 0 and (persona.edad > 12 or (edificio_nombre[temp_array[b]] != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (edificio_nombre[temp_array[b]] != "Circo")) and ((not persona.sexo and persona.edad > 15) or (edificio_nombre[temp_array[b]] != "Cabaret")){
+							var ocio = edificio_count[temp_array[b], irandom(array_length(edificio_count[temp_array[b]]) - 1)]
+							if ocio.count < edificio_clientes_max[temp_array[b]] and persona.familia.riqueza >= edificio_clientes_tarifa[temp_array[b]]{
+								persona.familia.riqueza -= edificio_clientes_tarifa[temp_array[b]]
+								ocio.ganancia += edificio_clientes_tarifa[temp_array[b]]
+								if ocio.privado
+									dinero_privado += edificio_clientes_tarifa[temp_array[b]]
+								else{
+									dinero += edificio_clientes_tarifa[temp_array[b]]
+									mes_tarifas[current_mes] += edificio_clientes_tarifa[temp_array[b]]
+								}
+								ocio.count++
+								persona.ocios[b] = edificio_clientes_calidad[temp_array[b]]
+								persona.felicidad_ocio += persona.ocios[b]
 							}
-							ocio.count++
-							persona.ocios[b] = edificio_clientes_calidad[temp_array[b]]
-							persona.felicidad_ocio += persona.ocios[b]
+							else{
+								persona.ocios[b] = floor(persona.ocios[b] / 2)
+								persona.felicidad_ocio += persona.ocios[b]
+							}
 						}
 						else{
 							persona.ocios[b] = floor(persona.ocios[b] / 2)
 							persona.felicidad_ocio += persona.ocios[b]
 						}
-					}
-					else{
-						persona.ocios[b] = floor(persona.ocios[b] / 2)
-						persona.felicidad_ocio += persona.ocios[b]
-					}
-				if persona.felicidad_ocio > 100
-					persona.felicidad_ocio = 100
+					if persona.felicidad_ocio > 100
+						persona.felicidad_ocio = 100
+				}
 				//Ir a la iglesia
-				if array_length(iglesias) > 0 and (persona.religion or (persona.edad < 12 and random(1) < 0.1)){
+				if array_length(iglesias) > 0 and (persona.religion or (persona.edad < 12 and random(1) < 0.1)) and not persona.preso{
 					persona.religion = true
 					var iglesia= null_edificio
 					if persona.familia.casa != homeless{
@@ -1817,7 +1835,7 @@ if keyboard_check(vk_space) or step >= 60{
 					persona.felicidad_salud = floor((persona.felicidad_salud + 3 * temp_contaminacion) / 4)
 				}
 				persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
-				temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley, persona.felicidad_crimen]
+				var temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley, persona.felicidad_crimen]
 				persona.felicidad_crimen = min(persona.felicidad_crimen + 5, 100)
 				if persona.es_hijo{
 					persona.felicidad_educacion = floor((persona.felicidad_educacion + 3 * edificio_clientes_calidad[persona.escuela.tipo]) / 4)
@@ -1840,7 +1858,7 @@ if keyboard_check(vk_space) or step >= 60{
 				//Descontento
 				if persona.edad > 18 and persona.edad < 60 and irandom(felicidad_minima) >= persona.felicidad + 5 * (persona.nacionalidad = 0) and dia > 365{
 					//Emigrar
-					if ley_eneabled[5] and persona.familia.riqueza >= 10 * real(persona.familia.integrantes) and brandom(){
+					if ley_eneabled[5] and persona.familia.riqueza >= 10 * real(persona.familia.integrantes) and brandom() and not persona.preso{
 						var familia = persona.familia
 						if familia.padre.felicidad < 15 and familia.madre.felicidad < 15{
 							if familia.padre != null_persona{
@@ -1859,7 +1877,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Protestas
-					else if not in(persona.trabajo, null_edificio, jubilado, delincuente) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado{
+					else if not in(persona.trabajo, null_edificio, jubilado, delincuente) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado and not persona.preso{
 						var edificio = persona.trabajo, fel_ali = 0, fel_sal = 0, fel_edu = 0, num_edu = 0, fel_div = 0, fel_rel = 0
 						for(var b = 0; b < array_length(edificio.trabajadores); b++){
 							var trabajador = edificio.trabajadores[b]
@@ -1934,7 +1952,7 @@ if keyboard_check(vk_space) or step >= 60{
 		#endregion
 		//Ciclo de los edificios
 		for(var a = 0; a < array_length(dia_trabajo[dia mod 28]); a++){
-			var edificio = dia_trabajo[dia mod 28, a], index = edificio.tipo, width = edificio_width[index], height = edificio_height[index]
+			var edificio = dia_trabajo[dia mod 28, a], index = edificio.tipo, width = edificio_width[index], height = edificio_height[index], var_edificio_nombre = edificio_nombre[index]
 			if edificio = delincuente
 				continue
 			if edificio.rotado{
@@ -1949,13 +1967,17 @@ if keyboard_check(vk_space) or step >= 60{
 				dinero -= edificio.mantenimiento
 				mes_mantenimiento[current_mes] += edificio.mantenimiento
 			}
+			if edificio.ladron != null_persona{
+				edificio.ladron.ladron = null_edificio
+				edificio.ladron = null_persona
+			}
 			//Edificios de trabajo
-			if edificio_es_trabajo[edificio.tipo]{
+			if edificio_es_trabajo[index]{
 				if edificio.huelga{
 					edificio.huelga_tiempo--
 					if edificio.huelga_tiempo = 0
 						set_paro(false, edificio)
-					if edificio_nombre[edificio.tipo] = "Granja" and (current_mes = 5 or current_mes = 10)
+					if var_edificio_nombre = "Granja" and (current_mes = 5 or current_mes = 10)
 						edificio.count = 0
 				}
 				else if not edificio.paro{
@@ -1970,7 +1992,7 @@ if keyboard_check(vk_space) or step >= 60{
 					for(b = 0; b < array_length(edificio.trabajadores); b++)
 						edificio.trabajadores[b].familia.riqueza += edificio.trabajo_sueldo
 					//Granjas
-					if edificio_nombre[edificio.tipo] = "Granja"{
+					if var_edificio_nombre = "Granja"{
 						if current_mes = 5 or current_mes = 10{
 							edificio.almacen[recurso_cultivo[edificio.modo]] += round(15 * min(edificio.count, edificio.trabajo_mes / 5) * edificio.eficiencia * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
 							edificio.count = 0
@@ -1986,7 +2008,7 @@ if keyboard_check(vk_space) or step >= 60{
 					
 					}
 					//Aserradero
-					else if edificio_nombre[edificio.tipo] = "Aserradero"{
+					else if var_edificio_nombre = "Aserradero"{
 						//Cortar árboles
 						if array_length(edificio.array_complex) > 0{
 							b = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))
@@ -2023,7 +2045,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Pescadería
-					else if edificio_nombre[edificio.tipo] = "Pescadería"{
+					else if var_edificio_nombre = "Pescadería"{
 						edificio.almacen[8] += round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
 						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[8] > 200{
 							edificio.ganancia += recurso_precio[8] * edificio.almacen[8]
@@ -2032,7 +2054,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Minas
-					else if edificio_nombre[edificio.tipo] = "Mina"{
+					else if var_edificio_nombre = "Mina"{
 						b = round(edificio.trabajo_mes / 2 * (0.8 + 0.1 * edificio.presupuesto))
 						var e = b
 						for(var c = max(0, edificio.x - 1); c < min(xsize - 1, edificio.x + width + 1); c++){
@@ -2070,7 +2092,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Muelle
-					else if edificio_nombre[edificio.tipo] = "Muelle"{
+					else if var_edificio_nombre = "Muelle"{
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
 							var c = round(edificio.trabajo_mes * 5 * (0.8 + 0.1 * edificio.presupuesto))
 							for(b = 0; b < array_length(recurso_nombre) and c > 0; b++){
@@ -2128,7 +2150,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Planta Siderúrgica
-					else if edificio_nombre[edificio.tipo] = "Planta Siderúrgica"{
+					else if var_edificio_nombre = "Planta Siderúrgica"{
 						b = max(0, min(floor(edificio.almacen[9] / 2), floor(edificio.almacen[10] / 3), round(edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[9] -= b * 2
 						edificio.almacen[10] -= b * 3
@@ -2146,7 +2168,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Fábrica textil
-					else if edificio_nombre[edificio.tipo] = "Fábrica Textil"{
+					else if var_edificio_nombre = "Fábrica Textil"{
 						b = max(0, min(max(floor(edificio.almacen[3] / 3), floor(edificio.almacen[20] / 3)), round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))))
 						if edificio.almacen[3] > edificio.almacen[20]
 							edificio.almacen[3] -= b * 3
@@ -2166,7 +2188,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Astillero
-					else if edificio_nombre[edificio.tipo] = "Astillero"{
+					else if var_edificio_nombre = "Astillero"{
 						b = max(0, min(floor(edificio.almacen[1] / 4), edificio.almacen[7], edificio.almacen[12], edificio.almacen[16], round(edificio.trabajo_mes / 125 * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[1] -= b * 4
 						edificio.almacen[7] -= b
@@ -2193,7 +2215,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Rancho
-					else if edificio_nombre[edificio.tipo] = "Rancho"{
+					else if var_edificio_nombre = "Rancho"{
 						b = edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200)
 						for(var c = 0; c < array_length(ganado_produccion[edificio.modo]); c++)
 							edificio.almacen[ganado_produccion[edificio.modo, c]] += floor(10 * b / array_length(ganado_produccion[edificio.modo]))
@@ -2209,7 +2231,7 @@ if keyboard_check(vk_space) or step >= 60{
 						
 					}
 					//Destilería de Ron
-					else if edificio_nombre[edificio.tipo] = "Destilería de Ron"{
+					else if var_edificio_nombre = "Destilería de Ron"{
 						b = max(0, min(floor(edificio.almacen[5] / 3), round(edificio.trabajo_mes / 12 * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[5] -= b * 3
 						edificio.almacen[22] += b
@@ -2223,7 +2245,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Quesería
-					else if edificio_nombre[edificio.tipo] = "Quesería"{
+					else if var_edificio_nombre = "Quesería"{
 						b = max(0, min(edificio.almacen[19], round(edificio.trabajo_mes / 9 * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[19] -= b
 						edificio.almacen[23] += b
@@ -2237,7 +2259,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Herrería
-					else if edificio_nombre[edificio.tipo] = "Herrería"{
+					else if var_edificio_nombre = "Herrería"{
 						b = max(0, min(edificio.almacen[1], edificio.almacen[15], round(edificio.trabajo_mes / 50 * (0.8 + 0.1 * edificio.presupuesto))))
 						edificio.almacen[1] -= b
 						edificio.almacen[15] -= b
@@ -2254,20 +2276,47 @@ if keyboard_check(vk_space) or step >= 60{
 							edificio.pedido[15] = 120 - edificio.almacen[15]
 						}
 					}
+					//Comisaría
+					else if var_edificio_nombre = "Comisaría"{
+						while array_length(edificio.clientes) > 0{
+							var persona = array_shift(edificio.clientes)
+							persona.preso = false
+							cambiar_trabajo(persona, null_edificio)
+						}
+						for(b = irandom(edificio.trabajo_mes / 14 * (0.8 + 0.1 * edificio.presupuesto)); b > 0 and array_length(edificio.clientes) < edificio_clientes_max[index]; b--){
+							var temp_edificio = edificio.casas_cerca[irandom(array_length(edificio.casas_cerca) - 1)]
+							if temp_edificio.ladron != null_persona{
+								var persona = temp_edificio.ladron
+								array_push(edificio.clientes, persona)
+								persona.preso = true
+								temp_edificio.ladron = null_persona
+								persona.ladron = null_edificio
+							}
+							for(var c = 0; c < array_length(temp_edificio.familias); c++){
+								var familia = temp_edificio.familias[c]
+								if familia.padre != null_persona
+									familia.padre.felicidad_crimen = min(100, familia.padre.felicidad_crimen + 4)
+								if familia.madre != null_persona
+									familia.madre.felicidad_crimen = min(100, familia.madre.felicidad_crimen + 4)
+								for(var d = 0; d < array_length(familia.hijos); d++)
+									familia.hijos[d].felicidad_crimen = min(100, familia.hijos[d].felicidad_crimen + 4)
+							}
+						}
+					}
 				}
 			}
 			//Casas
-			if edificio_es_casa[edificio.tipo] and (array_length(edificio.familias) > 0 or edificio.tipo = 32){
-				if edificio.tipo = 32 and array_length(edificio.familias) = 0{
+			if edificio_es_casa[index] and (array_length(edificio.familias) > 0 or var_edificio_nombre = "Toma"){
+				if var_edificio_nombre = "Toma" and array_length(edificio.familias) = 0{
 					destroy_edificio(edificio)
 					continue
 				}
-				edificio.ganancia += edificio_familias_renta[edificio.tipo] * array_length(edificio.familias)
+				edificio.ganancia += edificio_familias_renta[index] * array_length(edificio.familias)
 				if edificio.privado
-					dinero_privado += edificio_familias_renta[edificio.tipo] * array_length(edificio.familias)
+					dinero_privado += edificio_familias_renta[index] * array_length(edificio.familias)
 				else{
-					dinero += edificio_familias_renta[edificio.tipo] * array_length(edificio.familias)
-					mes_renta[current_mes] += edificio_familias_renta[edificio.tipo] * array_length(edificio.familias)
+					dinero += edificio_familias_renta[index] * array_length(edificio.familias)
+					mes_renta[current_mes] += edificio_familias_renta[index] * array_length(edificio.familias)
 				}
 				var poblacion = 0
 				for(var b = 0; b < array_length(edificio.familias); b++)
@@ -2378,7 +2427,7 @@ if keyboard_check(vk_space) or step >= 60{
 				if edificio != homeless
 					for(var b = 0; b < array_length(edificio.familias); b++){
 						var familia = edificio.familias[b]
-						familia.riqueza -= edificio_familias_renta[edificio.tipo]
+						familia.riqueza -= edificio_familias_renta[index]
 						if familia.riqueza <= -30{
 							cambiar_casa(familia, homeless)
 							b--
@@ -2386,11 +2435,11 @@ if keyboard_check(vk_space) or step >= 60{
 					}
 			}
 			//Edificios médicos
-			if edificio_es_medico[edificio.tipo]{
+			if edificio_es_medico[index]{
 				//Curar pacientes
-				repeat(min(array_length(edificio.clientes), round(edificio_clientes_calidad[edificio.tipo] * edificio.trabajo_mes / 1400 * (0.8 + 0.1 * edificio.presupuesto)))){
+				repeat(min(array_length(edificio.clientes), round(edificio_clientes_calidad[index] * edificio.trabajo_mes / 1400 * (0.8 + 0.1 * edificio.presupuesto)))){
 					var persona = array_shift(edificio.clientes)
-					persona.felicidad_salud = edificio_clientes_calidad[edificio.tipo]
+					persona.felicidad_salud = edificio_clientes_calidad[index]
 					persona.medico = null_edificio
 					if array_length(desausiado.clientes) > 0{
 						var temp_persona = array_shift(desausiado.clientes)
@@ -2430,11 +2479,11 @@ if keyboard_check(vk_space) or step >= 60{
 				}
 			}
 			//Edificios de ocio y religiosos
-			if edificio_es_ocio[edificio.tipo] or edificio_es_iglesia[edificio.tipo]
-				if edificio_trabajadores_max[edificio.tipo] = 0
+			if edificio_es_ocio[index] or edificio_es_iglesia[index]
+				if edificio_trabajadores_max[index] = 0
 					edificio.count = 0
 				else
-					edificio.count = max(0, floor(edificio.count * (1 - edificio.trabajo_mes / 28 / edificio_trabajadores_max[edificio.tipo])))
+					edificio.count = max(0, floor(edificio.count * (1 - edificio.trabajo_mes / 28 / edificio_trabajadores_max[index])))
 			edificio.trabajo_mes = 28 * array_length(edificio.trabajadores)
 		}
 		#region Bancarrota
