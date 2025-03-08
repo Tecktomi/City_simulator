@@ -155,25 +155,53 @@ if menu{
 		menu = false
 	pos += 20
 	if draw_menu(room_width / 2, pos, $"Resolucion: {window_get_width()} x {window_get_height()}", 0){
+		if draw_boton(room_width / 2, pos, "1120 x 630"){
+			ini_open(roaming + "config.txt")
+			ini_write_real("MAIN", "view_width", 1120)
+			ini_write_real("MAIN", "view_height", 630)
+			ini_close()
+			window_set_size(1120, 630)
+			window_center()
+		}
 		if draw_boton(room_width / 2, pos, "1280 x 720"){
+			ini_open(roaming + "config.txt")
+			ini_write_real("MAIN", "view_width", 1280)
+			ini_write_real("MAIN", "view_height", 720)
+			ini_close()
 			window_set_size(1280, 720)
 			window_center()
 		}
 		if draw_boton(room_width / 2, pos, "1366 x 768"){
+			ini_open(roaming + "config.txt")
+			ini_write_real("MAIN", "view_width", 1366)
+			ini_write_real("MAIN", "view_height", 768)
+			ini_close()
 			window_set_size(1366, 768)
 			window_center()
 		}
 		if draw_boton(room_width / 2, pos, "1600 x 900"){
+			ini_open(roaming + "config.txt")
+			ini_write_real("MAIN", "view_width", 1600)
+			ini_write_real("MAIN", "view_height", 900)
+			ini_close()
 			window_set_size(1600, 900)
 			window_center()
 		}
 		if draw_boton(room_width / 2, pos, "1920 x 1080"){
+			ini_open(roaming + "config.txt")
+			ini_write_real("MAIN", "view_width", 1920)
+			ini_write_real("MAIN", "view_height", 1080)
+			ini_close()
 			window_set_size(1920, 1080)
 			window_center()
 		}
 	}
-	if draw_boton(room_width / 2, pos, "Pantalla completa")
+	if draw_boton(room_width / 2, pos, "Pantalla completa"){
 		window_set_fullscreen(not window_get_fullscreen())
+		ini_open(roaming + "config.txt")
+		ini_write_real("MAIN", "fullscreen", window_get_fullscreen())
+		ini_close()
+	}
 	draw_set_halign(fa_left)
 	mouse_clear(mb_left)
 }
@@ -1714,7 +1742,7 @@ if keyboard_check(vk_space) or step >= 60{
 						array_push(embarazo[persona.familia.madre.embarazo], persona.familia.madre)
 					}
 					//Buscar trabajo
-					if not buscar_trabajo(persona) and irandom(persona.educacion) = 0 and irandom(persona.edad) < 10
+					if not buscar_trabajo(persona) and persona.trabajo = null_edificio and irandom(persona.educacion) = 0 and irandom(persona.edad) < 10
 						cambiar_trabajo(persona, delincuente)
 					//Delinquir
 					if persona.trabajo = delincuente{
@@ -2523,8 +2551,12 @@ if keyboard_check_pressed(vk_escape){
 	sel_info = false
 }
 //Pantalla completa
-if keyboard_check_pressed(vk_f4)
+if keyboard_check_pressed(vk_f4){
 	window_set_fullscreen(not window_get_fullscreen())
+	ini_open(roaming + "config.txt")
+	ini_write_real("MAIN", "fullscreen", window_get_fullscreen())
+	ini_close()
+}
 //Claves
 if keyboard_check(vk_lshift) and keyboard_check(ord("4")){
 	dinero += 100

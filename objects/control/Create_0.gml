@@ -10,6 +10,11 @@ directory_create(roaming + "Familias")
 directory_create(roaming + "Relaciones")
 directory_create(roaming + "Exigencias")
 directory_create(roaming + "Tratados")
+ini_open(roaming + "config.txt")
+window_set_size(ini_read_real("MAIN", "view_width", 1280), ini_read_real("MAIN", "view_height", 720))
+window_center()
+window_set_fullscreen(ini_read_real("MAIN", "fullscreen", 0))
+ini_close()
 #endregion
 //Personas
 #region Personas
