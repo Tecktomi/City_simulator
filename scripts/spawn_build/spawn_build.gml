@@ -1,5 +1,5 @@
 function spawn_build(var_checked, index, times = 1){
-	var coord, edificio;
+	var coord, edificio = control.null_edificio;
 	with control
 		repeat(times){
 			do coord = array_shift(var_checked)

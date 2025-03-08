@@ -93,8 +93,9 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 				cumplir_exigencia(3)
 			array_push(edificio_count[tipo], edificio)
 			if var_edificio_nombre = "Aserradero"{
-				for(var a = max(0, x - 5); a < min(x + width + 5, xsize); a++)
-					for(var b = max(0, y - 5); b < min(y + height + 5, ysize); b++)
+				var c = max(0, x - 5), d = min(x + width + 5, xsize), e = max(0, y - 5), f = min(y + height + 5, ysize)
+				for(var a = c; a < d; a++)
+					for(var b = e; b < f; b++)
 						if bosque[a, b]
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
@@ -114,8 +115,9 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 				}
 			}
 			//Buscar edificios cercanos
-			for(var a = max(0, x - 8); a < min(x + width + 9, xsize); a++)
-				for(var b = max(0, y - 8); b < min(y + height + 9, ysize); b++)
+			var c = max(0, x - 8), d = min(x + width + 9, xsize), e = max(0, y - 8), f = min(y + height + 9, ysize)
+			for(var a = c; a < d; a++)
+				for(var b = e; b < f; b++)
 					if bool_edificio[a, b]{
 						var temp_edificio = id_edificio[a, b]
 						if not array_contains(edificio.edificios_cerca, temp_edificio){
@@ -145,8 +147,12 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			//Modificar belleza
 			if edificio_belleza[tipo] != 50{
 				var size = ceil(abs(edificio_belleza[tipo] - 50) / 5)
-				for(var a = max(0, x - size); a < min(xsize, x + width + size); a++)
-					for(var b = max(0, y - size); b < min(ysize, y + height + size); b++){
+				c = max(0, x - size)
+				d = min(x + width + size, xsize)
+				e = max(0, y - size)
+				f = min(y + height + size, ysize)
+				for(var a = c; a < d; a++)
+					for(var b = e; b < f; b++){
 						array_set(belleza[a], b, round(belleza[a, b] + (edificio_belleza[tipo] - 50) / (1 + distancia_punto(a, b, edificio))))
 						if bool_edificio[a, b]{
 							var edificio_2 = id_edificio[a, b]
@@ -158,8 +164,12 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			//Modificar contaminacion
 			if edificio_contaminacion[tipo] != 0{
 				var size = ceil(edificio_contaminacion[tipo] / 5)
-				for(var a = max(0, x - size); a < min(xsize, x + width + size); a++)
-					for(var b = max(0, y - size); b < min(ysize, y + height + size); b++)
+				c = max(0, x - size)
+				d = min(x + width + size, xsize)
+				e = max(0, y - size)
+				f = min(y + height + size, ysize)
+				for(var a = c; a < d; a++)
+					for(var b = e; b < f; b++)
 						array_set(contaminacion[a], b, round(contaminacion[a, b] + edificio_contaminacion[tipo] / (1 + distancia_punto(a, b, edificio))))
 			}
 		}

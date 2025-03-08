@@ -154,49 +154,52 @@ if menu{
 	if draw_boton(room_width / 2, pos, "Continuar")
 		menu = false
 	pos += 20
+	if draw_boton(room_width / 2, pos, "Reiniciar")
+		game_restart()
+	pos += 20
 	if draw_menu(room_width / 2, pos, $"Resolucion: {window_get_width()} x {window_get_height()}", 0){
-		if draw_boton(room_width / 2, pos, "1120 x 630"){
+		if draw_boton(room_width / 2, pos, "1120 x 630", , , function f1(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1120 x 630");draw_set_halign(fa_center)}){
+			window_set_size(1120, 630)
+			window_center()
 			ini_open(roaming + "config.txt")
 			ini_write_real("MAIN", "view_width", 1120)
 			ini_write_real("MAIN", "view_height", 630)
 			ini_close()
-			window_set_size(1120, 630)
-			window_center()
 		}
-		if draw_boton(room_width / 2, pos, "1280 x 720"){
+		if draw_boton(room_width / 2, pos, "1280 x 720", , , function f2(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1280 x 720");draw_set_halign(fa_center)}){
+			window_set_size(1280, 720)
+			window_center()
 			ini_open(roaming + "config.txt")
 			ini_write_real("MAIN", "view_width", 1280)
 			ini_write_real("MAIN", "view_height", 720)
 			ini_close()
-			window_set_size(1280, 720)
-			window_center()
 		}
-		if draw_boton(room_width / 2, pos, "1366 x 768"){
+		if draw_boton(room_width / 2, pos, "1366 x 768", , , function f3(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1366 x 768");draw_set_halign(fa_center)}){
+			window_set_size(1366, 768)
+			window_center()
 			ini_open(roaming + "config.txt")
 			ini_write_real("MAIN", "view_width", 1366)
 			ini_write_real("MAIN", "view_height", 768)
 			ini_close()
-			window_set_size(1366, 768)
-			window_center()
 		}
-		if draw_boton(room_width / 2, pos, "1600 x 900"){
+		if draw_boton(room_width / 2, pos, "1600 x 900", , , function f4(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1600 x 900");draw_set_halign(fa_center)}){
+			window_set_size(1600, 900)
+			window_center()
 			ini_open(roaming + "config.txt")
 			ini_write_real("MAIN", "view_width", 1600)
 			ini_write_real("MAIN", "view_height", 900)
 			ini_close()
-			window_set_size(1600, 900)
-			window_center()
 		}
-		if draw_boton(room_width / 2, pos, "1920 x 1080"){
+		if draw_boton(room_width / 2, pos, "1920 x 1080", , , function f5(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1920 x 1080");draw_set_halign(fa_center)}){
+			window_set_size(1920, 1080)
+			window_center()
 			ini_open(roaming + "config.txt")
 			ini_write_real("MAIN", "view_width", 1920)
 			ini_write_real("MAIN", "view_height", 1080)
 			ini_close()
-			window_set_size(1920, 1080)
-			window_center()
 		}
 	}
-	if draw_boton(room_width / 2, pos, "Pantalla completa"){
+	if draw_boton(room_width / 2, pos, "Pantalla completa", , , function f6(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "fullscreen");draw_set_halign(fa_center)}){
 		window_set_fullscreen(not window_get_fullscreen())
 		ini_open(roaming + "config.txt")
 		ini_write_real("MAIN", "fullscreen", window_get_fullscreen())
@@ -373,7 +376,7 @@ if sel_build{
 				show_scroll++
 			show_scroll = clamp(show_scroll, 0, array_length(personas) - 20)
 			var max_width = 0
-			for(var a = 0; a < 20; a++){
+			for(var a = 0; a < min(20, array_length(personas)); a++){
 				if draw_boton(400, pos, name(personas[a + show_scroll])){
 					sel_build = false
 					sel_info = true
@@ -1779,7 +1782,8 @@ if keyboard_check(vk_space) or step >= 60{
 									array_push(temp_array_coord, {x : b, y : c})
 						temp_array_coord = array_shuffle(temp_array_coord)
 						var edificio = spawn_build(temp_array_coord, 32)
-						cambiar_casa(persona.familia, edificio)
+						if edificio != null_edificio
+							cambiar_casa(persona.familia, edificio)
 					}
 				}
 				//Vejez
