@@ -30,14 +30,15 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			trabajo_sueldo : edificio_trabajo_sueldo[tipo],
 			mantenimiento : edificio_mantenimiento[tipo],
 			presupuesto : 2,
-			mes_creacion : control.current_mes,
+			mes_creacion : current_mes,
 			ganancia : 0,
 			trabajo_mes : 0,
 			muelle_cercano : null_edificio,
 			distancia_muelle_cercano : 0,
-			number : ++control.edificio_number[tipo],
+			number : ++edificio_number[tipo],
 			rotado : rotado,
-			ladron : null_persona
+			ladron : null_persona,
+			empresa : null_empresa
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)

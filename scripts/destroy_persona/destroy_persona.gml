@@ -26,6 +26,8 @@ function destroy_persona(persona = null_persona, muerte = true){
 		flag = false
 		familia.integrantes--
 		if familia.integrantes = 0{
+			if persona.empresa != null_empresa
+				destroy_empresa(persona.empresa)
 			destroy_familia(familia, muerte)
 			flag = true
 			var b = 0
@@ -47,6 +49,8 @@ function destroy_persona(persona = null_persona, muerte = true){
 				show_debug_message(text + " han recibido una herencia")
 			}
 		}
+		else if persona.pareja != null_persona and persona.empresa != null_empresa
+			persona.empresa.jefe = persona.pareja
 		if persona.trabajo != null_edificio{
 			cambiar_trabajo(persona, null_edificio)
 			array_remove(null_edificio.trabajadores, persona)

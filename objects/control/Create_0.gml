@@ -313,6 +313,16 @@ var a, b
 		edificio_number[a] = 0
 		array_pop(edificio_count[a])
 	}
+	null_empresa = {
+		jefe : null_persona,
+		dinero : 0,
+		edificios : [null_edificio],
+		nacional : false
+	}
+	array_pop(null_empresa.edificios)
+	null_persona.empresa = null_empresa
+	empresas = [null_empresa]
+	array_pop(empresas)
 	jubilado = add_edificio(0, 0, 1, false)
 	desausiado = add_edificio(0, 0, 2, false)
 	medicos = [desausiado]
@@ -330,18 +340,6 @@ var a, b
 	}
 	cola_construccion = [null_construccion]
 	array_delete(cola_construccion, 0, 1)
-	null_empresa = {
-		jefe : null_persona,
-		dinero : 0,
-		edificios : [null_edificio]
-	}
-	array_pop(null_empresa.edificios)
-	null_persona.empresa = null_empresa
-	empresas = [null_empresa]
-	array_pop(empresas)
-	repeat(10){
-		
-	}
 #endregion
 //Settings
 #region diseño del mundo
@@ -372,7 +370,7 @@ var a, b
 			bool_draw_construccion[a, b] = false
 			draw_construccion[a, b] = null_construccion
 			draw_edificio_flip[a, b] = brandom()
-			bosque[a, b] = grid[# a, b] > 0.6 and c > 0.6
+			bosque[a, b] = grid[# a, b] > 0.6 and c > 0.62
 			if bosque[a, b]
 				bosque_madera[a, b] = floor(200 * grid[# a, b])
 			mar[a, b] = c < 0.5

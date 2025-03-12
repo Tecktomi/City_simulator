@@ -52,6 +52,8 @@ function destroy_edificio(edificio = control.null_edificio){
 		for(var a = edificio.x; a < edificio.x + width; a++)
 			for(var b = edificio.y; b < edificio.y + height; b++)
 				array_set(bool_edificio[a], b, false)
+		if edificio.privado
+			array_remove(edificio.empresa.edificios, edificio)
 		array_remove(edificios, edificio)
 		if edificio.exigencia != null_exigencia
 			array_remove(edificio.exigencia.edificios, edificio)
