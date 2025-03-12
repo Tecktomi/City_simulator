@@ -1,10 +1,10 @@
 function cambiar_casa(familia = control.null_familia, casa = control.null_edificio){
 	with control{
-		if edificio_nombre[familia.casa.tipo] = "Toma"
-			destroy_edificio(familia.casa)
-		else if familia.casa != homeless and array_length(familia.casa.familias) = edificio_familias_max[familia.casa.tipo]
+		if edificio_nombre[familia.casa.tipo] != "Toma" and familia.casa != homeless and array_length(familia.casa.familias) = edificio_familias_max[familia.casa.tipo]
 			array_push(casas_libres, familia.casa)
 		array_remove(familia.casa.familias, familia)
+		if edificio_nombre[familia.casa.tipo] = "Toma"
+			destroy_edificio(familia.casa)
 		array_push(casa.familias, familia)
 		familia.casa = casa
 		if familia.casa != homeless and array_length(familia.casa.familias) = edificio_familias_max[familia.casa.tipo]

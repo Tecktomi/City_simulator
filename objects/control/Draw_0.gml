@@ -1229,6 +1229,9 @@ if sel_info{
 					dinero_privado += temp_precio
 					inversion_privada -= temp_precio
 					sel_edificio.privado = false
+					for(var a = x; a < x + width; a++)
+						for(b = y; b < y + height; b++)
+							array_set(zona_privada[a], b, false)
 				}
 			}
 			else{
@@ -1240,6 +1243,9 @@ if sel_info{
 					inversion_privada += temp_precio
 					sel_edificio.privado = true
 					set_presupuesto(0, sel_edificio)
+					for(var a = x; a < x + width; a++)
+						for(b = y; b < y + height; b++)
+							array_set(zona_privada[a], b, true)
 				}
 			}
 			draw_text_pos(room_width - 20, pos, temp_text)

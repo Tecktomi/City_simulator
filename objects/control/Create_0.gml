@@ -60,7 +60,8 @@ var a, b
 		religion : true,
 		relacion : null_relacion,
 		ladron : undefined,
-		preso : false
+		preso : false,
+		empresa : undefined
 	}
 	null_persona.pareja = null_persona
 	null_relacion.persona = null_persona
@@ -329,6 +330,18 @@ var a, b
 	}
 	cola_construccion = [null_construccion]
 	array_delete(cola_construccion, 0, 1)
+	null_empresa = {
+		jefe : null_persona,
+		dinero : 0,
+		edificios : [null_edificio]
+	}
+	array_pop(null_empresa.edificios)
+	null_persona.empresa = null_empresa
+	empresas = [null_empresa]
+	array_pop(empresas)
+	repeat(10){
+		
+	}
 #endregion
 //Settings
 #region diseño del mundo
@@ -346,6 +359,8 @@ var a, b
 		ds_grid_add_disk(altura, floor(xsize / 2), floor(ysize / 2), a, 0.05)
 	a = ds_grid_get_max(altura, 0, 0, xsize, ysize)
 	ds_grid_multiply_region(altura, 0, 0, xsize, ysize, 1 / a)
+	//Matriz del mundo
+	var mar_checked, land_checked, land_matrix
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
 			var c = altura[# a, b]
@@ -369,17 +384,23 @@ var a, b
 			else
 				altura_color[a, b] = make_color_rgb(31 + 96 * c, 127, 31 + 96 * c)
 			#endregion
-			for(var d = 0; d < array_length(recurso_cultivo); d++)
-				if c < cultivo_altura_minima[d]
-					ds_grid_set(cultivo[d], a, b, 0)
-				else if c < cultivo_altura_minima[d] + 0.05
-					ds_grid_multiply(cultivo[d], a, b, 20 * (c - cultivo_altura_minima[d]))
+			if not mar[a, b]
+				for(var d = 0; d < array_length(recurso_cultivo); d++)
+					if c < cultivo_altura_minima[d]
+						ds_grid_set(cultivo[d], a, b, 0)
+					else if c < cultivo_altura_minima[d] + 0.05
+						ds_grid_multiply(cultivo[d], a, b, 20 * (c - cultivo_altura_minima[d]))
 			for(var d = 0; d < array_length(recurso_mineral); d++){
 				mineral[d][a, b] = (mineral_grid[d][# a, b] > recurso_mineral_rareza[d])
 				mineral_cantidad[d][a, b] = round(400 * power(mineral_grid[d][# a, b], 3))
 			}
 			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 			contaminacion[a, b] = 0
+			zona_privada[a, b] = false
+			zona_tipo[a, b] = 0
+			mar_checked[a, b] = false
+			land_checked[a, b] = false
+			land_matrix[a, b] = false
 		}
 	world_update = true
 	for(a = 0; a < xsize / 16; a++)
@@ -387,13 +408,7 @@ var a, b
 			chunk[a, b] = spr_arbol
 			chunk_update[a, b] = true
 		}
-	var mar_checked, land_checked, land_matrix, not_mar = [], yes_mar = [{a : 0, b : 0}], yes_land = [{a : floor(xsize / 2), b : floor(ysize / 2)}]
-	for(a = 0; a < xsize; a++)
-		for(b = 0; b < ysize; b++){
-			mar_checked[a, b] = false
-			land_checked[a, b] = false
-			land_matrix[a, b] = false
-		}
+	var not_mar = [], yes_mar = [{a : 0, b : 0}], yes_land = [{a : floor(xsize / 2), b : floor(ysize / 2)}]
 	array_set(mar_checked[0], 0, true)
 	array_set(land_checked[floor(xsize / 2)], floor(ysize / 2), true)
 	array_set(land_matrix[floor(xsize / 2)], floor(ysize / 2), true)
