@@ -42,7 +42,6 @@ function add_persona(){
 			preso : false,
 			empresa : null_empresa
 		}
-	
 		array_push(null_edificio.trabajadores, persona)
 		array_push(personas, persona)
 		array_push(cumples[persona.cumple], persona)
