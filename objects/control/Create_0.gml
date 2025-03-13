@@ -241,13 +241,13 @@ var a, b
 	array_pop(null_edificio.clientes)
 	array_pop(null_edificio.array_complex)
 	array_push(null_edificio.edificios_cerca, null_edificio)
-	null_edificio.edificios_cerca = []
+	array_pop(null_edificio.edificios_cerca)
 	array_push(null_edificio.trabajos_cerca[0], null_edificio)
-	null_edificio.trabajos_cerca[0] = []
+	array_pop(null_edificio.trabajos_cerca[0])
 	array_push(null_edificio.casas_cerca, null_edificio)
-	null_edificio.casas_cerca = []
+	array_pop(null_edificio.casas_cerca)
 	array_push(null_edificio.iglesias_cerca, null_edificio)
-	null_edificio.iglesias_cerca = []
+	array_pop(null_edificio.iglesias_cerca)
 	null_edificio.muelle_cercano = null_edificio
 	edificios = [null_edificio]
 	array_pop(edificios)
@@ -265,7 +265,7 @@ var a, b
 	null_persona.escuela = null_edificio
 	null_persona.medico = null_edificio
 	null_persona.ladron = null_edificio
-	for(var a = 0; a < array_length(educacion_nombre); a++)
+	for(a = 0; a < array_length(educacion_nombre); a++)
 		array_set(null_edificio.trabajos_cerca, a, [])
 	for(a = 0; a < 28; a++){
 		dia_trabajo[a] = [null_edificio]

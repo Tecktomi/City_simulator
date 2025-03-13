@@ -1180,10 +1180,23 @@ if sel_info{
 						text += $"{text != "" ? "\n" : ""}{recurso_nombre[a]}: {floor(sel_edificio.almacen[a])}"
 				draw_text_pos(room_width - 40, pos, text != "" ? text : "Sin recursos")
 			}
-			if draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.edificios_cerca)} edificios cerca", 0)
-				for(var a = 0; a < array_length(sel_edificio.edificios_cerca); a++){
-					var temp_edificio = sel_edificio.edificios_cerca[a]
-					if draw_boton(room_width - 40, pos, edificio_nombre[temp_edificio.tipo]){
+			if edificio_es_casa[index]{
+				for(var a = 0, b = 0; a < array_length(educacion_nombre); a++)
+					b += array_length(sel_edificio.trabajos_cerca[a])
+				if draw_menu(room_width - 20, pos, $"{b} trabajos cerca", 0)
+					for(var b = 0; b < array_length(educacion_nombre); b++)
+						for(var a = 0; a < array_length(sel_edificio.trabajos_cerca[b]); a++){
+							var temp_edificio = sel_edificio.trabajos_cerca[b, a]
+							if draw_boton(room_width - 40, pos, $"{edificio_nombre[temp_edificio.tipo]} {temp_edificio.number}"){
+								sel_edificio = temp_edificio
+								break
+							}
+					}
+				}
+			if edificio_es_trabajo[index] and draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.casas_cerca)} casas cerca", 0)
+				for(var a = 0; a < array_length(sel_edificio.casas_cerca); a++){
+					var temp_edificio = sel_edificio.casas_cerca[a]
+					if draw_boton(room_width - 40, pos, $"{edificio_nombre[temp_edificio.tipo]} {temp_edificio.number}"){
 						sel_edificio = temp_edificio
 						break
 					}
