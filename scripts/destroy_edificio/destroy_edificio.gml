@@ -9,42 +9,43 @@ function destroy_edificio(edificio = control.null_edificio){
 		array_set(bool_draw_edificio[edificio.x], edificio.y, false)
 		array_set(draw_edificio[edificio.x], edificio.y, null_edificio)
 		if array_length(edificio.trabajadores) < edificio_trabajadores_max[tipo]
-			array_remove(trabajo_educacion[edificio_trabajo_educacion[tipo]], edificio)
+			array_remove(trabajo_educacion[edificio_trabajo_educacion[tipo]], edificio, "eliminar trabajo de los disponibles")
 		for(var a = 0; a < array_length(edificio.trabajadores); a++)
 			cambiar_trabajo(edificio.trabajadores[a], null_edificio)
 		if edificio_es_medico[tipo]{
-			array_remove(medicos, edificio)
+			array_remove(medicos, edificio, "eliminar médico")
 			for(var a = 0; a < array_length(edificio.clientes); a++)
 				buscar_atencion_medica(edificio.clientes[a])
 		}
 		if edificio_es_escuela[tipo]{
-			array_remove(escuelas, edificio)
+			array_remove(escuelas, edificio, "eliminar escuela")
 			for(var a = 0; a < array_length(edificio.clientes); a++)
 				buscar_escuela(edificio.clientes[a])
 		}
 		if edificio_es_trabajo[tipo]{
-			array_remove(trabajos, edificio)
-			for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
-				array_remove(edificio.edificios_cerca[a].trabajos_cerca, edificio)
+			array_remove(trabajos, edificio, "eliminar trabajo")
+			for(var a = 0; a < array_length(edificio.casas_cerca); a++)
+				array_remove(edificio.casas_cerca[a].trabajos_cerca[edificio_trabajo_educacion[edificio.tipo]], edificio, "eliminar trabajo de las casas cercanas")
 		}
 		if edificio_es_casa[tipo]{
-			array_remove(casas, edificio)
+			array_remove(casas, edificio, "eliminar casa")
 			if edificio_nombre[tipo] != "Toma"{
-				for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
-					array_remove(edificio.edificios_cerca[a].casas_cerca, edificio)
+				for(var b = 0; b < array_length(educacion_nombre); b++)
+					for(var a = 0; a < array_length(edificio.trabajos_cerca[b]); a++)
+						array_remove(edificio.trabajos_cerca[b][a].casas_cerca, edificio, "eliminar casa de los edificios cercanos")
 				if array_length(edificio.familias) != edificio_familias_max[tipo]
-					array_remove(casas_libres, edificio)
+					array_remove(casas_libres, edificio, "elminar casa libre")
 			}
 		}
 		for(var a = 0; a < array_length(edificio.familias); a++)
 			cambiar_casa(edificio.familias[a], homeless)
 		if edificio_es_iglesia[tipo]
-			for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
-				array_remove(edificio.edificios_cerca[a].iglesias_cerca, edificio)
+			for(var a = 0; a < array_length(edificio.casas_cerca); a++)
+				array_remove(edificio.casas_cerca[a].iglesias_cerca, edificio, "eliminar iglesia cerca")
 		for(var a = 0; a < array_length(edificio.edificios_cerca); a++)
-			array_remove(edificio.edificios_cerca[a].edificios_cerca, edificio)
-		array_remove(dia_trabajo[edificio.dia_factura], edificio)
-		array_remove(edificio_count[tipo], edificio)
+			array_remove(edificio.edificios_cerca[a].edificios_cerca, edificio, "eliminar edificio cerca")
+		array_remove(dia_trabajo[edificio.dia_factura], edificio, "eliminar edificio del dia de trabajo")
+		array_remove(edificio_count[tipo], edificio, "eliminar edificio del edificio_count")
 		if edificio_nombre[tipo] = "Muelle"
 			for(var a = 0; a < array_length(edificios); a++)
 				if edificios[a].muelle_cercano = edificio
@@ -53,10 +54,10 @@ function destroy_edificio(edificio = control.null_edificio){
 			for(var b = edificio.y; b < edificio.y + height; b++)
 				array_set(bool_edificio[a], b, false)
 		if edificio.privado
-			array_remove(edificio.empresa.edificios, edificio)
-		array_remove(edificios, edificio)
+			array_remove(edificio.empresa.edificios, edificio, "eliminar edificio de la empresa")
+		array_remove(edificios, edificio, "eliminar edificio")
 		if edificio.exigencia != null_exigencia
-			array_remove(edificio.exigencia.edificios, edificio)
+			array_remove(edificio.exigencia.edificios, edificio, "eliminar edificio de las exigencias")
 		for(var a = 0; a < array_length(encargos); a++)
 			if encargos[a].edificio = edificio
 				if encargos[a].cantidad < 0

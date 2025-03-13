@@ -9,6 +9,6 @@ function destroy_empresa(empresa = control.null_empresa){
 			empresa.jefe.empresa = null_empresa
 			dinero += empresa.dinero
 		}
-		array_remove(empresas, empresa)
+		array_remove(empresas, empresa, "eliminar empresa")
 	}
 }

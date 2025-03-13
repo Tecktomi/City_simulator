@@ -75,6 +75,9 @@ var a, b
 		muerte[a] = [null_persona]
 		array_pop(muerte[a])
 	}
+	educacion_nombre = ["Analfabeto", "Educación Básica", "Educación Media", "Educación Técnica", "Educación Profesional"]
+	for(a = 0; a < array_length(educacion_nombre); a++)
+		trabajo_educacion[a] = []
 #endregion
 //Familias
 #region familias
@@ -199,7 +202,7 @@ var a, b
 		trabajadores : [null_persona],
 		clientes : [null_persona],
 		edificios_cerca : [],
-		trabajos_cerca : [],
+		trabajos_cerca : [[]],
 		casas_cerca : [],
 		iglesias_cerca : [],
 		x : 0,
@@ -239,8 +242,8 @@ var a, b
 	array_pop(null_edificio.array_complex)
 	array_push(null_edificio.edificios_cerca, null_edificio)
 	null_edificio.edificios_cerca = []
-	array_push(null_edificio.trabajos_cerca, null_edificio)
-	null_edificio.trabajos_cerca = []
+	array_push(null_edificio.trabajos_cerca[0], null_edificio)
+	null_edificio.trabajos_cerca[0] = []
 	array_push(null_edificio.casas_cerca, null_edificio)
 	null_edificio.casas_cerca = []
 	array_push(null_edificio.iglesias_cerca, null_edificio)
@@ -262,6 +265,8 @@ var a, b
 	null_persona.escuela = null_edificio
 	null_persona.medico = null_edificio
 	null_persona.ladron = null_edificio
+	for(var a = 0; a < array_length(educacion_nombre); a++)
+		array_set(null_edificio.trabajos_cerca, a, [])
 	for(a = 0; a < 28; a++){
 		dia_trabajo[a] = [null_edificio]
 		array_pop(dia_trabajo[a])
@@ -490,9 +495,6 @@ var a, b
 	step = 0
 	velocidad = 1
 	rotado = false
-	educacion_nombre = ["Analfabeto", "Educación Básica", "Educación Media", "Educación Técnica", "Educación Profesional"]
-	for(a = 0; a < array_length(educacion_nombre); a++)
-		trabajo_educacion[a] = []
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Leyes"]
 	ministerio = -1
 	felicidad_total = 50

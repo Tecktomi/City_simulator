@@ -1628,11 +1628,11 @@ if keyboard_check(vk_space) or step >= 60{
 						persona.educacion += random(edificio_clientes_calidad[persona.escuela.tipo] * persona.escuela.trabajo_mes / 25 / edificio_trabajadores_max[persona.escuela.tipo])
 						if persona.educacion >= 2{
 							persona.educacion = 2
-							array_remove(persona.escuela.clientes, persona)
+							array_remove(persona.escuela.clientes, persona, "salir del colegio")
 							persona.escuela = null_edificio
 						}
 						else if random(1) < 0.1{
-							array_remove(persona.escuela.clientes, persona)
+							array_remove(persona.escuela.clientes, persona, "expulsado del colegio")
 							buscar_escuela(persona)
 						}
 					}
@@ -1653,7 +1653,7 @@ if keyboard_check(vk_space) or step >= 60{
 				}
 				//Dejar de estudiar
 				if persona.edad = 18 and persona.escuela != null_edificio{
-					array_remove(persona.escuela.clientes, persona)
+					array_remove(persona.escuela.clientes, persona, "egresar del colegio")
 					persona.escuela = null_edificio
 				}
 				//Trabajo infantil :D
@@ -1675,7 +1675,7 @@ if keyboard_check(vk_space) or step >= 60{
 					buscar_trabajo(persona)
 					if persona.trabajo != null_edificio or persona.edad > 24{
 						var prev_familia = persona.familia, herencia = 0, b = prev_familia.felicidad_vivienda, c = prev_familia.felicidad_alimento
-						array_remove(prev_familia.hijos, persona)
+						array_remove(prev_familia.hijos, persona, "hijo se independiza")
 						if prev_familia.padre = null_persona and prev_familia.madre = null_persona and array_length(prev_familia.hijos) = 0{
 							if prev_familia.riqueza > 0
 								herencia = prev_familia.riqueza
@@ -2510,7 +2510,7 @@ if keyboard_check(vk_space) or step >= 60{
 						b--
 					}
 					else if brandom(){
-						array_remove(edificio.clientes, persona)
+						array_remove(edificio.clientes, persona, "paciente curado")
 						persona.medico = null_edificio
 						b--
 					}

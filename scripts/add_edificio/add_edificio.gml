@@ -5,7 +5,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			trabajadores : [null_persona],
 			clientes : [null_persona],
 			edificios_cerca : [null_edificio],
-			trabajos_cerca : [null_edificio],
+			trabajos_cerca : [[null_edificio]],
 			casas_cerca : [null_edificio],
 			iglesias_cerca : [null_edificio],
 			x : x,
@@ -44,11 +44,13 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 		array_pop(edificio.trabajadores)
 		array_pop(edificio.clientes)
 		array_pop(edificio.edificios_cerca)
-		array_pop(edificio.trabajos_cerca)
+		array_pop(edificio.trabajos_cerca[0])
 		array_pop(edificio.casas_cerca)
 		array_pop(edificio.iglesias_cerca)
 		array_pop(edificio.array_complex)
 		array_push(dia_trabajo[edificio.dia_factura], edificio)
+		for(var a = 0; a < array_length(educacion_nombre); a++)
+			array_set(edificio.trabajos_cerca, a, [])
 		var var_edificio_nombre = edificio_nombre[tipo]
 		for(var a = 0; a < array_length(recurso_nombre); a++){
 			array_push(edificio.almacen, 0)
@@ -84,7 +86,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			}
 			if edificio_es_casa[tipo]{
 				array_push(casas, edificio)
-				array_push(casas_libres, edificio)
+				if var_edificio_nombre != "Toma"
+					array_push(casas_libres, edificio)
 			}
 			if edificio_es_iglesia[tipo]{
 				array_push(iglesias, edificio)
@@ -117,27 +120,32 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			}
 			//Buscar edificios cercanos
 			var c = max(0, x - 8), d = min(x + width + 9, xsize), e = max(0, y - 8), f = min(y + height + 9, ysize)
-			for(var a = c; a < d; a++)
-				for(var b = e; b < f; b++)
-					if bool_edificio[a, b]{
-						var temp_edificio = id_edificio[a, b]
-						if not array_contains(edificio.edificios_cerca, temp_edificio){
-							array_push(edificio.edificios_cerca, temp_edificio)
-							array_push(temp_edificio.edificios_cerca, edificio)
-							if edificio_es_trabajo[tipo]
-								array_push(temp_edificio.trabajos_cerca, edificio)
-							if edificio_es_trabajo[temp_edificio.tipo]
-								array_push(edificio.trabajos_cerca, temp_edificio)
-							if edificio_es_casa[tipo] and var_edificio_nombre != "Toma"
+			if edificio_es_casa[tipo]
+				for(var a = c; a < d; a++)
+					for(var b = e; b < f; b++)
+						if bool_edificio[a, b]{
+							var temp_edificio = id_edificio[a, b], g = edificio_trabajo_educacion[temp_edificio.tipo]
+							if edificio_es_trabajo[temp_edificio.tipo] and not array_contains(edificio.trabajos_cerca[g], temp_edificio){
 								array_push(temp_edificio.casas_cerca, edificio)
-							if edificio_es_casa[temp_edificio.tipo] and edificio_nombre[temp_edificio.tipo] != "Toma"
-								array_push(edificio.casas_cerca, temp_edificio)
-							if edificio_es_iglesia[tipo]
-								array_push(temp_edificio.iglesias_cerca, edificio)
-							if edificio_es_iglesia[temp_edificio.tipo]
-								array_push(edificio.iglesias_cerca, temp_edificio)
+								array_push(edificio.trabajos_cerca[g], temp_edificio)
+								if edificio_es_iglesia[temp_edificio.tipo]
+									array_push(edificio.iglesias_cerca, temp_edificio)
+							}
 						}
-					}
+			if edificio_es_trabajo[tipo]{
+				var g = edificio_trabajo_educacion[tipo]
+				for(var a = c; a < d; a++)
+					for(var b = e; b < f; b++)
+						if bool_edificio[a, b]{
+							var temp_edificio = id_edificio[a, b]
+							if edificio_es_casa[temp_edificio.tipo] and edificio_nombre[temp_edificio.tipo] != "Toma" and not array_contains(edificio.casas_cerca, temp_edificio){
+								array_push(edificio.casas_cerca, temp_edificio)
+								array_push(temp_edificio.trabajos_cerca[g], edificio)
+								if edificio_es_iglesia[tipo]
+									array_push(temp_edificio.iglesias_cerca, edificio)
+							}
+						}
+			}
 			//Marcar terreno
 			for(var a = x; a < x + width; a++)
 				for(var b = y; b < y + height; b++){

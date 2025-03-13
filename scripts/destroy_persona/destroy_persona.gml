@@ -1,8 +1,8 @@
 function destroy_persona(persona = null_persona, muerte = true){
 	with control{
 		var  flag = false
-		array_remove(personas, persona)
-		array_remove(cumples[persona.cumple], persona)
+		array_remove(personas, persona, "eliminar persona")
+		array_remove(cumples[persona.cumple], persona, "eliminar persona de los cumpleaños")
 		if persona.pareja != null_persona
 			persona.pareja = null_persona
 		var familia = persona.familia
@@ -12,7 +12,7 @@ function destroy_persona(persona = null_persona, muerte = true){
 		else if familia.madre = persona
 			familia.madre = null_persona
 		else{
-			array_remove(familia.hijos, persona)
+			array_remove(familia.hijos, persona, "eliminar hijos")
 			for(var a = 0; a < array_length(familia.hijos); a++)
 				if familia.hijos[a].trabajo != null_edificio{
 					flag = true
@@ -53,16 +53,16 @@ function destroy_persona(persona = null_persona, muerte = true){
 			persona.empresa.jefe = persona.pareja
 		if persona.trabajo != null_edificio{
 			cambiar_trabajo(persona, null_edificio)
-			array_remove(null_edificio.trabajadores, persona)
+			array_remove(null_edificio.trabajadores, persona, "eliminar persona del trabajo")
 		}
 		if persona.embarazo != -1
-			array_remove(embarazo[persona.embarazo], persona)
+			array_remove(embarazo[persona.embarazo], persona, "eliminar persona embarazada")
 		if persona.muerte != -1 and persona.muerte != (dia mod 365)
-			array_remove(control.muerte[persona.muerte], persona)
+			array_remove(control.muerte[persona.muerte], persona, "eliminar persona que iba a morir")
 		if persona.escuela != null_edificio
-			array_remove(persona.escuela.clientes, persona)
+			array_remove(persona.escuela.clientes, persona, "eliminar persona de la escuela")
 		if persona.medico != null_edificio{
-			array_remove(persona.medico.clientes, persona)
+			array_remove(persona.medico.clientes, persona, "eliminar persona del médico")
 			if array_length(desausiado.clientes) > 0{
 				var temp_persona = null_persona
 				temp_persona = array_shift(desausiado.clientes)
