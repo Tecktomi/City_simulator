@@ -4,7 +4,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			familias : [null_familia],
 			trabajadores : [null_persona],
 			clientes : [null_persona],
-			edificios_cerca : [null_edificio],
 			trabajos_cerca : [[null_edificio]],
 			casas_cerca : [null_edificio],
 			iglesias_cerca : [null_edificio],
@@ -43,7 +42,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
 		array_pop(edificio.clientes)
-		array_pop(edificio.edificios_cerca)
 		array_pop(edificio.trabajos_cerca[0])
 		array_pop(edificio.casas_cerca)
 		array_pop(edificio.iglesias_cerca)

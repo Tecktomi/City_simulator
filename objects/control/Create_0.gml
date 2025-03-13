@@ -201,7 +201,6 @@ var a, b
 		familias : [null_familia],
 		trabajadores : [null_persona],
 		clientes : [null_persona],
-		edificios_cerca : [],
 		trabajos_cerca : [[]],
 		casas_cerca : [],
 		iglesias_cerca : [],
@@ -240,8 +239,6 @@ var a, b
 	array_pop(null_edificio.trabajadores)
 	array_pop(null_edificio.clientes)
 	array_pop(null_edificio.array_complex)
-	array_push(null_edificio.edificios_cerca, null_edificio)
-	array_pop(null_edificio.edificios_cerca)
 	array_push(null_edificio.trabajos_cerca[0], null_edificio)
 	array_pop(null_edificio.trabajos_cerca[0])
 	array_push(null_edificio.casas_cerca, null_edificio)
