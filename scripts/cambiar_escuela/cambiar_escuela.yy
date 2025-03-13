@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"cambiar_escuela",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"cambiar_escuela",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

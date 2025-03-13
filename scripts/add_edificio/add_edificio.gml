@@ -37,7 +37,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			number : ++edificio_number[tipo],
 			rotado : rotado,
 			ladron : null_persona,
-			empresa : null_empresa
+			empresa : null_empresa,
+			venta : false
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)

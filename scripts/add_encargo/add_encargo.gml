@@ -8,11 +8,13 @@ function add_encargo(recurso, cantidad, edificio = control.null_edificio){
 			}
 			array_push(encargos, encargo)
 			if edificio.privado{
-				dinero -= floor(recurso_precio[recurso] * cantidad)
+				var a = floor(recurso_precio[recurso] * cantidad)
+				dinero -= a
+				dinero_privado += a
 				if cantidad > 0
-					mes_compra_interna[current_mes] += floor(recurso_precio[recurso] * cantidad)
+					mes_compra_interna[current_mes] += a
 				else
-					mes_venta_interna[current_mes] -= floor(recurso_precio[recurso] * cantidad)
+					mes_venta_interna[current_mes] -= a
 			}
 		}
 	}

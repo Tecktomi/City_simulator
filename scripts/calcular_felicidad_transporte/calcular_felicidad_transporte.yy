@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"calcular_felicidad_transporte",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"calcular_felicidad_transporte",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

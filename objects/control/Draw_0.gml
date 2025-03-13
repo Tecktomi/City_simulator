@@ -653,6 +653,16 @@ if sel_build{
 							sel_edificio = encargo.edificio
 						}
 				}
+			draw_text_pos(110, pos, $"Credibilidad financiera: {credibilidad_financiera}")
+			if draw_menu(110, pos, $"{array_length(edificios_a_la_venta)} edificios a la venta", 5)
+				for(var a = 0; a < array_length(edificios_a_la_venta); a++){
+					var edificio = edificios_a_la_venta[a].edificio
+					if draw_boton(120, pos, $"{edificio_nombre[edificio.tipo]} {edificio.number}"){
+						sel_build = false
+						sel_info = true
+						sel_edificio = edificio
+					}
+				}
 			pos = 100
 			draw_set_color(c_black)
 			draw_text_pos(500, pos, "Mercado internacional")
@@ -704,14 +714,14 @@ if sel_build{
 			pos += 20
 			for(var a = 0; a < 20; a++){
 				if draw_sprite_boton(spr_icono, 4 + (recurso_historial[a + show_scroll, 23] < recurso_historial[a + show_scroll, 0]), 420 + max_width, pos + a * 20, 20, 20){
-					var flag = show[a + show_scroll + 5]
+					var flag = show[a + show_scroll + 6]
 					close_show()
-					show[a + show_scroll + 5] = not flag
+					show[a + show_scroll + 6] = not flag
 				}
 				draw_line(420, pos + a * 20, 460 + max_width, pos + a * 20)
 			}
 			for(var a = 0; a < array_length(recurso_nombre); a++)
-				if show[a + 5]{
+				if show[a + 6]{
 					draw_line(800, 150, 800, 350)
 					draw_line(800, 350, 1040, 350)
 					var mini = recurso_precio[a], maxa = recurso_precio[a]
@@ -1023,265 +1033,275 @@ if sel_info{
 		draw_rombo((x - y) * tile_width - xpos, (x + y) * tile_height - ypos - 1, (x - y - height) * tile_width - xpos - 1, (x + y + height) * tile_height - ypos, (x - y + width - height) * tile_width - xpos, (x + y + width + height) * tile_height - ypos + 1, (x - y + width) * tile_width - xpos + 1, (x + y + width) * tile_height - ypos, true)
 		draw_set_color(c_black)
 		draw_text_pos(room_width, pos, $"{var_edificio_nombre} {sel_edificio.number}")
-		if sel_edificio.privado
-			draw_text_pos(room_width - 20, pos, "PRIVADO")
-		//Paro
-		if sel_edificio.huelga{
-			draw_text_pos(room_width - 20, pos, "Edificio en huelga")
-			if sel_edificio.exigencia_fallida
-				var a = 240 * array_length(sel_edificio.trabajadores)
-			else
-				a = 60 * array_length(sel_edificio.trabajadores)
-			if draw_boton(room_width - 40, pos, $"Sobornar huelga ${a}") and dinero >= a{
-				dinero -= a
+		if sel_edificio.venta{
+			draw_text_pos(room_width - 20, pos, "EDIFICIO A LA VENTA")
+			pos += 20
+			if draw_boton(room_width - 20, pos, "Cancelar venta"){
+				for(var a = 0; a < array_length(edificios_a_la_venta); a++)
+					if edificios_a_la_venta[a].edificio = sel_edificio{
+						array_delete(edificios_a_la_venta, a, 1)
+						break
+					}
 				set_paro(false, sel_edificio)
+				sel_edificio.venta = false
 			}
-			if draw_boton(room_width - 40, pos, exigencia_nombre[sel_edificio.huelga_motivo]) and show_question($"Aceptar exigencia?\n\n{exigencia_nombre[sel_edificio.huelga_motivo]}"){
-				var array_edificio = [], b = sel_edificio.huelga_motivo
-				for(a = 0; a < array_length(edificios); a++)
-					if edificios[a].huelga
-						if edificios[a].huelga_motivo = b{
-							array_push(array_edificio, edificios[a])
-							set_paro(false, edificios[a])
-						}
-				var temp_exigencia = add_exigencia(b, array_edificio)
-				for(a = 0; a < array_length(temp_exigencia.edificios); a++)
-					temp_exigencia.edificios[a].exigencia = temp_exigencia
-			}
-			draw_set_alpha(0.5)
 		}
-		//Exigencia pendiente
-		else if sel_edificio.exigencia != null_exigencia
-			draw_text_pos(room_width - 20, pos, $"Esperando que cumplas {exigencia_nombre[sel_edificio.huelga_motivo]}")
-		#region presupuesto
-		if not sel_edificio.privado and var_edificio_nombre != "Toma"
-			for(var a = 0; a < 5; a++)
-				if draw_sprite_boton(spr_icono, 3 - (a > sel_edificio.presupuesto), room_width - 200 + a * 40, pos, 40, 40)
-					for(var b = 0; b < array_length(edificio_count[index]); b++){
-						var edificio = undefined
-						if keyboard_check(vk_lshift){
-							edificio = edificio_count[index, b]
-							if edificio.privado
-								continue
-						}
-						else{
-							b = array_length(edificio_count[index])
-							edificio = sel_edificio
-						}
-						set_presupuesto(a, edificio)
-					}
-		pos += 40
-		draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[index] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
-			edificio_es_casa[index] ? "Calidad de vivienda: " + string(sel_edificio.vivienda_calidad) + "\n" : ""}")
-		#endregion
-		//Prisiones
-		if var_edificio_nombre = "Comisaría"
-			if draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.clientes)} presxs.", 2)
-				for(var a = 0; a < array_length(sel_edificio.clientes); a++)
-					if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a])){
-						sel_persona = sel_edificio.clientes[a]
-						sel_edificio = null_edificio
-						sel_tipo = 2
-						close_show()
-					}
-		//Información familias
-		if edificio_es_casa[index]{
-			if draw_menu(room_width - 20, pos, $"Familias: {array_length(sel_edificio.familias)}/{edificio_familias_max[index]}", 3)
-				for(var a = 0; a < array_length(sel_edificio.familias); a++)
-					if draw_boton(room_width - 40, pos, $"Familia {sel_edificio.familias[a].padre.apellido} {sel_edificio.familias[a].madre.apellido}"){
-						sel_familia = sel_edificio.familias[a]
-						sel_tipo = 1
-					}
-		}
-		//Información trabajadores
-		if edificio_es_trabajo[index]{
-			if draw_menu(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{edificio_trabajadores_max[index]}", 4)
-				for(var a = 0; a < array_length(sel_edificio.trabajadores); a++)
-					if draw_boton(room_width - 40, pos, name(sel_edificio.trabajadores[a])){
-						sel_persona = sel_edificio.trabajadores[a]
-						sel_tipo = 2
-					}
-			if var_edificio_nombre = "Granja"{
-				if current_mes = 5 or current_mes = 10
-					draw_text_pos(room_width - 20, pos, "Consecha")
+		else{
+			if sel_edificio.privado
+				draw_text_pos(room_width - 20, pos, "PRIVADO")
+			//Paro
+			if sel_edificio.huelga{
+				draw_text_pos(room_width - 20, pos, "Edificio en huelga")
+				if sel_edificio.exigencia_fallida
+					var a = 240 * array_length(sel_edificio.trabajadores)
 				else
-					draw_text_pos(room_width - 20, pos, "Siembra")
-				draw_text_pos(room_width - 40, pos, $"Eficiencia: {floor(sel_edificio.eficiencia * 100)}%")
-				if contaminacion[sel_edificio.x, sel_edificio.y] > 0
-					draw_text_pos(room_width - 60, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
-				draw_text_pos(room_width - 40, pos, $"{sel_edificio.count} plantas")
-				draw_text_pos(room_width - 20, pos, $"\nProduciendo {recurso_nombre[recurso_cultivo[sel_edificio.modo]]}")
-				if not sel_edificio.privado and draw_boton(room_width - 40, pos, "Cambiar recurso", , not sel_edificio.huelga)
-					sel_modo = not sel_modo
-				if sel_modo
-					for(var a = 0; a < array_length(recurso_cultivo); a++)
-						if a != sel_edificio.modo{
-							if draw_boton(room_width - 40, pos, recurso_nombre[recurso_cultivo[a]])
-								sel_edificio.modo = a
-							if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
-								draw_gradiente(a, 0)
-								draw_set_color(c_black)
+					a = 60 * array_length(sel_edificio.trabajadores)
+				if draw_boton(room_width - 40, pos, $"Sobornar huelga ${a}") and dinero >= a{
+					dinero -= a
+					set_paro(false, sel_edificio)
+				}
+				if draw_boton(room_width - 40, pos, exigencia_nombre[sel_edificio.huelga_motivo]) and show_question($"Aceptar exigencia?\n\n{exigencia_nombre[sel_edificio.huelga_motivo]}"){
+					var array_edificio = [], b = sel_edificio.huelga_motivo
+					for(a = 0; a < array_length(edificios); a++)
+						if edificios[a].huelga
+							if edificios[a].huelga_motivo = b{
+								array_push(array_edificio, edificios[a])
+								set_paro(false, edificios[a])
 							}
+					var temp_exigencia = add_exigencia(b, array_edificio)
+					for(a = 0; a < array_length(temp_exigencia.edificios); a++)
+						temp_exigencia.edificios[a].exigencia = temp_exigencia
+				}
+				draw_set_alpha(0.5)
+			}
+			//Exigencia pendiente
+			else if sel_edificio.exigencia != null_exigencia
+				draw_text_pos(room_width - 20, pos, $"Esperando que cumplas {exigencia_nombre[sel_edificio.huelga_motivo]}")
+			#region presupuesto
+			if not sel_edificio.privado and var_edificio_nombre != "Toma"
+				for(var a = 0; a < 5; a++)
+					if draw_sprite_boton(spr_icono, 3 - (a > sel_edificio.presupuesto), room_width - 200 + a * 40, pos, 40, 40)
+						for(var b = 0; b < array_length(edificio_count[index]); b++){
+							var edificio = undefined
+							if keyboard_check(vk_lshift){
+								edificio = edificio_count[index, b]
+								if edificio.privado
+									continue
+							}
+							else{
+								b = array_length(edificio_count[index])
+								edificio = sel_edificio
+							}
+							set_presupuesto(a, edificio)
+						}
+			pos += 40
+			draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[index] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
+				edificio_es_casa[index] ? "Calidad de vivienda: " + string(sel_edificio.vivienda_calidad) + "\n" : ""}")
+			#endregion
+			//Prisiones
+			if var_edificio_nombre = "Comisaría"
+				if draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.clientes)} presxs.", 2)
+					for(var a = 0; a < array_length(sel_edificio.clientes); a++)
+						if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a])){
+							sel_persona = sel_edificio.clientes[a]
+							sel_edificio = null_edificio
+							sel_tipo = 2
+							close_show()
+						}
+			//Información familias
+			if edificio_es_casa[index]{
+				if draw_menu(room_width - 20, pos, $"Familias: {array_length(sel_edificio.familias)}/{edificio_familias_max[index]}", 3)
+					for(var a = 0; a < array_length(sel_edificio.familias); a++)
+						if draw_boton(room_width - 40, pos, $"Familia {sel_edificio.familias[a].padre.apellido} {sel_edificio.familias[a].madre.apellido}"){
+							sel_familia = sel_edificio.familias[a]
+							sel_tipo = 1
 						}
 			}
-			if var_edificio_nombre = "Pescadería"
-				if contaminacion[sel_edificio.x, sel_edificio.y] > 0
-					draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
-			if var_edificio_nombre = "Mina"{
-				draw_text_pos(room_width - 20, pos, $"Extrayendo {recurso_nombre[recurso_mineral[sel_edificio.modo]]}")
-				var c = 0
-				for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + width + 1); a++)
-					for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + height + 1); b++)
-						if mineral[sel_edificio.modo][a, b]
-							c += mineral_cantidad[sel_edificio.modo][a, b]
-				draw_text_pos(room_width - 40, pos, $"Depósito: {c}")
-				if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Cambiar recurso", 3)
-					for(var a = 0; a < array_length(recurso_mineral); a++)
-						if a != sel_edificio.modo{
-							if draw_boton(room_width - 40, pos, recurso_nombre[recurso_mineral[a]]){
+			//Información trabajadores
+			if edificio_es_trabajo[index]{
+				if draw_menu(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{edificio_trabajadores_max[index]}", 4)
+					for(var a = 0; a < array_length(sel_edificio.trabajadores); a++)
+						if draw_boton(room_width - 40, pos, name(sel_edificio.trabajadores[a])){
+							sel_persona = sel_edificio.trabajadores[a]
+							sel_tipo = 2
+						}
+				if var_edificio_nombre = "Granja"{
+					if current_mes = 5 or current_mes = 10
+						draw_text_pos(room_width - 20, pos, "Consecha")
+					else
+						draw_text_pos(room_width - 20, pos, "Siembra")
+					draw_text_pos(room_width - 40, pos, $"Eficiencia: {floor(sel_edificio.eficiencia * 100)}%")
+					if contaminacion[sel_edificio.x, sel_edificio.y] > 0
+						draw_text_pos(room_width - 60, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
+					draw_text_pos(room_width - 40, pos, $"{sel_edificio.count} plantas")
+					draw_text_pos(room_width - 20, pos, $"\nProduciendo {recurso_nombre[recurso_cultivo[sel_edificio.modo]]}")
+					if not sel_edificio.privado and draw_boton(room_width - 40, pos, "Cambiar recurso", , not sel_edificio.huelga)
+						sel_modo = not sel_modo
+					if sel_modo
+						for(var a = 0; a < array_length(recurso_cultivo); a++)
+							if a != sel_edificio.modo{
+								if draw_boton(room_width - 40, pos, recurso_nombre[recurso_cultivo[a]])
+									sel_edificio.modo = a
+								if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
+									draw_gradiente(a, 0)
+									draw_set_color(c_black)
+								}
+							}
+				}
+				if var_edificio_nombre = "Pescadería"
+					if contaminacion[sel_edificio.x, sel_edificio.y] > 0
+						draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
+				if var_edificio_nombre = "Mina"{
+					draw_text_pos(room_width - 20, pos, $"Extrayendo {recurso_nombre[recurso_mineral[sel_edificio.modo]]}")
+					var c = 0
+					for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + width + 1); a++)
+						for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + height + 1); b++)
+							if mineral[sel_edificio.modo][a, b]
+								c += mineral_cantidad[sel_edificio.modo][a, b]
+					draw_text_pos(room_width - 40, pos, $"Depósito: {c}")
+					if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Cambiar recurso", 3)
+						for(var a = 0; a < array_length(recurso_mineral); a++)
+							if a != sel_edificio.modo{
+								if draw_boton(room_width - 40, pos, recurso_nombre[recurso_mineral[a]]){
+									sel_edificio.modo = a
+									show[3] = false
+								}
+								if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
+									draw_gradiente(a, 1)
+									draw_set_color(c_black)
+								}
+							}
+				}
+				if var_edificio_nombre = "Rancho"{
+					if contaminacion[sel_edificio.x, sel_edificio.y] > 0
+						draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
+					draw_text_pos(room_width - 20, pos, $"Produciendo {ganado_nombre[sel_edificio.modo]}")
+					if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Cambiar recurso", 3)
+						for(var a = 0; a < array_length(ganado_nombre); a++)
+							if a != sel_edificio.modo and draw_boton(room_width - 40, pos, ganado_nombre[a]){
+								for(var b = 0; b < array_length(ganado_produccion[sel_edificio.modo]); b++)
+									sel_edificio.almacen[ganado_produccion[sel_edificio.modo, b]] = 0
 								sel_edificio.modo = a
 								show[3] = false
 							}
-							if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
-								draw_gradiente(a, 1)
-								draw_set_color(c_black)
-							}
+				}
+			}
+			//Información escuelas / consultas
+			if edificio_es_escuela[index] or edificio_es_medico[index]{
+				if draw_menu(room_width - 20, pos, $"{edificio_es_escuela[index] ? "Estudientes" : "Clientes"}: {array_length(sel_edificio.clientes)}/{edificio_clientes_max[index]}", 2)
+					for(var a = 0; a < array_length(sel_edificio.clientes); a++)
+						if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a])){
+							sel_persona = sel_edificio.clientes[a]
+							sel_tipo = 2
 						}
 			}
-			if var_edificio_nombre = "Rancho"{
-				if contaminacion[sel_edificio.x, sel_edificio.y] > 0
-					draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
-				draw_text_pos(room_width - 20, pos, $"Produciendo {ganado_nombre[sel_edificio.modo]}")
-				if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Cambiar recurso", 3)
-					for(var a = 0; a < array_length(ganado_nombre); a++)
-						if a != sel_edificio.modo and draw_boton(room_width - 40, pos, ganado_nombre[a]){
-							for(var b = 0; b < array_length(ganado_produccion[sel_edificio.modo]); b++)
-								sel_edificio.almacen[ganado_produccion[sel_edificio.modo, b]] = 0
-							sel_edificio.modo = a
-							show[3] = false
+			//Almacen / edificios cercanos
+			if not sel_edificio.privado{
+				if draw_menu(room_width - 20, pos, "Almacen", 1, , false){
+					text = ""
+					for(var a = 0; a < array_length(recurso_nombre); a++)
+						if floor(sel_edificio.almacen[a]) != 0
+							text += $"{text != "" ? "\n" : ""}{recurso_nombre[a]}: {floor(sel_edificio.almacen[a])}"
+					draw_text_pos(room_width - 40, pos, text != "" ? text : "Sin recursos")
+				}
+				if edificio_es_casa[index]{
+					for(var a = 0, b = 0; a < array_length(educacion_nombre); a++)
+						b += array_length(sel_edificio.trabajos_cerca[a])
+					if draw_menu(room_width - 20, pos, $"{b} trabajos cerca", 0)
+						for(var b = 0; b < array_length(educacion_nombre); b++)
+							for(var a = 0; a < array_length(sel_edificio.trabajos_cerca[b]); a++){
+								var temp_edificio = sel_edificio.trabajos_cerca[b, a]
+								if draw_boton(room_width - 40, pos, $"{edificio_nombre[temp_edificio.tipo]} {temp_edificio.number}"){
+									sel_edificio = temp_edificio
+									break
+								}
 						}
-			}
-		}
-		//Información escuelas / consultas
-		if edificio_es_escuela[index] or edificio_es_medico[index]{
-			if draw_menu(room_width - 20, pos, $"{edificio_es_escuela[index] ? "Estudientes" : "Clientes"}: {array_length(sel_edificio.clientes)}/{edificio_clientes_max[index]}", 2)
-				for(var a = 0; a < array_length(sel_edificio.clientes); a++)
-					if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a])){
-						sel_persona = sel_edificio.clientes[a]
-						sel_tipo = 2
 					}
-		}
-		//Almacen / edificios cercanos
-		if not sel_edificio.privado{
-			if draw_menu(room_width - 20, pos, "Almacen", 1, , false){
-				text = ""
+				if edificio_es_trabajo[index] and draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.casas_cerca)} casas cerca", 0)
+					for(var a = 0; a < array_length(sel_edificio.casas_cerca); a++){
+						var temp_edificio = sel_edificio.casas_cerca[a]
+						if draw_boton(room_width - 40, pos, $"{edificio_nombre[temp_edificio.tipo]} {temp_edificio.number}"){
+							sel_edificio = temp_edificio
+							break
+						}
+					}
+			}
+			//Privatizar / Estatizar
+			if not edificio_estatal[index] and not sel_edificio.huelga{
+				pos += 20
+				var temp_precio = edificio_precio[index], temp_text = $"Edificio base: ${temp_precio}"
+				if var_edificio_nombre = "Mina"{
+					var c = 0
+					for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + width + 1); a++)
+						for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + height + 1); b++)
+							if mineral[sel_edificio.modo][a, b]
+								c += mineral_cantidad[sel_edificio.modo][a, b]
+					c = floor(c * recurso_precio[recurso_mineral[sel_edificio.modo]] * 0.2)
+					temp_precio += c
+					temp_text += $"\nDerechos mineros: ${c}"
+				}
+				else if var_edificio_nombre = "Aserradero"{
+					var c = 0
+					for(var a = max(0, sel_edificio.x - 5); a < min(sel_edificio.x + width + 5, xsize); a++)
+						for(var b = max(0, sel_edificio.y - 5); b < min(sel_edificio.y + height + 5, ysize); b++)
+							if bosque[a, b]
+								c += bosque_madera[a, b]
+					c = floor(c * recurso_precio[1] * 0.2)
+					temp_precio += c
+					temp_text += $"\nDerechos madereros: ${c}"
+				}
+				var b = 0
 				for(var a = 0; a < array_length(recurso_nombre); a++)
-					if floor(sel_edificio.almacen[a]) != 0
-						text += $"{text != "" ? "\n" : ""}{recurso_nombre[a]}: {floor(sel_edificio.almacen[a])}"
-				draw_text_pos(room_width - 40, pos, text != "" ? text : "Sin recursos")
-			}
-			if edificio_es_casa[index]{
-				for(var a = 0, b = 0; a < array_length(educacion_nombre); a++)
-					b += array_length(sel_edificio.trabajos_cerca[a])
-				if draw_menu(room_width - 20, pos, $"{b} trabajos cerca", 0)
-					for(var b = 0; b < array_length(educacion_nombre); b++)
-						for(var a = 0; a < array_length(sel_edificio.trabajos_cerca[b]); a++){
-							var temp_edificio = sel_edificio.trabajos_cerca[b, a]
-							if draw_boton(room_width - 40, pos, $"{edificio_nombre[temp_edificio.tipo]} {temp_edificio.number}"){
-								sel_edificio = temp_edificio
-								break
-							}
+					if sel_edificio.almacen[a] > 0
+						b += sel_edificio.almacen[a] * recurso_precio[a]
+				if b > 0{
+					temp_text += $"\nInventario: ${floor(b)}"
+					temp_precio += floor(b)
+				}
+				if sel_edificio.privado{
+					temp_precio = floor(temp_precio * 1.1)
+					if draw_boton(room_width, pos, $"Estatizar Edificio -${temp_precio}") and dinero >= temp_precio{
+						mes_estatizacion[current_mes] += temp_precio
+						dinero -= temp_precio
+						dinero_privado += temp_precio
+						inversion_privada -= temp_precio
+						sel_edificio.privado = false
+						for(var a = x; a < x + width; a++)
+							for(b = y; b < y + height; b++)
+								array_set(zona_privada[a], b, false)
 					}
 				}
-			if edificio_es_trabajo[index] and draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.casas_cerca)} casas cerca", 0)
-				for(var a = 0; a < array_length(sel_edificio.casas_cerca); a++){
-					var temp_edificio = sel_edificio.casas_cerca[a]
-					if draw_boton(room_width - 40, pos, $"{edificio_nombre[temp_edificio.tipo]} {temp_edificio.number}"){
-						sel_edificio = temp_edificio
-						break
+				else{
+					temp_precio = floor(temp_precio * 0.9)
+					if draw_boton(room_width, pos, $"Privatizar Edificio +${temp_precio}"){
+						array_push(edificios_a_la_venta, {edificio : sel_edificio, precio : temp_precio, width : width, height : height})
+						set_paro(true, sel_edificio)
+						sel_edificio.venta = true
 					}
+					
 				}
-		}
-		//Privatizar / Estatizar
-		if not edificio_estatal[index] and not sel_edificio.huelga{
-			pos += 20
-			var temp_precio = edificio_precio[index], temp_text = $"Edificio base: ${temp_precio}"
-			if var_edificio_nombre = "Mina"{
-				var c = 0
-				for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + width + 1); a++)
-					for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + height + 1); b++)
-						if mineral[sel_edificio.modo][a, b]
-							c += mineral_cantidad[sel_edificio.modo][a, b]
-				c = floor(c * recurso_precio[recurso_mineral[sel_edificio.modo]] * 0.2)
-				temp_precio += c
-				temp_text += $"\nDerechos mineros: ${c}"
+				draw_text_pos(room_width - 20, pos, temp_text)
 			}
-			else if var_edificio_nombre = "Aserradero"{
-				var c = 0
-				for(var a = max(0, sel_edificio.x - 5); a < min(sel_edificio.x + width + 5, xsize); a++)
-					for(var b = max(0, sel_edificio.y - 5); b < min(sel_edificio.y + height + 5, ysize); b++)
-						if bosque[a, b]
-							c += bosque_madera[a, b]
-				c = floor(c * recurso_precio[1] * 0.2)
-				temp_precio += c
-				temp_text += $"\nDerechos madereros: ${c}"
+			if not sel_edificio.privado{
+				pos += 20
+				draw_text_pos(room_width, pos, $"Balance: ${floor(sel_edificio.ganancia)}")
 			}
-			var b = 0
-			for(var a = 0; a < array_length(recurso_nombre); a++)
-				if sel_edificio.almacen[a] > 0
-					b += sel_edificio.almacen[a] * recurso_precio[a]
-			if b > 0{
-				temp_text += $"\nInventario: ${floor(b)}"
-				temp_precio += floor(b)
-			}
-			if sel_edificio.privado{
-				temp_precio = floor(temp_precio * 1.1)
-				if draw_boton(room_width, pos, $"Estatizar Edificio -${temp_precio}") and dinero >= temp_precio{
-					mes_estatizacion[current_mes] += temp_precio
-					dinero -= temp_precio
-					dinero_privado += temp_precio
-					inversion_privada -= temp_precio
-					sel_edificio.privado = false
-					for(var a = x; a < x + width; a++)
-						for(b = y; b < y + height; b++)
-							array_set(zona_privada[a], b, false)
+			//Abrir ministerio de economía
+			if var_edificio_nombre = "Muelle"{
+				if draw_boton(room_width, pos, "Abrir ministerio de economía"){
+					sel_build = true
+					sel_info = false
+					ministerio = 5
 				}
 			}
-			else{
-				temp_precio = floor(temp_precio * 0.9)
-				if draw_boton(room_width, pos, $"Privatizar Edificio +${temp_precio}"){
-					mes_privatizacion[current_mes] += temp_precio
-					dinero += temp_precio
-					dinero_privado -= temp_precio
-					inversion_privada += temp_precio
-					sel_edificio.privado = true
-					set_presupuesto(0, sel_edificio)
-					for(var a = x; a < x + width; a++)
-						for(b = y; b < y + height; b++)
-							array_set(zona_privada[a], b, true)
-				}
-			}
-			draw_text_pos(room_width - 20, pos, temp_text)
-		}
-		if not sel_edificio.privado{
-			pos += 20
-			draw_text_pos(room_width, pos, $"Balance: ${floor(sel_edificio.ganancia)}")
-		}
-		//Abrir ministerio de economía
-		if var_edificio_nombre = "Muelle"{
-			if draw_boton(room_width, pos, "Abrir ministerio de economía"){
-				sel_build = true
+			else if draw_boton(room_width, pos, $"Muelle más cercano a {round(sel_edificio.distancia_muelle_cercano)}")
+				sel_edificio = sel_edificio.muelle_cercano
+			//Destruir edificio
+			pos += 40
+			if not sel_edificio.privado and ((var_edificio_nombre != "Muelle" and var_edificio_nombre != "Oficina de Construcción") or array_length(edificio_count[index]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.huelga){
+				destroy_edificio(sel_edificio)
 				sel_info = false
-				ministerio = 5
 			}
-		}
-		else if draw_boton(room_width, pos, $"Muelle más cercano a {round(sel_edificio.distancia_muelle_cercano)}")
-			sel_edificio = sel_edificio.muelle_cercano
-		//Destruir edificio
-		pos += 40
-		if not sel_edificio.privado and ((var_edificio_nombre != "Muelle" and var_edificio_nombre != "Oficina de Construcción") or array_length(edificio_count[index]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.huelga){
-			destroy_edificio(sel_edificio)
-			sel_info = false
 		}
 		draw_set_alpha(1)
 	}
@@ -1355,33 +1375,6 @@ if sel_info{
 		draw_text_pos(room_width, pos, $"Felicidad: {sel_persona.felicidad}")
 		draw_text_pos(room_width - 20, pos, $"Legislación: {sel_persona.felicidad_ley}")
 		draw_text_pos(room_width - 20, pos, $"Delincuencia: {sel_persona.felicidad_crimen}")
-		function draw_relacion(xx, yy, relacion = null_relacion, iter = 0){
-			if iter = 5
-				return
-			draw_sprite(spr_icono, relacion.sexo, xx, yy)
-			if not relacion.vivo
-				draw_set_color(c_black)
-			else
-				if relacion.sexo
-					draw_set_color(c_fuchsia)
-				else
-					draw_set_color(c_aqua)
-			draw_circle(xx, yy, 8, false)
-			draw_set_color(c_black)
-			if mouse_x > xx - 10 and mouse_y > yy - 10 and mouse_x < xx + 10 and mouse_y < yy + 10{
-				draw_text(mouse_x, mouse_y, relacion.nombre)
-				window_set_cursor(cr_handpoint)
-				if mouse_check_button_pressed(mb_left){
-					mouse_clear(mb_left)
-					if relacion.vivo
-						sel_persona = relacion.persona
-				}
-			}
-			if relacion.padre != null_relacion
-				draw_relacion(xx - 15 * (4 - iter), yy - 30, relacion.padre, iter + 1)
-			if relacion.madre != null_relacion
-				draw_relacion(xx + 15 * (4 - iter), yy - 30, relacion.madre, iter + 1)
-		}
 		draw_relacion(room_width - 150, room_height - 50, sel_persona.relacion)
 	}
 	draw_set_halign(fa_left)
@@ -1581,6 +1574,7 @@ if keyboard_check(vk_space) or step >= 60{
 						show_debug_message($"No has podido cumplir el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
 						pais_relacion[tratado.pais]--
 						array_delete(recurso_tratados[a], b--, 1)
+						credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
 					}
 				}
 			}
@@ -1590,7 +1584,7 @@ if keyboard_check(vk_space) or step >= 60{
 				array_shift(tratados_ofertas)
 			#endregion
 			//Inmigración
-			if ley_eneabled[1] and irandom(felicidad_total) > 25 or dia < 365{
+			if ley_eneabled[1] and (irandom(felicidad_total) > felicidad_minima or irandom(credibilidad_financiera) > 7 or dia < 365){
 				var familia = add_familia()
 				if familia.padre != null_persona{
 					buscar_trabajo(familia.padre)
@@ -1620,10 +1614,30 @@ if keyboard_check(vk_space) or step >= 60{
 				if fel_ali / array_length(familias) >= 50
 					cumplir_exigencia(6)
 			}
+			//Privatización de edificios
+			if irandom(10) < credibilidad_financiera{
+				var temp = array_shift(edificios_a_la_venta), edificio = temp.edificio, temp_precio = temp.precio, width = temp.width, height = temp.height
+				x = edificio.x
+				y = edificio.y
+				mes_privatizacion[current_mes] += temp_precio
+				dinero += temp_precio
+				dinero_privado -= temp_precio
+				inversion_privada += temp_precio
+				edificio.privado = true
+				set_presupuesto(0, edificio)
+				for(var a = x; a < x + width; a++)
+					for(var b = y; b < y + height; b++)
+						array_set(zona_privada[a], b, true)
+				edificio.venta = false
+				set_paro(false, edificio)
+			}
 		}
 		//Eventos anuales
 		if (dia mod 365) = 0{
 			felicidad_minima = floor(17 + floor(dia / 365))
+			//Credibilidad financiera
+			credibilidad_financiera = clamp(credibilidad_financiera + sign((dinero_privado + inversion_privada) - prev_beneficio_privado), 1, 10)
+			prev_beneficio_privado = dinero_privado + inversion_privada
 		}
 		#region Personas
 			//Ciclo normal de las personas
@@ -1638,14 +1652,13 @@ if keyboard_check(vk_space) or step >= 60{
 					if persona.escuela = null_edificio
 						buscar_escuela(persona)
 					else{
-						persona.educacion += random(edificio_clientes_calidad[persona.escuela.tipo] * persona.escuela.trabajo_mes / 25 / edificio_trabajadores_max[persona.escuela.tipo])
-						if persona.educacion >= 2{
-							persona.educacion = 2
-							array_remove(persona.escuela.clientes, persona, "salir del colegio")
-							persona.escuela = null_edificio
+						persona.educacion += random_range(0.1, 0.2)
+						if persona.educacion >= edificio_escuela_max[persona.escuela.tipo]{
+							persona.educacion = edificio_escuela_max[persona.escuela.tipo]
+							cambiar_escuela(persona, null_edificio)
 						}
-						else if random(1) < 0.1{
-							array_remove(persona.escuela.clientes, persona, "expulsado del colegio")
+						else if ley_eneabled[2] and random(1) < 0.1 and buscar_trabajo(persona){
+							cambiar_escuela(persona, null_edificio)
 							buscar_escuela(persona)
 						}
 					}
@@ -1665,12 +1678,11 @@ if keyboard_check(vk_space) or step >= 60{
 					}
 				}
 				//Dejar de estudiar
-				if persona.edad = 18 and persona.escuela != null_edificio{
-					array_remove(persona.escuela.clientes, persona, "egresar del colegio")
-					persona.escuela = null_edificio
-				}
+				if persona.edad = 18 and persona.escuela != null_edificio
+					cambiar_escuela(persona, null_edificio)
 				//Trabajo infantil :D
-				if ley_eneabled[2] and persona.es_hijo and persona.edad > 12 and not persona.preso
+				if ley_eneabled[2] and persona.es_hijo and persona.edad > 12 and not persona.preso{
+					cambiar_escuela(persona, null_edificio)
 					if buscar_trabajo(persona){
 						var flag = false
 						for(var b = 0; b < array_length(persona.familia.hijos); b++)
@@ -1683,10 +1695,10 @@ if keyboard_check(vk_space) or step >= 60{
 							add_felicidad_ley(persona.familia.madre, -10)
 						}
 					}
+				}
 				//Independizarse
 				if persona.edad > 18 and (irandom_range(persona.edad, 24) = 24 or persona.edad > 24) and persona.es_hijo and not persona.preso{
-					buscar_trabajo(persona)
-					if persona.trabajo != null_edificio or persona.edad > 24{
+					if buscar_trabajo(persona) or persona.edad > 24{
 						var prev_familia = persona.familia, herencia = 0, b = prev_familia.felicidad_vivienda, c = prev_familia.felicidad_alimento
 						array_remove(prev_familia.hijos, persona, "hijo se independiza")
 						if prev_familia.padre = null_persona and prev_familia.madre = null_persona and array_length(prev_familia.hijos) = 0{
@@ -1699,6 +1711,7 @@ if keyboard_check(vk_space) or step >= 60{
 							familia.madre = persona
 						else
 							familia.padre = persona
+						familia.riqueza = herencia
 						persona.familia = familia
 						persona.es_hijo = false
 					}
@@ -2079,7 +2092,7 @@ if keyboard_check(vk_space) or step >= 60{
 										add_encargo(1, edificio.almacen[1], edificio)
 										edificio.almacen[1] = 0
 										set_paro(true, edificio)
-										for(b = 0; b < array_length(edificio.trabajadores); b++){
+										while array_length(edificio.trabajadores) > 0{
 											cambiar_trabajo(edificio.trabajadores[b], null_edificio)
 											buscar_trabajo(edificio.trabajadores[b])
 										}
@@ -2170,6 +2183,7 @@ if keyboard_check(vk_space) or step >= 60{
 												show_debug_message($"Has cumplido el tratado comercial de {recurso_nombre[b]} con {pais_nombre[tratado.pais]}")
 												pais_relacion[tratado.pais]++
 												array_shift(recurso_tratados[b])
+												credibilidad_financiera = clamp(credibilidad_financiera + 1, 1, 10)
 											}
 										}
 										total -= d

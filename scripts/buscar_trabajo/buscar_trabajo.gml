@@ -5,7 +5,12 @@ function buscar_trabajo(persona = control.null_persona){
 			for(var a = persona.educacion; a >= 0; a--)
 				if array_length(trabajo_educacion[a]) > 0{
 					trabajo = trabajo_educacion[a, irandom(array_length(trabajo_educacion[a]) - 1)]
-					if trabajo != persona.trabajo and trabajo.trabajo_calidad > persona.trabajo.trabajo_calidad / (1 + persona.trabajo.paro) and (persona.religion or not edificio_es_iglesia[trabajo.tipo]) and ((persona.sexo and not persona.religion) or not (edificio_nombre[trabajo.tipo] = "Cabaret")){
+					var c = 0, b = 0
+					if not in(persona.trabajo, null_edificio, jubilado, delincuente){
+						c = calcular_felicidad_transporte(persona.familia.casa, trabajo)
+						b = calcular_felicidad_transporte(persona.familia.casa, persona.trabajo)
+					}
+					if trabajo != persona.trabajo and (trabajo.trabajo_calidad + c) > (persona.trabajo.trabajo_calidad / (1 + persona.trabajo.paro) + b) and (persona.religion or not edificio_es_iglesia[trabajo.tipo]) and ((persona.sexo and not persona.religion) or not (edificio_nombre[trabajo.tipo] = "Cabaret")){
 						cambiar_trabajo(persona, trabajo)
 						return true
 					}

@@ -64,6 +64,12 @@ function destroy_edificio(edificio = control.null_edificio){
 					encargos[a].edificio = null_edificio
 		if edificio.ladron != null_persona
 			edificio.ladron.ladron = null_edificio
+		if edificio.venta
+			for(var a = 0; a < array_length(edificios_a_la_venta); a++)
+				if edificios_a_la_venta[a].edificio = edificio{
+					array_delete(edificios_a_la_venta, a, 1)
+					break
+				}
 		//Modificar belleza
 		if edificio_belleza[tipo] != 50{
 			var size = ceil(abs(edificio_belleza[tipo] - 50) / 5)
