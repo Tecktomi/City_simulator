@@ -1,11 +1,11 @@
 {
   "$GMSprite":"",
   "%Name":"spr_tile",
-  "bboxMode":0,
+  "bboxMode":1,
   "bbox_bottom":63,
   "bbox_left":0,
   "bbox_right":63,
-  "bbox_top":32,
+  "bbox_top":0,
   "collisionKind":1,
   "collisionTolerance":0,
   "DynamicTexturePage":false,

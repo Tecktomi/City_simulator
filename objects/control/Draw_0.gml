@@ -1615,7 +1615,7 @@ if keyboard_check(vk_space) or step >= 60{
 					cumplir_exigencia(6)
 			}
 			//Privatización de edificios
-			if irandom(10) < credibilidad_financiera{
+			if array_length(edificios_a_la_venta) and irandom(10) < credibilidad_financiera{
 				var temp = array_shift(edificios_a_la_venta), edificio = temp.edificio, temp_precio = temp.precio, width = temp.width, height = temp.height
 				x = edificio.x
 				y = edificio.y
@@ -2214,24 +2214,6 @@ if keyboard_check(vk_space) or step >= 60{
 							}
 						}
 					}
-					//Planta Siderúrgica
-					else if var_edificio_nombre = "Planta Siderúrgica"{
-						b = max(0, min(floor(edificio.almacen[9] / 2), floor(edificio.almacen[10] / 3), round(edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto))))
-						edificio.almacen[9] -= b * 2
-						edificio.almacen[10] -= b * 3
-						edificio.almacen[15] += b * 2
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
-							edificio.ganancia -= recurso_precio[9] * (edificio.almacen[9] + edificio.pedido[9] - 240)
-							edificio.ganancia -= recurso_precio[10] * (edificio.almacen[10] + edificio.pedido[10] - 360)
-							edificio.ganancia += recurso_precio[15] * edificio.almacen[15]
-							add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 240, edificio)
-							add_encargo(10, edificio.almacen[10] + edificio.pedido[10] - 360, edificio)
-							add_encargo(15, edificio.almacen[15], edificio)
-							edificio.almacen[15] = 0
-							edificio.pedido[9] = 240 - edificio.almacen[9]
-							edificio.pedido[10] = 360 - edificio.almacen[10]
-						}
-					}
 					//Fábrica textil
 					else if var_edificio_nombre = "Fábrica Textil"{
 						b = max(0, min(max(floor(edificio.almacen[3] / 3), floor(edificio.almacen[20] / 3)), round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))))
@@ -2252,33 +2234,6 @@ if keyboard_check(vk_space) or step >= 60{
 							edificio.pedido[20] = 360 - edificio.almacen[20]
 						}
 					}
-					//Astillero
-					else if var_edificio_nombre = "Astillero"{
-						b = max(0, min(floor(edificio.almacen[1] / 4), edificio.almacen[7], edificio.almacen[12], edificio.almacen[16], round(edificio.trabajo_mes / 125 * (0.8 + 0.1 * edificio.presupuesto))))
-						edificio.almacen[1] -= b * 4
-						edificio.almacen[7] -= b
-						edificio.almacen[12] -= b
-						edificio.almacen[16] -= b
-						edificio.almacen[17] += b / 10
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
-							edificio.ganancia -= recurso_precio[1] * (edificio.almacen[1] + edificio.pedido[1] - 200)
-							edificio.ganancia -= recurso_precio[7] * (edificio.almacen[7] + edificio.pedido[7] - 50)
-							edificio.ganancia -= recurso_precio[12] * (edificio.almacen[12] + edificio.pedido[12] - 50)
-							edificio.ganancia -= recurso_precio[16] * (edificio.almacen[16] + edificio.pedido[16] - 50)
-							edificio.ganancia += recurso_precio[17] * floor(edificio.almacen[17])
-							add_encargo(1, edificio.almacen[1] + edificio.pedido[1] - 200, edificio)
-							add_encargo(7, edificio.almacen[7] + edificio.pedido[7] - 50, edificio)
-							add_encargo(12, edificio.almacen[12] + edificio.pedido[12] - 50, edificio)
-							add_encargo(16, edificio.almacen[16] + edificio.pedido[16] - 50, edificio)
-							if edificio.almacen[17] >= 1
-								add_encargo(17, floor(edificio.almacen[17]), edificio)
-							edificio.almacen[17] -= floor(edificio.almacen[17])
-							edificio.pedido[1] = 200 - edificio.almacen[1]
-							edificio.pedido[7] = 50 - edificio.almacen[7]
-							edificio.pedido[12] = 50 - edificio.almacen[12]
-							edificio.pedido[16] = 50 - edificio.almacen[16]
-						}
-					}
 					//Rancho
 					else if var_edificio_nombre = "Rancho"{
 						b = edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200)
@@ -2294,52 +2249,6 @@ if keyboard_check(vk_space) or step >= 60{
 								}
 							}
 						
-					}
-					//Destilería de Ron
-					else if var_edificio_nombre = "Destilería de Ron"{
-						b = max(0, min(floor(edificio.almacen[5] / 3), round(edificio.trabajo_mes / 12 * (0.8 + 0.1 * edificio.presupuesto))))
-						edificio.almacen[5] -= b * 3
-						edificio.almacen[22] += b
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
-							edificio.ganancia -= recurso_precio[5] * (edificio.almacen[5] + edificio.pedido[5] - 360)
-							edificio.ganancia += recurso_precio[22] * floor(edificio.almacen[22])
-							add_encargo(5, edificio.almacen[5] + edificio.pedido[5] - 360, edificio)
-							add_encargo(22, edificio.almacen[22], edificio)
-							edificio.almacen[22] = 0
-							edificio.pedido[5] = 360 - edificio.almacen[5]
-						}
-					}
-					//Quesería
-					else if var_edificio_nombre = "Quesería"{
-						b = max(0, min(edificio.almacen[19], round(edificio.trabajo_mes / 9 * (0.8 + 0.1 * edificio.presupuesto))))
-						edificio.almacen[19] -= b
-						edificio.almacen[23] += b
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
-							edificio.ganancia -= recurso_precio[19] * (edificio.almacen[19] + edificio.pedido[19] - 120)
-							edificio.ganancia += recurso_precio[23] * floor(edificio.almacen[23])
-							add_encargo(19, edificio.almacen[19] + edificio.pedido[19] - 120, edificio)
-							add_encargo(23, edificio.almacen[23], edificio)
-							edificio.almacen[23] = 0
-							edificio.pedido[19] = 120 - edificio.almacen[19]
-						}
-					}
-					//Herrería
-					else if var_edificio_nombre = "Herrería"{
-						b = max(0, min(edificio.almacen[1], edificio.almacen[15], round(edificio.trabajo_mes / 50 * (0.8 + 0.1 * edificio.presupuesto))))
-						edificio.almacen[1] -= b
-						edificio.almacen[15] -= b
-						edificio.almacen[24] += b * 5
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
-							edificio.ganancia -= recurso_precio[1] * (edificio.almacen[1] + edificio.pedido[1] - 120)
-							edificio.ganancia -= recurso_precio[15] * (edificio.almacen[15] + edificio.pedido[15] - 120)
-							edificio.ganancia += recurso_precio[24] * floor(edificio.almacen[24])
-							add_encargo(1, edificio.almacen[1] + edificio.pedido[1] - 120, edificio)
-							add_encargo(15, edificio.almacen[15] + edificio.pedido[15] - 120, edificio)
-							add_encargo(24, edificio.almacen[24], edificio)
-							edificio.almacen[24] = 0
-							edificio.pedido[1] = 120 - edificio.almacen[1]
-							edificio.pedido[15] = 120 - edificio.almacen[15]
-						}
 					}
 					//Comisaría
 					else if var_edificio_nombre = "Comisaría"{
@@ -2365,6 +2274,31 @@ if keyboard_check(vk_space) or step >= 60{
 									familia.madre.felicidad_crimen = min(100, familia.madre.felicidad_crimen + 4)
 								for(var d = 0; d < array_length(familia.hijos); d++)
 									familia.hijos[d].felicidad_crimen = min(100, familia.hijos[d].felicidad_crimen + 4)
+							}
+						}
+					}
+					//Industria generica
+					else if edificio_es_industria[index]{
+						var temp_array = []
+						for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
+							array_push(temp_array, edificio.almacen[edificio_industria_input_id[index, c]] / edificio_industria_input_num[index, c])
+						b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto))))
+						for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
+							edificio.almacen[edificio_industria_input_id[index, c]] -= b * edificio_industria_input_num[index, c]
+						for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++)
+							edificio.almacen[edificio_industria_output_id[index, c]] += b * edificio_industria_output_num[index, c]
+						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
+							for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++){
+								var d = edificio_industria_input_id[index, c]
+								edificio.ganancia -= recurso_precio[d] * (edificio.almacen[d] + edificio.pedido[d] - 120)
+								add_encargo(d, edificio.almacen[d] + edificio.pedido[d] - 120, edificio)
+								edificio.pedido[d] = 120 - edificio.almacen[d]
+							}
+							for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++){
+								var d = edificio_industria_output_id[index, c]
+								edificio.ganancia += recurso_precio[d] * floor(edificio.almacen[d])
+								add_encargo(d, edificio.almacen[d], edificio)
+								edificio.almacen[d] = 0
 							}
 						}
 					}

@@ -66,6 +66,7 @@
     {"id":{"name":"fecha","path":"scripts/fecha/fecha.yy",},},
     {"id":{"name":"gen_nombre","path":"scripts/gen_nombre/gen_nombre.yy",},},
     {"id":{"name":"in","path":"scripts/in/in.yy",},},
+    {"id":{"name":"min_array","path":"scripts/min_array/min_array.yy",},},
     {"id":{"name":"name","path":"scripts/name/name.yy",},},
     {"id":{"name":"perlin","path":"scripts/perlin/perlin.yy",},},
     {"id":{"name":"print_familia","path":"scripts/print_familia/print_familia.yy",},},
