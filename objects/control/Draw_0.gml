@@ -839,7 +839,7 @@ if sel_build{
 }
 //Colocar edificio
 if build_sel{
-	var width = edificio_width[build_index], height = edificio_height[build_index], d = 0, temp_altura = 0
+	var width = edificio_width[build_index], height = edificio_height[build_index], coste_aplanar = 0, temp_altura = 0
 	text = ""
 	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - width)
 	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - height)
@@ -874,9 +874,9 @@ if build_sel{
 	if edificio_nombre[build_index] = "Mina"{
 		draw_rombo((mx - my) * tile_width - xpos, (mx + my - 2) * tile_height - ypos, (mx - my - height - 2) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height + 2) * tile_height - ypos, (mx - my + width + 2) * tile_width - xpos, (mx + my + width) * tile_height - ypos, true)
 		flag = false
-		var c = 0
-		for(var a = max(0, mx - 1); a < min(xsize - 1, mx + width + 1); a++)
-			for(var b = max(0, my - 1); b < min(ysize - 1, my + height + 1); b++)
+		var c = 0, d = min(xsize - 1, mx + width + 1), e = min(ysize - 1, my + height + 1)
+		for(var a = max(0, mx - 1); a < d; a++)
+			for(var b = max(0, my - 1); b < e; b++)
 				if mineral[build_type][a, b]{
 					flag = true
 					c += mineral_cantidad[build_type][a, b]
@@ -917,17 +917,28 @@ if build_sel{
 					build_index = 19
 			}
 		}
-		
 	}
+	draw_set_color(c_red)
+	draw_set_alpha(0.5)
+	var c = min(xsize - 1, mx + width + 5), d = min(ysize - 1, my + height + 5)
+	for(var a = max(0, mx - 5); a < c; a++)
+		for(var b = max(0, my - 5); b < d; b++)
+			if zona_privada[a, b]
+				draw_rombo((a - b) * tile_width - xpos, (a + b) * tile_height - ypos, (a - b - 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, (a - b) * tile_width - xpos, (a + b + 2) * tile_height - ypos, (a - b + 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, false)
+	draw_set_color(c_white)
+	draw_set_alpha(1)
 	//Detectar terreno inválido
 	if flag{
 		flag = edificio_valid_place(mx, my, build_index, rotado)
 		//Detectar árboles cerca
 		if flag and edificio_nombre[build_index] = "Aserradero"{
 			draw_rombo((mx - my) * tile_width - xpos, (mx + my - 10) * tile_height - ypos, (mx - my - height - 10) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height + 10) * tile_height - ypos, (mx - my + width + 10) * tile_width - xpos, (mx + my + width) * tile_height - ypos, true)
-			var flag_2 = false, c = 0
-			for(var a = max(0, mx - 5); a < min(mx + width + 5, xsize); a++)
-				for(var b = max(0, my - 5); b < min(my + height + 5, ysize); b++)
+			var flag_2 = false
+			c = 0
+			d = min(mx + width + 5, xsize)
+			var e = min(my + height + 5, ysize)
+			for(var a = max(0, mx - 5); a < d; a++)
+				for(var b = max(0, my - 5); b < e; b++)
 					if bosque[a, b]{
 						flag_2 = true
 						c += bosque_madera[a, b]
@@ -951,10 +962,10 @@ if build_sel{
 		//Coste aplanar
 		for(var a = mx; a < mx + width; a++)
 			for(var b = my; b < my + height; b++)
-				d += 25 * sqrt(abs(altura[# a, b] - temp_altura))
-		d = round(d)
-		if d > 0
-			text += "Coste aplanar: $ " + string(round(d))
+				coste_aplanar += 25 * sqrt(abs(altura[# a, b] - temp_altura))
+		coste_aplanar = round(coste_aplanar)
+		if coste_aplanar > 0
+			text += "Coste aplanar: $ " + string(round(coste_aplanar))
 	}
 	if text != ""
 		draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, text)
@@ -986,8 +997,8 @@ if build_sel{
 			array_set(bool_draw_construccion[mx], my, true)
 			array_set(draw_construccion[mx], my, next_build)
 			build_sel = keyboard_check(vk_lshift)
-			dinero -= edificio_precio[build_index] + d
-			mes_construccion[current_mes] += edificio_precio[build_index] + d
+			dinero -= edificio_precio[build_index] + coste_aplanar
+			mes_construccion[current_mes] += edificio_precio[build_index] + coste_aplanar
 		}
 	}
 	if mouse_check_button_pressed(mb_right){
