@@ -7,3 +7,6 @@ function gen_nombre(sexo){
 function gen_apellido(){
 	return choose("Alvares", "Acuña", "Benides", "Bolivar", "Carrasco", "Casablanca", "Donoso", "Durán", "Escobar", "Espinoza", "Fernandez", "Flores", "Gonzales", "Guerrero", "Hernandez", "Hormazábal", "Irarrazaval", "Iturra", "Jimenez", "Larraín", "Lozana", "Meneses", "Marín", "Nuñez", "Noriega", "Ortiz", "Polanco", "Peña", "Quevedo", "Quezada", "Ramirez", "Román", "Sandoval", "Saavedra", "Tapia", "Troncoso", "Ugarte", "Urquiza", "Velasquez", "Vicuña", "Yañez", "Zamora", "Zuñiga")
 }
+function gen_nombre_empresa(){
+	return choose(gen_apellido(), control.pais_nombre[irandom(array_length(control.pais_nombre) - 1)]) + " " + choose("Ldta.", "S.A.", "Hmns.", "Corp.", "Asociados")
+}

@@ -11,6 +11,7 @@ function add_encargo(recurso, cantidad, edificio = control.null_edificio){
 				var a = floor(recurso_precio[recurso] * cantidad)
 				dinero -= a
 				dinero_privado += a
+				edificio.empresa.dinero += a
 				if cantidad > 0
 					mes_compra_interna[current_mes] += a
 				else

@@ -4,12 +4,16 @@ function add_empresa(inversion, nacional = false, persona = control.null_persona
 			jefe : persona,
 			dinero : inversion,
 			edificios : [null_edificio],
-			nacional : nacional
+			nacional : nacional,
+			nombre : ""
 		}
 		if nacional{
 			persona.empresa = empresa
 			persona.familia.riqueza -= inversion
+			empresa.nombre = persona.apellido + choose("Ldta.", "S.A.", "Hmns.", "Corp.", "Asociados")
 		}
+		else
+			empresa.nombre = gen_nombre_empresa()
 		array_pop(empresa.edificios)
 		array_push(empresas, empresa)
 		return empresa

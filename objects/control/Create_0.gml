@@ -408,7 +408,7 @@ var a, b
 			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 			contaminacion[a, b] = 0
 			zona_privada[a, b] = false
-			zona_tipo[a, b] = 0
+			zona_empresa[a, b]= null_empresa
 			mar_checked[a, b] = false
 			land_checked[a, b] = false
 			land_matrix[a, b] = false
@@ -503,7 +503,7 @@ var a, b
 	step = 0
 	velocidad = 1
 	rotado = false
-	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Leyes"]
+	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
 	felicidad_total = 50
 	ley_nombre = ["Legalizar divorcios", "Aceptar inmigrantes", "Trabajo infantil", "Jubilación", "Comida gratis", "Aceptar emigración", "Trabajo temporal", "Legalizar tomas"]
@@ -561,6 +561,8 @@ var a, b
 		array_push(pais_relacion, 0)
 	repeat(10)
 		add_tratado_oferta()
+	repeat(10)
+		add_empresa(irandom_range(1000, 5000))
 	while array_length(personas) < 50
 		add_familia(0)
 #endregion
