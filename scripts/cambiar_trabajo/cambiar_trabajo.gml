@@ -1,6 +1,6 @@
 function cambiar_trabajo(persona = control.null_persona, trabajo = control.null_edificio){
 	with control{
-		if not in(persona.trabajo, null_edificio, jubilado, delincuente) and array_length(persona.trabajo.trabajadores) = edificio_trabajadores_max[persona.trabajo.tipo]
+		if not in(persona.trabajo, null_edificio, jubilado, delincuente) and array_length(persona.trabajo.trabajadores) = edificio_trabajadores_max[persona.trabajo.tipo] and not persona.trabajo.paro
 			array_push(trabajo_educacion[edificio_trabajo_educacion[persona.trabajo.tipo]], persona.trabajo)
 		array_remove(persona.trabajo.trabajadores, persona, "persona yendose de su trabajo")
 		persona.familia.sueldo -= persona.trabajo.trabajo_sueldo

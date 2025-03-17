@@ -8,7 +8,7 @@ function destroy_edificio(edificio = control.null_edificio){
 		}
 		array_set(bool_draw_edificio[edificio.x], edificio.y, false)
 		array_set(draw_edificio[edificio.x], edificio.y, null_edificio)
-		if array_length(edificio.trabajadores) < edificio_trabajadores_max[tipo]
+		if array_length(edificio.trabajadores) < edificio_trabajadores_max[tipo] and not edificio.paro
 			array_remove(trabajo_educacion[edificio_trabajo_educacion[tipo]], edificio, "eliminar trabajo de los disponibles")
 		for(var a = 0; a < array_length(edificio.trabajadores); a++)
 			cambiar_trabajo(edificio.trabajadores[a], null_edificio)
@@ -89,6 +89,10 @@ function destroy_edificio(edificio = control.null_edificio){
 			for(var a = max(0, edificio.x - size); a < min(xsize, edificio.x + width + size); a++)
 				for(var b = max(0, edificio.y - size); b < min(ysize, edificio.y + height + size); b++)
 					array_set(contaminacion[a], b, round(contaminacion[a, b] - edificio_contaminacion[tipo] / (1 + distancia_punto(a, b, edificio))))
+		}
+		if sel_edificio = edificio{
+			sel_edificio = null_edificio
+			sel_info = false
 		}
 	}
 }

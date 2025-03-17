@@ -65,8 +65,11 @@ if keyboard_check(ord("C"))
 //Dibujo de arboles y edificios
 for(var a = min_camx; a < max_camx; a++)
 	for(var b = min_camy; b < max_camy; b++){
-		if bosque[a, b]
+		if bosque[a, b]{
+			draw_set_alpha(bosque_alpha[a, b])
 			draw_sprite_stretched(spr_arbol, 0, (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
+			draw_set_alpha(1)
+		}
 		if bool_draw_edificio[a, b]
 			if edificio_sprite[id_edificio[a, b].tipo]
 				draw_sprite_stretched(edificio_sprite_id[id_edificio[a, b].tipo], draw_edificio_flip[a, b], (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
@@ -1069,6 +1072,7 @@ if sel_info{
 					a = 60 * array_length(sel_edificio.trabajadores)
 				if draw_boton(room_width - 40, pos, $"Sobornar huelga ${a}") and dinero >= a{
 					dinero -= a
+					sel_edificio.huelga = false
 					set_paro(false, sel_edificio)
 				}
 				if draw_boton(room_width - 40, pos, exigencia_nombre[sel_edificio.huelga_motivo]) and show_question($"Aceptar exigencia?\n\n{exigencia_nombre[sel_edificio.huelga_motivo]}"){
@@ -1196,6 +1200,10 @@ if sel_info{
 								show[3] = false
 							}
 				}
+				if var_edificio_nombre = "Aserradero"{
+					if draw_boton(room_width - 20, pos, $"{(sel_edificio.modo = 0) ? "Despejar bosque" : "Reforestación"}")
+						sel_edificio.modo = 1 - sel_edificio.modo
+				}
 			}
 			//Información escuelas / consultas
 			if edificio_es_escuela[index] or edificio_es_medico[index]{
@@ -1309,10 +1317,8 @@ if sel_info{
 				sel_edificio = sel_edificio.muelle_cercano
 			//Destruir edificio
 			pos += 40
-			if not sel_edificio.privado and ((var_edificio_nombre != "Muelle" and var_edificio_nombre != "Oficina de Construcción") or array_length(edificio_count[index]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.huelga){
+			if not sel_edificio.privado and ((var_edificio_nombre != "Muelle" and var_edificio_nombre != "Oficina de Construcción") or array_length(edificio_count[index]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.huelga)
 				destroy_edificio(sel_edificio)
-				sel_info = false
-			}
 		}
 		draw_set_alpha(1)
 	}
@@ -1549,6 +1555,14 @@ if keyboard_check(vk_space) or step >= 60{
 				}
 			}
 		}
+		//Random tick
+		repeat(max(xsize * ysize / 10000, 1)){
+			var mx = irandom(xsize - 1), my = irandom(ysize - 1)
+			if bosque[mx, my]{
+				array_set(bosque_madera[mx], my, min(200, bosque_madera[mx, my] + 20))
+				array_set(bosque_alpha[mx], my, 0.5 + bosque_madera[mx, my] / 400)
+			}
+		}
 		//Eventos mensuales
 		if dia_mes(dia) = 0{
 			mes_enfermos[current_mes] = 0
@@ -1635,6 +1649,10 @@ if keyboard_check(vk_space) or step >= 60{
 				dinero_privado -= temp_precio
 				inversion_privada += temp_precio
 				edificio.privado = true
+				if edificio_nombre[edificio.tipo] = "Aserradero"
+					edificio.modo = 0
+				edificio.empresa = null_empresa
+				array_push(null_empresa.edificios, edificio)
 				set_presupuesto(0, edificio)
 				for(var a = x; a < x + width; a++)
 					for(var b = y; b < y + height; b++)
@@ -2087,11 +2105,33 @@ if keyboard_check(vk_space) or step >= 60{
 						//Cortar árboles
 						if array_length(edificio.array_complex) > 0{
 							b = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))
+							var e = b, flag = false
 							while b > 0 and array_length(edificio.array_complex) > 0{
 								var complex = edificio.array_complex[0]
 								if b < bosque_madera[complex.a, complex.b]{
 									array_set(bosque_madera[complex.a], complex.b, bosque_madera[complex.a, complex.b] - b)
+									array_set(bosque_alpha[complex.a], complex.b, 0.5 + bosque_madera[complex.a, complex.b] / 400)
 									b = 0
+								}
+								else if edificio.modo = 1{
+									if bosque_madera[complex.a, complex.b] > 1{
+										b -= bosque_madera[complex.a, complex.b] - 1
+										array_set(bosque_madera[complex.a], complex.b, 1)
+										array_set(bosque_alpha[complex.a], complex.b, 0.5)
+										array_push(edificio.array_complex, array_shift(edificio.array_complex))
+									}
+									else{
+										repeat(array_length(edificio.array_complex)){
+											complex = edificio.array_complex[0]
+											if bosque_madera[complex.a, complex.b] = 1{
+												array_shift(edificio.array_complex)
+												array_push(edificio.array_complex, complex)
+											}
+											else
+												break
+										}
+										break
+									}
 								}
 								else{
 									b -= bosque_madera[complex.a, complex.b]
@@ -2099,19 +2139,28 @@ if keyboard_check(vk_space) or step >= 60{
 									array_set(bosque[complex.a], complex.b, false)
 									array_shift(edificio.array_complex)
 									if array_length(edificio.array_complex) = 0{
-										edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
+										edificio.almacen[1] += e - b
 										add_encargo(1, edificio.almacen[1], edificio)
 										edificio.almacen[1] = 0
 										set_paro(true, edificio)
 										while array_length(edificio.trabajadores) > 0{
-											cambiar_trabajo(edificio.trabajadores[b], null_edificio)
-											buscar_trabajo(edificio.trabajadores[b])
+											var persona = edificio.trabajadores[0]
+											cambiar_trabajo(persona, null_edificio)
+											buscar_trabajo(persona)
+										}
+										if edificio.privado{
+											destroy_edificio(edificio)
+											flag = true
 										}
 										break
 									}
 								}
 							}
-							edificio.almacen[1] += 10 * array_length(edificio.trabajadores) - b
+							if flag{
+								a--
+								continue
+							}
+							edificio.almacen[1] += e - b
 						}
 						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[1] > 0{
 							edificio.ganancia += recurso_precio[1] * edificio.almacen[1]
@@ -2156,8 +2205,9 @@ if keyboard_check(vk_space) or step >= 60{
 							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
 							edificio.almacen[recurso_mineral[edificio.modo]] = 0
 							for(b = 0; b < array_length(edificio.trabajadores); b++){
-								cambiar_trabajo(edificio.trabajadores[b], null_edificio)
-								buscar_trabajo(edificio.trabajadores[b])
+								var persona = edificio.trabajadores[0]
+								cambiar_trabajo(persona, null_edificio)
+								buscar_trabajo(persona)
 							}
 						}
 						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[recurso_mineral[edificio.modo]] > 0{

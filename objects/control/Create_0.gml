@@ -382,8 +382,10 @@ var a, b
 			draw_construccion[a, b] = null_construccion
 			draw_edificio_flip[a, b] = brandom()
 			bosque[a, b] = grid[# a, b] > 0.6 and c > 0.62
-			if bosque[a, b]
+			if bosque[a, b]{
 				bosque_madera[a, b] = floor(200 * grid[# a, b])
+				bosque_alpha[a, b] = 0.5 + bosque_madera[a, b] / 400
+			}
 			mar[a, b] = c < 0.5
 			#region altura color
 			if mar[a, b]
