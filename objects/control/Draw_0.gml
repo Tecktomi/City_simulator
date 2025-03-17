@@ -2193,9 +2193,9 @@ if keyboard_check(vk_space) or step >= 60{
 					//Minas
 					else if var_edificio_nombre = "Mina"{
 						b = round(edificio.trabajo_mes / 2 * (0.8 + 0.1 * edificio.presupuesto))
-						var e = b
-						for(var c = max(0, edificio.x - 1); c < min(xsize - 1, edificio.x + width + 1); c++){
-							for(var d = max(0, edificio.y - 1); d < min(ysize - 1, edificio.y + height + 1); d++)
+						var e = b, f = min(xsize - 1, edificio.x + width + 1), g = min(ysize - 1, edificio.y + height + 1)
+						for(var c = max(0, edificio.x - 1); c < f; c++){
+							for(var d = max(0, edificio.y - 1); d < g; d++)
 								if mineral[edificio.modo][c, d]{
 									if mineral_cantidad[edificio.modo][c, d] <= b{
 										b -= mineral_cantidad[edificio.modo][c, d]
@@ -2214,13 +2214,38 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 						edificio.almacen[recurso_mineral[edificio.modo]] += e - b
 						if b > 0{
-							set_paro(true, edificio)
-							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
-							edificio.almacen[recurso_mineral[edificio.modo]] = 0
-							for(b = 0; b < array_length(edificio.trabajadores); b++){
-								var persona = edificio.trabajadores[0]
-								cambiar_trabajo(persona, null_edificio)
-								buscar_trabajo(persona)
+							var flag = false
+							if edificio.privado{
+								for(b = 0; b < array_length(recurso_mineral); b++){
+									for(var c = max(0, edificio.x - 1); c < f; c++){
+										for(var d = max(0, edificio.y - 1); d < g; d++)
+											if mineral[(edificio.modo + b) mod array_length(recurso_mineral)][c, d]{
+												flag = true
+												break
+											}
+										if flag
+											break
+									}
+									if flag{
+										edificio.modo = (edificio.modo + b) mod array_length(recurso_mineral)
+										break
+									}
+								}
+							}
+							if not flag{
+								set_paro(true, edificio)
+								add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
+								edificio.almacen[recurso_mineral[edificio.modo]] = 0
+								while array_length(edificio.trabajadores) > 0{
+									var persona = edificio.trabajadores[0]
+									cambiar_trabajo(persona, null_edificio)
+									buscar_trabajo(persona)
+								}
+								if edificio.privado{
+									destroy_edificio(edificio)
+									a--
+									continue
+								}
 							}
 						}
 						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[recurso_mineral[edificio.modo]] > 0{
