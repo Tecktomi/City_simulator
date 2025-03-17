@@ -956,19 +956,29 @@ if build_sel{
 	}
 	if not flag
 		text += "Construcción bloqueada\n"
-	else if edificio_nombre[build_index] != "Rancho"{
-		//Altura promedio
+	else{
+		if edificio_nombre[build_index] != "Rancho"{
+			//Altura promedio
+			for(var a = mx; a < mx + width; a++)
+				for(var b = my; b < my + height; b++)
+					temp_altura += altura[# a, b]
+			temp_altura /= width * height
+			//Coste aplanar
+			for(var a = mx; a < mx + width; a++)
+				for(var b = my; b < my + height; b++)
+					coste_aplanar += 25 * sqrt(abs(altura[# a, b] - temp_altura))
+			coste_aplanar = round(coste_aplanar)
+			if coste_aplanar > 0
+				text += $"Coste aplanar: ${coste_aplanar}"
+		}
+		var coste_terreno = 0
 		for(var a = mx; a < mx + width; a++)
 			for(var b = my; b < my + height; b++)
-				temp_altura += altura[# a, b]
-		temp_altura /= width * height
-		//Coste aplanar
-		for(var a = mx; a < mx + width; a++)
-			for(var b = my; b < my + height; b++)
-				coste_aplanar += 25 * sqrt(abs(altura[# a, b] - temp_altura))
-		coste_aplanar = round(coste_aplanar)
-		if coste_aplanar > 0
-			text += "Coste aplanar: $ " + string(round(coste_aplanar))
+				coste_terreno += 10 * zona_privada[a, b]
+		if coste_terreno > 0{
+			text += $"\Estatizar el terreno: ${coste_terreno}"
+			coste_aplanar += coste_terreno
+		}
 	}
 	if text != ""
 		draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, text)
@@ -979,6 +989,7 @@ if build_sel{
 			for(var a = mx; a < mx + width; a++)
 				for(var b = my; b < my + height; b++){
 					array_set(construccion_reservada[a], b, true)
+					array_set(zona_privada[a], b, false)
 					if bool_edificio[a, b] and id_edificio[a, b].tipo = 32
 						destroy_edificio(id_edificio[a, b])
 				}
@@ -1269,6 +1280,8 @@ if sel_info{
 					temp_precio += c
 					temp_text += $"\nDerechos madereros: ${c}"
 				}
+				temp_text += $"\nPrecio terreno: ${10 * width * height}"
+				temp_precio += 10 * width * height
 				var b = 0
 				for(var a = 0; a < array_length(recurso_nombre); a++)
 					if sel_edificio.almacen[a] > 0
