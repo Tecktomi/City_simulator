@@ -5,7 +5,9 @@ function add_empresa(inversion, nacional = false, persona = control.null_persona
 			dinero : inversion,
 			edificios : [null_edificio],
 			nacional : nacional,
-			nombre : ""
+			nombre : "",
+			quiebra : false,
+			dia_factura : irandom(27)
 		}
 		if nacional{
 			persona.empresa = empresa

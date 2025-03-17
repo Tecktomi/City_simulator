@@ -269,7 +269,14 @@ var a, b
 	null_persona.escuela = null_edificio
 	null_persona.medico = null_edificio
 	null_persona.ladron = null_edificio
-	edificios_a_la_venta = [{edificio : null_edificio, precio : 0, width : 0, height : 0}]
+	null_venta = {
+		edificio : null_edificio,
+		precio : 0,
+		width : 0,
+		height : 0,
+		estatal : true
+	}
+	edificios_a_la_venta = [null_venta]
 	array_pop(edificios_a_la_venta)
 	for(a = 0; a < array_length(educacion_nombre); a++)
 		array_set(null_edificio.trabajos_cerca, a, [])
@@ -328,7 +335,10 @@ var a, b
 		jefe : null_persona,
 		dinero : 0,
 		edificios : [null_edificio],
-		nacional : false
+		nacional : false,
+		nombre : "",
+		quiebra : false,
+		dia_factura : irandom(27)
 	}
 	array_pop(null_empresa.edificios)
 	null_persona.empresa = null_empresa
@@ -503,6 +513,7 @@ var a, b
 	step = 0
 	velocidad = 1
 	rotado = false
+	impuesto_empresa = 10
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
 	felicidad_total = 50
@@ -535,6 +546,7 @@ var a, b
 		mes_venta_interna[a] = 0
 		mes_estatizacion[a] = 0
 		mes_privatizacion[a] = 0
+		mes_impuestos[a] = 0
 		for(b = 0; b < array_length(recurso_nombre); b++){
 			mes_exportaciones_recurso[a, b] = 0
 			mes_importaciones_recurso[a, b] = 0

@@ -579,6 +579,7 @@ if sel_build{
 			temp_grid[9] = mes_venta_interna
 			temp_grid[10] = mes_privatizacion
 			temp_grid[11] = mes_estatizacion
+			temp_grid[12] = mes_impuestos
 			temp_text_array[0] = "Renta"
 			temp_text_array[1] = "Tarifas"
 			temp_text_array[2] = "Herencia"
@@ -591,8 +592,9 @@ if sel_build{
 			temp_text_array[9] = "Venta a Privados"
 			temp_text_array[10] = "Privatización"
 			temp_text_array[11] = "Estatización"
+			temp_text_array[12] = "Impuestos"
 			#endregion
-			for(var a = 0; a < 12; a++){
+			for(var a = 0; a < 13; a++){
 				count[a] = 0
 				maxi[a] = 0
 			}
@@ -601,7 +603,7 @@ if sel_build{
 				temp_importaciones[a] = 0
 			}
 			for(var a = 0; a < 12; a++){
-				for(b = 0; b <= 11; b++){
+				for(b = 0; b < 13; b++){
 					count[b] += temp_grid[b, (a + current_mes) mod 12]
 					maxi[b] = max(maxi[b], temp_grid[b, a])
 				}
@@ -611,7 +613,7 @@ if sel_build{
 				}
 			}
 			#region Ingresos
-			if draw_menu(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9] + count[10]}", 0){
+			if draw_menu(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12]}", 0){
 				draw_text_pos(120, pos, $"{temp_text_array[0]}: ${count[0]}")
 				draw_text_pos(120, pos, $"{temp_text_array[1]}: ${count[1]}")
 				draw_text_pos(120, pos, $"{temp_text_array[2]}: ${count[2]}")
@@ -621,6 +623,7 @@ if sel_build{
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_exportaciones[c]}")
 				draw_text_pos(120, pos, $"{temp_text_array[9]}: ${count[9]}")
 				draw_text_pos(120, pos, $"{temp_text_array[10]}: ${count[10]}")
+				draw_text_pos(120, pos, $"{temp_text_array[12]}: ${count[12]}")
 			}
 			if draw_menu(110, pos, $"Pérdidas: ${count[4] + count[5] + count[6] + count[7] + count[8] + count[11]}", 2){
 				draw_text_pos(120, pos, $"{temp_text_array[4]}: ${count[4]}")
@@ -633,7 +636,7 @@ if sel_build{
 				draw_text_pos(120, pos, $"{temp_text_array[8]}: ${count[8]}")
 				draw_text_pos(120, pos, $"{temp_text_array[11]}: ${count[11]}")
 			}
-			draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] + count[10] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11]}")
+			draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11]}")
 			if draw_menu(110, pos, $"{array_length(encargos)} encargos", 4)
 				for(var a = 0; a < array_length(encargos); a++){
 					var encargo = encargos[a]
@@ -657,7 +660,6 @@ if sel_build{
 							sel_edificio = encargo.edificio
 						}
 				}
-			draw_text_pos(110, pos, $"Credibilidad financiera: {credibilidad_financiera}")
 			if draw_menu(110, pos, $"{array_length(edificios_a_la_venta)} edificios a la venta", 5)
 				for(var a = 0; a < array_length(edificios_a_la_venta); a++){
 					var edificio = edificios_a_la_venta[a].edificio
@@ -775,17 +777,20 @@ if sel_build{
 		}
 		//Propiedad privada
 		else if ministerio = 7{
+			draw_text_pos(110, pos, $"Credibilidad financiera: {credibilidad_financiera}")
+			if draw_boton(120, pos, $"Impuesto {impuesto_empresa}")
+				impuesto_empresa = (impuesto_empresa + 5) mod 30
 			for(var a = 0; a < array_length(empresas); a++)
 				if draw_menu(120, pos, empresas[a].nombre, a){
 					var empresa = empresas[a]
-					draw_text_pos(140, pos, $"Dinero: ${empresa.dinero}")
+					draw_text_pos(140, pos, $"Dinero: ${floor(empresa.dinero)}")
 					if empresa.nacional and draw_boton(140, pos, $"Dueño: {name(empresa.jefe)}"){
 						sel_build = false
 						sel_info = true
 						sel_tipo = 2
 						sel_persona = empresa.jefe
 					}
-					for(var b = 0; b < array_length(empresa.edificios); b++)
+					for(b = 0; b < array_length(empresa.edificios); b++)
 						if draw_boton(140, pos, $"{edificio_nombre[empresa.edificios[b].tipo]} {empresa.edificios[b].number}"){
 							sel_build = false
 							sel_info = true
@@ -1343,7 +1348,7 @@ if sel_info{
 				else{
 					temp_precio = floor(temp_precio * 0.9)
 					if draw_boton(room_width, pos, $"Privatizar Edificio +${temp_precio}"){
-						array_push(edificios_a_la_venta, {edificio : sel_edificio, precio : temp_precio, width : width, height : height})
+						array_push(edificios_a_la_venta, {edificio : sel_edificio, precio : temp_precio, width : width, height : height, estatal : true})
 						set_paro(true, sel_edificio)
 						sel_edificio.venta = true
 					}
@@ -1633,6 +1638,7 @@ if keyboard_check(vk_space) or step >= 60{
 			mes_venta_interna[current_mes] = 0
 			mes_privatizacion[current_mes] = 0
 			mes_estatizacion[current_mes] = 0
+			mes_impuestos[current_mes] = 0
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				array_set(mes_exportaciones_recurso[current_mes], a, 0)
 				array_set(mes_importaciones_recurso[current_mes], a, 0)
@@ -1690,17 +1696,20 @@ if keyboard_check(vk_space) or step >= 60{
 					cumplir_exigencia(6)
 			}
 			//Privatización de edificios
-			if array_length(edificios_a_la_venta) > 0
-				for(var a = 0; a < array_length(empresas) and array_length(edificios_a_la_venta) > 0; a++){
-					var empresa = empresas[a], temp = edificios_a_la_venta[0], edificio = temp.edificio, temp_precio = temp.precio, width = temp.width, height = temp.height
+			for(var a = 0; a < array_length(empresas); a++){
+				var empresa = empresas[a]
+				if array_length(edificios_a_la_venta) > 0{
+					var temp = edificios_a_la_venta[0], edificio = temp.edificio, temp_precio = temp.precio, width = temp.width, height = temp.height
 					if empresa.dinero > 2 * temp_precio{
 						array_shift(edificios_a_la_venta)
 						x = edificio.x
 						y = edificio.y
-						mes_privatizacion[current_mes] += temp_precio
-						dinero += temp_precio
-						dinero_privado -= temp_precio
-						inversion_privada += temp_precio
+						if temp.estatal{
+							mes_privatizacion[current_mes] += temp_precio
+							dinero += temp_precio
+							dinero_privado -= temp_precio
+							inversion_privada += temp_precio
+						}
 						empresa.dinero -= temp_precio
 						edificio.privado = true
 						if edificio_nombre[edificio.tipo] = "Aserradero"
@@ -1717,6 +1726,23 @@ if keyboard_check(vk_space) or step >= 60{
 						set_paro(false, edificio)
 					}
 				}
+				var b = impuesto_empresa * array_length(empresa.edificios)
+				empresa.dinero -= b
+				dinero += b
+				mes_impuestos[current_mes] += b
+				if empresa.dinero < 0{
+					if empresa.quiebra{
+						credibilidad_financiera = max(credibilidad_financiera - 1, 1)
+						destroy_empresa(empresa)
+						a--
+						continue
+					}
+					else
+						empresa.quiebra = true
+				}
+				else
+					empresa.quiebra = false
+			}
 		}
 		//Eventos anuales
 		if (dia mod 365) = 0{
@@ -1724,6 +1750,8 @@ if keyboard_check(vk_space) or step >= 60{
 			//Credibilidad financiera
 			credibilidad_financiera = clamp(credibilidad_financiera + sign((dinero_privado + inversion_privada) - prev_beneficio_privado), 1, 10)
 			prev_beneficio_privado = dinero_privado + inversion_privada
+			if array_length(empresas) < irandom(credibilidad_financiera)
+				add_empresa(irandom_range(1000, 2000))
 		}
 		#region Personas
 			//Ciclo normal de las personas
@@ -2487,7 +2515,7 @@ if keyboard_check(vk_space) or step >= 60{
 									if tienda.privado{
 										dinero -= e * recurso_precio[d]
 										dinero_privado += e * recurso_precio[d]
-										mes_compra_interna[current_mes] += e * recurso_precio[d]
+										mes_compra_interna[current_mes] += round(e * recurso_precio[d])
 										edificio.empresa.dinero += e * recurso_precio[d]
 									}
 								}
@@ -2496,7 +2524,7 @@ if keyboard_check(vk_space) or step >= 60{
 									if tienda.privado{
 										dinero -= tienda.almacen[d] * recurso_precio[d]
 										dinero_privado += tienda.almacen[d] * recurso_precio[d]
-										mes_compra_interna[current_mes] += tienda.almacen[d] * recurso_precio[d]
+										mes_compra_interna[current_mes] += round(tienda.almacen[d] * recurso_precio[d])
 									}
 									tienda.almacen[d] = 0
 								}
