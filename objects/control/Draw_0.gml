@@ -660,15 +660,6 @@ if sel_build{
 							sel_edificio = encargo.edificio
 						}
 				}
-			if draw_menu(110, pos, $"{array_length(edificios_a_la_venta)} edificios a la venta", 5)
-				for(var a = 0; a < array_length(edificios_a_la_venta); a++){
-					var edificio = edificios_a_la_venta[a].edificio
-					if draw_boton(120, pos, $"{edificio_nombre[edificio.tipo]} {edificio.number}"){
-						sel_build = false
-						sel_info = true
-						sel_edificio = edificio
-					}
-				}
 			pos = 100
 			draw_set_color(c_black)
 			draw_text_pos(500, pos, "Mercado internacional")
@@ -769,7 +760,36 @@ if sel_build{
 			draw_text_pos(480, pos, "Ofertas disponibles")
 			for(var a = 0; a < array_length(tratados_ofertas); a++){
 				var tratado = tratados_ofertas[a]
-				if draw_boton(500, pos, $"{tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]} (+ {floor(tratado.factor * 100) - 100}%, {floor(tratado.tiempo / 12)} años y {tratado.tiempo mod 12} meses)"){
+				var width = 500
+				if draw_boton(width, pos, $"{tratado.cantidad} de "){
+					add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+					array_delete(tratados_ofertas, a, 1)
+				}
+				pos -= last_height
+				width += string_width($"{tratado.cantidad} de ")
+				draw_set_color(c_blue)
+				if draw_boton(width, pos, $"{recurso_nombre[tratado.recurso]}"){
+					add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+					array_delete(tratados_ofertas, a, 1)
+				}
+				pos -= last_height
+				width += string_width($"{recurso_nombre[tratado.recurso]}")
+				draw_set_color(c_black)
+				if draw_boton(width, pos, $" a  "){
+					add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+					array_delete(tratados_ofertas, a, 1)
+				}
+				pos -= last_height
+				width += string_width($" a  ")
+				draw_set_color(c_red)
+				if draw_boton(width, pos, $"{pais_nombre[tratado.pais]}"){
+					add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+					array_delete(tratados_ofertas, a, 1)
+				}
+				pos -= last_height
+				width += string_width($"{pais_nombre[tratado.pais]}")
+				draw_set_color(c_black)
+				if draw_boton(width, pos, $" +{floor(100 * (tratado.factor - 1))}%"){
 					add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 					array_delete(tratados_ofertas, a, 1)
 				}
@@ -778,26 +798,42 @@ if sel_build{
 		//Propiedad privada
 		else if ministerio = 7{
 			draw_text_pos(110, pos, $"Credibilidad financiera: {credibilidad_financiera}")
-			if draw_boton(120, pos, $"Impuesto {impuesto_empresa}")
+			if draw_boton(110, pos, $"Impuesto {impuesto_empresa}")
 				impuesto_empresa = (impuesto_empresa + 5) mod 30
-			for(var a = 0; a < array_length(empresas); a++)
-				if draw_menu(120, pos, empresas[a].nombre, a){
-					var empresa = empresas[a]
-					draw_text_pos(140, pos, $"Dinero: ${floor(empresa.dinero)}")
-					if empresa.nacional and draw_boton(140, pos, $"Dueño: {name(empresa.jefe)}"){
+			if draw_menu(110, pos, $"{array_length(edificios_a_la_venta)} edificios a la venta", 0)
+				for(var a = 0; a < array_length(edificios_a_la_venta); a++){
+					var edificio = edificios_a_la_venta[a].edificio
+					if draw_boton(120, pos, $"{edificio_nombre[edificio.tipo]} {edificio.number}"){
 						sel_build = false
 						sel_info = true
-						sel_tipo = 2
-						sel_persona = empresa.jefe
+						sel_tipo = 0
+						sel_edificio = edificio
 					}
-					for(b = 0; b < array_length(empresa.edificios); b++)
-						if draw_boton(140, pos, $"{edificio_nombre[empresa.edificios[b].tipo]} {empresa.edificios[b].number}"){
+				}
+			if draw_menu(110, pos, $"{array_length(empresas)} empresas en la isla", 1){
+				for(var a = 0; a < array_length(empresas); a++){
+					var empresa = empresas[a]
+					if draw_menu(120, pos, $"{empresa.nombre}{empresa.nacional ? " (nacional)" : ""}", a + 2){
+						draw_text_pos(140, pos, $"Dinero: ${floor(empresa.dinero)}")
+						if empresa.nacional and draw_boton(140, pos, $"Dueño: {name(empresa.jefe)}"){
 							sel_build = false
 							sel_info = true
-							sel_tipo = 0
-							sel_edificio = empresa.edificios[b]
+							sel_tipo = 2
+							sel_persona = empresa.jefe
 						}
+						if array_length(empresa.edificios) > 0{
+							draw_text_pos(140, pos, $"Dueña de {array_length(empresa.edificios)} edificios")
+							for(b = 0; b < array_length(empresa.edificios); b++)
+								if draw_boton(160, pos, $"{edificio_nombre[empresa.edificios[b].tipo]} {empresa.edificios[b].number}"){
+									sel_build = false
+									sel_info = true
+									sel_tipo = 0
+									sel_edificio = empresa.edificios[b]
+								}
+						}
+					}
 				}
+			}
 		}
 		//Leyes
 		else if ministerio = 8{
@@ -1914,6 +1950,12 @@ if keyboard_check(vk_space) or step >= 60{
 							}
 						}
 					}
+					//Crear empresa nacional
+					else if irandom(persona.familia.riqueza) > 750{
+						var empresa = add_empresa(500, true, persona)
+						show_debug_message($"Se ha creado una empresa nacional: {empresa.nombre}")
+						persona.familia.riqueza -= 500
+					}
 					//Mudarse
 					if not buscar_casa(persona) and persona.familia.casa = homeless and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente){
 						var temp_array_coord = [], index = persona.trabajo.tipo, width = edificio_width[index], height = edificio_height[index]
@@ -2460,7 +2502,7 @@ if keyboard_check(vk_space) or step >= 60{
 						var temp_array = []
 						for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
 							array_push(temp_array, edificio.almacen[edificio_industria_input_id[index, c]] / edificio_industria_input_num[index, c])
-						b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto))))
+						b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index])))
 						for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
 							edificio.almacen[edificio_industria_input_id[index, c]] -= b * edificio_industria_input_num[index, c]
 						for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++)

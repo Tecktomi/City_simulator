@@ -19,12 +19,14 @@ function edificio_valid_place(x, y, index, rotado = false){
 					flag = false
 					break
 				}
-			if not flag
-				for(var a = y; a < y + height; a++)
-					if mar[x, a] = mar[x + width - 1, a] or (a - y > 0 and mar[x, a] != mar[x, a - 1]){
-						flag = false
-						break
-					}
+			if flag
+				return true
+			flag = true
+			for(var a = y; a < y + height; a++)
+				if mar[x, a] = mar[x + width - 1, a] or (a - y > 0 and mar[x, a] != mar[x, a - 1]){
+					flag = false
+					break
+				}
 			return flag
 		}
 		else{
