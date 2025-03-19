@@ -1,6 +1,6 @@
 function cambiar_trabajo(persona = control.null_persona, trabajo = control.null_edificio){
 	with control{
-		if not in(persona.trabajo, null_edificio, jubilado, delincuente) and array_length(persona.trabajo.trabajadores) = edificio_trabajadores_max[persona.trabajo.tipo] and not persona.trabajo.paro
+		if not in(persona.trabajo, null_edificio, jubilado, delincuente) and array_length(persona.trabajo.trabajadores) = persona.trabajo.trabajadores_max and not persona.trabajo.paro
 			array_push(trabajo_educacion[edificio_trabajo_educacion[persona.trabajo.tipo]], persona.trabajo)
 		array_remove(persona.trabajo.trabajadores, persona, "persona yendose de su trabajo")
 		persona.familia.sueldo -= persona.trabajo.trabajo_sueldo
@@ -10,7 +10,7 @@ function cambiar_trabajo(persona = control.null_persona, trabajo = control.null_
 		persona.trabajo.trabajo_mes += abs(trabajo.dia_factura - (dia mod 28))
 		array_push(trabajo.trabajadores, persona)
 		if not in (trabajo, null_edificio, jubilado, delincuente){
-			if array_length(trabajo.trabajadores) = edificio_trabajadores_max[trabajo.tipo]
+			if array_length(trabajo.trabajadores) = trabajo.trabajadores_max
 				array_remove(trabajo_educacion[edificio_trabajo_educacion[trabajo.tipo]], trabajo, "trabajo ya no está disponible")
 			if persona.familia.casa != homeless
 				persona.felicidad_transporte = calcular_felicidad_transporte(persona.familia.casa, trabajo)

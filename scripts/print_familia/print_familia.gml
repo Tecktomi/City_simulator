@@ -13,6 +13,6 @@ function print_familia(familia = control.null_familia){
 	else
 		for(var a = 0; a < array_length(familia.hijos); a++)
 			text += "Hijo " + string(a) + ") " + name(familia.hijos[a]) + "\n"
-	text += "Viven en " + control.edificio_nombre[familia.casa.tipo]
+	text += "Viven en " + familia.casa.nombre
 	return text
 }

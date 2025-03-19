@@ -1,6 +1,7 @@
 function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 	with control{
 		var edificio = {
+			nombre : edificio_nombre[tipo] + " " + string(++edificio_number[tipo]),
 			familias : [null_familia],
 			trabajadores : [null_persona],
 			clientes : [null_persona],
@@ -25,6 +26,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			exigencia_fallida : false,
 			privado : false,
 			vivienda_calidad : edificio_familias_calidad[tipo],
+			trabajadores_max : edificio_trabajadores_max[tipo], 
 			trabajo_calidad : edificio_trabajo_calidad[tipo],
 			trabajo_sueldo : edificio_trabajo_sueldo[tipo],
 			mantenimiento : edificio_mantenimiento[tipo],
@@ -34,7 +36,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			trabajo_mes : 0,
 			muelle_cercano : null_edificio,
 			distancia_muelle_cercano : 0,
-			number : ++edificio_number[tipo],
 			rotado : rotado,
 			width : 0,
 			height : 0,
@@ -59,6 +60,11 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 		}
 		if fisico{
 			var width = edificio_width[tipo], height = edificio_height[tipo]
+			if edificio_es_industria[tipo] and build_type = 1{
+				width += 1
+				height += 2
+				edificio.trabajadores_max *= 2
+			}
 			if rotado{
 				var a = width
 				width = height

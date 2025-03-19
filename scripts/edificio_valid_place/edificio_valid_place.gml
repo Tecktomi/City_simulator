@@ -1,6 +1,10 @@
 function edificio_valid_place(x, y, index, rotado = false){
 	with control{
 		var width = edificio_width[index], height = edificio_height[index]
+		if edificio_es_industria[index] and build_type{
+			width += 1
+			height += 2
+		}
 		if rotado{
 			var a = width
 			width = height

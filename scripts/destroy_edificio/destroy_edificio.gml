@@ -3,7 +3,7 @@ function destroy_edificio(edificio = control.null_edificio){
 		var tipo = edificio.tipo, width = edificio.width, height = edificio.height
 		array_set(bool_draw_edificio[edificio.x], edificio.y, false)
 		array_set(draw_edificio[edificio.x], edificio.y, null_edificio)
-		if array_length(edificio.trabajadores) < edificio_trabajadores_max[tipo] and not edificio.paro
+		if array_length(edificio.trabajadores) < edificio.trabajadores_max and not edificio.paro
 			array_remove(trabajo_educacion[edificio_trabajo_educacion[tipo]], edificio, "eliminar trabajo de los disponibles")
 		for(var a = 0; a < array_length(edificio.trabajadores); a++)
 			cambiar_trabajo(edificio.trabajadores[a], null_edificio)

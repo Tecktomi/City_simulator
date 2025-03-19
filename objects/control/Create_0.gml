@@ -168,7 +168,7 @@ var a, b
 		"Vivienda anarquista por excelencia, se construirán automáticamente si no hay casas disponibles",
 		"",
 		"Reduce el crimen al encerrar a los delincuentes cercanos por un tiempo"]
-	edificio_trabajadores_max = [0, 0, 0, 0, 10, 10, 4, 3, 0, 0, 1, 2, 8, 5, 6, 5, 4, 4, 4, 5, 8, 0, 4, 20, 6, 15, 25, 3, 6, 3, 10, 0, 0, 0, 4]
+	edificio_trabajadores_max = [0, 0, 0, 0, 10, 10, 4, 3, 0, 0, 1, 2, 8, 5, 6, 5, 4, 4, 4, 5, 8, 0, 4, 10, 6, 10, 25, 3, 6, 3, 10, 0, 0, 0, 4]
 	edificio_trabajo_calidad = [0, 10, 0, 0, 25, 30, 50, 60, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45, 30, 0, 35, 30, 25, 25, 35, 30, 35, 40, 30, 0, 0, 10, 30]
 	edificio_trabajo_sueldo = [0, 2, 0, 0, 4, 5, 8, 11, 0, 0, 4, 5, 3, 7, 6, 5, 6, 6, 5, 6, 6, 0, 5, 4, 5, 4, 5, 5, 5, 6, 4, 0, 0, 1, 5]
 	edificio_trabajo_educacion = [0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 1, 0, 0, 1, 2, 1, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -191,10 +191,10 @@ var a, b
 	edificio_familias_calidad = [0, 0, 0, 0, 0, 0, 0, 0, 30, 40, 65, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 20, 0, 0]
 	edificio_familias_renta = [0, 0, 0, 0, 0, 0, 0, 0, 4, 6, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0]
 	edificio_anno = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0]
-	edificio_width = [0, 0, 0, 0, 6, 3, 3, 1, 2, 2, 3, 1, 4, 6, 5, 3, 3, 3, 3, 3, 3, 2, 2, 6, 3, 5, 6, 5, 5, 3, 4, 3, 1, 0, 2]
-	edificio_height = [0, 0, 0, 0, 3, 2, 3, 3, 2, 1, 2, 2, 4, 6, 5, 4, 5, 5, 5, 5, 2, 2, 3, 4, 4, 5, 8, 5, 3, 4, 3, 3, 1, 0, 4]
+	edificio_width = [0, 0, 0, 0, 6, 3, 3, 1, 2, 2, 3, 1, 4, 6, 5, 3, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 6, 5, 3, 3, 3, 3, 1, 0, 2]
+	edificio_height = [0, 0, 0, 0, 3, 2, 3, 3, 2, 1, 2, 2, 4, 6, 5, 4, 5, 5, 5, 5, 2, 2, 3, 4, 4, 4, 8, 5, 4, 4, 4, 3, 1, 0, 4]
 	edificio_color = [0, 0, 0, 0, 0, 10, 25, -10, 167, 177, 187, -15, 35, 80, -5, 30, 40, 45, 50, 55, 60, 65, 70, 0, 20, 10, -10, -25, -15, -30, 30, 200, 180, 0, 20]
-	edificio_precio = [0, 0, 0, 0, 400, 650, 300, 1500, 300, 200, 500, 250, 450, 2500, 800, 1000, 1500, 1800, 1200, 1400, 700, 200, 650, 4500, 900, 3500, 8000, 500, 4000, 3500, 6000, 500, 0, 0, 800]
+	edificio_precio = [0, 0, 0, 0, 400, 650, 300, 1500, 300, 200, 500, 250, 450, 2500, 800, 1000, 1500, 1800, 1200, 1400, 700, 200, 650, 3000, 900, 2500, 7000, 500, 4000, 3500, 4500, 500, 0, 0, 800]
 	edificio_recursos_num = [[], [], [], [], [10, 2], [8, 2], [30, 5], [25, 5, 5], [10, 2], [6, 1], [15, 3], [10, 1], [10, 15], [40, 10, 5], [20, 1], [20], [25, 5], [25, 5], [25, 5], [25, 5], [20, 3], [], [20, 3], [20, 15, 5], [15, 5], [40, 10], [50, 5, 5], [20, 2], [15, 10], [15, 10], [20, 10, 5], [20, 5], [], [], [10, 10]]
 	edificio_recursos_id = [[], [], [], [], [1, 10], [1, 10], [1, 10], [1, 10, 24], [1, 10], [1, 10], [1, 10], [1, 10], [1, 16], [1, 10, 24], [1, 10], [1], [1, 10], [1, 10], [1, 10], [1, 10], [1, 10], [], [1, 10], [1, 10, 24], [1, 12], [1, 24], [1, 10, 24], [1, 10], [1, 24], [1, 24], [1, 10, 24], [1, 10], [], [], [1, 10]]
 	edificio_mantenimiento = [0, 0, 0, 0, 4, 5, 6, 10, 3, 2, 10, 3, 6, 2, 8, 10, 12, 15, 10, 12, 5, 2, 5, 25, 6, 20, 40, 10, 20, 10, 25, 10, 0, 0, 7]
@@ -204,7 +204,9 @@ var a, b
 	edificio_contaminacion = [0, 0, 0, 0, -10, 10, 0, 0, 15, 5, 10, 0, 0, 20, 10, 30, 0, 10, 0, 0, 0, -10, 10, -30, 0, -25, 0, -10, -15, -10, -15, -10, -10, 0, 0]
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
 	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27], [6, 7, 11, 12, 16, 21, 24, 34], [13, 20, 22], [23, 25, 26, 28, 29, 30]]
+	edificio_industria_taller = [23, 25, 28, 29, 30]
 	null_edificio = {
+		nombre : "NULL",
 		familias : [null_familia],
 		trabajadores : [null_persona],
 		clientes : [null_persona],
@@ -229,6 +231,7 @@ var a, b
 		exigencia_fallida : false,
 		privado : false,
 		vivienda_calidad : 0,
+		trabajadores_max : 0,
 		trabajo_calidad : 0,
 		trabajo_sueldo : 0,
 		mantenimiento : 0,
@@ -238,7 +241,6 @@ var a, b
 		trabajo_mes : 0,
 		muelle_cercano : undefined,
 		distancia_muelle_cercano : 0,
-		number : 0,
 		rotado : false,
 		width : 0,
 		height : 0,
@@ -372,7 +374,9 @@ var a, b
 		tipo : 0,
 		tiempo : 0,
 		altura : 0,
-		rotado : false
+		rotado : false,
+		width : 0,
+		height : 0
 	}
 	cola_construccion = [null_construccion]
 	array_delete(cola_construccion, 0, 1)

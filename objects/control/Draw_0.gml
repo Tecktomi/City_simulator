@@ -93,19 +93,14 @@ for(var a = min_camx; a < max_camx; a++)
 				}
 		}
 		if bool_draw_construccion[a, b]{
-			var next_build = draw_construccion[a, b], e = next_build.id, width = edificio_width[e], height = edificio_height[e], c = next_build.x, d = next_build.y, temp_rotado = next_build.rotado
-			if temp_rotado{
-				var f = width
-				width = height
-				height = f
-			}
+			var next_build = draw_construccion[a, b], e = next_build.id, width = next_build.width, height = next_build.height, c = next_build.x, d = next_build.y, temp_rotado = next_build.rotado, var_edificio_nombre = edificio_nombre[next_build.id]
 			draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
 			draw_set_alpha(0.5)
 			draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d + width - height) * tile_width - xpos, (c + d + width + height) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
 			draw_set_alpha(1)
 			draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d + width - height) * tile_width - xpos, (c + d + width + height) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, true)
 			draw_set_color(c_white)
-			draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, $"{edificio_nombre[next_build.id]}{edificio_nombre[next_build.id] = "Mina" ? "\n" + recurso_nombre[recurso_mineral[next_build.tipo]] : ""}{edificio_nombre[next_build.id] = "Granja" ? "\n" + recurso_nombre[recurso_cultivo[next_build.tipo]] : ""}{edificio_nombre[next_build.id] = "Rancho" ? "\n" + ganado_nombre[next_build.tipo] : ""}")
+			draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, $"{var_edificio_nombre}{var_edificio_nombre = "Mina" ? "\n" + recurso_nombre[recurso_mineral[next_build.tipo]] : ""}{var_edificio_nombre = "Granja" ? "\n" + recurso_nombre[recurso_cultivo[next_build.tipo]] : ""}{var_edificio_nombre = "Rancho" ? "\n" + ganado_nombre[next_build.tipo] : ""}")
 		}	
 	}
 //Información general
@@ -403,7 +398,7 @@ if sel_build{
 				if edificio_es_casa[a] and (edificio_nombre[a] = "Homeless" or array_length(edificio_count[a]) > 0)
 					if draw_menu(110, pos, $"{edificio_nombre[a]}: {temp_array[a]} habitantes ({floor(temp_array[a] * 100 / array_length(personas))}%)", a)
 						for(b = 0; b < array_length(edificio_count[a]); b++)
-							if draw_boton(120, pos, $"{edificio_nombre[a]} {edificio_count[a, b].number}"){
+							if draw_boton(120, pos, edificio_count[a, b].nombre){
 								sel_build = false
 								sel_info = true
 								sel_tipo = 0
@@ -411,7 +406,7 @@ if sel_build{
 							}
 			if draw_menu(110, pos, $"Viviendas libres: {array_length(casas_libres)}", 0)
 				for(var a = 0; a < array_length(casas_libres); a++)
-					if draw_boton(120, pos, $"{edificio_nombre[casas_libres[a].tipo]} {casas_libres[a].number}"){
+					if draw_boton(120, pos, casas_libres[a].nombre){
 						sel_build = false
 						sel_info = true
 						sel_tipo = 0
@@ -493,7 +488,7 @@ if sel_build{
 			for(var a = 0; a < array_length(educacion_nombre); a++)
 				if array_length(trabajo_educacion[a]) > 0 and draw_menu(110, pos, educacion_nombre[a], a + 2)
 					for(b = 0; b < array_length(trabajo_educacion[a]); b++)
-						draw_text_pos(120, pos, edificio_nombre[trabajo_educacion[a, b].tipo])
+						draw_text_pos(120, pos, trabajo_educacion[a, b].nombre)
 		}
 		//Ministerio de Salud
 		else if ministerio = 3{
@@ -517,7 +512,7 @@ if sel_build{
 				for(var a = 0; a < array_length(edificio_nombre); a++)
 					if edificio_es_medico[a]
 						for(b = 0; b < array_length(edificio_count[a]); b++)
-							if draw_boton(120, pos, $"{edificio_nombre[a]} {b + 1} ({array_length(edificio_count[a, b].clientes)} clientes)"){
+							if draw_boton(120, pos, $"{edificio_count[a, b].nombre} ({array_length(edificio_count[a, b].clientes)} clientes)"){
 								sel_build = false
 								sel_info = true
 								sel_tipo = 0
@@ -546,7 +541,7 @@ if sel_build{
 				for(var a = 0; a < array_length(edificio_nombre); a++)
 					if edificio_es_escuela[a]
 						for(b = 0; b < array_length(edificio_count[a]); b++)
-							if draw_boton(120, pos, $"{edificio_nombre[a]} {b + 1} ({array_length(edificio_count[a, b].clientes)} estudiantes)"){
+							if draw_boton(120, pos, $"{edificio_count[a, b].nombre} ({array_length(edificio_count[a, b].clientes)} estudiantes)"){
 								sel_build = false
 								sel_info = true
 								sel_tipo = 0
@@ -632,7 +627,7 @@ if sel_build{
 					var encargo = encargos[a]
 					if encargo.cantidad > 0{
 						if encargo.edificio != null_edificio{
-							if draw_boton(120, pos, $"{encargo.cantidad} de {recurso_nombre[encargo.recurso]} de {edificio_nombre[encargo.edificio.tipo]}"){
+							if draw_boton(120, pos, $"{encargo.cantidad} de {recurso_nombre[encargo.recurso]} de {encargo.edificio.nombre}"){
 								sel_build = false
 								sel_info = true
 								sel_tipo = 0
@@ -643,7 +638,7 @@ if sel_build{
 							draw_text_pos(120, pos, $"{encargo.cantidad} de {recurso_nombre[encargo.recurso]}")
 					}
 					else
-						if draw_boton(120, pos, $"{-encargo.cantidad} de {recurso_nombre[encargo.recurso]} a {edificio_nombre[encargo.edificio.tipo]}"){
+						if draw_boton(120, pos, $"{-encargo.cantidad} de {recurso_nombre[encargo.recurso]} a {encargo.edificio.nombre}"){
 							sel_build = false
 							sel_info = true
 							sel_tipo = 0
@@ -799,7 +794,7 @@ if sel_build{
 			if draw_menu(110, pos, $"{array_length(edificios_a_la_venta)} edificios a la venta", 0)
 				for(var a = 0; a < array_length(edificios_a_la_venta); a++){
 					var edificio = edificios_a_la_venta[a].edificio
-					if draw_boton(120, pos, $"{edificio_nombre[edificio.tipo]} {edificio.number}"){
+					if draw_boton(120, pos, edificio.nombre){
 						sel_build = false
 						sel_info = true
 						sel_tipo = 0
@@ -822,7 +817,7 @@ if sel_build{
 						if array_length(empresa.edificios) > 0{
 							draw_text_pos(140, pos, $"Dueña de {array_length(empresa.edificios)} edificios")
 							for(b = 0; b < array_length(empresa.edificios); b++)
-								if draw_boton(160, pos, $"{edificio_nombre[empresa.edificios[b].tipo]} {empresa.edificios[b].number}"){
+								if draw_boton(160, pos, empresa.edificios[b].nombre){
 									sel_build = false
 									sel_info = true
 									sel_tipo = 0
@@ -903,12 +898,24 @@ if sel_build{
 }
 //Colocar edificio
 if build_sel{
-	var width = edificio_width[build_index], height = edificio_height[build_index], coste_aplanar = 0, temp_altura = 0
+	var width = edificio_width[build_index], height = edificio_height[build_index], temp_altura = 0, temp_precio = edificio_precio[build_index], temp_tiempo = edificio_construccion_tiempo[build_index]
 	text = ""
 	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - width)
 	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - height)
 	if keyboard_check_pressed(ord("R"))
 		rotado = not rotado
+	if edificio_es_industria[build_index]{
+		draw_set_color(c_white)
+		draw_text(0, 0, $"{(build_type = 0) ? ">" : ""}Taller\n{(build_type = 1) ? ">" : ""}Fábrica")
+		if mouse_wheel_up() or mouse_wheel_down()
+			build_type = 1 - build_type
+		if build_type = 1{
+			width += 1
+			height += 2
+			temp_precio *= 2
+			temp_tiempo *= 2
+		}
+	}
 	if rotado{
 		var a = width
 		width = height
@@ -1018,7 +1025,8 @@ if build_sel{
 	if not flag
 		text += "Construcción bloqueada\n"
 	else{
-		if edificio_nombre[build_index] != "Rancho"{
+		if not edificio_es_costero[build_index] and edificio_nombre[build_index] != "Rancho"{
+			var coste_aplanar = 0
 			//Altura promedio
 			for(var a = mx; a < mx + width; a++)
 				for(var b = my; b < my + height; b++)
@@ -1029,8 +1037,10 @@ if build_sel{
 				for(var b = my; b < my + height; b++)
 					coste_aplanar += 25 * sqrt(abs(altura[# a, b] - temp_altura))
 			coste_aplanar = round(coste_aplanar)
-			if coste_aplanar > 0
+			if coste_aplanar > 0{
 				text += $"Coste aplanar: ${coste_aplanar}"
+				temp_precio += coste_aplanar
+			}
 		}
 		var coste_terreno = 0, coste_deforestar = 0
 		for(var a = mx; a < mx + width; a++)
@@ -1040,11 +1050,11 @@ if build_sel{
 			}
 		if coste_terreno > 0{
 			text += $"\Estatizar terreno: ${coste_terreno}"
-			coste_aplanar += coste_terreno
+			temp_precio += coste_terreno
 		}
 		if coste_deforestar > 0{
 			text += $"\nDeforestar terreno: ${coste_deforestar}"
-			coste_aplanar += coste_deforestar
+			temp_precio += coste_deforestar
 		}
 	}
 	if text != ""
@@ -1074,16 +1084,18 @@ if build_sel{
 				y : my,
 				id : build_index,
 				tipo : build_type,
-				tiempo : edificio_construccion_tiempo[build_index],
+				tiempo : temp_tiempo,
 				altura : temp_altura,
-				rotado : rotado
+				rotado : rotado,
+				width : width,
+				height : height
 			}
 			array_push(cola_construccion, next_build)
 			array_set(bool_draw_construccion[mx], my, true)
 			array_set(draw_construccion[mx], my, next_build)
 			build_sel = keyboard_check(vk_lshift)
-			dinero -= edificio_precio[build_index] + coste_aplanar
-			mes_construccion[current_mes] += edificio_precio[build_index] + coste_aplanar
+			dinero -= temp_precio
+			mes_construccion[current_mes] += temp_precio
 		}
 	}
 	if mouse_check_button_pressed(mb_right){
@@ -1123,7 +1135,7 @@ if sel_info{
 		draw_set_color(c_white)
 		draw_rombo((x - y) * tile_width - xpos, (x + y) * tile_height - ypos - 1, (x - y - height) * tile_width - xpos - 1, (x + y + height) * tile_height - ypos, (x - y + width - height) * tile_width - xpos, (x + y + width + height) * tile_height - ypos + 1, (x - y + width) * tile_width - xpos + 1, (x + y + width) * tile_height - ypos, true)
 		draw_set_color(c_black)
-		draw_text_pos(room_width, pos, $"{var_edificio_nombre} {sel_edificio.number}")
+		draw_text_pos(room_width, pos, sel_edificio.nombre)
 		if sel_edificio.venta{
 			draw_text_pos(room_width - 20, pos, "EDIFICIO A LA VENTA")
 			pos += 20
@@ -1219,7 +1231,7 @@ if sel_info{
 			}
 			//Información trabajadores
 			if edificio_es_trabajo[index]{
-				if draw_menu(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{edificio_trabajadores_max[index]}", 4)
+				if draw_menu(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{sel_edificio.trabajadores_max}", 4)
 					for(var a = 0; a < array_length(sel_edificio.trabajadores); a++)
 						if draw_boton(room_width - 40, pos, name(sel_edificio.trabajadores[a])){
 							sel_persona = sel_edificio.trabajadores[a]
@@ -1315,7 +1327,7 @@ if sel_info{
 						for(var b = 0; b < array_length(educacion_nombre); b++)
 							for(var a = 0; a < array_length(sel_edificio.trabajos_cerca[b]); a++){
 								var temp_edificio = sel_edificio.trabajos_cerca[b, a]
-								if draw_boton(room_width - 40, pos, $"{edificio_nombre[temp_edificio.tipo]} {temp_edificio.number}"){
+								if draw_boton(room_width - 40, pos, temp_edificio.nombre){
 									sel_edificio = temp_edificio
 									break
 								}
@@ -1324,7 +1336,7 @@ if sel_info{
 				if edificio_es_trabajo[index] and draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.casas_cerca)} casas cerca", 0)
 					for(var a = 0; a < array_length(sel_edificio.casas_cerca); a++){
 						var temp_edificio = sel_edificio.casas_cerca[a]
-						if draw_boton(room_width - 40, pos, $"{edificio_nombre[temp_edificio.tipo]} {temp_edificio.number}"){
+						if draw_boton(room_width - 40, pos, temp_edificio.nombre){
 							sel_edificio = temp_edificio
 							break
 						}
@@ -1400,7 +1412,7 @@ if sel_info{
 		draw_text_pos(room_width, pos, name_familia(sel_familia))
 		if sel_familia.casa = homeless
 			draw_text_pos(room_width - 20, pos, "Sin hogar")
-		else if draw_boton(room_width - 20, pos, $"Vivienda: {edificio_nombre[sel_familia.casa.tipo]}"){
+		else if draw_boton(room_width - 20, pos, "Vivienda: " + sel_familia.casa.nombre){
 			sel_edificio = sel_familia.casa
 			sel_tipo = 0
 		}
@@ -1434,18 +1446,18 @@ if sel_info{
 		}
 		if sel_persona.familia.casa = homeless
 			draw_text_pos(room_width - 20, pos, "Sin hogar")
-		else if draw_boton(room_width - 20, pos, $"Vive en: {edificio_nombre[sel_persona.familia.casa.tipo]}"){
+		else if draw_boton(room_width - 20, pos, "Vive en: " + sel_persona.familia.casa.nombre){
 			sel_edificio = sel_persona.familia.casa
 			sel_tipo = 0
 		}
 		if sel_persona.trabajo = null_edificio
 			draw_text_pos(room_width - 20, pos, "Sin trabajo")
-		else if draw_boton(room_width - 20, pos, $"Trabaja en: {edificio_nombre[sel_persona.trabajo.tipo]}"){
+		else if draw_boton(room_width - 20, pos, "Trabaja en: " + sel_persona.trabajo.nombre){
 			sel_edificio = sel_persona.trabajo
 			sel_tipo = 0
 		}
 		draw_text_pos(room_width - 20, pos, $"Educación: {educacion_nombre[floor(sel_persona.educacion)]}")
-		if sel_persona.escuela != null_edificio and draw_boton(room_width - 40, pos, $"Estudiando en {edificio_nombre[sel_persona.escuela.tipo]}"){
+		if sel_persona.escuela != null_edificio and draw_boton(room_width - 40, pos, $"Estudiando en {sel_persona.escuela.nombre}"){
 			sel_edificio = sel_persona.escuela
 			sel_tipo = 0
 		}
@@ -1455,7 +1467,7 @@ if sel_info{
 			draw_text_pos(room_width - 20, pos, $"Enferm{ao(sel_persona)}")
 			if sel_persona.medico = desausiado
 				draw_text_pos(room_width - 40, pos, "Sin tratamiento")
-			else if draw_boton(room_width - 40, pos, $"Tratándose en {edificio_nombre[sel_persona.medico.tipo]}"){
+			else if draw_boton(room_width - 40, pos, "Tratándose en " + sel_persona.medico.nombre){
 				sel_edificio = sel_persona.medico
 				sel_tipo = 0
 			}
@@ -1525,12 +1537,7 @@ if keyboard_check(vk_space) or step >= 60{
 			next_build.tiempo -= b
 			//Edificio_terminado
 			if next_build.tiempo <= 0{
-				var tipo = next_build.id, width = edificio_width[tipo], height = edificio_height[tipo], c = next_build.x, d = next_build.y
-				if next_build.rotado{
-					var e = width
-					width = height
-					height = e
-				}
+				var tipo = next_build.id, width = next_build.width, height = next_build.height, c = next_build.x, d = next_build.y
 				array_shift(cola_construccion)
 				var edificio = add_edificio(c, d, tipo, , next_build.rotado)
 				#region Aplanar terreno
@@ -1563,7 +1570,7 @@ if keyboard_check(vk_space) or step >= 60{
 					edificio.eficiencia = e / width / height
 					edificio.modo = next_build.tipo
 				}
-				else if in(edificio_nombre[next_build.id], "Mina", "Rancho")
+				else if edificio_es_industria[tipo] or in(edificio_nombre[tipo], "Mina", "Rancho")
 					edificio.modo = next_build.tipo
 				//Despedir a todos los trabajadores si la ley de trabajo temporal está habilitada
 				if array_length(cola_construccion) = 0 and ley_eneabled[6]
@@ -2720,10 +2727,10 @@ if keyboard_check(vk_space) or step >= 60{
 			}
 			//Edificios de ocio y religiosos
 			if edificio_es_ocio[index] or edificio_es_iglesia[index]
-				if edificio_trabajadores_max[index] = 0
+				if edificio.trabajadores_max = 0
 					edificio.count = 0
 				else
-					edificio.count = max(0, floor(edificio.count * (1 - edificio.trabajo_mes / 28 / edificio_trabajadores_max[index])))
+					edificio.count = max(0, floor(edificio.count * (1 - edificio.trabajo_mes / 28 / edificio.trabajadores_max)))
 			edificio.trabajo_mes = 28 * array_length(edificio.trabajadores)
 		}
 		#region Bancarrota
