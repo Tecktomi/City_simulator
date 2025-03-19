@@ -16,6 +16,7 @@ function add_empresa(inversion, nacional = false, persona = control.null_persona
 		}
 		else
 			empresa.nombre = gen_nombre_empresa()
+		array_push(dia_empresas[empresa.dia_factura], empresa)
 		array_pop(empresa.edificios)
 		array_push(empresas, empresa)
 		return empresa

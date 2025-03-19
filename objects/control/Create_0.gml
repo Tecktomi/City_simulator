@@ -345,6 +345,11 @@ var a, b
 	null_persona.empresa = null_empresa
 	empresas = [null_empresa]
 	array_pop(empresas)
+	for(var a = 0; a < 28; a++){
+		dia_empresas[a] = [null_empresa]
+		array_pop(dia_empresas[a])
+	}
+	empresa_comprado = null_empresa
 	jubilado = add_edificio(0, 0, 1, false)
 	desausiado = add_edificio(0, 0, 2, false)
 	medicos = [desausiado]
@@ -396,6 +401,7 @@ var a, b
 			if bosque[a, b]{
 				bosque_madera[a, b] = floor(200 * grid[# a, b])
 				bosque_alpha[a, b] = 0.5 + bosque_madera[a, b] / 400
+				bosque_max[a, b] = bosque_madera[a, b]
 			}
 			mar[a, b] = c < 0.5
 			#region altura color
@@ -575,7 +581,7 @@ var a, b
 	repeat(10)
 		add_tratado_oferta()
 	repeat(10)
-		add_empresa(irandom_range(1000, 5000))
+		add_empresa(irandom_range(1000, 2000))
 	while array_length(personas) < 50
 		add_familia(0)
 #endregion

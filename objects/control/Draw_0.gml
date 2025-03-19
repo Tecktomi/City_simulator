@@ -1034,13 +1034,19 @@ if build_sel{
 			if coste_aplanar > 0
 				text += $"Coste aplanar: ${coste_aplanar}"
 		}
-		var coste_terreno = 0
+		var coste_terreno = 0, coste_deforestar = 0
 		for(var a = mx; a < mx + width; a++)
-			for(var b = my; b < my + height; b++)
+			for(var b = my; b < my + height; b++){
 				coste_terreno += 10 * zona_privada[a, b]
+				coste_deforestar += 10 * bosque[a, b]
+			}
 		if coste_terreno > 0{
-			text += $"\Estatizar el terreno: ${coste_terreno}"
+			text += $"\Estatizar terreno: ${coste_terreno}"
 			coste_aplanar += coste_terreno
+		}
+		if coste_deforestar > 0{
+			text += $"\nDeforestar terreno: ${coste_deforestar}"
+			coste_aplanar += coste_deforestar
 		}
 	}
 	if text != ""
@@ -1650,7 +1656,7 @@ if keyboard_check(vk_space) or step >= 60{
 		repeat(max(xsize * ysize / 10000, 1)){
 			var mx = irandom(xsize - 1), my = irandom(ysize - 1)
 			if bosque[mx, my]{
-				array_set(bosque_madera[mx], my, min(200, bosque_madera[mx, my] + 20))
+				array_set(bosque_madera[mx], my, max(bosque_max[mx, my], min(200, bosque_madera[mx, my] + 20)))
 				array_set(bosque_alpha[mx], my, 0.5 + bosque_madera[mx, my] / 400)
 			}
 		}
@@ -1730,54 +1736,6 @@ if keyboard_check(vk_space) or step >= 60{
 					fel_ali += familias[a].felicidad_alimento
 				if fel_ali / array_length(familias) >= 50
 					cumplir_exigencia(6)
-			}
-			//Privatización de edificios
-			for(var a = 0; a < array_length(empresas); a++){
-				var empresa = empresas[a]
-				if array_length(edificios_a_la_venta) > 0{
-					var temp = edificios_a_la_venta[0], edificio = temp.edificio, temp_precio = temp.precio, width = temp.width, height = temp.height
-					if empresa.dinero > 2 * temp_precio{
-						array_shift(edificios_a_la_venta)
-						x = edificio.x
-						y = edificio.y
-						if temp.estatal{
-							mes_privatizacion[current_mes] += temp_precio
-							dinero += temp_precio
-							dinero_privado -= temp_precio
-							inversion_privada += temp_precio
-						}
-						empresa.dinero -= temp_precio
-						edificio.privado = true
-						if edificio_nombre[edificio.tipo] = "Aserradero"
-							edificio.modo = 0
-						edificio.empresa = empresa
-						array_push(empresa.edificios, edificio)
-						set_presupuesto(0, edificio)
-						for(var b = x; b < x + width; b++)
-							for(var c = y; c < y + height; c++){
-								array_set(zona_privada[b], c, true)
-								array_set(zona_empresa[b], c, empresa)
-							}
-						edificio.venta = false
-						set_paro(false, edificio)
-					}
-				}
-				var b = impuesto_empresa * array_length(empresa.edificios)
-				empresa.dinero -= b
-				dinero += b
-				mes_impuestos[current_mes] += b
-				if empresa.dinero < 0{
-					if empresa.quiebra{
-						credibilidad_financiera = max(credibilidad_financiera - 1, 1)
-						destroy_empresa(empresa)
-						a--
-						continue
-					}
-					else
-						empresa.quiebra = true
-				}
-				else
-					empresa.quiebra = false
 			}
 		}
 		//Eventos anuales
@@ -2173,6 +2131,63 @@ if keyboard_check(vk_space) or step >= 60{
 			mes_muertos[current_mes]++
 		}
 		#endregion
+		//Ciclo de las empresas
+		for(var a = 0; a < array_length(dia_empresas[dia mod 28]); a++){
+			var empresa = dia_empresas[dia mod 28, a]
+			if array_length(edificios_a_la_venta) > 0{
+				var temp = edificios_a_la_venta[0], edificio = temp.edificio, temp_precio = temp.precio, width = temp.width, height = temp.height
+				if empresa.dinero > 2 * temp_precio{
+					empresa_comprado = null_empresa
+					array_shift(edificios_a_la_venta)
+					x = edificio.x
+					y = edificio.y
+					if temp.estatal{
+						mes_privatizacion[current_mes] += temp_precio
+						dinero += temp_precio
+						dinero_privado -= temp_precio
+						inversion_privada += temp_precio
+					}
+					empresa.dinero -= temp_precio
+					edificio.privado = true
+					if edificio_nombre[edificio.tipo] = "Aserradero"
+						edificio.modo = 0
+					edificio.empresa = empresa
+					array_push(empresa.edificios, edificio)
+					set_presupuesto(0, edificio)
+					for(var b = x; b < x + width; b++)
+						for(var c = y; c < y + height; c++){
+							array_set(zona_privada[b], c, true)
+							array_set(zona_empresa[b], c, empresa)
+						}
+					edificio.venta = false
+					set_paro(false, edificio)
+				}
+				else{
+					if empresa_comprado = null_empresa
+						empresa_comprado = empresa
+					else if empresa_comprado = empresa and array_length(edificios_a_la_venta) > 1{
+						var temp = array_shift(edificios_a_la_venta)
+						array_push(edificios_a_la_venta, temp)
+					}
+				}
+			}
+			var b = impuesto_empresa * array_length(empresa.edificios)
+			empresa.dinero -= b
+			dinero += b
+			mes_impuestos[current_mes] += b
+			if empresa.dinero < 0{
+				if empresa.quiebra{
+					credibilidad_financiera = max(credibilidad_financiera - 1, 1)
+					destroy_empresa(empresa)
+					a--
+					continue
+				}
+				else
+					empresa.quiebra = true
+			}
+			else
+				empresa.quiebra = false
+		}
 		//Ciclo de los edificios
 		for(var a = 0; a < array_length(dia_trabajo[dia mod 28]); a++){
 			var edificio = dia_trabajo[dia mod 28, a], index = edificio.tipo, width = edificio_width[index], height = edificio_height[index], var_edificio_nombre = edificio_nombre[index]

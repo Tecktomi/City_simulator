@@ -22,6 +22,7 @@ function destroy_empresa(empresa = control.null_empresa){
 			empresa.jefe.empresa = null_empresa
 			dinero += empresa.dinero
 		}
+		array_remove(dia_empresas[empresa.dia_factura], empresa, "Eliminar la empresa de su día de factura")
 		array_remove(empresas, empresa, "eliminar empresa")
 		if sel_build and ministerio = 7
 			close_show()

@@ -151,6 +151,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 					array_set(bool_edificio[a], b, true)
 					array_set(id_edificio[a], b, edificio)
 					array_set(construccion_reservada[a], b, false)
+					array_set(bosque[a], b, false)
 				}
 			//Modificar belleza
 			if edificio_belleza[tipo] != 50{
