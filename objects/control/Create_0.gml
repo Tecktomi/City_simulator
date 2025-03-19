@@ -272,13 +272,37 @@ var a, b
 	null_persona.escuela = null_edificio
 	null_persona.medico = null_edificio
 	null_persona.ladron = null_edificio
+	null_empresa = {
+		jefe : null_persona,
+		dinero : 0,
+		edificios : [null_edificio],
+		nacional : false,
+		nombre : "",
+		quiebra : false,
+		dia_factura : irandom(27),
+		terreno : [{a : 0, b : 0}],
+		ventas : []
+	}
+	array_pop(null_empresa.edificios)
+	array_pop(null_empresa.terreno)
+	null_persona.empresa = null_empresa
+	empresas = [null_empresa]
+	array_pop(empresas)
+	for(a = 0; a < 28; a++){
+		dia_empresas[a] = [null_empresa]
+		array_pop(dia_empresas[a])
+	}
+	empresa_comprado = null_empresa
 	null_venta = {
 		edificio : null_edificio,
 		precio : 0,
 		width : 0,
 		height : 0,
-		estatal : true
+		estatal : true,
+		empresa : null_empresa
 	}
+	array_push(null_empresa.ventas, null_venta)
+	array_pop(null_empresa.ventas)
 	edificios_a_la_venta = [null_venta]
 	array_pop(edificios_a_la_venta)
 	for(a = 0; a < array_length(educacion_nombre); a++)
@@ -334,24 +358,7 @@ var a, b
 		edificio_number[a] = 0
 		array_pop(edificio_count[a])
 	}
-	null_empresa = {
-		jefe : null_persona,
-		dinero : 0,
-		edificios : [null_edificio],
-		nacional : false,
-		nombre : "",
-		quiebra : false,
-		dia_factura : irandom(27)
-	}
-	array_pop(null_empresa.edificios)
-	null_persona.empresa = null_empresa
-	empresas = [null_empresa]
-	array_pop(empresas)
-	for(a = 0; a < 28; a++){
-		dia_empresas[a] = [null_empresa]
-		array_pop(dia_empresas[a])
-	}
-	empresa_comprado = null_empresa
+
 	jubilado = add_edificio(0, 0, 1, false)
 	desausiado = add_edificio(0, 0, 2, false)
 	medicos = [desausiado]
@@ -522,6 +529,7 @@ var a, b
 	step = 0
 	velocidad = 1
 	rotado = false
+	impuesto_empresa_fijo = 0
 	impuesto_empresa = 10
 	impuesto_forestal = 0.2
 	impuesto_minero = 0.2

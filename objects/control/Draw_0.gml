@@ -788,8 +788,10 @@ if sel_build{
 		//Propiedad privada
 		else if ministerio = 7{
 			draw_text_pos(110, pos, $"Credibilidad financiera: {credibilidad_financiera}")
-			if draw_boton(110, pos, $"Impuesto {impuesto_empresa}")
+			if draw_boton(110, pos, $"Impuesto por edificio ${impuesto_empresa}")
 				impuesto_empresa = (impuesto_empresa + 5) mod 30
+			if draw_boton(110, pos, $"Impuesto fijo ${impuesto_empresa_fijo}")
+				impuesto_empresa_fijo = (impuesto_empresa_fijo + 5) mod 30
 			if draw_boton(110, pos, $"Impuesto  minero {round(100 * impuesto_minero)}%")
 				impuesto_minero = ((10 * impuesto_minero + 1) mod 6) / 10
 			if draw_boton(110, pos, $"Impuesto forestal {round(100 * impuesto_forestal)}%")
@@ -815,6 +817,8 @@ if sel_build{
 							sel_tipo = 2
 							sel_persona = empresa.jefe
 						}
+						if array_length(empresa.terreno) > 0
+							draw_text_pos(140, pos, $"Dueños de {array_length(empresa.terreno)} terrenos")
 						if array_length(empresa.edificios) > 0{
 							draw_text_pos(140, pos, $"Dueña de {array_length(empresa.edificios)} edificios")
 							for(b = 0; b < array_length(empresa.edificios); b++)
@@ -1334,10 +1338,11 @@ if sel_info{
 				if sel_edificio.privado{
 					temp_precio = floor(temp_precio * 1.1)
 					if draw_boton(room_width, pos, $"Estatizar Edificio -${temp_precio}") and dinero >= temp_precio{
+						var empresa = sel_edificio.empresa
 						mes_estatizacion[current_mes] += temp_precio
 						dinero -= temp_precio
 						dinero_privado += temp_precio
-						sel_edificio.empresa.dinero += temp_precio
+						empresa.dinero += temp_precio
 						inversion_privada -= temp_precio
 						sel_edificio.privado = false
 						for(var a = x; a < x + width; a++)
@@ -1345,12 +1350,23 @@ if sel_info{
 								array_set(zona_privada[a], b, false)
 								array_set(zona_empresa[a], b, null_empresa)
 							}
+						for(var a = 0; a < array_length(empresa.terreno); a++){
+							var complex = empresa.terreno[a]
+							if complex.a >= x and complex.a < x + width and complex.b >= y and complex.b < y + height
+								array_delete(empresa.terreno, a--, 1)
+						}
 					}
 				}
 				else{
 					temp_precio = floor(temp_precio * 0.9)
 					if draw_boton(room_width, pos, $"Privatizar Edificio +${temp_precio}"){
-						array_push(edificios_a_la_venta, {edificio : sel_edificio, precio : temp_precio, width : width, height : height, estatal : true})
+						array_push(edificios_a_la_venta, {
+							edificio : sel_edificio,
+							precio : temp_precio,
+							width : width,
+							height : height,
+							estatal : true,
+							empresa : null_edificio})
 						set_paro(true, sel_edificio)
 						sel_edificio.venta = true
 					}
@@ -1867,8 +1883,9 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 					}
 					//Crear empresa nacional
-					else if irandom(persona.familia.riqueza) > 750{
+					else if persona.empresa = null_empresa and irandom(persona.familia.riqueza) > 750{
 						var empresa = add_empresa(500, true, persona)
+						persona.empresa = empresa
 						show_debug_message($"Se ha creado una empresa nacional: {empresa.nombre}")
 						persona.familia.riqueza -= 500
 					}
@@ -2090,7 +2107,7 @@ if keyboard_check(vk_space) or step >= 60{
 			//Compra de edificios
 			if array_length(edificios_a_la_venta) > 0{
 				var temp = edificios_a_la_venta[0], edificio = temp.edificio, temp_precio = temp.precio, width = temp.width, height = temp.height
-				if irandom(10) < credibilidad_financiera and empresa.dinero > 2 * temp_precio{
+				if not empresa.quiebra and irandom(10) < credibilidad_financiera and empresa.dinero > 2 * temp_precio{
 					empresa_comprado = null_empresa
 					array_shift(edificios_a_la_venta)
 					x = edificio.x
@@ -2100,6 +2117,15 @@ if keyboard_check(vk_space) or step >= 60{
 						dinero += temp_precio
 						dinero_privado -= temp_precio
 						inversion_privada += temp_precio
+					}
+					else if temp.empresa != null_empresa{
+						array_remove(temp.empresa.ventas, temp, "edificio eliminado de los edificios a la venta de una empresa")
+						temp.empresa.dinero += temp_precio
+						for(var b = 0; b < array_length(temp.empresa.terreno); b++){
+							var complex = temp.empresa.terreno[b]
+							if complex.a >= x and complex.a < x + width and complex.b >= y and complex.b < y + height
+								array_delete(temp.empresa.terreno, b--, 1)
+						}
 					}
 					empresa.dinero -= temp_precio
 					edificio.privado = true
@@ -2112,6 +2138,7 @@ if keyboard_check(vk_space) or step >= 60{
 						for(var c = y; c < y + height; c++){
 							array_set(zona_privada[b], c, true)
 							array_set(zona_empresa[b], c, empresa)
+							array_push(empresa.terreno, {a : b, b : c})
 						}
 					edificio.venta = false
 					set_paro(false, edificio)
@@ -2126,7 +2153,7 @@ if keyboard_check(vk_space) or step >= 60{
 				}
 			}
 			//Impuestos
-			var b = impuesto_empresa * array_length(empresa.edificios)
+			var b = impuesto_empresa * array_length(empresa.edificios) + impuesto_empresa_fijo
 			empresa.dinero -= b
 			dinero += b
 			mes_impuestos[current_mes] += b
@@ -2140,8 +2167,9 @@ if keyboard_check(vk_space) or step >= 60{
 				else{
 					empresa.quiebra = true
 					//Vender edificios para salir de la quiebra
-					if array_length(empresa.edificios) > 0
-						while empresa.dinero < 0{
+					if array_length(empresa.edificios) > 0{
+						var dinero_acumulado = 0
+						while empresa.dinero + dinero_acumulado < 0{
 							var edificio = array_shift(empresa.edificios), complex_2 = valorizar_edificio(edificio), temp_precio = complex_2.int, venta = {
 								edificio : edificio,
 								precio : temp_precio,
@@ -2150,13 +2178,14 @@ if keyboard_check(vk_space) or step >= 60{
 								estatal : false,
 								empresa : empresa
 							}
+							dinero_acumulado += temp_precio
 							array_push(edificios_a_la_venta, venta)
+							array_push(empresa.ventas, venta)
 							edificio.empresa = null_empresa
+							edificio.venta = true
 							set_paro(true, edificio)
-							empresa.dinero += temp_precio
-							if empresa.dinero >= 0
-								empresa.quiebra = false
 						}
+					}
 				}
 			}
 			else
