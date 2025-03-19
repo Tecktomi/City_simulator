@@ -74,12 +74,7 @@ for(var a = min_camx; a < max_camx; a++)
 			if edificio_sprite[id_edificio[a, b].tipo]
 				draw_sprite_stretched(edificio_sprite_id[id_edificio[a, b].tipo], draw_edificio_flip[a, b], (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
 			else{
-				var edificio = draw_edificio[a, b], c = edificio.x, d = edificio.y, e = edificio.tipo, width = edificio_width[e], height = edificio_height[e], temp_rotado = edificio.rotado
-				if temp_rotado{
-					var f = width
-					width = height
-					height = f
-				}
+				var edificio = draw_edificio[a, b], c = edificio.x, d = edificio.y, e = edificio.tipo, width = edificio.width, height = edificio.height, temp_rotado = edificio.rotado
 				draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
 				draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
 				draw_set_color(c_white)
@@ -466,14 +461,9 @@ if sel_build{
 			if draw_menu(110, pos, $"{array_length(cola_construccion)} edificios en construcción", 0)
 				for(var a = 0; a < array_length(cola_construccion); a++){
 					var next_build = cola_construccion[a]
-					if draw_boton(120, pos, $"{edificio_nombre[next_build.id]} ({edificio_precio[next_build.id]})") and dinero >= edificio_precio[next_build.id]{
+					if draw_boton(120, pos, $"{edificio_nombre[next_build.id]} (${edificio_precio[next_build.id]})") and dinero >= edificio_precio[next_build.id]{
 						array_delete(cola_construccion, a, 1)
-						var edificio = add_edificio(next_build.x, next_build.y, next_build.id), index = next_build.index, width = edificio_width[index], height = edificio_height[index]
-						if next_build.rotado{
-							b = width
-							width = height
-							height = b
-						}
+						var edificio = add_edificio(next_build.x, next_build.y, next_build.id, , next_build.rotado), index = next_build.tipo, width = edificio.width, height = edificio.height
 						if edificio_nombre[build_index] = "Granja"{
 							var d = 0
 							for(b = 0; b < width; b++)
@@ -800,6 +790,10 @@ if sel_build{
 			draw_text_pos(110, pos, $"Credibilidad financiera: {credibilidad_financiera}")
 			if draw_boton(110, pos, $"Impuesto {impuesto_empresa}")
 				impuesto_empresa = (impuesto_empresa + 5) mod 30
+			if draw_boton(110, pos, $"Impuesto  minero {round(100 * impuesto_minero)}%")
+				impuesto_minero = ((10 * impuesto_minero + 1) mod 6) / 10
+			if draw_boton(110, pos, $"Impuesto forestal {round(100 * impuesto_forestal)}%")
+				impuesto_forestal = ((10 * impuesto_forestal + 1) mod 6) / 10
 			if draw_menu(110, pos, $"{array_length(edificios_a_la_venta)} edificios a la venta", 0)
 				for(var a = 0; a < array_length(edificios_a_la_venta); a++){
 					var edificio = edificios_a_la_venta[a].edificio
@@ -1005,7 +999,7 @@ if build_sel{
 			var e = min(my + height + 5, ysize)
 			for(var a = max(0, mx - 5); a < d; a++)
 				for(var b = max(0, my - 5); b < e; b++)
-					if bosque[a, b]{
+					if bosque[a, b] and not (a >= mx and a < mx + width and b >= my and b < my + height){
 						flag_2 = true
 						c += bosque_madera[a, b]
 					}
@@ -1121,12 +1115,7 @@ if sel_info{
 	if sel_tipo = 0 and sel_edificio != null_edificio{
 		x = sel_edificio.x
 		y = sel_edificio.y
-		var index = sel_edificio.tipo, width = edificio_width[index], height = edificio_height[index], var_edificio_nombre = edificio_nombre[index]
-		if sel_edificio.rotado{
-			var a = width
-			width = height
-			height = a
-		}
+		var index = sel_edificio.tipo, width = sel_edificio.width, height = sel_edificio.height, var_edificio_nombre = edificio_nombre[index]
 		draw_set_color(c_white)
 		draw_rombo((x - y) * tile_width - xpos, (x + y) * tile_height - ypos - 1, (x - y - height) * tile_width - xpos - 1, (x + y + height) * tile_height - ypos, (x - y + width - height) * tile_width - xpos, (x + y + width + height) * tile_height - ypos + 1, (x - y + width) * tile_width - xpos + 1, (x + y + width) * tile_height - ypos, true)
 		draw_set_color(c_black)
@@ -1340,37 +1329,8 @@ if sel_info{
 			//Privatizar / Estatizar
 			if not edificio_estatal[index] and not sel_edificio.huelga{
 				pos += 20
-				var temp_precio = edificio_precio[index], temp_text = $"Edificio base: ${temp_precio}"
-				if var_edificio_nombre = "Mina"{
-					var c = 0
-					for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + width + 1); a++)
-						for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + height + 1); b++)
-							if mineral[sel_edificio.modo][a, b]
-								c += mineral_cantidad[sel_edificio.modo][a, b]
-					c = floor(c * recurso_precio[recurso_mineral[sel_edificio.modo]] * 0.2)
-					temp_precio += c
-					temp_text += $"\nDerechos mineros: ${c}"
-				}
-				else if var_edificio_nombre = "Aserradero"{
-					var c = 0
-					for(var a = max(0, sel_edificio.x - 5); a < min(sel_edificio.x + width + 5, xsize); a++)
-						for(var b = max(0, sel_edificio.y - 5); b < min(sel_edificio.y + height + 5, ysize); b++)
-							if bosque[a, b]
-								c += bosque_madera[a, b]
-					c = floor(c * recurso_precio[1] * 0.2)
-					temp_precio += c
-					temp_text += $"\nDerechos madereros: ${c}"
-				}
-				temp_text += $"\nPrecio terreno: ${10 * width * height}"
-				temp_precio += 10 * width * height
-				var b = 0
-				for(var a = 0; a < array_length(recurso_nombre); a++)
-					if sel_edificio.almacen[a] > 0
-						b += sel_edificio.almacen[a] * recurso_precio[a]
-				if b > 0{
-					temp_text += $"\nInventario: ${floor(b)}"
-					temp_precio += floor(b)
-				}
+				var complex_2 = valorizar_edificio(sel_edificio)
+				var temp_precio = complex_2.int, temp_text = complex_2.str
 				if sel_edificio.privado{
 					temp_precio = floor(temp_precio * 1.1)
 					if draw_boton(room_width, pos, $"Estatizar Edificio -${temp_precio}") and dinero >= temp_precio{
@@ -1381,7 +1341,7 @@ if sel_info{
 						inversion_privada -= temp_precio
 						sel_edificio.privado = false
 						for(var a = x; a < x + width; a++)
-							for(b = y; b < y + height; b++){
+							for(var b = y; b < y + height; b++){
 								array_set(zona_privada[a], b, false)
 								array_set(zona_empresa[a], b, null_empresa)
 							}
@@ -1556,8 +1516,6 @@ if keyboard_check(vk_space) or step >= 60{
 					height = e
 				}
 				array_shift(cola_construccion)
-				array_set(bool_draw_construccion[c], d, false)
-				array_set(draw_construccion[c], d, null_construccion)
 				var edificio = add_edificio(c, d, tipo, , next_build.rotado)
 				#region Aplanar terreno
 				if not edificio_es_costero[tipo] and edificio_nombre[build_index] != "Rancho"{
@@ -1916,18 +1874,13 @@ if keyboard_check(vk_space) or step >= 60{
 					}
 					//Mudarse
 					if not buscar_casa(persona) and persona.familia.casa = homeless and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente){
-						var temp_array_coord = [], index = persona.trabajo.tipo, width = edificio_width[index], height = edificio_height[index]
-						if persona.trabajo.rotado{
-							var b = width
-							width = height
-							height = b
-						}
+						var temp_array_coord = [], edificio = persona.trabajo, index = edificio.tipo, width = edificio.width, height = edificio.height
 						for(var b = persona.trabajo.x - 2; b < persona.trabajo.x + width + 2; b++)
 							for(var c = persona.trabajo.y - 2; c < persona.trabajo.y + height + 2; c++)
 								if not bool_edificio[b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c]
 									array_push(temp_array_coord, {x : b, y : c})
 						temp_array_coord = array_shuffle(temp_array_coord)
-						var edificio = spawn_build(temp_array_coord, 32)
+						edificio = spawn_build(temp_array_coord, 32)
 						if edificio != null_edificio
 							cambiar_casa(persona.familia, edificio)
 					}
@@ -2134,9 +2087,10 @@ if keyboard_check(vk_space) or step >= 60{
 		//Ciclo de las empresas
 		for(var a = 0; a < array_length(dia_empresas[dia mod 28]); a++){
 			var empresa = dia_empresas[dia mod 28, a]
+			//Compra de edificios
 			if array_length(edificios_a_la_venta) > 0{
 				var temp = edificios_a_la_venta[0], edificio = temp.edificio, temp_precio = temp.precio, width = temp.width, height = temp.height
-				if empresa.dinero > 2 * temp_precio{
+				if irandom(10) < credibilidad_financiera and empresa.dinero > 2 * temp_precio{
 					empresa_comprado = null_empresa
 					array_shift(edificios_a_la_venta)
 					x = edificio.x
@@ -2166,11 +2120,12 @@ if keyboard_check(vk_space) or step >= 60{
 					if empresa_comprado = null_empresa
 						empresa_comprado = empresa
 					else if empresa_comprado = empresa and array_length(edificios_a_la_venta) > 1{
-						var temp = array_shift(edificios_a_la_venta)
+						array_shift(edificios_a_la_venta)
 						array_push(edificios_a_la_venta, temp)
 					}
 				}
 			}
+			//Impuestos
 			var b = impuesto_empresa * array_length(empresa.edificios)
 			empresa.dinero -= b
 			dinero += b
@@ -2182,22 +2137,36 @@ if keyboard_check(vk_space) or step >= 60{
 					a--
 					continue
 				}
-				else
+				else{
 					empresa.quiebra = true
+					//Vender edificios para salir de la quiebra
+					if array_length(empresa.edificios) > 0
+						while empresa.dinero < 0{
+							var edificio = array_shift(empresa.edificios), complex_2 = valorizar_edificio(edificio), temp_precio = complex_2.int, venta = {
+								edificio : edificio,
+								precio : temp_precio,
+								width : edificio.width,
+								height : edificio.height,
+								estatal : false,
+								empresa : empresa
+							}
+							array_push(edificios_a_la_venta, venta)
+							edificio.empresa = null_empresa
+							set_paro(true, edificio)
+							empresa.dinero += temp_precio
+							if empresa.dinero >= 0
+								empresa.quiebra = false
+						}
+				}
 			}
 			else
 				empresa.quiebra = false
 		}
 		//Ciclo de los edificios
 		for(var a = 0; a < array_length(dia_trabajo[dia mod 28]); a++){
-			var edificio = dia_trabajo[dia mod 28, a], index = edificio.tipo, width = edificio_width[index], height = edificio_height[index], var_edificio_nombre = edificio_nombre[index]
+			var edificio = dia_trabajo[dia mod 28, a], index = edificio.tipo, width = edificio.width, height = edificio.height, var_edificio_nombre = edificio_nombre[index]
 			if edificio = delincuente
 				continue
-			if edificio.rotado{
-				var b = width
-				width = height
-				height = b
-			}
 			edificio.ganancia -= edificio.mantenimiento
 			if edificio.privado{
 				dinero_privado -= edificio.mantenimiento

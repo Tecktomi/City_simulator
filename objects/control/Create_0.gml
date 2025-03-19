@@ -240,6 +240,8 @@ var a, b
 		distancia_muelle_cercano : 0,
 		number : 0,
 		rotado : false,
+		width : 0,
+		height : 0,
 		ladron : null_persona,
 		venta : false
 	}
@@ -345,7 +347,7 @@ var a, b
 	null_persona.empresa = null_empresa
 	empresas = [null_empresa]
 	array_pop(empresas)
-	for(var a = 0; a < 28; a++){
+	for(a = 0; a < 28; a++){
 		dia_empresas[a] = [null_empresa]
 		array_pop(dia_empresas[a])
 	}
@@ -521,6 +523,8 @@ var a, b
 	velocidad = 1
 	rotado = false
 	impuesto_empresa = 10
+	impuesto_forestal = 0.2
+	impuesto_minero = 0.2
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
 	felicidad_total = 50

@@ -36,6 +36,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			distancia_muelle_cercano : 0,
 			number : ++edificio_number[tipo],
 			rotado : rotado,
+			width : 0,
+			height : 0,
 			ladron : null_persona,
 			empresa : null_empresa,
 			venta : false
@@ -62,6 +64,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 				width = height
 				height = a
 			}
+			edificio.width = width
+			edificio.height = height
+			array_set(bool_draw_construccion[x], y, false)
+			array_set(draw_construccion[x], y, null_construccion)
 			array_set(bool_draw_edificio[x], y, true)
 			array_set(draw_edificio[x], y, edificio)
 			array_push(edificios, edificio)

@@ -1,17 +1,12 @@
 function destroy_empresa(empresa = control.null_empresa){
 	with control{
 		for(var a = 0; a < array_length(empresa.edificios); a++){
-			var edificio = empresa.edificios[a], width = edificio_width[edificio.tipo], height = edificio_height[edificio.tipo]
+			var edificio = empresa.edificios[a], width = edificio.width, height = edificio.height, complex_2 = valorizar_edificio(edificio), temp_precio = complex_2.int
 			edificio.empresa = null_empresa
 			set_paro(true, edificio)
-			if edificio.rotado{
-				var b = width
-				width = height
-				height = width
-			}
 			var venta = {
 				edificio : edificio,
-				precio : edificio_precio[edificio.tipo],
+				precio : temp_precio,
 				width : width,
 				height : height,
 				estatal : false

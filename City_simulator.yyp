@@ -76,6 +76,7 @@
     {"id":{"name":"spawn_build","path":"scripts/spawn_build/spawn_build.yy",},},
     {"id":{"name":"string_struct_begin","path":"scripts/string_struct_begin/string_struct_begin.yy",},},
     {"id":{"name":"string_struct","path":"scripts/string_struct/string_struct.yy",},},
+    {"id":{"name":"valorizar_edificio","path":"scripts/valorizar_edificio/valorizar_edificio.yy",},},
     {"id":{"name":"spr_1x1","path":"sprites/spr_1x1/spr_1x1.yy",},},
     {"id":{"name":"spr_arbol","path":"sprites/spr_arbol/spr_arbol.yy",},},
     {"id":{"name":"spr_icono","path":"sprites/spr_icono/spr_icono.yy",},},
