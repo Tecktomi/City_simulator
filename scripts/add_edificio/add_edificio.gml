@@ -41,7 +41,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			height : 0,
 			ladron : null_persona,
 			empresa : null_empresa,
-			venta : false
+			venta : false,
+			es_almacen : edificio_es_almacen[tipo]
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
@@ -106,6 +107,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			}
 			if edificio_es_ocio[tipo]
 				cumplir_exigencia(3)
+			if edificio_es_almacen[tipo]
+				array_push(almacenes[tipo], edificio)
 			array_push(edificio_count[tipo], edificio)
 			if var_edificio_nombre = "Aserradero"{
 				var c = max(0, x - 5), d = min(x + width + 5, xsize), e = max(0, y - 5), f = min(y + height + 5, ysize)

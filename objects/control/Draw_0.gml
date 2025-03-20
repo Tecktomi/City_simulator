@@ -492,7 +492,7 @@ if sel_build{
 		}
 		//Ministerio de Salud
 		else if ministerio = 3{
-			var fel_sal = 0, temp_enfermos = 0, num_sal = 0, temp_espera = 0, num_hambre = 0
+			var fel_sal = 0, temp_enfermos = 0, num_sal = 0, temp_espera = 0, num_hambre = 0, num_almacenes = 0
 			for(var a = 0; a < array_length(personas); a++){
 				fel_sal += personas[a].felicidad_salud
 				if personas[a].medico != null_edificio{
@@ -501,6 +501,8 @@ if sel_build{
 						temp_espera++
 				}
 			}
+			for(var a = 0; a < array_length(edificio_almacen_index); a++)
+				num_almacenes += array_length(almacenes[edificio_almacen_index[a]])
 			draw_text_pos(110, pos, $"Satisfación sanitaria: {floor(fel_sal / array_length(personas))}")
 			for(var a = 0; a < 12; a++)
 				temp_enfermos += mes_enfermos[a]
@@ -521,6 +523,21 @@ if sel_build{
 			for(var a = 0; a < array_length(familias); a++)
 				num_hambre += (familias[a].felicidad_alimento < 10) * (real(familias[a].padre != null_persona) + real(familias[a].madre != null_persona) + array_length(familias[a].hijos))
 			draw_text_pos(110, pos, $"{num_hambre} personas hambrietas")
+			if draw_menu(110, pos, $"{num_almacenes} edificios distribuyendo comida", 1)
+				for(var a = 0; a < array_length(edificio_almacen_index); a++)
+					for(b = 0; b < array_length(almacenes[edificio_almacen_index[a]]); b++){
+						var edificio = almacenes[edificio_almacen_index[a], b]
+						if draw_boton(120, pos, edificio.nombre){
+							sel_build = false
+							sel_info = true
+							sel_tipo = 0
+							sel_edificio = edificio
+						}
+						var d = 0
+						for(var c = 0; c < array_length(recurso_comida); c++)
+							d += edificio.almacen[recurso_comida[c]]
+						draw_text_pos(130, pos, $"{d} comida almacenada")
+					}
 		}
 		//Ministerio de Educación
 		else if ministerio = 4{
@@ -1158,6 +1175,15 @@ if sel_info{
 					ministerio = 7
 					close_show()
 					show[array_get_index(empresas, sel_edificio.empresa)] = true
+				}
+			}
+			else if edificio_es_almacen[index] and var_edificio_nombre != "Mercado"{
+				if draw_boton(room_width - 20, pos, $"{sel_edificio.es_almacen ? "Vendiendo al público" : "Sin vender al público"}"){
+					if sel_edificio.es_almacen
+						array_remove(almacenes[index], sel_edificio)
+					else
+						array_push(almacenes[index], sel_edificio)
+					sel_edificio.es_almacen = not sel_edificio.es_almacen
 				}
 			}
 			//Paro
@@ -1927,6 +1953,31 @@ if keyboard_check(vk_space) or step >= 60{
 						array_push(muerte[persona.muerte], persona)
 					}
 				}
+				//Acciones no para niños
+				if not persona.es_hijo{
+					//Comprar productos de lujo
+					for(var b = 0; b < array_length(recurso_lujo); b++){
+						c = recurso_lujo[b]
+						var temp_precio = recurso_precio[c]
+						if persona.familia.sueldo > 0 and persona.familia.riqueza > temp_precio and array_length(edificio_count[35]) > 0{
+							var tienda = edificio_count[35, irandom(array_length(edificio_count[35]) - 1)]
+							if tienda.almacen[c] >= 1{
+								tienda.almacen[c]--
+								persona.felicidad_ocio += 10
+								tienda.ganancia += temp_precio
+								persona.familia.riqueza -= temp_precio
+								if tienda.privado{
+									dinero_privado += temp_precio
+									tienda.empresa.dinero += temp_precio
+								}
+								else{
+									dinero += temp_precio
+									mes_tarifas[current_mes] += temp_precio
+								}
+							}
+						}
+					}
+				}
 				//Acudir a edificios de ocio
 				if not persona.preso{
 					var temp_array = array_shuffle(edificios_ocio_index)
@@ -2246,7 +2297,7 @@ if keyboard_check(vk_space) or step >= 60{
 						}
 						else
 							edificio.count += array_length(edificio.trabajadores)
-						b = 200 * array_contains(recurso_comida, recurso_cultivo[edificio.modo])
+						b = 200 * array_contains(recurso_comida, recurso_cultivo[edificio.modo]) * edificio.es_almacen
 						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
 							edificio.ganancia += recurso_precio[recurso_cultivo[edificio.modo]] * (edificio.almacen[recurso_cultivo[edificio.modo]] - b)
 							add_encargo(recurso_cultivo[edificio.modo], edificio.almacen[recurso_cultivo[edificio.modo]] - b, edificio)
@@ -2325,10 +2376,11 @@ if keyboard_check(vk_space) or step >= 60{
 					//Pescadería
 					else if var_edificio_nombre = "Pescadería"{
 						edificio.almacen[8] += round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
-						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[8] > 200{
-							edificio.ganancia += recurso_precio[8] * edificio.almacen[8]
-							add_encargo(8, edificio.almacen[8] - 200, edificio)
-							edificio.almacen[8] = 200
+						b = 200 * edificio.es_almacen
+						if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[8] > b{
+							edificio.ganancia += recurso_precio[8] * (edificio.almacen[8] - b)
+							add_encargo(8, edificio.almacen[8] - b, edificio)
+							edificio.almacen[8] = b
 						}
 					}
 					//Minas
@@ -2465,7 +2517,7 @@ if keyboard_check(vk_space) or step >= 60{
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
 							edificio.ganancia -= recurso_precio[3] * (edificio.almacen[3] + edificio.pedido[3] - 360)
 							edificio.ganancia -= recurso_precio[20] * (edificio.almacen[20] + edificio.pedido[20] - 360)
-							edificio.ganancia+= recurso_precio[16] * edificio.almacen[16]
+							edificio.ganancia += recurso_precio[16] * edificio.almacen[16]
 							add_encargo(3, edificio.almacen[3] + edificio.pedido[3] - 360, edificio)
 							add_encargo(20, edificio.almacen[20] + edificio.pedido[3] - 360, edificio)
 							add_encargo(16, edificio.almacen[16], edificio)
@@ -2481,11 +2533,11 @@ if keyboard_check(vk_space) or step >= 60{
 							edificio.almacen[ganado_produccion[edificio.modo, c]] += floor(10 * b / array_length(ganado_produccion[edificio.modo]))
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12
 							for(b = 0; b < array_length(ganado_produccion[edificio.modo]); b++){
-								var c = ganado_produccion[edificio.modo, b], d = 100 * array_contains(recurso_comida, c)
+								var c = ganado_produccion[edificio.modo, b], d = 200 * array_contains(recurso_comida, c) * edificio.es_almacen
 								if edificio.almacen[c] > d{
-									edificio.ganancia += recurso_precio[c] * edificio.almacen[c]
-									add_encargo(c, edificio.almacen[c], edificio)
-									edificio.almacen[c] -= edificio.almacen[c]
+									edificio.ganancia += recurso_precio[c] * (edificio.almacen[c] - d)
+									add_encargo(c, edificio.almacen[c] - d, edificio)
+									edificio.almacen[c] = d
 								}
 							}
 						
@@ -2535,10 +2587,23 @@ if keyboard_check(vk_space) or step >= 60{
 								edificio.pedido[d] = 120 - edificio.almacen[d]
 							}
 							for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++){
-								var d = edificio_industria_output_id[index, c]
-								edificio.ganancia += recurso_precio[d] * floor(edificio.almacen[d])
-								add_encargo(d, edificio.almacen[d], edificio)
-								edificio.almacen[d] = 0
+								var d = edificio_industria_output_id[index, c], e = 200 * array_contains(recurso_comida, d) * edificio.es_almacen
+								if edificio.almacen[d] > e{
+									edificio.ganancia += recurso_precio[d] * (floor(edificio.almacen[d]) - e)
+									add_encargo(d, edificio.almacen[d] - e, edificio)
+									edificio.almacen[d] = e
+								}
+							}
+						}
+					}
+					//Mercado
+					else if var_edificio_nombre = "Mercado"{
+						for(b = 0; b < array_length(recurso_nombre); b++){
+							var c = edificio.almacen[b] + edificio.pedido[b] - 100
+							if array_contains(recurso_comida, b) or array_contains(recurso_lujo, b) and c < 0{
+								edificio.ganancia -= recurso_precio[b] * c
+								add_encargo(b, c, edificio)
+								edificio.pedido[b] = 100 - edificio.almacen[b]
 							}
 						}
 					}
@@ -2565,8 +2630,8 @@ if keyboard_check(vk_space) or step >= 60{
 					poblacion += edificio.familias[b].integrantes
 				//Conseguir alimento
 				for(b = 0; b < array_length(edificio_almacen_index); b++)
-					if array_length(edificio_count[edificio_almacen_index[b]]) > 0{
-						var tienda = edificio_count[edificio_almacen_index[b]][irandom(array_length(edificio_count[edificio_almacen_index[b]]) - 1)]
+					if array_length(almacenes[edificio_almacen_index[b]]) > 0{
+						var tienda = almacenes[edificio_almacen_index[b]][irandom(array_length(almacenes[edificio_almacen_index[b]]) - 1)]
 						for(var c = 0; c < array_length(recurso_comida); c++){
 							var d = recurso_comida[c]
 							if edificio.almacen[d] < poblacion and tienda.almacen[d] > 0{

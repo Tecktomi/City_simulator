@@ -37,6 +37,8 @@ function destroy_edificio(edificio = control.null_edificio){
 		if edificio_es_iglesia[tipo]
 			for(var a = 0; a < array_length(edificio.casas_cerca); a++)
 				array_remove(edificio.casas_cerca[a].iglesias_cerca, edificio, "eliminar iglesia cerca")
+		if edificio_es_almacen[tipo] and edificio.es_almacen
+			array_remove(almacenes[tipo], edificio)
 		array_remove(dia_trabajo[edificio.dia_factura], edificio, "eliminar edificio del dia de trabajo")
 		array_remove(edificio_count[tipo], edificio, "eliminar edificio del edificio_count")
 		if edificio_nombre[tipo] = "Muelle"
