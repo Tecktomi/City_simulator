@@ -25,7 +25,7 @@ function fecha(dia, anno = true){
 	else
 		text = string(day - 333) + " de diciembre"
 	if anno
-		return text + ", " + string(floor(dia / 365))
+		return text + ", " + string(1800 + floor(dia / 365))
 	else
 		return text
 }

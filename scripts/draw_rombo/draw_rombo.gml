@@ -10,3 +10,10 @@ function draw_rombo(xn, yn, xw, yw, xs, ys, xe, ye, outline){
 		draw_triangle(xn, yn, xe, ye, xs, ys, false)
 	}
 }
+function draw_rombo_coord(a, b, width, height, outline){
+	with control
+		draw_rombo(	(a - b) * tile_width - xpos, (a + b) * tile_height - ypos,
+					(a - b - height) * tile_width - xpos, (a + b + height) * tile_height - ypos,
+					(a - b + width - height) * tile_width - xpos, (a + b + width + height) * tile_height - ypos,
+					(a - b + width) * tile_width - xpos, (a + b + width) * tile_height - ypos, outline)
+}

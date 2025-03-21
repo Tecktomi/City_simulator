@@ -103,6 +103,10 @@ for(var a = min_camx; a < max_camx; a++)
 			draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, $"{var_edificio_nombre}{var_edificio_nombre = "Mina" ? "\n" + recurso_nombre[recurso_mineral[next_build.tipo]] : ""}{var_edificio_nombre = "Granja" ? "\n" + recurso_nombre[recurso_cultivo[next_build.tipo]] : ""}{var_edificio_nombre = "Rancho" ? "\n" + ganado_nombre[next_build.tipo] : ""}")
 		}	
 	}
+if keyboard_check(ord("V"))
+	draw_gradiente(0, 4)
+if keyboard_check(ord("T"))
+	draw_gradiente(0, 5)
 //Información general
 draw_set_alpha(0.5)
 draw_set_color(c_ltgray)

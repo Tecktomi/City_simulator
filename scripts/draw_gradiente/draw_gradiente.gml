@@ -51,5 +51,35 @@ function draw_gradiente(tipo, modo){
 			if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height
 				draw_text(0, 20, clamp(contaminacion[mx, my], 0, 100))
 		}
+		if modo = 4{
+			draw_set_color(c_white)
+			draw_text(0, 0, "Ocupación Residencial")
+			for(var c = 0; c < array_length(casas); c++){
+				var casa = casas[c], a = casa.x, b = casa.y, width = casa.width, height = casa.height, d = array_length(casa.familias) / edificio_familias_max[casa.tipo]
+				if a + width > min_camx and b + height > min_camy and a < max_camx and b < max_camy{
+					draw_set_color(c_gray)
+					draw_rombo_coord(a, b, width, height, false)
+					draw_set_alpha(0.5)
+					draw_set_color(make_color_rgb(255 * (1 - d), 255 * d, 0))
+					draw_rombo_coord(a, b, width, height, false)
+					draw_set_alpha(1)
+				}
+			}
+		}
+		if modo = 5{
+			draw_set_color(c_white)
+			draw_text(0, 0, "Ocupación Laboral")
+			for(var c = 0; c < array_length(trabajos); c++){
+				var edificio = trabajos[c], a = edificio.x, b = edificio.y, width = edificio.width, height = edificio.height, d = array_length(edificio.trabajadores) / edificio.trabajadores_max
+				if a + width > min_camx and b + height > min_camy and a < max_camx and b < max_camy{
+					draw_set_color(c_gray)
+					draw_rombo_coord(a, b, width, height, false)
+					draw_set_alpha(0.5)
+					draw_set_color(make_color_rgb(255 * (1 - d), 255 * d, 0))
+					draw_rombo_coord(a, b, width, height, false)
+					draw_set_alpha(1)
+				}
+			}
+		}
 	}
 }

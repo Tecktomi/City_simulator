@@ -329,7 +329,7 @@ var a, b
 		def_edificio_base("Quesería Artesanal", 5, 4, 3000, 720, [1, 10, 24], [25, 10, 25], 15, 40, 5, false,, true); def_edificio_servicio(); def_edificio_trabajo(true, 8, 40, 5,, true, [19], [2], [23], [1], 0.5)
 		def_edificio_base("Herrería", 5, 4, 4000, 1080, [1, 10, 15, 24], [25, 10, 20, 20], 20, 30, 15, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, true, [1, 15], [2, 1], [24], [1], 0.5)
 		def_edificio_base("Vecindad", 3, 3, 1200, 720, [1, 15, 25], [10, 10, 10], 4,, 15, false,,,,,true, 8, 40, 5, 20); def_edificio_servicio(); def_edificio_trabajo()
-		def_edificio_base("Toma", 1, 1,,,,,, 20, 5,,,,true ,, true, 1, 20); def_edificio_servicio(); def_edificio_trabajo()
+		def_edificio_base("Toma", 1, 1,,,,,, 20, 5,,,,true ,, true, 1, 15); def_edificio_servicio(); def_edificio_trabajo()
 		def_edificio_base("Delincuente"); def_edificio_servicio(); def_edificio_trabajo(,,10)
 		def_edificio_base("Comisaría", 4, 2, 1200, 720, [1, 10, 15], [20, 5, 20], 12, 40); def_edificio_servicio(,,,,, 4); def_edificio_trabajo(true, 4, 40, 7)
 		def_edificio_base("Mercado", 4, 4, 800, 360, [1, 10, 16], [20, 5, 20], 10, 40, 10); def_edificio_servicio(); def_edificio_trabajo(true, 15, 35, 4)
