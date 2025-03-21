@@ -61,11 +61,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 		}
 		if fisico{
 			var width = edificio_width[tipo], height = edificio_height[tipo]
-			if edificio_es_industria[tipo] and build_type = 1{
-				width += 1
-				height += 2
-				edificio.trabajadores_max *= 2
-			}
 			if rotado{
 				var a = width
 				width = height

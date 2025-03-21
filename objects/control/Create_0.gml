@@ -135,12 +135,12 @@ var a, b
 #endregion
 //Recursos
 #region recursos
-	recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas"]
-	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 7, 250, 2.2, 1.2, 1.4, 2.2, 12, 8, 15]
+	recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles"]
+	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 7, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 10]
 	recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23]
-	recurso_lujo = [22]
+	recurso_lujo = [4, 22, 25]
 	recurso_mineral = [9, 10, 11, 12, 13, 14]
 	recurso_mineral_color = [c_black, c_gray, c_yellow, c_orange, c_ltgray, c_dkgray]
 	recurso_mineral_rareza = [0.8, 0.85, 0.95, 0.75, 0.85, 0.9]
@@ -168,12 +168,6 @@ var a, b
 #endregion
 //Edificios
 #region edificios
-	edificio_nombre = ["Sin trabajo", "Jubilado", "Sin atención médica", "Homeless", "Granja", "Aserradero", "Escuela", "Consultorio", "Chabola", "Cabaña", "Parcela", "Taberna", "Circo", "Muelle", "Pescadería", "Mina", "Capilla", "Hospicio", "Albergue", "Escuela parroquial", "Oficina de Construcción", "Plaza", "Oficina de Transporte", "Planta Siderúrgica", "Cabaret", "Fábrica Textil", "Astillero", "Rancho", "Destilería de Ron", "Quesería", "Herrería", "Vecindad", "Toma", "Delincuente", "Comisaría", "Mercado"]
-	edificio_industria_input_id = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [9, 10], [], [3, 20], [1, 7, 12, 16], [], [5], [19], [1, 15], [], [], [], [], []]
-	edificio_industria_input_num = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [2, 3], [], [3, 3], [4, 1, 1, 1], [], [3], [1], [1, 1], [], [], [], [], []]
-	edificio_industria_output_id = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [15], [], [16], [17], [], [22], [23], [24], [], [], [], [], []]
-	edificio_industria_output_num = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [2], [], [1], [0.1], [], [1], [1], [3], [], [], [], [], []]
-	edificio_industria_velocidad = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0.2, 0, 2, 3, 0.5, 0, 0, 0, 0, 0]
 	edificio_descripcion = ["", "", "", "",
 		"Produce diversos cultivos dependiendo de la fertilidad del terreno",
 		"Corta áboles cercanos para extraer madera",
@@ -204,44 +198,217 @@ var a, b
 		"Vivienda anarquista por excelencia, se construirán automáticamente si no hay casas disponibles",
 		"",
 		"Reduce el crimen al encerrar a los delincuentes cercanos por un tiempo",
-		"Vende comida y bienes de lujo"]
-	edificio_trabajadores_max = [0, 0, 0, 0, 10, 10, 4, 3, 0, 0, 1, 2, 8, 5, 6, 5, 4, 4, 4, 5, 8, 0, 4, 10, 6, 10, 25, 3, 6, 3, 10, 0, 0, 0, 4, 4]
-	edificio_trabajo_calidad = [0, 10, 0, 0, 25, 30, 50, 60, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45, 30, 0, 35, 30, 25, 25, 35, 30, 35, 40, 30, 0, 0, 10, 30, 35]
-	edificio_trabajo_sueldo = [0, 2, 0, 0, 4, 5, 8, 11, 0, 0, 4, 5, 3, 7, 6, 5, 6, 6, 5, 6, 6, 0, 5, 4, 5, 4, 5, 5, 5, 6, 4, 0, 0, 1, 5, 4]
-	edificio_trabajo_educacion = [0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 1, 0, 0, 1, 2, 1, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-	edificio_es_casa = [false, false, false, true, false, false, false, false, true, true, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false]
-	edificio_es_trabajo = [false, false, false, false, true, true, true, true, false, false, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, false, false, true, true, true]
-	edificio_es_escuela = [false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-	edificio_escuela_max = [0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	edificio_es_medico = [false, false, true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-	edificio_es_ocio = [false, false, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
-	edificio_es_iglesia = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-	edificio_es_costero = [false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false]
-	edificio_es_almacen = [false, false, false, false, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true]
-	edificio_sprite = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false]
-	edificio_es_industria = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, true, false, true, true, true, false, false, false, false, false]
-	edificio_sprite_id = [spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1]
-	edificio_clientes_max = [0, 0, 0, 0, 0, 0, 20, 25, 0, 0, 0, 5, 16, 0, 0, 0, 20, 10, 10, 10, 0, 4, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0]
-	edificio_clientes_calidad = [0, 0, 0, 0, 0, 0, 50, 60, 0, 0, 0, 25, 20, 0, 0, 0, 50, 30, 30, 30, 0, 10, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	edificio_clientes_tarifa = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	edificio_familias_max = [0, 0, 0, 0, 0, 0, 0, 0, 5, 2, 1, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 1, 0, 0, 0]
-	edificio_familias_calidad = [0, 0, 0, 0, 0, 0, 0, 0, 30, 40, 65, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 20, 0, 0, 0]
-	edificio_familias_renta = [0, 0, 0, 0, 0, 0, 0, 0, 4, 6, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0]
-	edificio_anno = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0]
-	edificio_width = [0, 0, 0, 0, 6, 3, 3, 1, 2, 2, 3, 1, 4, 6, 5, 3, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 6, 5, 3, 3, 3, 3, 1, 0, 2, 3]
-	edificio_height = [0, 0, 0, 0, 3, 2, 3, 3, 2, 1, 2, 2, 4, 6, 5, 4, 5, 5, 5, 5, 2, 2, 3, 4, 4, 4, 8, 5, 4, 4, 4, 3, 1, 0, 4, 3]
-	edificio_color = [0, 0, 0, 0, 0, 10, 25, -10, 167, 177, 187, -15, 35, 80, -5, 30, 40, 45, 50, 55, 60, 65, 70, 0, 20, 10, -10, -25, -15, -30, 30, 200, 180, 0, 20, 30]
-	edificio_precio = [0, 0, 0, 0, 400, 650, 300, 1500, 300, 200, 500, 250, 450, 2500, 800, 1000, 1500, 1800, 1200, 1400, 700, 200, 650, 3000, 900, 2500, 7000, 500, 4000, 3500, 4500, 500, 0, 0, 800, 600]
-	edificio_recursos_num = [[], [], [], [], [10, 2], [8, 2], [30, 5], [25, 5, 5], [10, 2], [6, 1], [15, 3], [10, 1], [10, 15], [40, 10, 5], [20, 1], [20], [25, 5], [25, 5], [25, 5], [25, 5], [20, 3], [], [20, 3], [20, 15, 5], [15, 5], [40, 10], [50, 5, 5], [20, 2], [15, 10], [15, 10], [20, 10, 5], [20, 5], [], [], [10, 10], [10, 10]]
-	edificio_recursos_id = [[], [], [], [], [1, 10], [1, 10], [1, 10], [1, 10, 24], [1, 10], [1, 10], [1, 10], [1, 10], [1, 16], [1, 10, 24], [1, 10], [1], [1, 10], [1, 10], [1, 10], [1, 10], [1, 10], [], [1, 10], [1, 10, 24], [1, 12], [1, 24], [1, 10, 24], [1, 10], [1, 24], [1, 24], [1, 10, 24], [1, 10], [], [], [1, 10], [1, 16]]
-	edificio_mantenimiento = [0, 0, 0, 0, 4, 5, 6, 10, 3, 2, 10, 3, 6, 2, 8, 10, 12, 15, 10, 12, 5, 2, 5, 25, 6, 20, 40, 10, 20, 10, 25, 10, 0, 0, 7, 5]
-	edificio_estatal = [true, true, true, true, false, false, true, true, false, false, false, false, false, true, false, false, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, true, true, true, false]
-	edificio_belleza = [0, 0, 0, 0, 40, 30, 40, 50, 40, 55, 75, 30, 30, 30, 20, 25, 60, 50, 50, 50, 40, 80, 40, 25, 30, 35, 40, 40, 40, 35, 35, 40, 30, 0, 35, 35]
-	edificio_construccion_tiempo = [0, 0, 0, 0, 180, 240, 720, 640, 300, 180, 720, 240, 240, 1080, 240, 480, 720, 720, 720, 720, 600, 180, 720, 1800, 600, 1480, 2880, 360, 1480, 1800, 1800, 600, 0, 0, 720, 360]
-	edificio_contaminacion = [0, 0, 0, 0, -10, 10, 0, 0, 15, 5, 10, 0, 0, 20, 10, 30, 0, 10, 0, 0, 0, -10, 10, -30, 0, -25, 0, -10, -15, -10, -15, -10, -10, 0, 0, -10]
+		"Vende comida y bienes de lujo",
+		"Utiliza madera para producir muebles",
+		"Fábrica a vapor que requiere algún combustible y lana o algodón para producir tela a una gran velocidad."]
+	#region arreglos vacíos
+		edificio_nombre = []
+		edificio_width = []
+		edificio_height = []
+		edificio_precio = []
+		edificio_construccion_tiempo = []
+		edificio_recursos_id = []
+		edificio_recursos_num = []
+		edificio_mantenimiento = []
+		edificio_anno = []
+		edificio_belleza = []
+		edificio_contaminacion = []
+		edificio_estatal = []
+		edificio_es_costero = []
+		edificio_es_almacen = []
+		edificio_sprite = []
+		edificio_sprite_id = []
+		edificio_es_casa = []
+		edificio_familias_max = []
+		edificio_familias_calidad = []
+		edificio_familias_renta = []
+		edificio_es_medico = []
+		edificio_es_ocio = []
+		edificio_es_iglesia = []
+		edificio_es_escuela = []
+		edificio_escuela_max = []
+		edificio_clientes_max = []
+		edificio_clientes_calidad = []
+		edificio_clientes_tarifa = []
+		edificio_es_trabajo = []
+		edificio_trabajadores_max = []
+		edificio_trabajo_calidad = []
+		edificio_trabajo_sueldo = []
+		edificio_trabajo_educacion = []
+		edificio_es_industria = []
+		edificio_industria_input_id = []
+		edificio_industria_input_num = []
+		edificio_industria_output_id = []
+		edificio_industria_output_num = []
+		edificio_industria_velocidad = []
+	#endregion
+	#region funciones de definición
+	function def_edificio_base(nombre, width = 0, height = 0, precio = 0, tiempo = 0, recur_id = [0], recur_num = [0], mantenimiento = 0, belleza = 50, contaminacion = 0, estatal = true, es_costero = false, es_almacen = false, sprite = false, sprite_id = spr_1x1, es_casa = false, fam_max = 0, fam_cal = 0, fam_ren = 0, anno = 0){
+		array_push(edificio_nombre, string(nombre))
+		array_push(edificio_width, width)
+		array_push(edificio_height, height)
+		array_push(edificio_precio, precio)
+		array_push(edificio_construccion_tiempo, tiempo)
+		array_pop(recur_id)
+		array_push(edificio_recursos_id, recur_id)
+		array_pop(recur_num)
+		array_push(edificio_recursos_num, recur_num)
+		array_push(edificio_mantenimiento, mantenimiento)
+		array_push(edificio_belleza, belleza)
+		array_push(edificio_contaminacion, contaminacion)
+		array_push(edificio_estatal, estatal)
+		array_push(edificio_es_costero, es_costero)
+		array_push(edificio_es_almacen, es_almacen)
+		array_push(edificio_sprite, sprite)
+		array_push(edificio_sprite_id, sprite_id)
+		array_push(edificio_es_casa, es_casa)
+		array_push(edificio_familias_max, fam_max)
+		array_push(edificio_familias_calidad, fam_cal)
+		array_push(edificio_familias_renta, fam_ren)
+		array_push(edificio_anno, anno)
+		var index = array_length(edificio_nombre)
+	}
+	function def_edificio_servicio(es_medico = false, es_ocio = false, es_iglesia = false, es_escuela = false, escuela_max = 0, cli_max = 0, cli_cal = 0, cli_tar = 0){
+		array_push(edificio_es_medico, es_medico)
+		array_push(edificio_es_ocio, es_ocio)
+		array_push(edificio_es_iglesia, es_iglesia)
+		array_push(edificio_es_escuela, es_escuela)
+		array_push(edificio_escuela_max, escuela_max)
+		array_push(edificio_clientes_max, cli_max)
+		array_push(edificio_clientes_calidad, cli_cal)
+		array_push(edificio_clientes_tarifa, cli_tar)
+		var index = array_length(edificio_es_medico)
+	}
+	function def_edificio_trabajo(es_trabajo = false, trab_max = 0, trab_cal = 0, trab_sue = 0, trab_edu = 0, es_industria = false, ind_in_id = [0], ind_in_num = [0], ind_out_id = [0], ind_out_num = [0], ind_vel = 0){
+		array_push(edificio_es_trabajo, es_trabajo)
+		array_push(edificio_trabajadores_max, trab_max)
+		array_push(edificio_trabajo_calidad, trab_cal)
+		array_push(edificio_trabajo_sueldo, trab_sue)
+		array_push(edificio_trabajo_educacion, trab_edu)
+		array_push(edificio_es_industria, es_industria)
+		array_pop(ind_in_id)
+		array_push(edificio_industria_input_id, ind_in_id)
+		array_pop(ind_in_num)
+		array_push(edificio_industria_input_num, ind_in_num)
+		array_pop(ind_out_id)
+		array_push(edificio_industria_output_id, ind_out_id)
+		array_pop(ind_out_num)
+		array_push(edificio_industria_output_num, ind_out_num)
+		array_push(edificio_industria_velocidad, ind_vel)
+		var index = array_length(edificio_es_trabajo)
+	}
+	#endregion
+	#region definición
+		def_edificio_base("Sin trabajo"); def_edificio_servicio(); def_edificio_trabajo()
+		def_edificio_base("Jubilado"); def_edificio_servicio(); def_edificio_trabajo(, 0, 15, 2)
+		def_edificio_base("Sin atención médica"); def_edificio_servicio(true); def_edificio_trabajo()
+		def_edificio_base("Homeless",,,,,,,,,,,,,,,true); def_edificio_servicio(); def_edificio_trabajo()
+		def_edificio_base("Granja", 6, 3, 400, 180, [1, 10], [10, 2], 4, 40, -10, false,,true); def_edificio_servicio(); def_edificio_trabajo(true, 10, 25, 4)
+		def_edificio_base("Aserradero", 3, 2, 650, 240, [1, 10], [8, 2], 5, 30, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5)
+		def_edificio_base("Escuela", 3, 3, 1000, 640, [1, 10], [30, 5], 6, 40); def_edificio_servicio(,,,true, 2, 20, 50); def_edificio_trabajo(true, 4, 50, 8, 2)
+		def_edificio_base("Consultorio", 2, 3, 1500, 720, [1, 10, 24], [25, 5, 5], 15, 55); def_edificio_servicio(true,,,,,20, 60); def_edificio_trabajo(true, 3, 65, 11, 3)
+		def_edificio_base("Chabola", 2, 2, 300, 300, [1, 10], [10, 2], 3, 40, 10, false,,,,,true, 5, 30, 4); def_edificio_servicio(); def_edificio_trabajo()
+		def_edificio_base("Cabaña", 2, 1, 250, 200, [1, 10, 25], [6, 1, 6], 2, 55, 10, false,,,,,true, 2, 45, 6); def_edificio_servicio(); def_edificio_trabajo()
+		def_edificio_base("Parcela", 3, 2, 500, 360, [1, 10, 25], [15, 3, 10], 10, 75, 10, false,,,,,true, 2, 65, 12); def_edificio_servicio(); def_edificio_trabajo(true, 1, 40, 4)
+		def_edificio_base("Taberna", 2, 1, 300, 240, [1, 10], [10, 2], 3, 30,, false); def_edificio_servicio(, true,,,, 5, 25, 1); def_edificio_trabajo(true, 2, 35, 5)
+		def_edificio_base("Circo", 4, 4, 500, 240, [1, 16], [10, 20], 6, 30,, false); def_edificio_servicio(, true,,,, 16, 20, 1); def_edificio_trabajo(true, 8, 25, 4)
+		def_edificio_base("Muelle", 6, 6, 2500, 1080, [1, 10, 24], [40, 40, 10], 10, 30, 15,, true, true); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 6, 1)
+		def_edificio_base("Pescadería", 5, 5, 800, 360, [1, 10], [20, 10], 6, 25, 10, false, true, true); def_edificio_servicio(); def_edificio_trabajo(true, 6, 25, 5)
+		def_edificio_base("Mina", 4, 3, 1000, 720, [1, 10], [20, 10], 10, 25, 15, false); def_edificio_servicio(); def_edificio_trabajo(true, 8, 20, 5)
+		def_edificio_base("Capilla", 4, 3, 1500, 600, [1, 10], [20, 5], 10, 65); def_edificio_servicio(,, true,,, 12, 40); def_edificio_trabajo(true, 2, 60, 6, 1)
+		def_edificio_base("Hospicio", 4, 3, 2000, 1080, [1, 10, 24], [20, 5, 5], 15, 50); def_edificio_servicio(true,, true,,, 10, 30); def_edificio_trabajo(true, 5, 60, 8, 2)
+		def_edificio_base("Albergue", 4, 3, 1800, 600, [1, 10], [20, 5], 12, 40,,,,,,, true, 10, 25); def_edificio_servicio(,, true,,, 10, 30); def_edificio_trabajo(true, 3, 50, 5, 1)
+		def_edificio_base("Escuela parroquial", 4, 3, 1800, 720, [1, 10], [20, 5], 12, 45); def_edificio_servicio(,, true, true, 1, 10, 30); def_edificio_trabajo(true, 5, 60, 6, 2)
+		def_edificio_base("Oficina de Construcción", 3, 2, 1400, 600, [1, 10, 24], [10, 5, 10], 8, 35); def_edificio_servicio(); def_edificio_trabajo(true, 6, 35, 5, 1)
+		def_edificio_base("Plaza", 2, 2, 400, 180, [1], [5], 4, 70, -15); def_edificio_servicio(, true,,,, 5, 10); def_edificio_trabajo()
+		def_edificio_base("Oficina de Transporte", 3, 2, 1200, 600, [1, 10], [10, 5], 6, 35); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 4)
+		def_edificio_base("Forja", 5, 4, 3000, 1080, [1, 15, 24], [30, 20, 20], 25, 25, 20, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 30, 6,, true, [9, 10], [2, 3], [15], [1], 1)
+		def_edificio_base("Cabaret", 4, 3, 900, 450, [1, 10], [20, 5], 6, 30,, false); def_edificio_servicio(, true,,,, 6, 40, 3); def_edificio_trabajo(true, 4, 35, 6)
+		def_edificio_base("Taller Textil", 5, 4, 3500, 900, [1, 10, 24], [30, 10, 20], 20, 30, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 25, 5,, true, [3, 20], [3, 3], [16], [1], 2)
+		def_edificio_base("Astillero", 9, 6, 7000, 1800, [1, 10, 15, 24], [50, 30, 10, 20], 40, 40, 10, false, true); def_edificio_servicio(); def_edificio_trabajo(true, 30, 35, 4,, true, [1, 7, 12, 16], [5, 1, 1, 1], [17], [0.1], 0.3)
+		def_edificio_base("Rancho", 8, 8, 500, 300, [1], [20], 5, 45, -10, false,,true); def_edificio_servicio(); def_edificio_trabajo(true, 4, 40, 4)
+		def_edificio_base("Taller de Destilado", 5, 4, 4000, 900, [1, 10, 24], [25, 10, 25], 20, 40, 5, false); def_edificio_servicio(); def_edificio_trabajo(true, 12, 40, 5,, true, [5], [3], [22], [1], 1)
+		def_edificio_base("Quesería Artesanal", 5, 4, 3000, 720, [1, 10, 24], [25, 10, 25], 15, 40, 5, false,, true); def_edificio_servicio(); def_edificio_trabajo(true, 8, 40, 5,, true, [19], [2], [23], [1], 0.5)
+		def_edificio_base("Herrería", 5, 4, 4000, 1080, [1, 10, 15, 24], [25, 10, 20, 20], 20, 30, 15, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, true, [1, 15], [2, 1], [24], [1], 0.5)
+		def_edificio_base("Vecindad", 3, 3, 1200, 720, [1, 15, 25], [10, 10, 10], 4,, 15, false,,,,,true, 8, 40, 5, 20); def_edificio_servicio(); def_edificio_trabajo()
+		def_edificio_base("Toma", 1, 1,,,,,, 20, 5,,,,true ,, true, 1, 20); def_edificio_servicio(); def_edificio_trabajo()
+		def_edificio_base("Delincuente"); def_edificio_servicio(); def_edificio_trabajo(,,10)
+		def_edificio_base("Comisaría", 4, 2, 1200, 720, [1, 10, 15], [20, 5, 20], 12, 40); def_edificio_servicio(,,,,, 4); def_edificio_trabajo(true, 4, 40, 7)
+		def_edificio_base("Mercado", 4, 4, 800, 360, [1, 10, 16], [20, 5, 20], 10, 40, 10); def_edificio_servicio(); def_edificio_trabajo(true, 15, 35, 4)
+		def_edificio_base("Mueblería", 5, 4, 3000, 720, [1, 10, 24], [25, 10, 20], 20, 40, 5, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, true, [1], [4], [25], [1], 1)
+		def_edificio_base("Fábrica Textil", 8, 6, 10000, 2400, [1, 10, 15, 24], [50, 20, 30, 50], 40, 25, 30, false,,,,,,,,, 30); def_edificio_servicio(); def_edificio_trabajo(true, 30, 20, 4,, true, [3, 7], [2, 2], [16], [1], 5)
+	#endregion
+	if true{
+		a = 37 - array_length(edificio_nombre)
+		repeat(a){
+			def_edificio_base("NULL", 2, 2, 100, 10);
+			def_edificio_servicio();
+			def_edificio_trabajo()
+		}
+	}
+	else{
+		edificio_nombre =			["Sin trabajo",	"Jubilado",	"Sin atención médica",	"Homeless",	"Granja",	"Aserradero",	"Escuela",	"Consultorio",	"Chabola",	"Cabaña",	"Parcela",	"Taberna",	"Circo",	"Muelle",	"Pescadería",	"Mina",	"Capilla",	"Hospicio",	"Albergue",	"Escuela parroquial",	"Oficina de Construcción",	"Plaza",
+		"Oficina de Transporte",	"Forja",	"Cabaret",	"Taller Texti",	"Astillero",	"Rancho",	"Taller de Destilado",	"Quesería Artesanal",	"Herrería",	"Vecindad",	"Toma",	"Delincuente",	"Comisaría",	"Mercado",	"Mueblería",	"Fábrica Textil"]
+		edificio_width =			[0,				0, 0, 0, 6, 3, 3, 1, 2, 2, 3, 1, 4, 6, 5, 3, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 6, 5, 3, 3, 3, 3, 1, 0, 2, 3, 3, 6]
+		edificio_height =			[0,				0, 0, 0, 3, 2, 3, 3, 2, 1, 2, 2, 4, 6, 5, 4, 5, 5, 5, 5, 2, 2, 3, 4, 4, 4, 8, 5, 4, 4, 4, 3, 1, 0, 4, 3, 4, 5]
+		edificio_precio =			[0,				0, 0, 0, 400, 650, 1000, 1500, 300, 250, 500, 250, 450, 2500, 800, 1000, 1500, 1800, 1200, 1400, 700, 200, 650, 3000, 900, 3500, 6000, 500, 3000, 3000, 3200, 500, 0, 0, 800, 600, 2500, 10000]
+		edificio_construccion_tiempo=[0,			0, 0, 0, 180, 240, 640, 720, 300, 200, 360, 240, 240, 1080, 240, 480, 720, 720, 720, 720, 600, 180, 720, 1800, 600, 1480, 2880, 360, 1480, 1800, 1800, 600, 0, 0, 720, 360, 720, 1800]
+		edificio_recursos_id =		[[],			[], [], [], [1, 10], [1, 10], [1, 10], [1, 10, 24], [1, 10], [1, 10], [1, 10], [1, 10], [1, 16], [1, 10, 24], [1, 10], [1], [1, 10], [1, 10], [1, 10], [1, 10], [1, 10], [], [1, 10], [1, 10, 24], [1, 12], [1, 24], [1, 10, 24], [1, 10], [1, 24], [1, 24], [1, 10, 24], [1, 10], [], [], [1, 10], [1, 16], [1, 10], [1, 15, 24]]
+		edificio_recursos_num =		[[],			[], [], [], [10, 2], [8, 2], [30, 5], [25, 5, 5], [10, 2], [6, 1], [15, 3], [10, 1], [10, 15], [40, 10, 5], [20, 1], [20], [25, 5], [25, 5], [25, 5], [25, 5], [20, 3], [], [20, 3], [20, 15, 5], [15, 5], [40, 10], [50, 5, 5], [20, 2], [15, 10], [15, 10], [20, 10, 5], [20, 5], [], [], [10, 10], [10, 10], [20, 5], [40, 20, 20]]
+		edificio_anno =				[0,				0,			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 30]
+		edificio_mantenimiento =	[0,				0, 0, 0, 4, 5, 6, 10, 3, 2, 10, 3, 6, 2, 8, 10, 12, 15, 10, 12, 5, 2, 5, 25, 6, 20, 40, 10, 20, 10, 25, 10, 0, 0, 7, 5, 10, 40]
+		edificio_belleza =			[0,				0, 0, 0, 40, 30, 40, 50, 40, 55, 75, 30, 30, 30, 20, 25, 60, 50, 50, 50, 40, 80, 40, 25, 30, 35, 40, 40, 40, 35, 35, 40, 30, 0, 35, 35, 40, 25]
+		edificio_contaminacion =	[0,				0, 0, 0, -10, 10, 0, 0, 10, 5, 10, 0, 0, 20, 10, 30, 0, 10, 0, 0, 0, -10, 10, -30, 0, -25, 0, -10, -15, -10, -15, -10, -10, 0, 0, -10, 0, -30]
+		edificio_es_costero =		[false,			false,		false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
+		edificio_es_almacen =		[false,			false,		false, false, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false]
+		edificio_sprite =			[false,			false,		false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false]
+		edificio_sprite_id =		[spr_1x1,		spr_1x1,	spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1]
+		edificio_estatal =			[true,			true, true, true, false, false, true, true, false, false, false, false, false, true, false, false, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false]
+		edificio_es_casa =			[false,			false,		false,					true,		false,		false,			false,		false,			true,		true,		true,		false,		false,		false,		false,			false,	false,		false,		true,		false,					false,						false,		false,						false,		false,		false,			false,			false,		false,					false,					false,		true,		true,	false,			false,			false,		false,			false]
+		edificio_familias_max =		[0,				0,			0,						0,			0,			0,				0,			0,				5,			2,			1,			0,			0,			0,			0,				0,		0,			0,			8,			0,						0,							0,			0,							0,			0,			0,				0,				0,			0,						0,						0,			10,			1,		0,				0,				0,			0,				0]
+		edificio_familias_calidad = [0,				0,			0,						0,			0,			0,				0,			0,				30,			40,			65,			0,			0,			0,			0,				0,		0,			0,			15,			0,						0,							0,			0,							0,			0,			0,				0,				0,			0,						0,						0,			35,			20,		0,				0,				0,			0,				0]
+		edificio_familias_renta =	[0,				0,			0,						0, 0, 0, 0, 0, 4, 6, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0]
+		edificio_es_escuela =		[false,			false,		false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+		edificio_escuela_max =		[0,				0,			0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		edificio_es_medico =		[false,			false,		true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+		edificio_es_ocio =			[false,			false,		false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false]
+		edificio_es_iglesia =		[false,			false,		false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+		edificio_clientes_max =		[0,				0,			0, 0, 0, 0, 20, 25, 0, 0, 0, 5, 16, 0, 0, 0, 20, 10, 10, 10, 0, 4, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0]
+		edificio_clientes_calidad = [0,				0,			0, 0, 0, 0, 50, 60, 0, 0, 0, 25, 20, 0, 0, 0, 50, 30, 30, 30, 0, 10, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		edificio_clientes_tarifa =	[0,				0,			0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+		edificio_es_trabajo =		[false,			false,		false, false, true, true, true, true, false, false, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, true]
+		edificio_trabajadores_max =	[0,				0,			0, 0, 10, 10, 4, 3, 0, 0, 1, 2, 8, 5, 6, 5, 4, 4, 4, 5, 8, 0, 4, 10, 6, 10, 25, 3, 6, 3, 10, 0, 0, 0, 4, 4, 6, 20]
+		edificio_trabajo_calidad =	[0,				10,			0, 0, 25, 30, 50, 65, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45, 30, 0, 35, 30, 25, 25, 35, 30, 35, 40, 30, 0, 0, 10, 30, 35, 35, 30]
+		edificio_trabajo_sueldo =	[0,				2,			0, 0, 4, 5, 8, 11, 0, 0, 4, 5, 3, 7, 6, 5, 6, 6, 5, 6, 6, 0, 5, 4, 5, 4, 5, 5, 5, 6, 4, 0, 0, 1, 5, 4, 4, 4]
+		edificio_trabajo_educacion =[0,				0,			0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 1, 0, 0, 1, 2, 1, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+		edificio_es_industria =		[false,			false,		false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, true, false, true, true, true, false, false, false, false, false, true, false]
+		edificio_industria_input_id=[[],			[],			[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [9, 10], [], [3, 7, 20], [1, 7, 12, 16], [], [5], [19], [1, 15], [], [], [], [], [], [1], [9, 3, 20]]
+		edificio_industria_input_num=[[],			[],			[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [2, 3], [], [3, 3, 3], [4, 1, 1, 1], [], [3], [1], [1, 1], [], [], [], [], [], [4], [1, 2, 2]]
+		edificio_industria_output_id=[[],			[],			[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [15], [], [16], [17], [], [22], [23], [24], [], [], [], [], [], [25], [16]]
+		edificio_industria_output_num=[[],			[],			[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [2], [], [1], [0.1], [], [1], [1], [3], [], [], [], [], [], [1], [1]]
+		edificio_industria_velocidad=[0,			0,			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0.2, 0, 2, 3, 0.5, 0, 0, 0, 0, 0, 1, 4]
+	}
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
-	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27], [6, 7, 11, 12, 16, 21, 24, 34, 35], [13, 20, 22], [23, 25, 26, 28, 29, 30]]
-	edificio_industria_taller = [23, 25, 28, 29, 30]
+	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27], [6, 7, 11, 12, 16, 21, 24, 34, 35], [13, 20, 22], [23, 25, 26, 28, 29, 30, 36, 37]]
+	edificio_color = []
+	for(a = 0; a < array_length(edificio_nombre); a++){
+		var flag = false
+		for(b = 0; b < array_length(edificio_categoria); b++){
+			for(var c = 0; c < array_length(edificio_categoria[b]); c++)
+				if a = edificio_categoria[b, c]{
+					array_push(edificio_color, b * 40 + c * 3)
+					flag = true
+					break
+				}
+			if flag
+				break
+		}
+		if not flag
+			array_push(edificio_color, 0)
+	}
+	array_set(edificio_color, 17, 88)
+	array_set(edificio_color, 18, 88)
+	array_set(edificio_color, 19, 88)
 	null_edificio = {
 		nombre : "NULL",
 		familias : [null_familia],

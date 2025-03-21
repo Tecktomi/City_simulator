@@ -2,8 +2,6 @@ function valorizar_edificio(edificio = null_edificio){
 	with control{
 		var index = edificio.tipo, width = edificio.width, height = edificio.height, var_edificio_nombre = edificio_nombre[index]
 		var temp_precio = edificio_precio[index], temp_text = $"Edificio base: ${temp_precio}"
-		if edificio_es_industria[index] and edificio.modo = 1
-			temp_precio *= 2
 		if var_edificio_nombre = "Mina"{
 			var c = 0
 			for(var a = max(0, edificio.x - 1); a < min(xsize - 1, edificio.x + width + 1); a++)

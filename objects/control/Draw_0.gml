@@ -921,18 +921,6 @@ if build_sel{
 	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - height)
 	if keyboard_check_pressed(ord("R"))
 		rotado = not rotado
-	if edificio_es_industria[build_index]{
-		draw_set_color(c_white)
-		draw_text(0, 0, $"{(build_type = 0) ? ">" : ""}Taller\n{(build_type = 1) ? ">" : ""}Fábrica")
-		if mouse_wheel_up() or mouse_wheel_down()
-			build_type = 1 - build_type
-		if build_type = 1{
-			width += 1
-			height += 2
-			temp_precio *= 2
-			temp_tiempo *= 2
-		}
-	}
 	if rotado{
 		var a = width
 		width = height
@@ -1596,7 +1584,7 @@ if keyboard_check(vk_space) or step >= 60{
 					edificio.eficiencia = e / width / height
 					edificio.modo = next_build.tipo
 				}
-				else if edificio_es_industria[tipo] or in(edificio_nombre[tipo], "Mina", "Rancho")
+				else if in(edificio_nombre[tipo], "Mina", "Rancho")
 					edificio.modo = next_build.tipo
 				//Despedir a todos los trabajadores si la ley de trabajo temporal está habilitada
 				if array_length(cola_construccion) = 0 and ley_eneabled[6]
@@ -1957,8 +1945,7 @@ if keyboard_check(vk_space) or step >= 60{
 				if not persona.es_hijo{
 					//Comprar productos de lujo
 					for(var b = 0; b < array_length(recurso_lujo); b++){
-						c = recurso_lujo[b]
-						var temp_precio = recurso_precio[c]
+						var c = recurso_lujo[b], temp_precio = recurso_precio[c]
 						if persona.familia.sueldo > 0 and persona.familia.riqueza > temp_precio and array_length(edificio_count[35]) > 0{
 							var tienda = edificio_count[35, irandom(array_length(edificio_count[35]) - 1)]
 							if tienda.almacen[c] >= 1{
@@ -2506,8 +2493,8 @@ if keyboard_check(vk_space) or step >= 60{
 							}
 						}
 					}
-					//Fábrica textil
-					else if var_edificio_nombre = "Fábrica Textil"{
+					//Taller textil
+					else if var_edificio_nombre = "Taller Textil"{
 						b = max(0, min(max(floor(edificio.almacen[3] / 3), floor(edificio.almacen[20] / 3)), round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))))
 						if edificio.almacen[3] > edificio.almacen[20]
 							edificio.almacen[3] -= b * 3
