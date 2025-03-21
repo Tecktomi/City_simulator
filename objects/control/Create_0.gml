@@ -574,7 +574,7 @@ var a, b
 #endregion
 //Settings
 #region diseño del mundo
-	dia = 0
+	dia = 1
 	xsize = 240
 	ysize = 240
 	for(a = 0; a < array_length(recurso_cultivo); a++)
@@ -721,6 +721,11 @@ var a, b
 	tile_width = 32
 	tile_height = 16
 	menu = false
+	menu_principal = true
+	draw_set_halign(fa_center)
+	tutorial = 0
+	tutorial_max = 12
+	tutorial_complete = false
 	step = 0
 	velocidad = 1
 	rotado = false
