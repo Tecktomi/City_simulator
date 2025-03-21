@@ -1,5 +1,5 @@
 function min_array(array){
-	b = array[0]
+	var b = array[0]
 	for(var a = 1; a < array_length(array); a++)
 		b = min(b, array[a])
 	return b

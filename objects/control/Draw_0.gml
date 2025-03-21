@@ -2493,26 +2493,6 @@ if keyboard_check(vk_space) or step >= 60{
 							}
 						}
 					}
-					//Taller textil
-					else if var_edificio_nombre = "Taller Textil"{
-						b = max(0, min(max(floor(edificio.almacen[3] / 3), floor(edificio.almacen[20] / 3)), round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))))
-						if edificio.almacen[3] > edificio.almacen[20]
-							edificio.almacen[3] -= b * 3
-						else
-							edificio.almacen[20] -= b * 3
-						edificio.almacen[16] += b
-						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
-							edificio.ganancia -= recurso_precio[3] * (edificio.almacen[3] + edificio.pedido[3] - 360)
-							edificio.ganancia -= recurso_precio[20] * (edificio.almacen[20] + edificio.pedido[20] - 360)
-							edificio.ganancia += recurso_precio[16] * edificio.almacen[16]
-							add_encargo(3, edificio.almacen[3] + edificio.pedido[3] - 360, edificio)
-							add_encargo(20, edificio.almacen[20] + edificio.pedido[3] - 360, edificio)
-							add_encargo(16, edificio.almacen[16], edificio)
-							edificio.almacen[16] = 0
-							edificio.pedido[3] = 360 - edificio.almacen[3]
-							edificio.pedido[20] = 360 - edificio.almacen[20]
-						}
-					}
 					//Rancho
 					else if var_edificio_nombre = "Rancho"{
 						b = edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200)
@@ -2556,22 +2536,55 @@ if keyboard_check(vk_space) or step >= 60{
 							}
 						}
 					}
-					//Industria generica
+					//Industria genérica
 					else if edificio_es_industria[index]{
-						var temp_array = []
-						for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
-							array_push(temp_array, edificio.almacen[edificio_industria_input_id[index, c]] / edificio_industria_input_num[index, c])
-						b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index])))
-						for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
-							edificio.almacen[edificio_industria_input_id[index, c]] -= b * edificio_industria_input_num[index, c]
-						for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++)
-							edificio.almacen[edificio_industria_output_id[index, c]] += b * edificio_industria_output_num[index, c]
+						//Industria de inputs optativos
+						if edificio_industria_optativo[index]{
+							var max_rss = 0, max_c = 0
+							for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++){
+								var d = floor(edificio.almacen[edificio_industria_input_id[index, c]] / edificio_industria_input_num[index, c])
+								if d > max_rss{
+									max_rss = d
+									max_c = c
+								}
+							}
+							if max_rss > 0{
+								b = max(0, min(max_rss, round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index]), edificio.almacen[9] * edificio_industria_vapor[index]))
+								if b > 0{
+									edificio.almacen[edificio_industria_input_id[index, max_c]] -= b * edificio_industria_input_num[index, max_c]
+									for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++)
+										edificio.almacen[edificio_industria_output_id[index, c]] += b * edificio_industria_output_num[index, c]
+									if edificio_industria_vapor[index]
+										edificio.almacen[9]--
+								}
+							}
+						}
+						//Industria de inputs rígidos
+						else{
+							var temp_array = []
+							for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
+								array_push(temp_array, edificio.almacen[edificio_industria_input_id[index, c]] / edificio_industria_input_num[index, c])
+							b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index]), edificio.almacen[9] * edificio_industria_vapor[index]))
+							if b > 0{
+								for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
+									edificio.almacen[edificio_industria_input_id[index, c]] -= b * edificio_industria_input_num[index, c]
+								for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++)
+									edificio.almacen[edificio_industria_output_id[index, c]] += b * edificio_industria_output_num[index, c]
+								if edificio_industria_vapor[index]
+									edificio.almacen[9]--
+							}
+						}
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
 							for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++){
 								var d = edificio_industria_input_id[index, c]
 								edificio.ganancia -= recurso_precio[d] * (edificio.almacen[d] + edificio.pedido[d] - 120)
 								add_encargo(d, edificio.almacen[d] + edificio.pedido[d] - 120, edificio)
 								edificio.pedido[d] = 120 - edificio.almacen[d]
+							}
+							if edificio_industria_vapor[index]{
+								edificio.ganancia -= recurso_precio[9] * (edificio.almacen[9] + edificio.pedido[9] - 120)
+								add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 120, edificio)
+								edificio.pedido[9] = 120 - edificio.almacen[9]
 							}
 							for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++){
 								var d = edificio_industria_output_id[index, c], e = 200 * array_contains(recurso_comida, d) * edificio.es_almacen
