@@ -11,7 +11,8 @@ if menu_principal{
 	if draw_boton(room_width / 2, pos, "Tutorial", true){
 		draw_set_font(Font1)
 		draw_set_halign(fa_left)
-		tutorial = 1
+		tutorial = 0
+		tutorial_bool = true
 		velocidad = 0
 		menu_principal = false
 	}
@@ -21,8 +22,17 @@ if menu_principal{
 }
 else{
 	#region Visual
-	if tutorial > 0
+	if tutorial_bool and not menu{
 		tutorial_complete = false
+		for(var a = 0; a < array_length(tutorial_keys[tutorial]); a++)
+			keyboard_clear(tutorial_keys[tutorial, a])
+		for(var a = 0; a < array_length(tutorial_mouse[tutorial]); a++)
+			mouse_clear(tutorial_mouse[tutorial, a])
+		if not (mouse_x > tutorial_xbox[tutorial] and mouse_y > tutorial_ybox[tutorial] and mouse_x < tutorial_wbox[tutorial] and mouse_y < tutorial_hbox[tutorial]){
+			mouse_clear(mb_left)
+			mouse_clear(mb_right)
+		}
+	}
 	window_set_cursor(cr_default)
 	//Dibujar mundo
 	if world_update{
@@ -61,7 +71,6 @@ else{
 	}
 	#endregion
 	#region vistas
-	if tutorial = 0{
 		if keyboard_check(ord("G")) and not keyboard_check(vk_lcontrol){
 			if mouse_wheel_up()
 				build_type = (build_type + 1) mod array_length(recurso_cultivo)
@@ -86,7 +95,6 @@ else{
 			draw_gradiente(0, 2)
 		if keyboard_check(ord("C"))
 			draw_gradiente(0, 3)
-	}
 	#endregion
 	//Dibujo de arboles y edificios
 	for(var a = min_camx; a < max_camx; a++)
@@ -129,28 +137,28 @@ else{
 				draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, $"{var_edificio_nombre}{var_edificio_nombre = "Mina" ? "\n" + recurso_nombre[recurso_mineral[next_build.tipo]] : ""}{var_edificio_nombre = "Granja" ? "\n" + recurso_nombre[recurso_cultivo[next_build.tipo]] : ""}{var_edificio_nombre = "Rancho" ? "\n" + ganado_nombre[next_build.tipo] : ""}")
 			}	
 		}
-	if keyboard_check(ord("V"))
-		draw_gradiente(0, 4)
-	if keyboard_check(ord("T"))
+	#region vistas post-dibujo
+		if keyboard_check(ord("V"))
+			draw_gradiente(0, 4)
+		if keyboard_check(ord("T"))
 		draw_gradiente(0, 5)
+	#endregion
 	//Información general
 	draw_set_alpha(0.5)
 	draw_set_color(c_ltgray)
 	var text = $"FPS: {fps}\n{fecha(dia)}\n{array_length(personas)} habitantes\n$ {floor(dinero)}"
 	draw_rectangle(0, room_height, string_width(text), room_height - string_height(text) - 25, false)
-	if tutorial = 1
-		show_tutorial(room_width / 2, 200, "Bienvenido a tu propio paraíso tropical\n Aquí aprederás lo básico para manejar tu país")
-	if tutorial = 2
-		show_tutorial(string_width(text) + 10, room_height - string_height(text) - 25, "Primero lo importante, aquí se muestran tus riquezas, tus súdbitos y el día",, 0, room_height - string_height(text) - 25, string_width(text) + 10, room_height)
+	tutorial_set(1, string_width(text) + 10, room_height - string_height(text) - 25,,, 0, room_height - string_height(text) - 25, string_width(text) + 10, room_height)
+	tutorial_set(9,,,,, 0, room_height - string_height(text) - 25, string_width(text) + 10, room_height - string_height(text))
 	draw_set_color(c_black)
 	draw_set_valign(fa_bottom)
 	pos = room_height
 	draw_text_pos(0, pos, text)
-	if draw_sprite_boton(spr_icono, 6, 10, room_height - last_height - 20) and tutorial = 0
+	if draw_sprite_boton(spr_icono, 6, 10, room_height - last_height - 20) and not tutorial_bool
 		velocidad = 0
-	if draw_sprite_boton(spr_icono, 7, 40, room_height - last_height - 20) and tutorial = 0
+	if draw_sprite_boton(spr_icono, 7, 40, room_height - last_height - 20) and not tutorial_bool
 		velocidad = 1
-	if draw_sprite_boton(spr_icono, 8, 70, room_height - last_height - 20) and tutorial = 0
+	if draw_sprite_boton(spr_icono, 8, 70, room_height - last_height - 20) and not tutorial_bool
 		velocidad = 2.5
 	pos -= 20
 	for(var a = 0; a < array_length(exigencia_nombre); a++)
@@ -235,35 +243,26 @@ else{
 			ini_write_real("MAIN", "fullscreen", window_get_fullscreen())
 			ini_close()
 		}
+		if tutorial_bool{
+			pos += 30
+			if draw_boton(room_width / 2, pos, "Salir del tutorial"){
+				tutorial = 0
+				tutorial_bool = false
+			}
+		}
 		draw_set_halign(fa_left)
 		mouse_clear(mb_left)
 	}
 	//Abrir menú de construcción
-	if mouse_check_button_pressed(mb_right) and not build_sel and in(tutorial, 0, 5){
+	if mouse_check_button_pressed(mb_right) and not build_sel{
 		close_show()
 		sel_build = not sel_build
 		sel_info = false
 		build_type = 0
 		ministerio = -1
-		if tutorial = 5
+		if tutorial = 4
 			tutorial_complete = true
 	}
-	if tutorial = 3
-		show_tutorial(room_width / 2, 400, "Mueve la cámara arrastrando el mouse al borde")
-	if tutorial = 4
-		if show_tutorial(room_width / 2, 400, "Haz zoom con Control + la rueda del mouse"){
-			tile_width = 32
-			tile_height = 16
-			var a = edificios[0].x, b = edificios[0].y
-			xpos = (a - b) * tile_width - room_width / 2
-			ypos = (a + b) * tile_height - room_height / 2
-			min_camx = max(0, floor((xpos / tile_width + ypos / tile_height) / 2))
-			min_camy = max(0, floor((ypos / tile_height - (xpos + room_width) / tile_width) / 2))
-			max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
-			max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
-		}
-	if tutorial = 5
-		show_tutorial(room_width / 2, 400, "Abramos el menú de construcciones y ministros\nHaz clic derecho", false)
 	//Menú de construcción y ministros
 	if sel_build{
 		draw_set_alpha(0.5)
@@ -287,6 +286,12 @@ else{
 			if draw_boton(b, room_height - 100, ministerio_nombre[a], true){
 				close_show()
 				ministerio = a
+				if tutorial_bool{
+					if tutorial = 18 and a = 0
+						tutorial_complete = true
+					if tutorial = 20 and a = 5
+						tutorial_complete = true
+				}
 			}
 			b += last_width + 10
 		}
@@ -307,12 +312,18 @@ else{
 							edificio_es_medico[b] ? "Atiende a " + string(edificio_clientes_max[b]) + " pacientes\n" : ""}{
 							edificio_es_ocio[b] or edificio_es_iglesia[b] ? "Acepta " + string(edificio_clientes_max[b]) + " visitantes\n" : ""}{edificio_descripcion[b]}")
 						draw_set_valign(fa_top)
-					}, b) and dinero + 2500 >= edificio_precio[b] and (in(tutorial, 0, 8) and b = 8){
+					}, b) and dinero + 2500 >= edificio_precio[b]{
 					build_index = b
 					build_sel = true
 					sel_build = false
-					if tutorial = 8 and b = 8
-						tutorial_complete = true
+					if tutorial_bool{
+						if tutorial = 7 and edificio_nombre[b] = "Chabola"
+							tutorial_complete = true
+						if tutorial = 12 and edificio_nombre[b] = "Granja"
+							tutorial_complete = true
+						if tutorial = 14 and edificio_nombre[b] = "Aserradero"
+							tutorial_complete = true
+					}
 				}
 			}
 		}
@@ -735,7 +746,7 @@ else{
 				draw_text_pos(420 + max_width, pos, "Exportar")
 				pos += 20
 				for(var a = 0; a < 20; a++)
-					recurso_exportado[a + show_scroll] = draw_boton_rectangle(420 + max_width, pos + a * 20, 420 + max_width + 18, pos + a * 20 + 18, recurso_exportado[a + show_scroll])
+					recurso_exportado[a + show_scroll] = draw_boton_rectangle(420 + max_width + last_width / 2 - 5, pos + a * 20, 420 + max_width + last_width / 2 + 13, pos + a * 20 + 18, recurso_exportado[a + show_scroll])
 				max_width += last_width + 10
 				pos = 120
 				draw_text_pos(420 + max_width, pos, "Importar")
@@ -968,12 +979,6 @@ else{
 					}
 			}
 		}
-		if tutorial = 6
-			show_tutorial(room_width / 2, 200, "Aquí encontrarás los edificios disponibles\nordenados por categorias",, 100, 80, room_width - 100, 100)
-		if tutorial = 7
-			show_tutorial(room_width / 2, 500, "Aquí podrás consultar los distintos ministerios\npara ver el estado de la isla",, 100, room_height - 100, room_width - 100, room_height - 80)
-		if tutorial = 8
-			show_tutorial(room_width / 2, 400, "Vamos a construir una Chabola", false, 100, 100, 200, 120)
 	}
 	//Colocar edificio
 	if build_sel{
@@ -1163,7 +1168,7 @@ else{
 				build_sel = keyboard_check(vk_lshift)
 				dinero -= temp_precio
 				mes_construccion[current_mes] += temp_precio
-				if tutorial = 9
+				if tutorial_bool and tutorial = 8
 					tutorial_complete = true
 			}
 		}
@@ -1172,9 +1177,6 @@ else{
 			build_sel = false
 		}
 	}
-	if tutorial = 9
-		if show_tutorial(room_width / 2, 400, "Selecciona algún lugar disponible", false, 0, 0, room_width, room_height)
-			velocidad = 2.5
 	//Seleccionar edificio
 	if mouse_check_button_pressed(mb_left){
 		var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
@@ -1189,6 +1191,8 @@ else{
 				sel_familia = null_familia
 				sel_persona = null_persona
 				sel_tipo = 0
+				if tutorial_bool and tutorial = 10
+					tutorial_complete = true
 			}
 		}
 	}
@@ -1563,8 +1567,8 @@ else{
 		draw_set_halign(fa_left)
 	}
 	#region Movimiento de la cámara
-	if in(tutorial, 0, 3, 4, 9){
-		if keyboard_check(vk_lcontrol) and in(tutorial, 0, 4, 9){
+	if not tutorial_bool or tutorial_camara[tutorial]{
+		if keyboard_check(vk_lcontrol){
 			if mouse_wheel_up() and tile_width < 64{
 				var center_x = ((room_width / 2 + xpos) / tile_width + (room_height / 2 + ypos) / tile_height) / 2
 				var center_y = ((room_height / 2 + ypos) / tile_height - (room_width / 2 + xpos) / tile_width) / 2
@@ -1663,8 +1667,16 @@ else{
 							while array_length(edificio.trabajadores) > 0
 								cambiar_trabajo(edificio.trabajadores[0], null_edificio)
 						}
-					if tutorial = 10
-						tutorial_complete = true
+					if tutorial_bool{
+						if tutorial = 9 and edificio_nombre[tipo] = "Chabola"
+							tutorial_complete = true
+						if tutorial = 13 and edificio_nombre[tipo] = "Granja"
+							tutorial_complete = true
+						if tutorial = 15 and edificio_nombre[tipo] = "Aserradero"
+							tutorial_complete = true
+						if tutorial = 17 and edificio_nombre[tipo] = "Escuela"
+							tutorial_complete = true
+					}
 				}
 			}
 			//Mover recursos
@@ -2890,11 +2902,6 @@ else{
 			#endregion
 		}
 	}
-	if tutorial = 10
-		if show_tutorial(room_width / 2, 400, "Ahora espera a que se construya", false, 0, 0, room_width, room_height)
-			velocidad = 1
-	if tutorial = 11
-		show_tutorial(room_width / 2, 400, "Eso es todo por ahora")
 	#region abreviatura
 		//Añadir familia
 		if keyboard_check(vk_lcontrol) and (keyboard_check_pressed(ord("F")) or (keyboard_check(ord("F")) and keyboard_check(vk_lshift)))
@@ -2923,4 +2930,50 @@ else{
 		mes_herencia[current_mes] += 100
 	}
 	#endregion
+	//Tutorial
+	if tutorial_bool and not menu{
+		draw_set_color(c_black)
+		draw_set_alpha(0.5)
+		draw_rectangle(0, 0, tutorial_xbox[tutorial], room_height, false)
+		draw_rectangle(tutorial_xbox[tutorial] + 1, 0, room_width, tutorial_ybox[tutorial], false)
+		draw_rectangle(tutorial_xbox[tutorial] + 1, tutorial_hbox[tutorial], room_width, room_height, false)
+		draw_rectangle(tutorial_wbox[tutorial], tutorial_ybox[tutorial] + 1, room_width, tutorial_hbox[tutorial] - 1, false)
+		draw_set_color(c_white)
+		draw_set_alpha(1)
+		draw_set_font(font_big)
+		draw_text(tutorial_xtext[tutorial], tutorial_ytext[tutorial], tutorial_text[tutorial])
+		draw_set_font(Font1)
+		if tutorial_complete or (tutorial_enter[tutorial] and keyboard_check_pressed(vk_enter)){
+			tutorial_complete = false
+			tutorial++
+			if tutorial = 4{
+				tile_width = 32
+				tile_height = 16
+				var a = edificios[0].x, b = edificios[0].y
+				xpos = (a - b) * tile_width - room_width / 2
+				ypos = (a + b) * tile_height - room_height / 2
+				min_camx = max(0, floor((xpos / tile_width + ypos / tile_height) / 2))
+				min_camy = max(0, floor((ypos / tile_height - (xpos + room_width) / tile_width) / 2))
+				max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
+				max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
+			}
+			else if tutorial = 9
+				velocidad = 2.5
+			else if tutorial = 10{
+				velocidad = 1
+				var edificio = edificio_count[8, array_length(edificio_count[8]) - 1], a = edificio.x, b = edificio.y
+				xpos = (a - b) * tile_width - room_width / 2
+				ypos = (a + b) * tile_height - room_height / 2
+				min_camx = max(0, floor((xpos / tile_width + ypos / tile_height) / 2))
+				min_camy = max(0, floor((ypos / tile_height - (xpos + room_width) / tile_width) / 2))
+				max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
+				max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
+				tutorial_set(10,,,,, room_width / 2 - 64, room_height / 2, room_width / 2 + 64, room_height / 2 + 64)
+			}
+			if tutorial = 22
+				sel_build = false
+			if tutorial = array_length(tutorial_text)
+				tutorial_bool = false
+		}
+	}
 }

@@ -336,56 +336,6 @@ var a, b
 		def_edificio_base("Mueblería", 5, 4, 3000, 720, [1, 10, 24], [25, 10, 20], 20, 40, 5, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, true, [1], [4], [25], [1], 1)
 		def_edificio_base("Fábrica Textil", 8, 6, 10000, 2400, [1, 10, 15, 24], [50, 20, 30, 50], 40, 25, 30, false,,,,,,,,, 30); def_edificio_servicio(); def_edificio_trabajo(true, 30, 20, 4,, true, [3, 20], [2, 2], [16], [1], 3, true, true)
 	#endregion
-	if true{
-		a = 37 - array_length(edificio_nombre)
-		repeat(a){
-			def_edificio_base("NULL", 2, 2, 100, 10);
-			def_edificio_servicio();
-			def_edificio_trabajo()
-		}
-	}
-	else{
-		edificio_nombre =			["Sin trabajo",	"Jubilado",	"Sin atención médica",	"Homeless",	"Granja",	"Aserradero",	"Escuela",	"Consultorio",	"Chabola",	"Cabaña",	"Parcela",	"Taberna",	"Circo",	"Muelle",	"Pescadería",	"Mina",	"Capilla",	"Hospicio",	"Albergue",	"Escuela parroquial",	"Oficina de Construcción",	"Plaza",
-		"Oficina de Transporte",	"Forja",	"Cabaret",	"Taller Texti",	"Astillero",	"Rancho",	"Taller de Destilado",	"Quesería Artesanal",	"Herrería",	"Vecindad",	"Toma",	"Delincuente",	"Comisaría",	"Mercado",	"Mueblería",	"Fábrica Textil"]
-		edificio_width =			[0,				0, 0, 0, 6, 3, 3, 1, 2, 2, 3, 1, 4, 6, 5, 3, 3, 3, 3, 3, 3, 2, 2, 3, 3, 3, 6, 5, 3, 3, 3, 3, 1, 0, 2, 3, 3, 6]
-		edificio_height =			[0,				0, 0, 0, 3, 2, 3, 3, 2, 1, 2, 2, 4, 6, 5, 4, 5, 5, 5, 5, 2, 2, 3, 4, 4, 4, 8, 5, 4, 4, 4, 3, 1, 0, 4, 3, 4, 5]
-		edificio_precio =			[0,				0, 0, 0, 400, 650, 1000, 1500, 300, 250, 500, 250, 450, 2500, 800, 1000, 1500, 1800, 1200, 1400, 700, 200, 650, 3000, 900, 3500, 6000, 500, 3000, 3000, 3200, 500, 0, 0, 800, 600, 2500, 10000]
-		edificio_construccion_tiempo=[0,			0, 0, 0, 180, 240, 640, 720, 300, 200, 360, 240, 240, 1080, 240, 480, 720, 720, 720, 720, 600, 180, 720, 1800, 600, 1480, 2880, 360, 1480, 1800, 1800, 600, 0, 0, 720, 360, 720, 1800]
-		edificio_recursos_id =		[[],			[], [], [], [1, 10], [1, 10], [1, 10], [1, 10, 24], [1, 10], [1, 10], [1, 10], [1, 10], [1, 16], [1, 10, 24], [1, 10], [1], [1, 10], [1, 10], [1, 10], [1, 10], [1, 10], [], [1, 10], [1, 10, 24], [1, 12], [1, 24], [1, 10, 24], [1, 10], [1, 24], [1, 24], [1, 10, 24], [1, 10], [], [], [1, 10], [1, 16], [1, 10], [1, 15, 24]]
-		edificio_recursos_num =		[[],			[], [], [], [10, 2], [8, 2], [30, 5], [25, 5, 5], [10, 2], [6, 1], [15, 3], [10, 1], [10, 15], [40, 10, 5], [20, 1], [20], [25, 5], [25, 5], [25, 5], [25, 5], [20, 3], [], [20, 3], [20, 15, 5], [15, 5], [40, 10], [50, 5, 5], [20, 2], [15, 10], [15, 10], [20, 10, 5], [20, 5], [], [], [10, 10], [10, 10], [20, 5], [40, 20, 20]]
-		edificio_anno =				[0,				0,			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 30]
-		edificio_mantenimiento =	[0,				0, 0, 0, 4, 5, 6, 10, 3, 2, 10, 3, 6, 2, 8, 10, 12, 15, 10, 12, 5, 2, 5, 25, 6, 20, 40, 10, 20, 10, 25, 10, 0, 0, 7, 5, 10, 40]
-		edificio_belleza =			[0,				0, 0, 0, 40, 30, 40, 50, 40, 55, 75, 30, 30, 30, 20, 25, 60, 50, 50, 50, 40, 80, 40, 25, 30, 35, 40, 40, 40, 35, 35, 40, 30, 0, 35, 35, 40, 25]
-		edificio_contaminacion =	[0,				0, 0, 0, -10, 10, 0, 0, 10, 5, 10, 0, 0, 20, 10, 30, 0, 10, 0, 0, 0, -10, 10, -30, 0, -25, 0, -10, -15, -10, -15, -10, -10, 0, 0, -10, 0, -30]
-		edificio_es_costero =		[false,			false,		false, false, false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false]
-		edificio_es_almacen =		[false,			false,		false, false, true, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false]
-		edificio_sprite =			[false,			false,		false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false]
-		edificio_sprite_id =		[spr_1x1,		spr_1x1,	spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1, spr_1x1]
-		edificio_estatal =			[true,			true, true, true, false, false, true, true, false, false, false, false, false, true, false, false, true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, true, true, true, false, false, false]
-		edificio_es_casa =			[false,			false,		false,					true,		false,		false,			false,		false,			true,		true,		true,		false,		false,		false,		false,			false,	false,		false,		true,		false,					false,						false,		false,						false,		false,		false,			false,			false,		false,					false,					false,		true,		true,	false,			false,			false,		false,			false]
-		edificio_familias_max =		[0,				0,			0,						0,			0,			0,				0,			0,				5,			2,			1,			0,			0,			0,			0,				0,		0,			0,			8,			0,						0,							0,			0,							0,			0,			0,				0,				0,			0,						0,						0,			10,			1,		0,				0,				0,			0,				0]
-		edificio_familias_calidad = [0,				0,			0,						0,			0,			0,				0,			0,				30,			40,			65,			0,			0,			0,			0,				0,		0,			0,			15,			0,						0,							0,			0,							0,			0,			0,				0,				0,			0,						0,						0,			35,			20,		0,				0,				0,			0,				0]
-		edificio_familias_renta =	[0,				0,			0,						0, 0, 0, 0, 0, 4, 6, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0]
-		edificio_es_escuela =		[false,			false,		false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-		edificio_escuela_max =		[0,				0,			0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-		edificio_es_medico =		[false,			false,		true, false, false, false, false, true, false, false, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-		edificio_es_ocio =			[false,			false,		false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false, false, false, false, true, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false]
-		edificio_es_iglesia =		[false,			false,		false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
-		edificio_clientes_max =		[0,				0,			0, 0, 0, 0, 20, 25, 0, 0, 0, 5, 16, 0, 0, 0, 20, 10, 10, 10, 0, 4, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0]
-		edificio_clientes_calidad = [0,				0,			0, 0, 0, 0, 50, 60, 0, 0, 0, 25, 20, 0, 0, 0, 50, 30, 30, 30, 0, 10, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-		edificio_clientes_tarifa =	[0,				0,			0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-		edificio_es_trabajo =		[false,			false,		false, false, true, true, true, true, false, false, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true, true, true, true, true, true, false, false, true, true, true, true, true]
-		edificio_trabajadores_max =	[0,				0,			0, 0, 10, 10, 4, 3, 0, 0, 1, 2, 8, 5, 6, 5, 4, 4, 4, 5, 8, 0, 4, 10, 6, 10, 25, 3, 6, 3, 10, 0, 0, 0, 4, 4, 6, 20]
-		edificio_trabajo_calidad =	[0,				10,			0, 0, 25, 30, 50, 65, 0, 0, 40, 40, 25, 25, 30, 25, 45, 40, 40, 45, 30, 0, 35, 30, 25, 25, 35, 30, 35, 40, 30, 0, 0, 10, 30, 35, 35, 30]
-		edificio_trabajo_sueldo =	[0,				2,			0, 0, 4, 5, 8, 11, 0, 0, 4, 5, 3, 7, 6, 5, 6, 6, 5, 6, 6, 0, 5, 4, 5, 4, 5, 5, 5, 6, 4, 0, 0, 1, 5, 4, 4, 4]
-		edificio_trabajo_educacion =[0,				0,			0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 1, 0, 0, 1, 2, 1, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
-		edificio_es_industria =		[false,			false,		false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, false, true, true, false, true, true, true, false, false, false, false, false, true, false]
-		edificio_industria_input_id=[[],			[],			[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [9, 10], [], [3, 7, 20], [1, 7, 12, 16], [], [5], [19], [1, 15], [], [], [], [], [], [1], [9, 3, 20]]
-		edificio_industria_input_num=[[],			[],			[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [2, 3], [], [3, 3, 3], [4, 1, 1, 1], [], [3], [1], [1, 1], [], [], [], [], [], [4], [1, 2, 2]]
-		edificio_industria_output_id=[[],			[],			[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [15], [], [16], [17], [], [22], [23], [24], [], [], [], [], [], [25], [16]]
-		edificio_industria_output_num=[[],			[],			[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [2], [], [1], [0.1], [], [1], [1], [3], [], [], [], [], [], [1], [1]]
-		edificio_industria_velocidad=[0,			0,			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0.2, 0, 2, 3, 0.5, 0, 0, 0, 0, 0, 1, 4]
-	}
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
 	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27], [6, 7, 11, 12, 16, 21, 24, 34, 35], [13, 20, 22], [23, 25, 26, 28, 29, 30, 36, 37]]
 	edificio_color = []
@@ -723,9 +673,65 @@ var a, b
 	menu = false
 	menu_principal = true
 	draw_set_halign(fa_center)
-	tutorial = 0
-	tutorial_max = 12
+	tutorial_bool = false
 	tutorial_complete = false
+	tutorial = 0
+	tutorial_enter = [true, true, true, true, false, true, true, false, false, false, false, true, false, false, false, false, true, false, false, true, false, true, true]
+	tutorial_camara = [false, false, true, true, false, false, false, false, true, true, false, false, true, true, true, true, true, true, true, false, false, false, false]
+	tutorial_xbox =  [0, 0, 0, 0, 0, 100, 100, 100, 0, 0, 0, room_width - 300, 0, 0, 0, 0, 0, 0, 0, 100, 100, 100, 0]
+	tutorial_ybox = [0, 0, 0, 0, 0, 80, room_height - 100, 100, 0, 0, 0, 0, 80, 80, 80, 80, 80, 80, 80, 100, room_height - 100, 100, 110]
+	tutorial_wbox = [0, 0, 0, 0, room_width, room_width - 100, room_width - 100, 240, room_width, room_width, 0, room_width, room_width, room_width, room_width, room_width, room_width, room_width, room_width, 350, room_width - 100, room_width - 100, room_width]
+	tutorial_hbox = [0, 0, 0, 0, room_height, 100, room_height - 80, 120, room_height, room_height, 0, room_height, room_height, room_height, room_height, room_height, room_height, room_height, room_height, room_height - 100, room_height - 80, room_height - 100, room_height]
+	tutorial_xtext = [room_width / 2, 0, room_width / 2, room_width / 2, room_width / 2, room_width / 2, room_width / 2, room_width / 2, room_width / 2, room_width / 2, room_width / 2, room_width / 4, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200]
+	tutorial_ytext = [200, 0, 400, 400, 400, 200, 500, 400, 400, 400, 400, 400, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+	tutorial_text = [	"Bienvenido a tu propio paraíso tropical\n Aquí aprederás lo básico para manejar tu país",
+						"Primero lo importante, aquí verás la fecha, la población y tu dinero disponible",
+						"Mueve la cámara arrastrando el mouse cerca del borde",
+						"Haz zoom con [Control] + [la rueda del mouse]",
+						"Abramos el menú de construcciones y ministros\nHaz [clic derecho]",
+						"Aquí encontrarás los edificios disponibles\nordenados por categorias",
+						"Aquí están tus ministros, donde puedes\nconsultar información sobre la isla",
+						"Vamos a construir una Chabola",
+						"Selecciona algún lugar disponible",
+						"Ahora espera a que se construya\nMientras tanto, estos son los controles del tiempo\nAdemás puedes adelantar días manteniendo [Espacio]",
+						//10
+						"Listo! Ahora selecciona la Chabola con [clic izquierdo]\npara ver su información detallada",
+						"Aquí se encuentra la información del edificio\n  Las familias que vivne aquí\n  Los trabajadores que trabajan aquí\n  Los recursos que tiene almacenado\n  Y mucho más",
+						"Ahora construye una granja\nLa granja la encontrarás en el panel de Materias primas",
+						"Las granjas necesitan un suelo adecuando para funcionar\nBusca un lugar donde su eficiciencia sea alta (verde) para construirla\nPuedes rotar el edificio con [R] si lo deseas",
+						"Bien hecho, los ciudadanos necesitarán comida y podrán producirla en la granja\nAhora construye un aserradero para empezar a exportar recursos",
+						"Los aserraderos necesitan árboles cerca para ser construidos\nMientras más árboles tenga, más madera podrá extraer",
+						"Bien hecho, el aserradero extraerá madera cuando tenga trabajadores\n2 veces al año esta madera se exportará en el muelle",
+						"Ahora, otra cosa importante para tu isla es satisfacer las demandas de la población\nConstruye una escuela para mejorar la felicidad de la gente\nLa escuela está en el panel de Servicios",
+						"Bien.  Los ciudadanos tienes ciertas necesidades que hay que cumplir\nLo más importante es alimentación y salud, no quieres que mueran tus votantes\nRevísalas en el Ministerio de Población [clic derecho]",
+						"Aquí puedes revisar el flujo de población, edades y felicidades\nSi haces [clic izquierdo] en Felicidad podrás ver el detalle\nSi los ciudadanos son muy infelices, podrá emigrar y protestar",
+						//20
+						"Otro ministerio importante es el de economía",
+						"Aquí podrás ver cómo gana dinero la isla y en qué se va\nAdemás podrás controlar las importaciones y exportaciones",
+						"Felicidades, eso es todo por ahora\nHay montones más de cosas y detalles en tu isla, pero tendrás que descubrirlas tú\n¡Larga vida al presidente!"]
+	tutorial_keys = [[], [], [], [vk_lcontrol], [], [vk_escape], [vk_escape], [vk_escape], [vk_lcontrol], [vk_space], [], [], [], [vk_space, vk_lcontrol], [], [vk_space, vk_lcontrol], [], [vk_space, vk_lcontrol], [], [], [], [vk_lcontrol], []]
+	tutorial_mouse = [[], [], [], [], [mb_right], [], [], [mb_left], [mb_left], [mb_left], [mb_left], [], [mb_left, mb_right], [mb_left, mb_right], [mb_left, mb_right], [mb_left, mb_right], [], [mb_left, mb_right], [mb_left, mb_right], [mb_left, mb_right], [mb_left, mb_right], [mb_left, mb_right], []]
+	var cursed_keys = [vk_space, vk_lcontrol]
+	var cursed_mouse = [mb_left, mb_right]
+	for(a = 0; a < array_length(tutorial_text); a++){
+		for(b = 0; b < array_length(cursed_mouse); b++){
+			if array_contains(tutorial_mouse[a], cursed_mouse[b])
+				array_remove(tutorial_mouse[a], cursed_mouse[b])
+			else
+				array_push(tutorial_mouse[a], cursed_mouse[b])
+		}
+		for(b = 0; b < array_length(cursed_keys); b++){
+			if array_contains(tutorial_keys[a], cursed_keys[b])
+				array_remove(tutorial_keys[a], cursed_keys[b])
+			else
+				array_push(tutorial_keys[a], cursed_keys[b])
+		}
+		if tutorial_enter[a]
+			if a = array_length(tutorial_text) - 1
+				tutorial_text[a] += "\n[Enter] para terminar"
+			else
+				tutorial_text[a] += "\n[Enter] para continuar"
+	}
 	step = 0
 	velocidad = 1
 	rotado = false
