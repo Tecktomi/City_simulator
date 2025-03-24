@@ -141,6 +141,7 @@ var a, b
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23]
 	recurso_lujo = [4, 22, 25]
+	recurso_lujo_prbabilidad = [1, 1, 0.1]
 	recurso_mineral = [9, 10, 11, 12, 13, 14]
 	recurso_mineral_color = [c_black, c_gray, c_yellow, c_orange, c_ltgray, c_dkgray]
 	recurso_mineral_rareza = [0.8, 0.85, 0.95, 0.75, 0.85, 0.9]
@@ -201,7 +202,8 @@ var a, b
 		"Vende comida y bienes de lujo",
 		"Utiliza madera para producir muebles",
 		"Fábrica a vapor que requiere combustible y lana o algodón para producir tela a una gran velocidad.",
-		"Aquí mismo se extrae la arcilla y se cosen ladrillos"]
+		"Aquí mismo se extrae la arcilla y se cosen ladrillos",
+		"Produce grandes cantidades de ladrillos utilizando hornos a vapor"]
 	#region arreglos vacíos
 		edificio_nombre = []
 		edificio_width = []
@@ -337,9 +339,10 @@ var a, b
 		def_edificio_base("Mueblería", 5, 4, 2500, 720, [1, 10, 24, 26], [25, 10, 20, 40], 20, 40, 5, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, true, [1], [4], [25], [1], 1)
 		def_edificio_base("Fábrica Textil", 8, 6, 9000, 2400, [1, 10, 15, 24, 26], [50, 20, 30, 50, 60], 40, 25, 30, false,,,,,,,,, 30); def_edificio_servicio(); def_edificio_trabajo(true, 30, 20, 4,, true, [3, 20], [2, 2], [16], [1], 3, true, true)
 		def_edificio_base("Tejar", 5, 4, 1500, 360, [1, 10, 26], [20, 10, 30], 7, 40, -5, false); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 5)
+		def_edificio_base("Fábrica de Ladrillos", 8, 6, 8000, 1800, [1, 10, 24, 26], [40, 20, 20, 80], 25, 30, -20, false,,,,,,,,, 50); def_edificio_servicio(); def_edificio_trabajo(true, 20, 25, 4,, true,,, [26], [1], 4,, true)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
-	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27, 38], [6, 7, 11, 12, 16, 21, 24, 34, 35], [13, 20, 22], [23, 25, 26, 28, 29, 30, 36, 37]]
+	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27, 38], [6, 7, 11, 12, 16, 21, 24, 34, 35], [13, 20, 22], [23, 25, 26, 28, 29, 30, 36, 37, 39]]
 	edificio_color = []
 	for(a = 0; a < array_length(edificio_nombre); a++){
 		var flag = false

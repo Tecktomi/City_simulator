@@ -1677,7 +1677,7 @@ else{
 					else if edificio_nombre[tipo] = "Tejar"{
 						var e = 0
 						for(var a = c; a < c + width; a++)
-							for(var b = d; b < d + height; b++)
+							for(b = d; b < d + height; b++)
 								e += (altura[# a, b] > 0.6)
 						edificio.eficiencia = e / width / height
 					}
@@ -1840,7 +1840,7 @@ else{
 			}
 			//Eventos anuales
 			if (dia mod 365) = 0{
-				felicidad_minima = floor(17 + floor(dia / 365))
+				felicidad_minima = floor(10 + 50 * (1 + dia / 365) / (100 + dia / 365))
 				//Credibilidad financiera
 				credibilidad_financiera = clamp(credibilidad_financiera + sign((dinero_privado + inversion_privada) - prev_beneficio_privado), 1, 10)
 				prev_beneficio_privado = dinero_privado + inversion_privada
@@ -2051,7 +2051,7 @@ else{
 						//Comprar productos de lujo
 						for(var b = 0; b < array_length(recurso_lujo); b++){
 							var c = recurso_lujo[b], temp_precio = recurso_precio[c]
-							if persona.familia.sueldo > 0 and persona.familia.riqueza > temp_precio and array_length(edificio_count[35]) > 0{
+							if persona.familia.sueldo > 0 and persona.familia.riqueza > temp_precio and random(1) < recurso_lujo_prbabilidad[b] and array_length(edificio_count[35]) > 0{
 								var tienda = edificio_count[35, irandom(array_length(edificio_count[35]) - 1)]
 								if tienda.almacen[c] >= 1{
 									tienda.almacen[c]--
@@ -2906,11 +2906,12 @@ else{
 					}
 				}
 				//Edificios de ocio y religiosos
-				if edificio_es_ocio[index] or edificio_es_iglesia[index]
+				if edificio_es_ocio[index] or edificio_es_iglesia[index]{
 					if edificio.trabajadores_max = 0
 						edificio.count = 0
 					else
 						edificio.count = max(0, floor(edificio.count * (1 - edificio.trabajo_mes / 28 / edificio.trabajadores_max)))
+				}
 				edificio.trabajo_mes = 28 * array_length(edificio.trabajadores)
 			}
 			#region Bancarrota
