@@ -136,7 +136,7 @@ var a, b
 //Recursos
 #region recursos
 	recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos"]
-	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 7, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 10, 0.6]
+	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6]
 	recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23]
@@ -323,23 +323,23 @@ var a, b
 		def_edificio_base("Oficina de Construcción", 3, 2, 1000, 600, [1, 10, 24, 26], [10, 5, 10, 20], 8, 35); def_edificio_servicio(); def_edificio_trabajo(true, 6, 35, 5, 1)
 		def_edificio_base("Plaza", 2, 2, 200, 180, [1, 26], [5, 15], 4, 70, -15); def_edificio_servicio(, true,,,, 5, 10); def_edificio_trabajo()
 		def_edificio_base("Oficina de Transporte", 3, 2, 800, 600, [1, 10, 26], [10, 5, 20], 6, 35); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 4)
-		def_edificio_base("Forja", 5, 4, 2500, 1080, [1, 15, 24, 26], [30, 20, 20, 40], 25, 25, 20, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 30, 6,, true, [9, 10], [2, 3], [15], [1], 1)
+		def_edificio_base("Forja", 5, 4, 2500, 1080, [1, 15, 24, 26], [30, 20, 20, 40], 25, 25, 20, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 30, 6,, true, [9, 10], [2, 3], [15], [2], 1)
 		def_edificio_base("Cabaret", 4, 3, 700, 450, [1, 10, 26], [20, 5, 20], 6, 30,, false); def_edificio_servicio(, true,,,, 6, 40, 3); def_edificio_trabajo(true, 4, 35, 6)
 		def_edificio_base("Taller Textil", 5, 4, 3000, 900, [1, 10, 24, 26], [30, 10, 20, 40], 20, 30, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 25, 5,, true, [3, 7, 20], [3, 2, 3], [16], [1], 2, true)
 		def_edificio_base("Astillero", 9, 6, 6200, 1800, [1, 10, 15, 24, 26], [50, 30, 10, 20, 40], 40, 40, 10, false, true); def_edificio_servicio(); def_edificio_trabajo(true, 30, 35, 4,, true, [1, 7, 12, 16], [5, 1, 1, 1], [17], [0.1], 0.3)
 		def_edificio_base("Rancho", 8, 8, 500, 300, [1], [30], 5, 45, -10, false,,true); def_edificio_servicio(); def_edificio_trabajo(true, 4, 40, 4)
 		def_edificio_base("Taller de Destilado", 5, 4, 3500, 900, [1, 10, 24, 26], [25, 10, 25, 40], 20, 40, 5, false); def_edificio_servicio(); def_edificio_trabajo(true, 12, 40, 5,, true, [5], [3], [22], [1], 1)
-		def_edificio_base("Quesería Artesanal", 5, 4, 2500, 720, [1, 10, 24, 26], [25, 10, 25, 40], 15, 40, 5, false,, true); def_edificio_servicio(); def_edificio_trabajo(true, 8, 40, 5,, true, [19], [2], [23], [1], 0.5)
-		def_edificio_base("Herrería", 5, 4, 3500, 1080, [1, 10, 15, 24, 26], [25, 10, 20, 20, 40], 20, 30, 15, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, true, [1, 15], [2, 1], [24], [1], 0.5)
+		def_edificio_base("Quesería Artesanal", 5, 4, 2500, 720, [1, 10, 24, 26], [25, 10, 25, 40], 15, 40, 5, false,, true); def_edificio_servicio(); def_edificio_trabajo(true, 8, 40, 5,, true, [19], [3], [23], [3], 0.5)
+		def_edificio_base("Herrería", 5, 4, 3500, 1080, [1, 10, 15, 24, 26], [25, 10, 20, 20, 40], 20, 30, 15, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, true, [1, 15], [2, 1], [24], [2], 0.5)
 		def_edificio_base("Vecindad", 3, 3, 1000, 720, [1, 15, 25, 26], [10, 10, 10, 30], 4,, 15, false,,,,,true, 8, 40, 5, 20); def_edificio_servicio(); def_edificio_trabajo()
 		def_edificio_base("Toma", 1, 1,,,,,, 20, 5,,,,true ,, true, 1, 15); def_edificio_servicio(); def_edificio_trabajo()
 		def_edificio_base("Delincuente"); def_edificio_servicio(); def_edificio_trabajo(,,10)
 		def_edificio_base("Comisaría", 4, 2, 900, 720, [1, 10, 15, 26], [20, 5, 20, 25], 12, 40); def_edificio_servicio(,,,,, 4); def_edificio_trabajo(true, 4, 40, 7)
 		def_edificio_base("Mercado", 4, 4, 600, 360, [1, 10, 16, 26], [20, 5, 20, 20], 10, 40, 10); def_edificio_servicio(); def_edificio_trabajo(true, 15, 35, 4)
 		def_edificio_base("Mueblería", 5, 4, 2500, 720, [1, 10, 24, 26], [25, 10, 20, 40], 20, 40, 5, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, true, [1], [4], [25], [1], 1)
-		def_edificio_base("Fábrica Textil", 8, 6, 9000, 2400, [1, 10, 15, 24, 26], [50, 20, 30, 50, 60], 40, 25, 30, false,,,,,,,,, 30); def_edificio_servicio(); def_edificio_trabajo(true, 30, 20, 4,, true, [3, 20], [2, 2], [16], [1], 3, true, true)
+		def_edificio_base("Fábrica Textil", 8, 6, 9000, 2400, [1, 10, 15, 24, 26], [50, 20, 30, 50, 60], 60, 25, 30, false,,,,,,,,, 30); def_edificio_servicio(); def_edificio_trabajo(true, 30, 20, 4,, true, [3, 20], [3, 3], [16], [1], 3, true, true)
 		def_edificio_base("Tejar", 5, 4, 1500, 360, [1, 10, 26], [20, 10, 30], 7, 40, -5, false); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 5)
-		def_edificio_base("Fábrica de Ladrillos", 8, 6, 8000, 1800, [1, 10, 24, 26], [40, 20, 20, 80], 25, 30, -20, false,,,,,,,,, 50); def_edificio_servicio(); def_edificio_trabajo(true, 20, 25, 4,, true,,, [26], [1], 4,, true)
+		def_edificio_base("Fábrica de Ladrillos", 8, 6, 8000, 1800, [1, 10, 24, 26], [40, 20, 20, 80], 25, 30, -20, false,,,,,,,,, 50); def_edificio_servicio(); def_edificio_trabajo(true, 15, 25, 4,, true,,, [26], [3], 4,, true)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
 	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27, 38], [6, 7, 11, 12, 16, 21, 24, 34, 35], [13, 20, 22], [23, 25, 26, 28, 29, 30, 36, 37, 39]]
@@ -358,6 +358,26 @@ var a, b
 		}
 		if not flag
 			array_push(edificio_color, 0)
+		//Evaluación capital industria
+		if false and edificio_es_industria[a]{
+			var text = $"{edificio_nombre[a]}: ";
+			b = 0
+			if edificio_industria_optativo[a]{
+				b = 999999
+				for(var c = 0; c < array_length(edificio_industria_input_id[a]); c++)
+					b = min(b, recurso_precio[edificio_industria_input_id[a, c]] * edificio_industria_input_num[a, c])
+			}
+			else
+				for(var c = 0; c < array_length(edificio_industria_input_id[a]); c++)
+					b += recurso_precio[edificio_industria_input_id[a, c]] * edificio_industria_input_num[a, c]
+			var d = 0
+			for(var c = 0; c < array_length(edificio_industria_output_id[a]); c++)
+				d += recurso_precio[edificio_industria_output_id[a, c]] * edificio_industria_output_num[a, c]
+			var c = edificio_trabajadores_max[a] * edificio_industria_velocidad[a]
+			text += $"Costos: input: ${c * b}, mant: ${edificio_mantenimiento[a]}, mano de obra: ${edificio_trabajadores_max[a] * edificio_trabajo_sueldo[a]} (${c * b + edificio_mantenimiento[a] + edificio_trabajo_sueldo[a] * edificio_trabajadores_max[a]})"
+			text += $"Ganancia: ${c * d}"
+			show_debug_message(text)
+		}
 	}
 	array_set(edificio_color, 17, 88)
 	array_set(edificio_color, 18, 88)
