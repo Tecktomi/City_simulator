@@ -135,8 +135,8 @@ var a, b
 #endregion
 //Recursos
 #region recursos
-	recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos"]
-	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6]
+	recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo"]
+	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 8]
 	recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23]
@@ -203,7 +203,8 @@ var a, b
 		"Utiliza madera para producir muebles",
 		"Fábrica a vapor que requiere combustible y lana o algodón para producir tela a una gran velocidad.",
 		"Aquí mismo se extrae la arcilla y se cosen ladrillos",
-		"Produce grandes cantidades de ladrillos utilizando hornos a vapor"]
+		"Produce grandes cantidades de ladrillos utilizando hornos a vapor",
+		"Perforadora de petróleo"]
 	#region arreglos vacíos
 		edificio_nombre = []
 		edificio_width = []
@@ -340,9 +341,10 @@ var a, b
 		def_edificio_base("Fábrica Textil", 8, 6, 9000, 2400, [1, 10, 15, 24, 26], [50, 20, 30, 50, 60], 60, 25, 30, false,,,,,,,,, 30); def_edificio_servicio(); def_edificio_trabajo(true, 30, 20, 4,, true, [3, 20], [3, 3], [16], [1], 3, true, true)
 		def_edificio_base("Tejar", 5, 4, 1500, 360, [1, 10, 26], [20, 10, 30], 7, 40, -5, false); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 5)
 		def_edificio_base("Fábrica de Ladrillos", 8, 6, 8000, 1800, [1, 10, 24, 26], [40, 20, 20, 80], 25, 30, -20, false,,,,,,,,, 50); def_edificio_servicio(); def_edificio_trabajo(true, 15, 25, 4,, true,,, [26], [3], 4,, true)
+		def_edificio_base("Perforadora de Petróleo", 4, 4, 3000, 730, [10, 15, 26], [30, 30, 30], 20, 20, -20, false,,,,,,,,, 60); def_edificio_servicio(); def_edificio_trabajo(true, 4, 30, 5, 1)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
-	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27, 38], [6, 7, 11, 12, 16, 21, 24, 34, 35], [13, 20, 22], [23, 25, 26, 28, 29, 30, 36, 37, 39]]
+	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35], [13, 20, 22], [23, 25, 26, 28, 29, 30, 36, 37, 39]]
 	edificio_color = []
 	for(a = 0; a < array_length(edificio_nombre); a++){
 		var flag = false
@@ -375,7 +377,7 @@ var a, b
 				d += recurso_precio[edificio_industria_output_id[a, c]] * edificio_industria_output_num[a, c]
 			var c = edificio_trabajadores_max[a] * edificio_industria_velocidad[a]
 			text += $"Costos: input: ${c * b}, mant: ${edificio_mantenimiento[a]}, mano de obra: ${edificio_trabajadores_max[a] * edificio_trabajo_sueldo[a]} (${c * b + edificio_mantenimiento[a] + edificio_trabajo_sueldo[a] * edificio_trabajadores_max[a]})"
-			text += $"Ganancia: ${c * d}"
+			text += $" -> Ganancia: ${c * d}"
 			show_debug_message(text)
 		}
 	}
@@ -522,7 +524,7 @@ var a, b
 	}
 	array_pop(null_exigencia.edificios)
 	null_edificio.exigencia = null_exigencia
-	felicidad_minima = 17
+	felicidad_minima = 10
 #endregion
 #region edificios ficticios
 	edificios_ocio_index = []
@@ -557,7 +559,7 @@ var a, b
 	var mineral_grid
 	for(a = 0; a < array_length(recurso_mineral); a++)
 		mineral_grid[a] = perlin(xsize, ysize, 1, false, 6)
-	var grid = perlin(xsize, ysize, 1, false)
+	var grid = perlin(xsize, ysize, 1, false), grid_petroleo = perlin(xsize, ysize, 1, false)
 	altura = perlin(xsize, ysize, 1, false)
 	for(a = 0; a < xsize / 2; a += 3)
 		ds_grid_add_disk(altura, floor(xsize / 2), floor(ysize / 2), a, 0.05)
@@ -603,6 +605,7 @@ var a, b
 			}
 			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 			contaminacion[a, b] = 0
+			petroleo[a, b] = floor(max(0, 10000 * (grid_petroleo[# a, b] - 0.8)))
 			zona_privada[a, b] = false
 			zona_empresa[a, b]= null_empresa
 			mar_checked[a, b] = false

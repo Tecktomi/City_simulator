@@ -101,6 +101,8 @@ else{
 			draw_gradiente(0, 2)
 		if keyboard_check(ord("C"))
 			draw_gradiente(0, 3)
+		if keyboard_check(ord("P")) or (build_sel and edificio_nombre[build_index] =  "Perforadora de Petróleo")
+			draw_gradiente(0, 6)
 	#endregion
 	//Dibujo de arboles y edificios
 	for(var a = min_camx; a < max_camx; a++)
@@ -394,6 +396,7 @@ else{
 				}
 				//Felicidad
 				if draw_menu(120, pos, $"Felicidad: {floor(felicidad_total)}", 3, , true){
+					draw_text_pos(130, pos, $"Mínimo esperado: {felicidad_minima}")
 					var fel_tra = 0, fel_edu = 0, fel_viv = 0, fel_sal = 0, num_tra = 0, num_edu = 0, fel_oci = 0, fel_ali = 0, c = 0, fel_tran = 0, num_tran = 0, fel_rel = 0, num_rel = 0, fel_ley = 0, fel_cri = 0, len = array_length(personas)
 					b = 0
 					for(var a = 0; a < array_length(personas); a++){
@@ -1076,6 +1079,17 @@ else{
 			c /= width * height
 			text += $"Eficiencia: {100 * c}%\n"
 		}
+		//Perforadora de Petróleo
+		else if edificio_nombre[build_index] = "Perforadora de Petróleo"{
+			var c = 0, d = mx + width, e = my + height
+			for(var a = mx; a < d; a++)
+				for(var b = my; b < e; b++)
+					c += petroleo[a, b]
+			if c = 0
+				flag = false
+			else
+				text += $"Depósito: {c}\n"
+		}
 		draw_set_color(c_red)
 		draw_set_alpha(0.5)
 		var c = min(xsize - 1, mx + width + 5), d = min(ysize - 1, my + height + 5)
@@ -1400,6 +1414,16 @@ else{
 					if var_edificio_nombre = "Aserradero"{
 						if draw_boton(room_width - 20, pos, $"{(sel_edificio.modo = 0) ? "Despejar bosque" : "Reforestación"}")
 							sel_edificio.modo = 1 - sel_edificio.modo
+					}
+					if var_edificio_nombre = "Perforadora de Petróleo"{
+						var c = 0; d = x + width; e = y + height
+						for(var a = x; a < d; a++)
+							for(var b = y; b < e; b++)
+								c += petroleo[a, b]
+						if c > 0
+							draw_text_pos(room_width - 20, pos, $"Depósito: {c}")
+						else
+							draw_text_pos(room_width - 20, pos, "Depósito vacío")
 					}
 				}
 				//Información escuelas / consultas
@@ -2720,6 +2744,50 @@ else{
 								edificio.ganancia += recurso_precio[26] * edificio.almacen[26]
 								add_encargo(26, edificio.almacen[26], edificio)
 								edificio.almacen[26] = 0
+							}
+						}
+						//Perforadora de Petróleo
+						else if var_edificio_nombre = "Perforadora de Petróleo"{
+							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto))
+							var e = b, f = edificio.x + width, g = edificio.y + height
+							for(var c = edificio.x; c < f; c++){
+								for(var d = edificio.x; d < g; d++)
+									if petroleo[c, d] > 0{
+										if petroleo[c, d] > b{
+											array_set(petroleo[c], d, petroleo[c, d] - b)
+											b = 0
+										}
+										else{
+											b -= petroleo[c, d]
+											array_set(petroleo[c], d, 0)
+										}
+										if b = 0
+											break
+									}
+								if b = 0
+									break
+							}
+							edificio.almacen[27] += e - b
+							if e > 0 and b > 0{
+								edificio.ganancia += recurso_precio[27] * edificio.almacen[27]
+								add_encargo(27, edificio.almacen[27], edificio)
+								edificio.almacen[27] = 0
+								set_paro(true, edificio)
+								while array_length(edificio.trabajadores) > 0{
+									var persona = edificio.trabajadores[0]
+									cambiar_trabajo(persona, null_edificio)
+									buscar_trabajo(persona)
+								}
+								if edificio.privado{
+									destroy_edificio(edificio)
+									a--
+									continue
+								}
+							}
+							if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[27] > 0{
+								edificio.ganancia += recurso_precio[27] * edificio.almacen[27]
+								add_encargo(27, edificio.almacen[27], edificio)
+								edificio.almacen[27] = 0
 							}
 						}
 					}

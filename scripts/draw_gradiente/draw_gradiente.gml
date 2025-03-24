@@ -81,5 +81,18 @@ function draw_gradiente(tipo, modo){
 				}
 			}
 		}
+		if modo = 6{
+			draw_set_color(c_white)
+			draw_text(0, 0, "Depósitos de Petróleo")
+			draw_set_color(c_black)
+			for(var a = min_camx; a < max_camx; a++)
+				for(var b = min_camy; b < max_camy; b++)
+					if petroleo[a, b] > 0
+						draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height / 2, false)
+			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
+			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
+			if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height
+				draw_text(0, 20, petroleo[mx, my])
+		}
 	}
 }
