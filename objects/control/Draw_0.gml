@@ -7,6 +7,12 @@ if menu_principal{
 		draw_set_halign(fa_left)
 		menu_principal = false
 	}
+	pos += 10
+	if draw_boton(room_width / 2, pos, $"Fecha inicial: {1800  + floor(dia / 365)}", true,,,,false)
+		if keyboard_check(vk_lshift)
+			dia = max(0, dia - 365)
+		else
+			dia = min(dia + 365, 73000)
 	pos += 20
 	if draw_boton(room_width / 2, pos, "Tutorial", true){
 		draw_set_font(Font1)
@@ -1061,6 +1067,15 @@ else{
 				}
 			}
 		}
+		//Tejar
+		else if edificio_nombre[build_index] = "Tejar"{
+			var c = 0
+			for(var a = mx; a < mx + width; a++)
+				for(var b = my; b < my + height; b++)
+					c += (altura[# a, b] > 0.6)
+			c /= width * height
+			text += $"Eficiencia: {100 * c}%\n"
+		}
 		draw_set_color(c_red)
 		draw_set_alpha(0.5)
 		var c = min(xsize - 1, mx + width + 5), d = min(ysize - 1, my + height + 5)
@@ -1659,6 +1674,13 @@ else{
 					}
 					else if in(edificio_nombre[tipo], "Mina", "Rancho")
 						edificio.modo = next_build.tipo
+					else if edificio_nombre[tipo] = "Tejar"{
+						var e = 0
+						for(var a = c; a < c + width; a++)
+							for(var b = d; b < d + height; b++)
+								e += (altura[# a, b] > 0.6)
+						edificio.eficiencia = e / width / height
+					}
 					//Despedir a todos los trabajadores si la ley de trabajo temporal está habilitada
 					if array_length(cola_construccion) = 0 and ley_eneabled[6]
 						for(var a = 0; a < array_length(edificio_count[20]); a++){
@@ -2688,6 +2710,16 @@ else{
 									add_encargo(b, c, edificio)
 									edificio.pedido[b] = 100 - edificio.almacen[b]
 								}
+							}
+						}
+						//Tejar
+						else if var_edificio_nombre = "Tejar"{
+							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia)
+							edificio.almacen[26] += b
+							if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[26] > 0{
+								edificio.ganancia += recurso_precio[26] * edificio.almacen[26]
+								add_encargo(26, edificio.almacen[26], edificio)
+								edificio.almacen[26] = 0
 							}
 						}
 					}

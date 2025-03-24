@@ -1,4 +1,4 @@
-function draw_boton(x, y, text, borde = false, able = true, display = undefined, display_arguments = undefined){
+function draw_boton(x, y, text, borde = false, able = true, display = undefined, display_arguments = undefined, pressed = true){
 	with control{
 		var c = draw_get_color(), d = draw_get_halign(), e = (d = fa_left ? 1 : (d = fa_center ? 0.5 : 0))
 		var f = draw_get_valign(), g = (f = fa_top ? 1 : (f = fa_middle ? 0.5 : 0)), width = string_width(text), height = string_height(text)
@@ -17,8 +17,9 @@ function draw_boton(x, y, text, borde = false, able = true, display = undefined,
 				window_set_cursor(cr_handpoint)
 				if display != undefined
 					display(display_arguments)
-				if mouse_check_button_pressed(mb_left){
-					mouse_clear(mb_left)
+				if mouse_check_button_pressed(mb_left) or (not pressed and mouse_check_button(mb_left)){
+					if pressed
+						mouse_clear(mb_left)
 					return true
 				}
 			}
