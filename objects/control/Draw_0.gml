@@ -690,6 +690,10 @@ else{
 						temp_importaciones[b] += mes_importaciones_recurso[a, b]
 					}
 				}
+				for(var a = 0; a < 13; a++){
+					count[b] = round(count[b])
+					maxi[b] = round(maxi[b])
+				}
 				#region Ingresos
 				if draw_menu(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12]}", 0){
 					draw_text_pos(120, pos, $"{temp_text_array[0]}: ${count[0]}")
@@ -986,6 +990,13 @@ else{
 							for(b = 0; b < array_length(edificio_count[20]); b++)
 								set_paro(false, edificio_count[20, b])
 					}
+				if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
+					credibilidad_financiera += floor(sueldo_minimo / 2)
+					sueldo_minimo = (sueldo_minimo + 1) mod 6
+					credibilidad_financiera = clamp(credibilidad_financiera - floor(sueldo_minimo / 2), 1, 10)
+					for(var a = 0; a < array_length(edificios); a++)
+						edificios[a].trabajo_sueldo = max(sueldo_minimo, edificio_trabajo_sueldo[edificios[a].tipo] + edificios[a].presupuesto - 2)
+				}
 			}
 		}
 	}
@@ -1416,7 +1427,7 @@ else{
 							sel_edificio.modo = 1 - sel_edificio.modo
 					}
 					if var_edificio_nombre = "Perforadora de Petróleo"{
-						var c = 0; d = x + width; e = y + height
+						var c = 0, d = x + width, e = y + height
 						for(var a = x; a < d; a++)
 							for(var b = y; b < e; b++)
 								c += petroleo[a, b]

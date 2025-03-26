@@ -28,7 +28,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			vivienda_calidad : edificio_familias_calidad[tipo],
 			trabajadores_max : edificio_trabajadores_max[tipo], 
 			trabajo_calidad : edificio_trabajo_calidad[tipo],
-			trabajo_sueldo : edificio_trabajo_sueldo[tipo],
+			trabajo_sueldo : max(control.sueldo_minimo, edificio_trabajo_sueldo[tipo]),
 			mantenimiento : edificio_mantenimiento[tipo],
 			presupuesto : 2,
 			mes_creacion : current_mes,

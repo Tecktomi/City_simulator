@@ -132,6 +132,7 @@ var a, b
 	familias = [null_familia]
 	array_pop(familias)
 	null_persona.familia = null_familia
+	sueldo_minimo = 0
 #endregion
 //Recursos
 #region recursos
