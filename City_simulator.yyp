@@ -23,6 +23,7 @@
     {"id":{"name":"Font1","path":"fonts/Font1/Font1.yy",},},
     {"id":{"name":"control","path":"objects/control/control.yy",},},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},},
+    {"id":{"name":"acelerar_edificio","path":"scripts/acelerar_edificio/acelerar_edificio.yy",},},
     {"id":{"name":"add_edificio","path":"scripts/add_edificio/add_edificio.yy",},},
     {"id":{"name":"add_empresa","path":"scripts/add_empresa/add_empresa.yy",},},
     {"id":{"name":"add_encargo","path":"scripts/add_encargo/add_encargo.yy",},},

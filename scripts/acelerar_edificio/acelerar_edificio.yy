@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"acelerar_edificio",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"acelerar_edificio",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

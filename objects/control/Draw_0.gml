@@ -533,27 +533,11 @@ else{
 				if draw_menu(110, pos, $"{array_length(cola_construccion)} edificios en construcción", 0)
 					for(var a = 0; a < array_length(cola_construccion); a++){
 						var next_build = cola_construccion[a]
-						if draw_boton(120, pos, $"{edificio_nombre[next_build.id]} (${edificio_precio[next_build.id]})") and dinero >= edificio_precio[next_build.id]{
-							array_delete(cola_construccion, a, 1)
-							var edificio = add_edificio(next_build.x, next_build.y, next_build.id, , next_build.rotado), index = next_build.tipo, width = edificio.width, height = edificio.height
-							if edificio_nombre[build_index] = "Granja"{
-								var d = 0
-								for(b = 0; b < width; b++)
-									for(var c = 0; c < height; c++)
-										d += cultivo[build_type][# next_build.x + b, next_build.y + c]
-								edificio.eficiencia = d / width / height
-								edificio.modo = next_build.tipo
-							}
-							else if edificio_nombre[build_index] = "Mina"
-								edificio.modo = next_build.tipo
-							//Despedir a todos los trabajadores si la ley de trabajo temporal está habilitada
-							if array_length(cola_construccion) = 0 and ley_eneabled[6]
-								for(b = 0; b < array_length(edificio_count[20]); b++){
-									edificio = edificio_count[20, b]
-									set_paro(true, edificio)
-									while array_length(edificio.trabajadores) > 0
-										cambiar_trabajo(edificio.trabajadores[0], null_edificio)
-								}
+						if draw_boton(120, pos, $"{edificio_nombre[next_build.id]}"){
+							sel_build = false
+							sel_info = true
+							sel_tipo = 3
+							sel_construccion = next_build
 						}
 					}
 				draw_text_pos(110, pos, $"{num_temp} trabajadores temporales ({floor(100 * num_temp / num_tra)}%)")
@@ -1185,22 +1169,6 @@ else{
 		if mouse_check_button_pressed(mb_left){
 			mouse_clear(mb_left)
 			if flag{
-				for(var a = mx; a < mx + width; a++)
-					for(var b = my; b < my + height; b++){
-						array_set(construccion_reservada[a], b, true)
-						if zona_privada[a, b]{
-							zona_empresa[a, b].dinero += 10
-							array_set(zona_privada[a], b, false)
-							array_set(zona_empresa[a], b, null_empresa)
-						}
-						if bool_edificio[a, b] and id_edificio[a, b].tipo = 32
-							destroy_edificio(id_edificio[a, b])
-					}
-				if array_length(cola_construccion) = 0 and ley_eneabled[6]
-					for(var a = 0; a < array_length(edificio_count[20]); a++)
-						set_paro(false, edificio_count[20, a])
-				for(var a = 0; a < array_length(edificio_recursos_id[build_index]); a++)
-					recurso_construccion[edificio_recursos_id[build_index, a]] += edificio_recursos_num[build_index, a]
 				var next_build = {
 					x : mx,
 					y : my,
@@ -1212,9 +1180,25 @@ else{
 					width : width,
 					height : height
 				}
+				for(var a = mx; a < mx + width; a++)
+					for(var b = my; b < my + height; b++){
+						array_set(construccion_reservada[a], b, true)
+						if zona_privada[a, b]{
+							zona_empresa[a, b].dinero += 10
+							array_set(zona_privada[a], b, false)
+							array_set(zona_empresa[a], b, null_empresa)
+						}
+						if bool_edificio[a, b] and id_edificio[a, b].tipo = 32
+							destroy_edificio(id_edificio[a, b])
+						array_set(draw_construccion[a], b, next_build)
+					}
+				if array_length(cola_construccion) = 0 and ley_eneabled[6]
+					for(var a = 0; a < array_length(edificio_count[20]); a++)
+						set_paro(false, edificio_count[20, a])
+				for(var a = 0; a < array_length(edificio_recursos_id[build_index]); a++)
+					recurso_construccion[edificio_recursos_id[build_index, a]] += edificio_recursos_num[build_index, a]
 				array_push(cola_construccion, next_build)
 				array_set(bool_draw_construccion[mx], my, true)
-				array_set(draw_construccion[mx], my, next_build)
 				build_sel = keyboard_check(vk_lshift)
 				dinero -= temp_precio
 				mes_construccion[current_mes] += temp_precio
@@ -1233,16 +1217,23 @@ else{
 		var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
 		if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build{
 			mouse_clear(mb_left)
-			sel_info = bool_edificio[mx, my]
+			sel_info = bool_edificio[mx, my] or construccion_reservada[mx, my]
 			if sel_info{
-				sel_edificio = id_edificio[mx, my]
-				if sel_edificio != null_edificio
-					close_show()
 				sel_familia = null_familia
 				sel_persona = null_persona
-				sel_tipo = 0
-				if tutorial_bool and tutorial = 10
-					tutorial_complete = true
+				close_show()
+				if construccion_reservada[mx, my]{
+					sel_construccion = draw_construccion[mx, my]
+					sel_edificio = null_edificio
+					sel_tipo = 3
+				}
+				else{
+					sel_edificio = id_edificio[mx, my]
+					sel_construccion = null_construccion
+					sel_tipo = 0
+					if tutorial_bool and tutorial = 10
+						tutorial_complete = true
+				}
 			}
 		}
 	}
@@ -1624,6 +1615,38 @@ else{
 			draw_text_pos(room_width - 20, pos, $"Delincuencia: {sel_persona.felicidad_crimen}")
 			draw_relacion(room_width - 150, room_height - 50, sel_persona.relacion)
 		}
+		//Información construcciones
+		else if sel_tipo = 3 and sel_construccion != null_construccion{
+			x = sel_construccion.x
+			y = sel_construccion.y
+			var index = sel_construccion.id, width = sel_construccion.width, height = sel_construccion.height
+			draw_text_pos(room_width, pos, edificio_nombre[index])
+			draw_text_pos(room_width - 20, pos, $"Progreso: {floor(100 * (edificio_construccion_tiempo[index] - sel_construccion.tiempo) / edificio_construccion_tiempo[index])}%")
+			if draw_boton(room_width - 20, pos, $"Terminar edificio ${edificio_precio[index]}") and dinero >= edificio_precio[index]{
+				dinero -= edificio_precio[index]
+				sel_edificio = acelerar_edificio(sel_construccion)
+				sel_construccion = null_construccion
+				sel_tipo = 0
+			}
+			if draw_boton(room_width - 20, pos, "Cancelar construcción"){
+				for(var a = x; a < x + width; a++)
+					for(var b = y; b < y + height; b++){
+						array_set(draw_construccion[a], b, null_construccion)
+						array_set(construccion_reservada[a], b, false)
+					}
+				array_set(bool_draw_construccion[x], y, false)
+				array_remove(cola_construccion, sel_construccion)
+				if array_length(cola_construccion) = 0 and ley_eneabled[6]
+					for(var a = 0; a < array_length(edificio_count[20]); a++){
+						var edificio = edificio_count[20, a]
+						set_paro(true, edificio)
+						while array_length(edificio.trabajadores) > 0
+							cambiar_trabajo(edificio.trabajadores[0], null_edificio)
+					}
+				sel_construccion = null_construccion
+				sel_info = false
+			}
+		}
 		draw_set_halign(fa_left)
 	}
 	#region Movimiento de la cámara
@@ -1684,6 +1707,8 @@ else{
 				next_build.tiempo -= b
 				//Edificio_terminado
 				if next_build.tiempo <= 0{
+					acelerar_edificio(next_build)
+					/*
 					var tipo = next_build.id, width = next_build.width, height = next_build.height, c = next_build.x, d = next_build.y
 					array_shift(cola_construccion)
 					var edificio = add_edificio(c, d, tipo, , next_build.rotado)
@@ -1744,6 +1769,7 @@ else{
 						if tutorial = 17 and edificio_nombre[tipo] = "Escuela"
 							tutorial_complete = true
 					}
+					*/
 				}
 			}
 			//Mover recursos

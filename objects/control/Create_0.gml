@@ -43,7 +43,7 @@ debug = false
 						"Permite que los ciudadanos construyan tomas cuando no logran encontrar un hogar"]
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
-		null_construccion = {
+	null_construccion = {
 		x : 0,
 		y : 0,
 		id : 0,
@@ -692,6 +692,7 @@ debug = false
 	sel_edificio = null_edificio
 	sel_familia = null_familia
 	sel_persona = null_persona
+	sel_construccion = null_construccion
 	sel_tipo = 0
 	sel_build = false
 	sel_modo = false

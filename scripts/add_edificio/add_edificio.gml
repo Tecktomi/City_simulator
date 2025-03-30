@@ -69,7 +69,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			edificio.width = width
 			edificio.height = height
 			array_set(bool_draw_construccion[x], y, false)
-			array_set(draw_construccion[x], y, null_construccion)
 			array_set(bool_draw_edificio[x], y, true)
 			array_set(draw_edificio[x], y, edificio)
 			array_push(edificios, edificio)
@@ -164,6 +163,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 					array_set(id_edificio[a], b, edificio)
 					array_set(construccion_reservada[a], b, false)
 					array_set(bosque[a], b, false)
+					array_set(draw_construccion[a], b, null_construccion)
 				}
 			//Modificar belleza
 			if edificio_belleza[tipo] != 50{
