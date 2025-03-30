@@ -14,7 +14,7 @@ function draw_boton(x, y, text, borde = false, able = true, display = undefined,
 		pos += (2 * g - 1) * height
 		if able{
 			if mouse_x > x + (e - 1) * width and mouse_y > y + (1 - g) * height and mouse_x < x + e * width and mouse_y < y + g * height{
-				window_set_cursor(cr_handpoint)
+				cursor = cr_handpoint
 				if display != undefined
 					display(display_arguments)
 				if mouse_check_button_pressed(mb_left) or (not pressed and mouse_check_button(mb_left)){

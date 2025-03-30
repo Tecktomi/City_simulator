@@ -1,5 +1,7 @@
+if window_get_cursor() != cursor
+	window_set_cursor(cursor)
+cursor = cr_arrow
 if menu_principal{
-	window_set_cursor(cr_default)
 	pos = 100
 	draw_set_font(font_big)
 	if draw_boton(room_width / 2, pos, "Empezar partida", true){
@@ -39,7 +41,6 @@ else{
 			mouse_clear(mb_right)
 		}
 	}
-	window_set_cursor(cr_default)
 	//Dibujar mundo
 	if world_update{
 		var prev_tile_width = tile_width
@@ -101,7 +102,7 @@ else{
 			draw_gradiente(0, 2)
 		if keyboard_check(ord("C"))
 			draw_gradiente(0, 3)
-		if keyboard_check(ord("P")) or (build_sel and edificio_nombre[build_index] =  "Perforadora de Petróleo")
+		if keyboard_check(ord("P")) or (build_sel and edificio_nombre[build_index] =  "Pozo Petrolífero")
 			draw_gradiente(0, 6)
 	#endregion
 	//Dibujo de arboles y edificios
@@ -691,8 +692,8 @@ else{
 					}
 				}
 				for(var a = 0; a < 13; a++){
-					count[b] = round(count[b])
-					maxi[b] = round(maxi[b])
+					count[a] = round(count[a])
+					maxi[a] = round(maxi[a])
 				}
 				#region Ingresos
 				if draw_menu(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12]}", 0){
@@ -823,18 +824,19 @@ else{
 			//Ministerio de Exterior
 			else if ministerio = 6{
 				draw_text_pos(100, pos, "Relaciones Exteriores")
-				for(var a = 1; a < array_length(pais_nombre); a++){
-					draw_text_pos(110, pos, $"{pais_nombre[a]} ({pais_relacion[a]})")
+				for(var a = 1; a < array_length(pais_current); a++){
+					var e = pais_current[a]
+					draw_text_pos(110, pos, $"{pais_nombre[e]} ({pais_relacion[e]})")
 					var d = 0
 					for(b = 0; b < array_length(recurso_nombre); b++)
 						for(var c = 0; c < array_length(recurso_tratados[b]); c++)
-							if recurso_tratados[b, c].pais = a
+							if recurso_tratados[b, c].pais = e
 								d++
 					if d > 0 and draw_menu(120, pos, $"{d} tratados comerciales", a)
 						for(b = 0; b < array_length(recurso_nombre); b++)
 							for(var c = 0; c < array_length(recurso_tratados[b]); c++){
 								var tratado = recurso_tratados[b, c]
-								if tratado.pais = a
+								if tratado.pais = e
 									draw_text_pos(130, pos, $"{tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+ {floor(tratado.factor * 100) - 100}%)")
 							}
 				}
@@ -888,6 +890,8 @@ else{
 					impuesto_minero = ((10 * impuesto_minero + 1) mod 6) / 10
 				if draw_boton(110, pos, $"Impuesto forestal {round(100 * impuesto_forestal)}%")
 					impuesto_forestal = ((10 * impuesto_forestal + 1) mod 6) / 10
+				if (dia / 365) >= 60 and draw_boton(110, pos, $"Impuesto petrolífero {round(100 * impuesto_petrolifero)}%")
+					impuesto_petrolifero = ((10 * impuesto_petrolifero + 1) mod 6) / 10
 				if draw_menu(110, pos, $"{array_length(edificios_a_la_venta)} edificios a la venta", 0)
 					for(var a = 0; a < array_length(edificios_a_la_venta); a++){
 						var edificio = edificios_a_la_venta[a].edificio
@@ -1052,6 +1056,8 @@ else{
 			}
 			if flag
 				text += $"Depósito: {c}\n"
+			else
+				text += $"Se necesita un depósito de {recurso_nombre[recurso_mineral[build_type]]}\n"
 		}
 		//Ranchos
 		else if edificio_nombre[build_index] = "Rancho"{
@@ -1083,21 +1089,23 @@ else{
 		}
 		//Tejar
 		else if edificio_nombre[build_index] = "Tejar"{
-			var c = 0
-			for(var a = mx; a < mx + width; a++)
-				for(var b = my; b < my + height; b++)
+			var c = 0, d = mx + width, e = my + height
+			for(var a = mx; a < d; a++)
+				for(var b = my; b < e; b++)
 					c += (altura[# a, b] > 0.6)
 			c /= width * height
 			text += $"Eficiencia: {100 * c}%\n"
 		}
-		//Perforadora de Petróleo
-		else if edificio_nombre[build_index] = "Perforadora de Petróleo"{
+		//Pozo Petrolífero
+		else if edificio_nombre[build_index] = "Pozo Petrolífero"{
 			var c = 0, d = mx + width, e = my + height
 			for(var a = mx; a < d; a++)
 				for(var b = my; b < e; b++)
 					c += petroleo[a, b]
-			if c = 0
+			if c = 0{
 				flag = false
+				text += "Se necesita petróleo cerca\n"
+			}
 			else
 				text += $"Depósito: {c}\n"
 		}
@@ -1137,16 +1145,18 @@ else{
 		if not flag
 			text += "Construcción bloqueada\n"
 		else{
+			c = mx + width
+			d = my + height
 			if not edificio_es_costero[build_index] and edificio_nombre[build_index] != "Rancho"{
 				var coste_aplanar = 0
 				//Altura promedio
-				for(var a = mx; a < mx + width; a++)
-					for(var b = my; b < my + height; b++)
+				for(var a = mx; a < c; a++)
+					for(var b = my; b < d; b++)
 						temp_altura += altura[# a, b]
 				temp_altura /= width * height
 				//Coste aplanar
-				for(var a = mx; a < mx + width; a++)
-					for(var b = my; b < my + height; b++)
+				for(var a = mx; a < c; a++)
+					for(var b = my; b < d; b++)
 						coste_aplanar += 25 * sqrt(abs(altura[# a, b] - temp_altura))
 				coste_aplanar = round(coste_aplanar)
 				if coste_aplanar > 0{
@@ -1155,8 +1165,8 @@ else{
 				}
 			}
 			var coste_terreno = 0, coste_deforestar = 0
-			for(var a = mx; a < mx + width; a++)
-				for(var b = my; b < my + height; b++){
+			for(var a = mx; a < c; a++)
+				for(var b = my; b < d; b++){
 					coste_terreno += 10 * zona_privada[a, b]
 					coste_deforestar += 10 * bosque[a, b]
 				}
@@ -1390,9 +1400,9 @@ else{
 							draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
 					if var_edificio_nombre = "Mina"{
 						draw_text_pos(room_width - 20, pos, $"Extrayendo {recurso_nombre[recurso_mineral[sel_edificio.modo]]}")
-						var c = 0
-						for(var a = max(0, sel_edificio.x - 1); a < min(xsize - 1, sel_edificio.x + width + 1); a++)
-							for(var b = max(0, sel_edificio.y - 1); b < min(xsize - 1, sel_edificio.y + height + 1); b++)
+						var c = 0, d = min(xsize - 1, sel_edificio.x + width + 1), e = min(xsize - 1, sel_edificio.y + height + 1)
+						for(var a = max(0, sel_edificio.x - 1); a < d; a++)
+							for(var b = max(0, sel_edificio.y - 1); b < e; b++)
 								if mineral[sel_edificio.modo][a, b]
 									c += mineral_cantidad[sel_edificio.modo][a, b]
 						draw_text_pos(room_width - 40, pos, $"Depósito: {c}")
@@ -1426,7 +1436,7 @@ else{
 						if draw_boton(room_width - 20, pos, $"{(sel_edificio.modo = 0) ? "Despejar bosque" : "Reforestación"}")
 							sel_edificio.modo = 1 - sel_edificio.modo
 					}
-					if var_edificio_nombre = "Perforadora de Petróleo"{
+					if var_edificio_nombre = "Pozo Petrolífero"{
 						var c = 0, d = x + width, e = y + height
 						for(var a = x; a < d; a++)
 							for(var b = y; b < e; b++)
@@ -1875,12 +1885,24 @@ else{
 			}
 			//Eventos anuales
 			if (dia mod 365) = 0{
-				felicidad_minima = floor(10 + 50 * (1 + dia / 365) / (100 + dia / 365))
+				var anno = floor(dia / 365)
+				felicidad_minima = floor(10 + 50 * (1 + anno) / (100 + anno))
 				//Credibilidad financiera
 				credibilidad_financiera = clamp(credibilidad_financiera + sign((dinero_privado + inversion_privada) - prev_beneficio_privado), 1, 10)
 				prev_beneficio_privado = dinero_privado + inversion_privada
 				if array_length(empresas) < irandom(credibilidad_financiera)
 					add_empresa(irandom_range(1000, 2000))
+				for(var a = 0; a < array_length(pais_nombre); a++){
+					if anno = pais_inicio[a]
+						array_push(pais_current, a)
+					else if anno = pais_fin[a]{
+						for(var b = 0; b < array_length(recurso_nombre); b++)
+							for(var c = 0; c > array_length(recurso_tratados[b]); c++)
+								if recurso_tratados[b, c].pais = pais_current[a]
+									array_delete(recurso_tratados[b], c--, 1)
+						array_delete(pais_current, a, 1)
+					}
+				}
 			}
 			#region Personas
 				//Ciclo normal de las personas
@@ -2052,9 +2074,9 @@ else{
 						}
 						//Mudarse
 						if not buscar_casa(persona) and persona.familia.casa = homeless and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente){
-							var temp_array_coord = [], edificio = persona.trabajo, index = edificio.tipo, width = edificio.width, height = edificio.height
-							for(var b = persona.trabajo.x - 2; b < persona.trabajo.x + width + 2; b++)
-								for(var c = persona.trabajo.y - 2; c < persona.trabajo.y + height + 2; c++)
+							var temp_array_coord = [], edificio = persona.trabajo, index = edificio.tipo, width = edificio.width, height = edificio.height, d = edificio.x + width + 2, e = edificio.y + height + 2
+							for(var b = edificio.x - 2; b < d; b++)
+								for(var c = edificio.y - 2; c < e; c++)
 									if not bool_edificio[b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c]
 										array_push(temp_array_coord, {x : b, y : c})
 							temp_array_coord = array_shuffle(temp_array_coord)
@@ -2757,8 +2779,8 @@ else{
 								edificio.almacen[26] = 0
 							}
 						}
-						//Perforadora de Petróleo
-						else if var_edificio_nombre = "Perforadora de Petróleo"{
+						//Pozo Petrolífero
+						else if var_edificio_nombre = "Pozo Petrolífero"{
 							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto))
 							var e = b, f = edificio.x + width, g = edificio.y + height
 							for(var c = edificio.x; c < f; c++){

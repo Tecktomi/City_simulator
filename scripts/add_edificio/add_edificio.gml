@@ -128,10 +128,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 				}
 			}
 			//Buscar edificios cercanos
-			var c = max(0, x - 8), d = min(x + width + 9, xsize), e = max(0, y - 8), f = min(y + height + 9, ysize)
+			var c = min(x + width + 9, xsize), d = min(y + height + 9, ysize)
 			if edificio_es_casa[tipo]
-				for(var a = c; a < d; a++)
-					for(var b = e; b < f; b++)
+				for(var a = max(0, x - 8); a < c; a++)
+					for(var b = max(0, y - 8); b < d; b++)
 						if bool_edificio[a, b]{
 							var temp_edificio = id_edificio[a, b], g = edificio_trabajo_educacion[temp_edificio.tipo]
 							if edificio_es_trabajo[temp_edificio.tipo] and not array_contains(edificio.trabajos_cerca[g], temp_edificio){
@@ -143,8 +143,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 						}
 			if edificio_es_trabajo[tipo]{
 				var g = edificio_trabajo_educacion[tipo]
-				for(var a = c; a < d; a++)
-					for(var b = e; b < f; b++)
+				for(var a = max(0, x - 8); a < c; a++)
+					for(var b = max(0, y - 8); b < d; b++)
 						if bool_edificio[a, b]{
 							var temp_edificio = id_edificio[a, b]
 							if edificio_es_casa[temp_edificio.tipo] and edificio_nombre[temp_edificio.tipo] != "Toma" and not array_contains(edificio.casas_cerca, temp_edificio){
@@ -156,8 +156,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 						}
 			}
 			//Marcar terreno
-			for(var a = x; a < x + width; a++)
-				for(var b = y; b < y + height; b++){
+			c = x + width
+			d = y + height
+			for(var a = x; a < c; a++)
+				for(var b = y; b < d; b++){
 					array_set(bool_edificio[a], b, true)
 					array_set(id_edificio[a], b, edificio)
 					array_set(construccion_reservada[a], b, false)
@@ -166,12 +168,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			//Modificar belleza
 			if edificio_belleza[tipo] != 50{
 				var size = ceil(abs(edificio_belleza[tipo] - 50) / 5)
-				c = max(0, x - size)
-				d = min(x + width + size, xsize)
-				e = max(0, y - size)
-				f = min(y + height + size, ysize)
-				for(var a = c; a < d; a++)
-					for(var b = e; b < f; b++){
+				c = min(x + width + size, xsize)
+				d = min(y + height + size, ysize)
+				for(var a = max(0, x - size); a < c; a++)
+					for(var b = max(0, y - size); b < d; b++){
 						array_set(belleza[a], b, round(belleza[a, b] + (edificio_belleza[tipo] - 50) / (1 + distancia_punto(a, b, edificio))))
 						if bool_edificio[a, b]{
 							var edificio_2 = id_edificio[a, b]
@@ -183,12 +183,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			//Modificar contaminacion
 			if edificio_contaminacion[tipo] != 0{
 				var size = ceil(edificio_contaminacion[tipo] / 5)
-				c = max(0, x - size)
-				d = min(x + width + size, xsize)
-				e = max(0, y - size)
-				f = min(y + height + size, ysize)
-				for(var a = c; a < d; a++)
-					for(var b = e; b < f; b++)
+				c = min(x + width + size, xsize)
+				d = min(y + height + size, ysize)
+				for(var a = max(0, x - size); a < c; a++)
+					for(var b = max(0, y - size); b < d; b++)
 						array_set(contaminacion[a], b, round(contaminacion[a, b] + edificio_contaminacion[tipo] / (1 + distancia_punto(a, b, edificio))))
 			}
 		}

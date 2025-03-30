@@ -1,5 +1,6 @@
 randomize()
 var a, b
+debug = false
 #region Save
 	roaming = game_save_id
 	directory_create(roaming + "Personas")
@@ -17,13 +18,19 @@ var a, b
 	ini_close()
 #endregion
 #region Definiciones independientes
-	pais_nombre = ["Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana", "Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos"]
-	pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88, 90, 92, 88, 88, 77, 86, 96, 78]
-	pais_idioma = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 3, 3, 0, 3, 3]
-	idioma_nombre = ["Español", "Francés", "Portugués", "Inglés"]
+	pais_nombre = ["Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana", "Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos", "Gran Colombia", "Provincias Unidas de Centroamérica", "España", "Francia", "Inglaterra", "Portugal", "Holanda", "Virreinato de Nueva España", "Virreinato de Nueva Granada"]
+	pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88, 90, 92, 88, 88, 77, 86, 96, 78, 90, 90, 80, 70, 70, 80, 70, 90, 90]
+	pais_inicio = [0, 95, 21, 41, 38, 38, 103, 38, 4, 44, 31, 31, 22, 181, 162, 38, 173, 0, 19, 19, 23, 0, 0, 0, 0, 0, 0, 0]
+	pais_fin = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 40, 0, 0, 0, 0, 0, 21, 19]
+	pais_idioma = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 3, 3, 0, 3, 3, 0, 0, 0, 1, 3, 2, 4, 0, 0]
+	idioma_nombre = ["Español", "Francés", "Portugués", "Inglés", "Alemán"]
 	pais_relacion = []
-	for(a = 0; a < array_length(pais_nombre); a++)
+	pais_current = []
+	for(a = 0; a < array_length(pais_nombre); a++){
+		if pais_inicio[a] = 0
+			array_push(pais_current, a)
 		array_push(pais_relacion, 0)
+	}
 	ley_nombre = ["Legalizar divorcios", "Aceptar inmigrantes", "Trabajo infantil", "Jubilación", "Comida gratis", "Aceptar emigración", "Trabajo temporal", "Legalizar tomas"]
 	ley_eneabled = [false, true, false, true, true, true, false, true]
 	ley_descripcion = [	"Permite a los ciudadanos separarse legalmente, molestará a los ciudadanos religiosos",
@@ -205,7 +212,7 @@ var a, b
 		"Fábrica a vapor que requiere combustible y lana o algodón para producir tela a una gran velocidad.",
 		"Aquí mismo se extrae la arcilla y se cosen ladrillos",
 		"Produce grandes cantidades de ladrillos utilizando hornos a vapor",
-		"Perforadora de petróleo"]
+		"Pozo Petrolífero"]
 	#region arreglos vacíos
 		edificio_nombre = []
 		edificio_width = []
@@ -342,7 +349,7 @@ var a, b
 		def_edificio_base("Fábrica Textil", 8, 6, 9000, 2400, [1, 10, 15, 24, 26], [50, 20, 30, 50, 60], 60, 25, 30, false,,,,,,,,, 30); def_edificio_servicio(); def_edificio_trabajo(true, 30, 20, 4,, true, [3, 20], [3, 3], [16], [1], 3, true, true)
 		def_edificio_base("Tejar", 5, 4, 1500, 360, [1, 10, 26], [20, 10, 30], 7, 40, -5, false); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 5)
 		def_edificio_base("Fábrica de Ladrillos", 8, 6, 8000, 1800, [1, 10, 24, 26], [40, 20, 20, 80], 25, 30, -20, false,,,,,,,,, 50); def_edificio_servicio(); def_edificio_trabajo(true, 15, 25, 4,, true,,, [26], [3], 4,, true)
-		def_edificio_base("Perforadora de Petróleo", 4, 4, 3000, 730, [10, 15, 26], [30, 30, 30], 20, 20, -20, false,,,,,,,,, 60); def_edificio_servicio(); def_edificio_trabajo(true, 4, 30, 5, 1)
+		def_edificio_base("Pozo Petrolífero", 4, 4, 3000, 730, [10, 15, 26], [30, 30, 30], 20, 20, -20, false,,,,,,,,, 60); def_edificio_servicio(); def_edificio_trabajo(true, 4, 30, 5, 1)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
 	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35], [13, 20, 22], [23, 25, 26, 28, 29, 30, 36, 37, 39]]
@@ -362,7 +369,7 @@ var a, b
 		if not flag
 			array_push(edificio_color, 0)
 		//Evaluación capital industria
-		if false and edificio_es_industria[a]{
+		if debug and edificio_es_industria[a]{
 			var text = $"{edificio_nombre[a]}: ";
 			b = 0
 			if edificio_industria_optativo[a]{
@@ -606,7 +613,7 @@ var a, b
 			}
 			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 			contaminacion[a, b] = 0
-			petroleo[a, b] = floor(max(0, 10000 * (grid_petroleo[# a, b] - 0.8)))
+			petroleo[a, b] = floor(max(0, 10000 * (grid_petroleo[# a, b] - 0.85)))
 			zona_privada[a, b] = false
 			zona_empresa[a, b]= null_empresa
 			mar_checked[a, b] = false
@@ -702,6 +709,7 @@ var a, b
 	menu = false
 	menu_principal = true
 	draw_set_halign(fa_center)
+	cursor = cr_arrow
 	tutorial_bool = false
 	tutorial_complete = false
 	tutorial = 0
@@ -768,6 +776,7 @@ var a, b
 	impuesto_empresa = 10
 	impuesto_forestal = 0.2
 	impuesto_minero = 0.2
+	impuesto_petrolifero = 0.2
 	for(a = 0; a < 12; a++){
 		mes_enfermos[a] = 0
 		mes_emigrantes[a]  = 0
@@ -813,7 +822,7 @@ var a, b
 	repeat(10)
 		add_tratado_oferta()
 	repeat(10)
-		add_empresa(irandom_range(1000, 2000))
+		add_empresa(power(10, random_range(3, 4.2)))
 	while array_length(personas) < 50
 		add_familia(0)
 #endregion

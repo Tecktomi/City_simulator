@@ -18,7 +18,7 @@ function add_familia(origen = -1, generada = true){
 			persona.familia = familia
 			persona.educacion = sqr(random(2.1))
 			if origen = -1
-				persona.nacionalidad = irandom_range(1, array_length(pais_nombre) - 1)
+				persona.nacionalidad = irandom_range(1, pais_current[array_length(pais_current) - 1])
 			else
 				persona.nacionalidad = origen
 			persona.religion = (irandom(100) < pais_religion[persona.nacionalidad])
@@ -45,7 +45,7 @@ function add_familia(origen = -1, generada = true){
 				persona_2.relacion.nombre = name(persona_2)
 				persona_2.edad = irandom_range(max(20, persona.edad - 5), persona.edad + 5)
 				if origen = -1
-					persona_2.nacionalidad = choose(persona.nacionalidad, irandom_range(1, array_length(pais_nombre) - 1))
+					persona_2.nacionalidad = choose(persona.nacionalidad, irandom_range(1, pais_current[array_length(pais_current) - 1]))
 				else
 					persona_2.nacionalidad = origen
 				persona_2.religion = choose(persona.religion, (irandom(100) < pais_religion[persona_2.nacionalidad]))

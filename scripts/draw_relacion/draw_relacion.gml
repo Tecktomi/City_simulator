@@ -13,7 +13,7 @@ function draw_relacion(xx, yy, relacion = null_relacion, iter = 0){
 	draw_set_color(c_black)
 	if mouse_x > xx - 10 and mouse_y > yy - 10 and mouse_x < xx + 10 and mouse_y < yy + 10{
 		draw_text(mouse_x, mouse_y, relacion.nombre)
-		window_set_cursor(cr_handpoint)
+		cursor = cr_handpoint
 		if mouse_check_button_pressed(mb_left){
 			mouse_clear(mb_left)
 			if relacion.vivo
