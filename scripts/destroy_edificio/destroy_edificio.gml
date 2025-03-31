@@ -5,8 +5,11 @@ function destroy_edificio(edificio = control.null_edificio){
 		array_set(draw_edificio[edificio.x], edificio.y, null_edificio)
 		if array_length(edificio.trabajadores) < edificio.trabajadores_max and not edificio.paro
 			array_remove(trabajo_educacion[edificio_trabajo_educacion[tipo]], edificio, "eliminar trabajo de los disponibles")
-		for(var a = 0; a < array_length(edificio.trabajadores); a++)
-			cambiar_trabajo(edificio.trabajadores[a], null_edificio)
+		while array_length(edificio.trabajadores) > 0{
+			var persona = edificio.trabajadores[0]
+			persona.felicidad_temporal -= 25
+			cambiar_trabajo(persona, null_edificio)
+		}
 		if edificio_es_medico[tipo]{
 			array_remove(medicos, edificio, "eliminar médico")
 			for(var a = 0; a < array_length(edificio.clientes); a++)
@@ -32,8 +35,16 @@ function destroy_edificio(edificio = control.null_edificio){
 					array_remove(casas_libres, edificio, "elminar casa libre")
 			}
 		}
-		for(var a = 0; a < array_length(edificio.familias); a++)
-			cambiar_casa(edificio.familias[a], homeless)
+		for(var a = 0; a < array_length(edificio.familias); a++){
+			var familia = edificio.familias[a]
+			if familia.padre != null_persona
+				familia.padre.felicidad_temporal -= 25
+			if familia.madre != null_persona
+				familia.madre.felicidad_temporal -= 25
+			for(var b = 0; b < array_length(familia.hijos); b++)
+				familia.hijos[b].felicidad_temporal -= 15
+			cambiar_casa(familia, homeless)
+		}
 		if edificio_es_iglesia[tipo]
 			for(var a = 0; a < array_length(edificio.casas_cerca); a++)
 				array_remove(edificio.casas_cerca[a].iglesias_cerca, edificio, "eliminar iglesia cerca")
