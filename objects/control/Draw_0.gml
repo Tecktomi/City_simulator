@@ -37,6 +37,7 @@ else{
 		for(var a = 0; a < array_length(tutorial_mouse[tutorial]); a++)
 			mouse_clear(tutorial_mouse[tutorial, a])
 		if not (mouse_x > tutorial_xbox[tutorial] and mouse_y > tutorial_ybox[tutorial] and mouse_x < tutorial_wbox[tutorial] and mouse_y < tutorial_hbox[tutorial]){
+			show_debug_message("mouse tutorial")
 			mouse_clear(mb_left)
 			mouse_clear(mb_right)
 		}
@@ -66,15 +67,15 @@ else{
 		tile_height = prev_tile_width / 2
 	}
 	#region Dibujo de mundo
-	for(var a = floor(min_camx / 16); a < ceil(max_camx / 16); a++)
-		for(var b = floor(min_camy / 16); b < ceil(max_camy / 16); b++)
-			draw_sprite_stretched(chunk[a, b], 0, (a - b - 1) * 16 * tile_width - xpos, (a + b) * 16 * tile_height - ypos, 32 * tile_width, 32 * tile_height)
-	if show_grid{
-		draw_set_color(c_ltgray)
-		for(var a = 0; a < xsize; a++)
-			draw_line(a * tile_width - xpos, a * tile_height - ypos, (a - ysize) * tile_width - xpos, (a + ysize) * tile_height - ypos)
-		for(var a = 0; a < ysize; a++)
-			draw_line(-a * tile_width - xpos, a * tile_height - ypos, (xsize - a) * tile_width - xpos, (xsize + a) * tile_height - ypos)
+		for(var a = floor(min_camx / 16); a < ceil(max_camx / 16); a++)
+			for(var b = floor(min_camy / 16); b < ceil(max_camy / 16); b++)
+				draw_sprite_stretched(chunk[a, b], 0, (a - b - 1) * 16 * tile_width - xpos, (a + b) * 16 * tile_height - ypos, 32 * tile_width, 32 * tile_height)
+		if show_grid{
+			draw_set_color(c_ltgray)
+			for(var a = 0; a < xsize; a++)
+				draw_line(a * tile_width - xpos, a * tile_height - ypos, (a - ysize) * tile_width - xpos, (a + ysize) * tile_height - ypos)
+			for(var a = 0; a < ysize; a++)
+				draw_line(-a * tile_width - xpos, a * tile_height - ypos, (xsize - a) * tile_width - xpos, (xsize + a) * tile_height - ypos)
 	}
 	#endregion
 	#region vistas
@@ -132,7 +133,7 @@ else{
 							draw_rectangle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d) * tile_width - xpos + string_width("PARO"), (c + d) * tile_height - ypos + string_height("PARO"), false)
 							draw_set_color(c_red)
 							draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, "PARO")
-							}
+						}
 					}
 			}
 			if bool_draw_construccion[a, b]{
@@ -260,6 +261,7 @@ else{
 			}
 		}
 		draw_set_halign(fa_left)
+		show_debug_message("mouse menú de pausa")
 		mouse_clear(mb_left)
 	}
 	//Abrir menú de construcción
@@ -555,7 +557,7 @@ else{
 			}
 			//Ministerio de Salud
 			else if ministerio = 3{
-				var fel_sal = 0, temp_enfermos = 0, num_sal = 0, temp_espera = 0, num_hambre = 0, num_almacenes = 0
+				var fel_sal = 0, temp_enfermos = 0, num_sal = 0, temp_espera = 0, num_hambre = 0, num_almacenes = 0, temp_accidentes = 0
 				for(var a = 0; a < array_length(personas); a++){
 					fel_sal += personas[a].felicidad_salud
 					if personas[a].medico != null_edificio{
@@ -567,12 +569,15 @@ else{
 				for(var a = 0; a < array_length(edificio_almacen_index); a++)
 					num_almacenes += array_length(almacenes[edificio_almacen_index[a]])
 				draw_text_pos(110, pos, $"Satisfación sanitaria: {floor(fel_sal / array_length(personas))}")
-				for(var a = 0; a < 12; a++)
+				for(var a = 0; a < 12; a++){
 					temp_enfermos += mes_enfermos[a]
+					temp_accidentes += mes_accidentes[a]
+				}
 				draw_text_pos(110, pos, $"{temp_enfermos} muertes por enfermedad el último año")
 				draw_text_pos(110, pos, $"{num_sal} personas enfermas")
 				draw_text_pos(120, pos, $"{array_length(desausiado.clientes)} personas sin atención médica")
 				draw_text_pos(120, pos, $"{temp_espera} personas atendidas")
+				draw_text_pos(120, pos, $"{temp_accidentes} accidentes laborales el último año")
 				if draw_menu(110, pos, $"{array_length(medicos) - 1} edificios médicos", 0)
 					for(var a = 0; a < array_length(edificio_nombre); a++)
 						if edificio_es_medico[a]
@@ -1169,6 +1174,7 @@ else{
 			draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, text)
 		//Construir
 		if mouse_check_button_pressed(mb_left){
+			show_debug_message("mouse construir")
 			mouse_clear(mb_left)
 			if flag{
 				var next_build = {
@@ -1218,6 +1224,7 @@ else{
 		var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 		var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
 		if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build{
+			show_debug_message("mouse: seleccionar edificio")
 			mouse_clear(mb_left)
 			sel_info = bool_edificio[mx, my] or construccion_reservada[mx, my]
 			if sel_info{
@@ -1804,6 +1811,7 @@ else{
 				mes_privatizacion[current_mes] = 0
 				mes_estatizacion[current_mes] = 0
 				mes_impuestos[current_mes] = 0
+				mes_accidentes[current_mes] = 0
 				for(var a = 0; a < array_length(recurso_nombre); a++){
 					array_set(mes_exportaciones_recurso[current_mes], a, 0)
 					array_set(mes_importaciones_recurso[current_mes], a, 0)
@@ -2084,8 +2092,10 @@ else{
 					//Acciones no para niños
 					if not persona.es_hijo{
 						//Accidentes laborales
-						if persona.trabajo != null_edificio and random(1) < edificio_trabajo_riesgo[persona.trabajo.tipo]
+						if persona.trabajo != null_edificio and random(1) < persona.trabajo.trabajo_riesgo{
+							mes_accidentes[current_mes]++
 							buscar_atencion_medica(persona)
+						}
 						//Comprar productos de lujo
 						for(var b = 0; b < array_length(recurso_lujo); b++){
 							var c = recurso_lujo[b], temp_precio = recurso_precio[c]
@@ -2159,44 +2169,44 @@ else{
 						}
 					}
 					#region Calculo de felicidad
-					felicidad_total = felicidad_total * array_length(personas) - persona.felicidad
-					if array_length(medicos) = 1
-						persona.felicidad_salud = floor(persona.felicidad_salud / 2)
-					else{
-						var temp_contaminacion = 0.25;
-						if persona.familia.casa != homeless
-							temp_contaminacion = (1 - clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100) / 100)
-						if not in(persona.trabajo, null_edificio, jubilado, delincuente)
-							temp_contaminacion *= (1 - clamp(contaminacion[persona.trabajo.x, persona.trabajo.y], 0, 100) / 100)
-						if persona.escuela != null_edificio
-							temp_contaminacion *= (1 - clamp(contaminacion[persona.escuela.x, persona.escuela.y], 0, 100) / 100)
-						temp_contaminacion = 100 * temp_contaminacion
-						persona.felicidad_salud = floor((persona.felicidad_salud + 3 * temp_contaminacion) / 4)
-					}
-					persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
-					var temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley, persona.felicidad_crimen]
-					persona.felicidad_crimen = min(persona.felicidad_crimen + 5, 100)
-					if persona.es_hijo{
-						persona.felicidad_educacion = floor((persona.felicidad_educacion + 3 * edificio_clientes_calidad[persona.escuela.tipo]) / 4)
-						array_push(temp_array, persona.felicidad_educacion)
-					}
-					if persona.trabajo != null_edificio{
-						var b = 1 + real(persona.es_hijo and ley_eneabled[2])
-						persona.felicidad_trabajo = floor((persona.felicidad_trabajo + 3 * (persona.trabajo.trabajo_calidad / (b + persona.trabajo.huelga))) / 4)
-						array_push(temp_array, persona.felicidad_trabajo)
-					}
-					if persona.religion{
-						persona.felicidad_religion = floor(persona.felicidad_religion * 0.9)
-						array_push(temp_array, persona.felicidad_religion)
-					}
-					if persona.familia.casa != homeless and (persona.escuela != null_edificio or not in(persona.trabajo, null_edificio, jubilado, delincuente))
-						array_push(temp_array, persona.felicidad_transporte)
-					persona.felicidad = calcular_felicidad(temp_array) + persona.felicidad_temporal / array_length(temp_array)
-					felicidad_total = (felicidad_total + persona.felicidad) / array_length(personas)
-					if abs(persona.felicidad_temporal) <= 10
-						persona.felicidad_temporal = 0
-					else
-						persona.felicidad_temporal /= 2
+						felicidad_total = felicidad_total * array_length(personas) - persona.felicidad
+						if array_length(medicos) = 1
+							persona.felicidad_salud = floor(persona.felicidad_salud / 2)
+						else{
+							var temp_contaminacion = 0.25;
+							if persona.familia.casa != homeless
+								temp_contaminacion = (1 - clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100) / 100)
+							if not in(persona.trabajo, null_edificio, jubilado, delincuente)
+								temp_contaminacion *= (1 - clamp(contaminacion[persona.trabajo.x, persona.trabajo.y], 0, 100) / 100)
+							if persona.escuela != null_edificio
+								temp_contaminacion *= (1 - clamp(contaminacion[persona.escuela.x, persona.escuela.y], 0, 100) / 100)
+							temp_contaminacion = 100 * temp_contaminacion
+							persona.felicidad_salud = floor((persona.felicidad_salud + 3 * temp_contaminacion) / 4)
+						}
+						persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
+						var temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley, persona.felicidad_crimen]
+						persona.felicidad_crimen = min(persona.felicidad_crimen + 5, 100)
+						if persona.es_hijo{
+							persona.felicidad_educacion = floor((persona.felicidad_educacion + 3 * edificio_clientes_calidad[persona.escuela.tipo]) / 4)
+							array_push(temp_array, persona.felicidad_educacion)
+						}
+						if persona.trabajo != null_edificio{
+							var b = 1 + real(persona.es_hijo and ley_eneabled[2])
+							persona.felicidad_trabajo = floor((persona.felicidad_trabajo + 3 * (persona.trabajo.trabajo_calidad / (b + persona.trabajo.huelga))) / 4)
+							array_push(temp_array, persona.felicidad_trabajo)
+						}
+						if persona.religion{
+							persona.felicidad_religion = floor(persona.felicidad_religion * 0.9)
+							array_push(temp_array, persona.felicidad_religion)
+						}
+						if persona.familia.casa != homeless and (persona.escuela != null_edificio or not in(persona.trabajo, null_edificio, jubilado, delincuente))
+							array_push(temp_array, persona.felicidad_transporte)
+						persona.felicidad = calcular_felicidad(temp_array) + persona.felicidad_temporal / array_length(temp_array)
+						felicidad_total = (felicidad_total + persona.felicidad) / array_length(personas)
+						if abs(persona.felicidad_temporal) <= 10
+							persona.felicidad_temporal = 0
+						else
+							persona.felicidad_temporal /= 2
 					#endregion
 					//Descontento
 					if persona.edad > 18 and persona.edad < 60 and irandom(felicidad_minima) >= persona.felicidad + 5 * (persona.nacionalidad = 0) and dia > 365{

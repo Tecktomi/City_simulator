@@ -424,6 +424,7 @@ debug = false
 		trabajadores_max : 0,
 		trabajo_calidad : 0,
 		trabajo_sueldo : 0,
+		trabajo_riesgo : 0,
 		mantenimiento : 0,
 		presupuesto : 2,
 		mes_creacion : 0,
@@ -801,6 +802,7 @@ debug = false
 		mes_estatizacion[a] = 0
 		mes_privatizacion[a] = 0
 		mes_impuestos[a] = 0
+		mes_accidentes[a] = 0
 		for(b = 0; b < array_length(recurso_nombre); b++){
 			mes_exportaciones_recurso[a, b] = 0
 			mes_importaciones_recurso[a, b] = 0

@@ -7,6 +7,7 @@ function draw_sprite_boton(sprite, subsprite, x, y, w = 0, h = 0){
 	if mouse_x > x and mouse_y > y and mouse_x < x + w and mouse_y < y + h{
 		cursor = cr_handpoint
 		if mouse_check_button_pressed(mb_left){
+			show_debug_message("mouse draw_sprite_boton")
 			mouse_clear(mb_left)
 			return true
 		}
