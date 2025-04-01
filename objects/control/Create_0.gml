@@ -806,6 +806,8 @@ debug = false
 		for(b = 0; b < array_length(recurso_nombre); b++){
 			mes_exportaciones_recurso[a, b] = 0
 			mes_importaciones_recurso[a, b] = 0
+			mes_compra_recurso[a, b] = 0
+			mes_venta_recurso[a, b] = 0
 		}
 	}
 	for(a = 0; a < array_length(edificio_nombre) * 2; a++)

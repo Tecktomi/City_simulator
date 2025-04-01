@@ -15,7 +15,6 @@ function draw_relacion(xx, yy, relacion = null_relacion, iter = 0){
 		draw_text(mouse_x, mouse_y, relacion.nombre)
 		cursor = cr_handpoint
 		if mouse_check_button_pressed(mb_left){
-			show_debug_message("mouse draw_relacion")
 			mouse_clear(mb_left)
 			if relacion.vivo
 				sel_persona = relacion.persona

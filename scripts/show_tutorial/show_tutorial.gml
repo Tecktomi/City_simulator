@@ -16,10 +16,8 @@ function show_tutorial(x, y, text, enter = true, xbox = 0, ybox = 0, wbox = 0, h
 		draw_set_font(font_big)
 		draw_text(x, y, text)
 		draw_set_font(Font1)
-		if mouse_check_button_pressed(mb_left) and not (mouse_x > xbox and mouse_y > ybox and mouse_x < wbox and mouse_y < hbox){
-			show_debug_message("mouse show_tutorial")
+		if mouse_check_button_pressed(mb_left) and not (mouse_x > xbox and mouse_y > ybox and mouse_x < wbox and mouse_y < hbox)
 			mouse_clear(mb_left)
-		}
 		if (enter and keyboard_check_pressed(vk_enter)) or tutorial_complete{
 			keyboard_clear(vk_enter)
 			tutorial = (tutorial + 1) mod tutorial_max

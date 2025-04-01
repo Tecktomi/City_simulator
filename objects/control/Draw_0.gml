@@ -37,7 +37,6 @@ else{
 		for(var a = 0; a < array_length(tutorial_mouse[tutorial]); a++)
 			mouse_clear(tutorial_mouse[tutorial, a])
 		if not (mouse_x > tutorial_xbox[tutorial] and mouse_y > tutorial_ybox[tutorial] and mouse_x < tutorial_wbox[tutorial] and mouse_y < tutorial_hbox[tutorial]){
-			show_debug_message("mouse tutorial")
 			mouse_clear(mb_left)
 			mouse_clear(mb_right)
 		}
@@ -247,7 +246,7 @@ else{
 				ini_close()
 			}
 		}
-		if draw_boton(room_width / 2, pos, "Pantalla completa", , , function f6(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "fullscreen");draw_set_halign(fa_center)}){
+		if draw_boton(room_width / 2, pos, "Pantalla completa",,, function f6(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "fullscreen");draw_set_halign(fa_center)}){
 			window_set_fullscreen(not window_get_fullscreen())
 			ini_open(roaming + "config.txt")
 			ini_write_real("MAIN", "fullscreen", window_get_fullscreen())
@@ -261,8 +260,8 @@ else{
 			}
 		}
 		draw_set_halign(fa_left)
-		show_debug_message("mouse menú de pausa")
-		mouse_clear(mb_left)
+		if mouse_check_button_pressed(mb_left)
+			mouse_clear(mb_left)
 	}
 	//Abrir menú de construcción
 	if mouse_check_button_pressed(mb_right) and not build_sel{
@@ -635,7 +634,7 @@ else{
 			}
 			//Ministerio de Economía
 			else if ministerio = 5{
-				var temp_array, temp_grid, temp_text_array, count, maxi, temp_exportaciones, temp_importaciones
+				var temp_array, temp_grid, temp_text_array, count, maxi, temp_exportaciones, temp_importaciones, temp_compra, temp_venta
 				#region Definición de variables
 				temp_grid[0] = mes_renta
 				temp_grid[1] = mes_tarifas
@@ -671,6 +670,8 @@ else{
 				for(var a = 0; a < array_length(recurso_nombre); a++){
 					temp_exportaciones[a] = 0
 					temp_importaciones[a] = 0
+					temp_compra[a] = 0
+					temp_venta[a] = 0
 				}
 				for(var a = 0; a < 12; a++){
 					for(b = 0; b < 13; b++){
@@ -680,6 +681,8 @@ else{
 					for(b = 0; b < array_length(recurso_nombre); b++){
 						temp_exportaciones[b] += mes_exportaciones_recurso[a, b]
 						temp_importaciones[b] += mes_importaciones_recurso[a, b]
+						temp_compra[b] += mes_compra_recurso[a, b]
+						temp_venta[b] += mes_venta_recurso[a, b]
 					}
 				}
 				for(var a = 0; a < 13; a++){
@@ -695,7 +698,10 @@ else{
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_exportaciones[c] > 0
 								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_exportaciones[c]}")
-					draw_text_pos(120, pos, $"{temp_text_array[9]}: ${count[9]}")
+					if draw_menu(120, pos, $"{temp_text_array[9]}: ${count[9]}", 6)
+						for(var c = 0; c < array_length(recurso_nombre); c++)
+							if temp_venta[c] > 0
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_venta[c]}")
 					draw_text_pos(120, pos, $"{temp_text_array[10]}: ${count[10]}")
 					draw_text_pos(120, pos, $"{temp_text_array[12]}: ${count[12]}")
 				}
@@ -707,7 +713,10 @@ else{
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_importaciones[c] > 0
 								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_importaciones[c]}")
-					draw_text_pos(120, pos, $"{temp_text_array[8]}: ${count[8]}")
+					if draw_menu(120, pos, $"{temp_text_array[8]}: ${count[8]}", 7)
+						for(var c = 0; c < array_length(recurso_nombre); c++)
+							if temp_compra[c] > 0
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_compra[c]}")
 					draw_text_pos(120, pos, $"{temp_text_array[11]}: ${count[11]}")
 				}
 				draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11]}")
@@ -785,14 +794,14 @@ else{
 				pos += 20
 				for(var a = 0; a < 20; a++){
 					if draw_sprite_boton(spr_icono, 4 + (recurso_historial[a + show_scroll, 23] < recurso_historial[a + show_scroll, 0]), 420 + max_width, pos + a * 20, 20, 20){
-						var flag = show[a + show_scroll + 6]
+						var flag = show[a + show_scroll + 8]
 						close_show()
-						show[a + show_scroll + 6] = not flag
+						show[a + show_scroll + 8] = not flag
 					}
 					draw_line(420, pos + a * 20, 460 + max_width, pos + a * 20)
 				}
 				for(var a = 0; a < array_length(recurso_nombre); a++)
-					if show[a + 6]{
+					if show[a + 8]{
 						draw_line(800, 150, 800, 350)
 						draw_line(800, 350, 1040, 350)
 						var mini = recurso_precio[a], maxa = recurso_precio[a]
@@ -1174,7 +1183,6 @@ else{
 			draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, text)
 		//Construir
 		if mouse_check_button_pressed(mb_left){
-			show_debug_message("mouse construir")
 			mouse_clear(mb_left)
 			if flag{
 				var next_build = {
@@ -1224,7 +1232,6 @@ else{
 		var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 		var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
 		if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build{
-			show_debug_message("mouse: seleccionar edificio")
 			mouse_clear(mb_left)
 			sel_info = bool_edificio[mx, my] or construccion_reservada[mx, my]
 			if sel_info{
@@ -1815,6 +1822,8 @@ else{
 				for(var a = 0; a < array_length(recurso_nombre); a++){
 					array_set(mes_exportaciones_recurso[current_mes], a, 0)
 					array_set(mes_importaciones_recurso[current_mes], a, 0)
+					array_set(mes_compra_recurso[current_mes], a, 0)
+					array_set(mes_venta_recurso[current_mes], a, 0)
 				}
 				//Actualizar precios de recursos y tratados comerciales
 				for(var a = 0; a < array_length(recurso_nombre); a++){
@@ -2711,7 +2720,9 @@ else{
 									}
 								}
 								if max_rss > 0{
-									b = max(0, min(max_rss, round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index]), edificio.almacen[9] * edificio_industria_vapor[index]))
+									b = max(0, min(max_rss, round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index])))
+									if edificio_industria_vapor[index] and edificio.almacen[9] = 0
+										b = 0
 									if b > 0{
 										edificio.almacen[edificio_industria_input_id[index, max_c]] -= b * edificio_industria_input_num[index, max_c]
 										for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++)
@@ -2726,7 +2737,9 @@ else{
 								var temp_array = []
 								for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
 									array_push(temp_array, edificio.almacen[edificio_industria_input_id[index, c]] / edificio_industria_input_num[index, c])
-								b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index]), edificio.almacen[9] * edificio_industria_vapor[index]))
+								b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index])))
+								if edificio_industria_vapor[index] and edificio.almacen[9] = 0
+									b = 0
 								if b > 0{
 									for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
 										edificio.almacen[edificio_industria_input_id[index, c]] -= b * edificio_industria_input_num[index, c]
@@ -2856,18 +2869,22 @@ else{
 										tienda.almacen[d] -= e
 										edificio.almacen[d] += e
 										if tienda.privado{
-											dinero -= e * recurso_precio[d]
-											dinero_privado += e * recurso_precio[d]
-											mes_compra_interna[current_mes] += round(e * recurso_precio[d])
-											edificio.empresa.dinero += e * recurso_precio[d]
+											var temp_precio = round(e * recurso_precio[d])
+											dinero -= temp_precio
+											dinero_privado += temp_precio
+											mes_compra_interna[current_mes] += temp_precio
+											array_set(mes_compra_recurso[current_mes], d, mes_compra_recurso[current_mes, d] + temp_precio)
+											edificio.empresa.dinero += temp_precio
 										}
 									}
 									else{
 										edificio.almacen[d] += tienda.almacen[d]
 										if tienda.privado{
-											dinero -= tienda.almacen[d] * recurso_precio[d]
-											dinero_privado += tienda.almacen[d] * recurso_precio[d]
-											mes_compra_interna[current_mes] += round(tienda.almacen[d] * recurso_precio[d])
+											var temp_precio = round(tienda.almacen[d] * recurso_precio[d])
+											dinero -= temp_precio
+											dinero_privado += temp_precio
+											mes_compra_interna[current_mes] += temp_precio
+											array_set(mes_compra_recurso[current_mes], d, mes_compra_recurso[current_mes, d] + temp_precio)
 										}
 										tienda.almacen[d] = 0
 									}

@@ -18,10 +18,8 @@ function draw_boton(x, y, text, borde = false, able = true, display = undefined,
 				if display != undefined
 					display(display_arguments)
 				if mouse_check_button_pressed(mb_left) or (not pressed and mouse_check_button(mb_left)){
-					if pressed{
-						show_debug_message("draw_boton")
+					if pressed
 						mouse_clear(mb_left)
-					}
 					return true
 				}
 			}
