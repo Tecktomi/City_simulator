@@ -1,5 +1,7 @@
-function destroy_persona(persona = null_persona, muerte = true){
+function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 	with control{
+		if debug
+			show_debug_message(fecha(dia) + $" destroy_persona ({name(persona)}) ({motivo})")
 		var  flag = false
 		array_remove(personas, persona, "eliminar persona")
 		array_remove(cumples[persona.cumple], persona, "eliminar persona de los cumpleaños")
@@ -62,6 +64,7 @@ function destroy_persona(persona = null_persona, muerte = true){
 		if persona.escuela != null_edificio
 			array_remove(persona.escuela.clientes, persona, "eliminar persona de la escuela")
 		if persona.medico != null_edificio{
+			show_debug_message($"{fecha(dia)} {name(persona)} eliminada de la lista de espera en {persona.medico.nombre}")
 			array_remove(persona.medico.clientes, persona, "eliminar persona del médico")
 			if array_length(desausiado.clientes) > 0{
 				var temp_persona = null_persona

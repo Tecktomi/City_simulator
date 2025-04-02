@@ -1,5 +1,7 @@
 function cambiar_casa(familia = control.null_familia, casa = control.null_edificio){
 	with control{
+		if debug
+			show_debug_message(fecha(dia) + $" cambiar_casa ({name_familia(familia)})")
 		if edificio_nombre[familia.casa.tipo] != "Toma" and familia.casa != homeless and array_length(familia.casa.familias) = edificio_familias_max[familia.casa.tipo]
 			array_push(casas_libres, familia.casa)
 		array_remove(familia.casa.familias, familia, "persona yendose de su casa")

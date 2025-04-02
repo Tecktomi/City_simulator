@@ -1,5 +1,7 @@
 function acelerar_edificio(construccion = control.null_construccion){
 	with control{
+		if debug
+			show_debug_message(string(dia) + " acelerar_edificio")
 		array_remove(cola_construccion, construccion)
 		x = construccion.x
 		y = construccion.y
@@ -60,6 +62,10 @@ function acelerar_edificio(construccion = control.null_construccion){
 				tutorial_complete = true
 			if tutorial = 17 and var_edificio_nombre = "Escuela"
 				tutorial_complete = true
+		}
+		if sel_info and sel_tipo = 3 and sel_construccion = construccion{
+			sel_tipo = 0
+			sel_edificio = edificio
 		}
 		return edificio
 	}

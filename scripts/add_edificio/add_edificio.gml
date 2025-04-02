@@ -1,5 +1,7 @@
 function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 	with control{
+		if debug
+			show_debug_message(fecha(dia) + $" add_edificio ({edificio_nombre[tipo]} {edificio_number[tipo]})")
 		var edificio = {
 			nombre : edificio_nombre[tipo] + " " + string(++edificio_number[tipo]),
 			familias : [null_familia],

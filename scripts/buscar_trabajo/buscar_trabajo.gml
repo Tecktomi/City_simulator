@@ -1,5 +1,7 @@
 function buscar_trabajo(persona = control.null_persona){
 	with control{
+		if debug
+			show_debug_message(fecha(dia) + $" buscar_trabajo ({name(persona)})")
 		if array_length(trabajos) > 0{
 			var trabajo = null_edificio
 			for(var a = persona.educacion; a >= 0; a--)

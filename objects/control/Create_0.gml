@@ -1,6 +1,6 @@
 randomize()
 var a, b
-debug = false
+debug = true
 #region Save
 	roaming = game_save_id
 	directory_create(roaming + "Personas")
@@ -18,6 +18,7 @@ debug = false
 	ini_close()
 #endregion
 #region Definiciones independientes
+	dia = 1
 	pais_nombre = ["Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana", "Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos", "Gran Colombia", "Provincias Unidas de Centroamérica", "España", "Francia", "Inglaterra", "Portugal", "Holanda", "Virreinato de Nueva España", "Virreinato de Nueva Granada"]
 	pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88, 90, 92, 88, 88, 77, 86, 96, 78, 90, 90, 80, 70, 70, 80, 70, 90, 90]
 	pais_inicio = [0, 95, 21, 41, 38, 38, 103, 38, 4, 44, 31, 31, 22, 181, 162, 38, 173, 0, 19, 19, 23, 0, 0, 0, 0, 0, 0, 0]
@@ -347,7 +348,7 @@ debug = false
 		def_edificio_base("Toma", 1, 1,,,,,, 20, 5,,,,true ,, true, 1, 15); def_edificio_servicio(); def_edificio_trabajo()
 		def_edificio_base("Delincuente"); def_edificio_servicio(); def_edificio_trabajo(,,10,,, 0.05)
 		def_edificio_base("Comisaría", 4, 2, 900, 720, [1, 10, 15, 26], [20, 5, 20, 25], 12, 40); def_edificio_servicio(,,,,, 4); def_edificio_trabajo(true, 4, 40, 7,, 0.04)
-		def_edificio_base("Mercado", 4, 4, 600, 360, [1, 10, 16, 26], [20, 5, 20, 20], 10, 40, 10); def_edificio_servicio(); def_edificio_trabajo(true, 15, 35, 4)
+		def_edificio_base("Mercado", 4, 4, 600, 360, [1, 10, 16, 26], [20, 5, 20, 20], 10, 40, 10); def_edificio_servicio(); def_edificio_trabajo(true, 4, 35, 4)
 		def_edificio_base("Mueblería", 5, 4, 2500, 720, [1, 10, 24, 26], [25, 10, 20, 40], 20, 40, 5, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, 0.01, true, [1], [4], [25], [1], 1)
 		def_edificio_base("Fábrica Textil", 8, 6, 9000, 2400, [1, 10, 15, 24, 26], [50, 20, 30, 50, 60], 60, 25, 30, false,,,,,,,,, 30); def_edificio_servicio(); def_edificio_trabajo(true, 30, 20, 4,, 0.04, true, [3, 20], [3, 3], [16], [1], 3, true, true)
 		def_edificio_base("Tejar", 5, 4, 1500, 360, [1, 10, 26], [20, 10, 30], 7, 40, -5, false); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 5,, 0.01)
@@ -541,6 +542,7 @@ debug = false
 #region edificios ficticios
 	edificios_ocio_index = []
 	edificio_almacen_index = []
+	edificio_experiencia = []
 	for(a = 0; a < array_length(edificio_nombre); a++){
 		if edificio_es_ocio[a]{
 			null_persona.ocios[a] = 0
@@ -553,6 +555,7 @@ debug = false
 		array_pop(edificio_count[a])
 		almacenes[a] = [null_edificio]
 		array_pop(almacenes[a])
+		array_push(edificio_experiencia, 1)
 	}
 	jubilado = add_edificio(0, 0, 1, false)
 	desausiado = add_edificio(0, 0, 2, false)
@@ -563,7 +566,6 @@ debug = false
 #endregion
 //Settings
 #region diseño del mundo
-	dia = 1
 	xsize = 240
 	ysize = 240
 	for(a = 0; a < array_length(recurso_cultivo); a++)

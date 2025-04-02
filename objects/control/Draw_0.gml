@@ -1731,7 +1731,7 @@ else{
 			if array_length(cola_construccion) > 0{
 				var b = 0
 				for(var a = 0; a < array_length(edificio_count[20]); a++)
-					b += edificio_count[20, a].trabajo_mes / 25 * (0.8 + 0.1 * edificio_count[20, a].presupuesto)
+					b += array_length(edificio_count[20, a].trabajadores) * (0.8 + 0.1 * edificio_count[20, a].presupuesto) * edificio_count[20, a].eficiencia * edificio_experiencia[20]
 				var next_build = cola_construccion[0]
 				next_build.tiempo -= b
 				//Edificio_terminado
@@ -1742,10 +1742,10 @@ else{
 			if array_length(encargos) > 0{
 				var c = 0, rss_in = [], rss_out = []
 				for(var a = 0; a < array_length(edificio_count[22]); a++)
-					c += 3 * array_length(edificio_count[22, a].trabajadores) * (0.8 + 0.1 * edificio_count[22, a].presupuesto)
+					c += 3 * array_length(edificio_count[22, a].trabajadores) * (0.8 + 0.1 * edificio_count[22, a].presupuesto) * edificio_count[22, a].eficiencia * edificio_experiencia[22]
 				for(var a = 0; a < array_length(edificio_count[13]); a++)
 					if not (current_mes = edificio_count[13, a].mes_creacion or current_mes = (edificio_count[13, a].mes_creacion + 6) mod 12)
-						c += 2 * array_length(edificio_count[13, a].trabajadores) * (0.8 + 0.1 * edificio_count[13, a].presupuesto)
+						c += 2 * array_length(edificio_count[13, a].trabajadores) * (0.8 + 0.1 * edificio_count[13, a].presupuesto) * edificio_count[13, a].eficiencia * edificio_experiencia[22]
 				c = round(c)
 				for(var a = 0; a < array_length(recurso_nombre); a++){
 					array_push(rss_in, false)
@@ -2224,16 +2224,16 @@ else{
 							var familia = persona.familia
 							if familia.padre.felicidad < 15 and familia.madre.felicidad < 15{
 								if familia.padre != null_persona{
-									destroy_persona(familia.padre, false)
+									destroy_persona(familia.padre, false, "Padre emigrado")
 									mes_emigrantes[current_mes]++
 								}
 								if array_contains(familias, familia) and familia.madre != null_persona{
-									destroy_persona(familia.madre, false)
+									destroy_persona(familia.madre, false, "Madre emigrada")
 									mes_emigrantes[current_mes]++
 								}
 								if array_contains(familias, familia)
 									for(var b = 0; b < array_length(familia.hijos); b++){
-										destroy_persona(familia.hijos[b], false)
+										destroy_persona(familia.hijos[b], false, "Hijo emigrado")
 										mes_emigrantes[current_mes]++
 									}
 							}
@@ -2308,7 +2308,7 @@ else{
 				//Muertes
 				while array_length(muerte[dia mod 365]) > 0{
 				var persona = array_shift(muerte[dia mod 365])
-				destroy_persona(persona)
+				destroy_persona(persona,, "Muerte de causa natural")
 				mes_muertos[current_mes]++
 			}
 			#endregion
@@ -2405,6 +2405,8 @@ else{
 			//Ciclo de los edificios
 			for(var a = 0; a < array_length(dia_trabajo[dia mod 28]); a++){
 				var edificio = dia_trabajo[dia mod 28, a], index = edificio.tipo, width = edificio.width, height = edificio.height, var_edificio_nombre = edificio_nombre[index]
+				if edificio.presupuesto > 3
+					edificio_experiencia[index] = 2 - 0.99 * (2 - edificio_experiencia[index])
 				if edificio = delincuente
 					continue
 				edificio.ganancia -= edificio.mantenimiento
@@ -2445,7 +2447,7 @@ else{
 						//Granjas
 						if var_edificio_nombre = "Granja"{
 							if current_mes = 5 or current_mes = 10{
-								edificio.almacen[recurso_cultivo[edificio.modo]] += round(15 * min(edificio.count, edificio.trabajo_mes / 5) * edificio.eficiencia * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
+								edificio.almacen[recurso_cultivo[edificio.modo]] += round(15 * min(edificio.count, edificio.trabajo_mes / 5) * edificio.eficiencia * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200) * edificio_experiencia[index])
 								edificio.count = 0
 							}
 							else
@@ -2462,7 +2464,7 @@ else{
 						else if var_edificio_nombre = "Aserradero"{
 							//Cortar árboles
 							if array_length(edificio.array_complex) > 0{
-								b = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto))
+								b = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index])
 								var e = b, flag = false
 								while b > 0 and array_length(edificio.array_complex) > 0{
 									var complex = edificio.array_complex[0]
@@ -2528,7 +2530,7 @@ else{
 						}
 						//Pescadería
 						else if var_edificio_nombre = "Pescadería"{
-							edificio.almacen[8] += round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200))
+							edificio.almacen[8] += round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200) * edificio.eficiencia * edificio_experiencia[index])
 							b = 200 * edificio.es_almacen
 							if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[8] > b{
 								edificio.ganancia += recurso_precio[8] * (edificio.almacen[8] - b)
@@ -2538,7 +2540,7 @@ else{
 						}
 						//Minas
 						else if var_edificio_nombre = "Mina"{
-							b = round(edificio.trabajo_mes / 2 * (0.8 + 0.1 * edificio.presupuesto))
+							b = round(edificio.trabajo_mes / 2 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index])
 							var e = b, f = min(xsize - 1, edificio.x + width + 1), g = min(ysize - 1, edificio.y + height + 1)
 							for(var c = max(0, edificio.x - 1); c < f; c++){
 								for(var d = max(0, edificio.y - 1); d < g; d++)
@@ -2661,7 +2663,7 @@ else{
 						}
 						//Rancho
 						else if var_edificio_nombre = "Rancho"{
-							b = edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200)
+							b = round(edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200) * edificio.eficiencia * edificio_experiencia[index])
 							for(var c = 0; c < array_length(ganado_produccion[edificio.modo]); c++)
 								edificio.almacen[ganado_produccion[edificio.modo, c]] += floor(10 * b / array_length(ganado_produccion[edificio.modo]))
 							if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12
@@ -2682,7 +2684,7 @@ else{
 								persona.preso = false
 								cambiar_trabajo(persona, null_edificio)
 							}
-							for(b = irandom(edificio.trabajo_mes / 14 * (0.8 + 0.1 * edificio.presupuesto)); b > 0 and array_length(edificio.clientes) < edificio_clientes_max[index]; b--){
+							for(b = irandom(edificio.trabajo_mes / 14 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]); b > 0 and array_length(edificio.clientes) < edificio_clientes_max[index]; b--){
 								var temp_edificio = edificio.casas_cerca[irandom(array_length(edificio.casas_cerca) - 1)]
 								if temp_edificio.ladron != null_persona{
 									var persona = temp_edificio.ladron
@@ -2720,7 +2722,7 @@ else{
 									}
 								}
 								if max_rss > 0{
-									b = max(0, min(max_rss, round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index])))
+									b = max(0, min(max_rss, round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index] * edificio.eficiencia * edificio_experiencia[index])))
 									if edificio_industria_vapor[index] and edificio.almacen[9] = 0
 										b = 0
 									if b > 0{
@@ -2737,7 +2739,7 @@ else{
 								var temp_array = []
 								for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
 									array_push(temp_array, edificio.almacen[edificio_industria_input_id[index, c]] / edificio_industria_input_num[index, c])
-								b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index])))
+								b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index] * edificio.eficiencia)))
 								if edificio_industria_vapor[index] and edificio.almacen[9] = 0
 									b = 0
 								if b > 0{
@@ -2784,7 +2786,7 @@ else{
 						}
 						//Tejar
 						else if var_edificio_nombre = "Tejar"{
-							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia)
+							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index])
 							edificio.almacen[26] += b
 							if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[26] > 0{
 								edificio.ganancia += recurso_precio[26] * edificio.almacen[26]
@@ -2794,7 +2796,7 @@ else{
 						}
 						//Pozo Petrolífero
 						else if var_edificio_nombre = "Pozo Petrolífero"{
-							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto))
+							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index])
 							var e = b, f = edificio.x + width, g = edificio.y + height
 							for(var c = edificio.x; c < f; c++){
 								for(var d = edificio.x; d < g; d++)
@@ -2943,13 +2945,13 @@ else{
 						if irandom(15) > familia.felicidad_alimento{
 							flag = false
 							if familia.padre != null_persona{
-								flag = destroy_persona(familia.padre)
+								flag = destroy_persona(familia.padre,, "Padre muerto de inanicion")
 								if exigencia_pedida[2]
 									fallar_exigencia(2)
 								mes_inanicion[current_mes] ++
 							}
 							if not flag and familia.madre != null_persona{
-								flag = destroy_persona(familia.madre)
+								flag = destroy_persona(familia.madre,, "Madre muerta de inanicion")
 								if exigencia_pedida[2]
 									fallar_exigencia(2)
 								mes_inanicion[current_mes]++
@@ -2957,7 +2959,7 @@ else{
 							if not flag
 								for(var c = 0; not flag and c < array_length(familia.hijos); c++)
 									if brandom(){
-										flag = destroy_persona(familia.hijos[c])
+										flag = destroy_persona(familia.hijos[c],, "Hijo muerto de inanicion")
 										if exigencia_pedida[2]
 											fallar_exigencia(2)
 										mes_inanicion[current_mes]++
@@ -2984,7 +2986,7 @@ else{
 				//Edificios médicos
 				if edificio_es_medico[index]{
 					//Curar pacientes
-					repeat(min(array_length(edificio.clientes), round(edificio_clientes_calidad[index] * edificio.trabajo_mes / 1400 * (0.8 + 0.1 * edificio.presupuesto)))){
+					repeat(min(array_length(edificio.clientes), round(edificio_clientes_calidad[index] * edificio.trabajo_mes / 1400 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]))){
 						var persona = array_shift(edificio.clientes)
 						persona.felicidad_salud = edificio_clientes_calidad[index]
 						persona.medico = null_edificio
@@ -3021,7 +3023,7 @@ else{
 								for(var c = 0; c < array_length(persona.escuela.clientes); c++)
 									persona.escuela.clientes[c].felicidad_salud = floor(persona.escuela.clientes[c].felicidad_salud * 0.9)
 							}
-							destroy_persona(persona)
+							destroy_persona(persona,, $"Paciente muerto ({persona.medico.nombre})")
 							mes_enfermos[current_mes]++
 							b--
 						}
@@ -3037,7 +3039,7 @@ else{
 					if edificio.trabajadores_max = 0
 						edificio.count = 0
 					else
-						edificio.count = max(0, floor(edificio.count * (1 - edificio.trabajo_mes / 28 / edificio.trabajadores_max)))
+						edificio.count = max(0, floor(edificio.count * (1 - edificio.trabajo_mes / 28 / edificio.trabajadores_max * edificio.eficiencia * edificio_experiencia[index])))
 				}
 				edificio.trabajo_mes = 28 * array_length(edificio.trabajadores)
 			}
@@ -3086,9 +3088,9 @@ else{
 		}
 		//Claves
 		if keyboard_check(vk_lshift) and keyboard_check(ord("4")){
-		dinero += 100
-		mes_herencia[current_mes] += 100
-	}
+			dinero += 1000
+			mes_herencia[current_mes] += 1000
+		}
 	#endregion
 	//Tutorial
 	if tutorial_bool and not menu{

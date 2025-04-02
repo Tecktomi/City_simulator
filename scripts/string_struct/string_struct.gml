@@ -40,8 +40,20 @@ function string_struct(struct, b = 0){
 		}
 	}
 	else{
-		if array_contains(global.stack, struct)
-			return string_repeat(" ", b) +  "..."
+		if struct = control.null_persona
+			return string_repeat(" ", b) + "null_persona"
+		else if struct = control.null_edificio
+			return string_repeat(" ", b) + "null_edificio"
+		else if struct = control.null_familia
+			return string_repeat(" ", b) + "null_familia"
+		else if struct = control.null_empresa
+			return string_repeat(" ", b) + "null_empresa"
+		else if struct = control.null_relacion
+			return string_repeat(" ", b) + "null_relacion"
+		else if struct = control.null_construccion
+			return string_repeat(" ", b) + "null_construccion"
+		else if array_contains(global.stack, struct)
+			return string_repeat(" ", b) + "..."
 		else{
 			array_push(global.stack, struct)
 			var text = "{\n"
