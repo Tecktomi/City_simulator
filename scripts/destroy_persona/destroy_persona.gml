@@ -66,12 +66,7 @@ function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 		if persona.medico != null_edificio{
 			show_debug_message($"{fecha(dia)} {name(persona)} eliminada de la lista de espera en {persona.medico.nombre}")
 			array_remove(persona.medico.clientes, persona, "eliminar persona del médico")
-			if array_length(desausiado.clientes) > 0{
-				var temp_persona = null_persona
-				temp_persona = array_shift(desausiado.clientes)
-				array_push(persona.medico.clientes, temp_persona)
-				temp_persona.medico = persona.medico
-			}
+			traer_paciente_en_espera(persona.medico)
 		}
 		if persona.ladron != null_edificio
 			persona.ladron.ladron = null_persona

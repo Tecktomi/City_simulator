@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"traer_paciente_en_espera",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"traer_paciente_en_espera",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

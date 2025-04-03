@@ -460,7 +460,7 @@ else{
 					max_width = max(max_width, string_width(name(personas[a + show_scroll])))
 				}
 				pos = 120
-				for(var a = 0; a < 20; a++)
+				for(var a = 0; a < min(20, array_length(personas)); a++)
 					draw_text_pos(410 + max_width, pos, $"{personas[a + show_scroll].edad} años")
 			}
 			//Ministerio de Vivienda
@@ -556,7 +556,7 @@ else{
 			}
 			//Ministerio de Salud
 			else if ministerio = 3{
-				var fel_sal = 0, temp_enfermos = 0, num_sal = 0, temp_espera = 0, num_hambre = 0, num_almacenes = 0, temp_accidentes = 0
+				var fel_sal = 0, temp_enfermos = 0, num_sal = 0, temp_espera = 0, num_hambre = 0, num_almacenes = 0, temp_accidentes = 0, num_impor = 0
 				for(var a = 0; a < array_length(personas); a++){
 					fel_sal += personas[a].felicidad_salud
 					if personas[a].medico != null_edificio{
@@ -605,6 +605,11 @@ else{
 								d += edificio.almacen[recurso_comida[c]]
 							draw_text_pos(130, pos, $"{d} comida almacenada")
 						}
+				draw_text_pos(110, pos, $"Alimento necesario al año: {array_length(personas) * 12}")
+				for(var a = 0; a < array_length(recurso_comida); a++)
+					num_impor += recurso_importado_fijo[recurso_comida[a]]
+				if num_impor > 0
+					draw_text_pos(120, pos, $"({num_impor} alimentos importados)")
 			}
 			//Ministerio de Educación
 			else if ministerio = 4{
@@ -778,15 +783,15 @@ else{
 				}
 				max_width += max_width_2 + 10
 				pos = 140
-				draw_text_pos(420 + max_width, pos, "Mensual")
+				draw_text_pos(420 + max_width, pos, "Anual")
 				max_width_2 = last_width
 				for(var a = 0; a < 20; a++){
 					if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado_fijo[a + show_scroll]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Importación fija mensual")})
 						if not keyboard_check(vk_lshift)
-							recurso_importado_fijo[a + show_scroll] += 50
+							recurso_importado_fijo[a + show_scroll] += 100
 						else if recurso_importado_fijo[a + show_scroll] > 0
-							recurso_importado_fijo[a + show_scroll] -= 50
-						max_width_2 = max(max_width_2, last_width)
+							recurso_importado_fijo[a + show_scroll] -= 100
+					max_width_2 = max(max_width_2, last_width)
 				}
 				max_width += max_width_2 + 10
 				pos = 120
@@ -2103,7 +2108,10 @@ else{
 						//Accidentes laborales
 						if persona.trabajo != null_edificio and random(1) < persona.trabajo.trabajo_riesgo{
 							mes_accidentes[current_mes]++
-							buscar_atencion_medica(persona)
+							if persona.medico != null_edificio
+								destroy_persona(persona,, "Accidente laboral")
+							else
+								buscar_atencion_medica(persona)
 						}
 						//Comprar productos de lujo
 						for(var b = 0; b < array_length(recurso_lujo); b++){
@@ -2307,10 +2315,10 @@ else{
 				}
 				//Muertes
 				while array_length(muerte[dia mod 365]) > 0{
-				var persona = array_shift(muerte[dia mod 365])
-				destroy_persona(persona,, "Muerte de causa natural")
-				mes_muertos[current_mes]++
-			}
+					var persona = array_shift(muerte[dia mod 365])
+					destroy_persona(persona,, "Muerte de causa natural")
+					mes_muertos[current_mes]++
+				}
 			#endregion
 			//Ciclo de las empresas
 			for(var a = 0; a < array_length(dia_empresas[dia mod 28]); a++){
@@ -2642,21 +2650,21 @@ else{
 										c -= total
 									}
 									#region Importaciones
-									var total = min(c, recurso_importado[b])
-									edificio.almacen[b] += total
-									var d = floor(total * recurso_precio[b] * 1.2)
-									dinero -= d
-									mes_importaciones[current_mes] += d
-									array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
-									recurso_importado[b] -= total
-									c -= total
-									total = min(c, recurso_importado_fijo[b])
-									edificio.almacen[b] += total
-									d = floor(total * recurso_precio[b] * 1.2)
-									dinero -= d
-									mes_importaciones[current_mes] += d
-									array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
-									c -= total
+										var total = min(c, recurso_importado[b])
+										edificio.almacen[b] += total
+										var d = floor(total * recurso_precio[b] * 1.2)
+										dinero -= d
+										mes_importaciones[current_mes] += d
+										array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
+										recurso_importado[b] -= total
+										c -= total
+										total = min(c, recurso_importado_fijo[b] / 2 / array_length(edificio_count[13]))
+										edificio.almacen[b] += total
+										d = floor(total * recurso_precio[b] * 1.2)
+										dinero -= d
+										mes_importaciones[current_mes] += d
+										array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
+										c -= total
 									#endregion
 								}
 							}
@@ -2990,11 +2998,7 @@ else{
 						var persona = array_shift(edificio.clientes)
 						persona.felicidad_salud = edificio_clientes_calidad[index]
 						persona.medico = null_edificio
-						if array_length(desausiado.clientes) > 0{
-							var temp_persona = array_shift(desausiado.clientes)
-							array_push(edificio.clientes, temp_persona)
-							temp_persona.medico = edificio
-						}
+						traer_paciente_en_espera(edificio)
 					}
 					//Pacientes no curados
 					for(var b = 0; b < array_length(edificio.clientes); b++){
@@ -3023,7 +3027,11 @@ else{
 								for(var c = 0; c < array_length(persona.escuela.clientes); c++)
 									persona.escuela.clientes[c].felicidad_salud = floor(persona.escuela.clientes[c].felicidad_salud * 0.9)
 							}
-							destroy_persona(persona,, $"Paciente muerto ({persona.medico.nombre})")
+							var temp_text = "["
+							for(var c = 0; c < array_length(edificio.clientes); c++)
+								temp_text  += name(edificio.clientes[c]) + ", "
+							show_debug_message(temp_text + "]")
+							destroy_persona(persona,, $"Paciente muerto ({edificio.nombre})")
 							mes_enfermos[current_mes]++
 							b--
 						}

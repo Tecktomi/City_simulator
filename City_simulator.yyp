@@ -78,6 +78,7 @@
     {"id":{"name":"spawn_build","path":"scripts/spawn_build/spawn_build.yy",},},
     {"id":{"name":"string_struct_begin","path":"scripts/string_struct_begin/string_struct_begin.yy",},},
     {"id":{"name":"string_struct","path":"scripts/string_struct/string_struct.yy",},},
+    {"id":{"name":"traer_paciente_en_espera","path":"scripts/traer_paciente_en_espera/traer_paciente_en_espera.yy",},},
     {"id":{"name":"tutorial_set","path":"scripts/tutorial_set/tutorial_set.yy",},},
     {"id":{"name":"valorizar_edificio","path":"scripts/valorizar_edificio/valorizar_edificio.yy",},},
     {"id":{"name":"spr_1x1","path":"sprites/spr_1x1/spr_1x1.yy",},},

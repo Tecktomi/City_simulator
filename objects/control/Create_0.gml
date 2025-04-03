@@ -1,6 +1,6 @@
 randomize()
 var a, b
-debug = true
+debug = false
 #region Save
 	roaming = game_save_id
 	directory_create(roaming + "Personas")
