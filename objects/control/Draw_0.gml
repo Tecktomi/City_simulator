@@ -611,6 +611,12 @@ else{
 					num_impor += recurso_importado_fijo[recurso_comida[a]]
 				if num_impor > 0
 					draw_text_pos(120, pos, $"({num_impor} alimentos importados)")
+				if (dia / 365) > 50{
+					pos += 10
+					draw_text_pos(120, pos, $"Entrada máxima de agua: {agua_input}")
+					draw_text_pos(120, pos, $"Salida máxima de agua: {agua_output}")
+					draw_text_pos(120, pos, $"Eficiencia: {min(100, 100 * agua_input / agua_output)}%")
+				}
 			}
 			//Ministerio de Educación
 			else if ministerio = 4{
@@ -1482,6 +1488,13 @@ else{
 								sel_familia = sel_edificio.familias[a]
 								sel_tipo = 1
 							}
+					if not sel_edificio.tuberias and (dia / 365) > 50 and draw_boton(room_width - 20, pos, "Conectar agua potable $200") and dinero >= 200{
+						sel_edificio.tuberias = true
+						dinero -= 200
+						mes_construccion[current_mes] += 200
+						agua_output += edificio_agua[index]
+						set_calidad_vivienda(sel_edificio)
+					}
 				}
 				//Información trabajadores
 				if edificio_es_trabajo[index]{
@@ -2298,6 +2311,7 @@ else{
 							persona.felicidad_salud = floor((persona.felicidad_salud + 3 * temp_contaminacion) / 4)
 						}
 						persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
+						set_calidad_vivienda(persona.familia.casa)
 						var temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley, persona.felicidad_crimen]
 						persona.felicidad_crimen = min(persona.felicidad_crimen + 5, 100)
 						if persona.es_hijo{
@@ -2901,7 +2915,7 @@ else{
 						}
 						//Pozo Petrolífero
 						else if var_edificio_nombre = "Pozo Petrolífero"{
-							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index])
+							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * min(1, agua_input / agua_output))
 							var e = b, f = edificio.x + width, g = edificio.y + height
 							for(var c = edificio.x; c < f; c++){
 								for(var d = edificio.x; d < g; d++)
@@ -2943,14 +2957,27 @@ else{
 								edificio.almacen[27] = 0
 							}
 						}
+						//Bomba de Agua
+						else if var_edificio_nombre = "Bomba de Agua"{
+							agua_input -= edificio.count
+							b = min(edificio.almacen[9] * 25, round(edificio.trabajo_mes * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]))
+							edificio.almacen[9] -= ceil(b / 25)
+							edificio.ganancia -= round(recurso_precio[9] * ceil(b / 25))
+							add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 100, edificio)
+							edificio.pedido[9] = 100 - edificio.almacen[9]
+							edificio.count = b
+							agua_input += b
+						}
 					}
 				}
 				//Casas
 				if edificio_es_casa[index] and (array_length(edificio.familias) > 0 or var_edificio_nombre = "Toma"){
 					if var_edificio_nombre = "Toma" and array_length(edificio.familias) = 0{
 						destroy_edificio(edificio)
+						a--
 						continue
 					}
+					set_calidad_vivienda(edificio)
 					var b = edificio_familias_renta[index] * array_length(edificio.familias)
 					edificio.ganancia += b
 					if edificio.privado{

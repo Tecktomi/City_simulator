@@ -26,6 +26,8 @@ function destroy_edificio(edificio = control.null_edificio){
 			array_remove(trabajos, edificio, "eliminar trabajo")
 			for(var a = 0; a < array_length(edificio.casas_cerca); a++)
 				array_remove(edificio.casas_cerca[a].trabajos_cerca[edificio_trabajo_educacion[edificio.tipo]], edificio, "eliminar trabajo de las casas cercanas")
+			if edificio_nombre[tipo] = "Pozo Petrolífero"
+				agua_output -= edificio_agua[tipo]
 		}
 		if edificio_es_casa[tipo]{
 			array_remove(casas, edificio, "eliminar casa")
@@ -36,6 +38,8 @@ function destroy_edificio(edificio = control.null_edificio){
 				if array_length(edificio.familias) != edificio_familias_max[tipo]
 					array_remove(casas_libres, edificio, "elminar casa libre")
 			}
+			if edificio.tuberias
+				agua_output -= edificio_agua[tipo]
 		}
 		for(var a = 0; a < array_length(edificio.familias); a++){
 			var familia = edificio.familias[a]

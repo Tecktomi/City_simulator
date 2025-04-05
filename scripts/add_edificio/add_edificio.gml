@@ -18,6 +18,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			almacen : [],
 			pedido : [],
 			eficiencia : 1,
+			tuberias : false,
 			modo : 0,
 			array_complex : [{a : 0, b : 0}],
 			paro : false,
@@ -111,6 +112,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
 			}
+			else if var_edificio_nombre = "Pozo Petrolífero"
+				agua_output += edificio_agua[tipo]
 			if var_edificio_nombre != "Muelle"
 				buscar_muelle_cercano(edificio)
 			else{

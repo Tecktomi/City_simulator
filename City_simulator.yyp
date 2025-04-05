@@ -72,6 +72,7 @@
     {"id":{"name":"perlin","path":"scripts/perlin/perlin.yy",},},
     {"id":{"name":"print_familia","path":"scripts/print_familia/print_familia.yy",},},
     {"id":{"name":"scr_color","path":"scripts/scr_color/scr_color.yy",},},
+    {"id":{"name":"set_calidad_vivienda","path":"scripts/set_calidad_vivienda/set_calidad_vivienda.yy",},},
     {"id":{"name":"set_paro","path":"scripts/set_paro/set_paro.yy",},},
     {"id":{"name":"set_presupuesto","path":"scripts/set_presupuesto/set_presupuesto.yy",},},
     {"id":{"name":"show_tutorial","path":"scripts/show_tutorial/show_tutorial.yy",},},
