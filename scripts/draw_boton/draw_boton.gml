@@ -1,4 +1,4 @@
-function draw_boton(x, y, text, borde = false, able = true, display = undefined, display_arguments = undefined, pressed = true){
+function draw_boton(x, y, text, borde = false, able = true, display = undefined, display_arguments = undefined, pressed = true, vertical = true){
 	with control{
 		var c = draw_get_color(), d = draw_get_halign(), e = (d = fa_left ? 1 : (d = fa_center ? 0.5 : 0))
 		var f = draw_get_valign(), g = (f = fa_top ? 1 : (f = fa_middle ? 0.5 : 0)), width = string_width(text), height = string_height(text)
@@ -11,7 +11,10 @@ function draw_boton(x, y, text, borde = false, able = true, display = undefined,
 		draw_text(x, y, text)
 		last_width = width
 		last_height = height
-		pos += (2 * g - 1) * height
+		if vertical
+			pos += (2 * g - 1) * height
+		else
+			wpos += (2 * e - 1) * width
 		if able{
 			if mouse_x > x + (e - 1) * width and mouse_y > y + (1 - g) * height and mouse_x < x + e * width and mouse_y < y + g * height{
 				cursor = cr_handpoint

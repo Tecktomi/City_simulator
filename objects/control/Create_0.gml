@@ -825,6 +825,7 @@ debug = false
 	prev_beneficio_privado = 0
 	credibilidad_financiera = 3
 	pos = 0
+	wpos = 0
 	deuda = false
 	deuda_dia = 0
 	null_encargo = {

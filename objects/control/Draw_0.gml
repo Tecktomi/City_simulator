@@ -642,32 +642,32 @@ else{
 			else if ministerio = 5{
 				var temp_array, temp_grid, temp_text_array, count, maxi, temp_exportaciones, temp_importaciones, temp_compra, temp_venta
 				#region Definición de variables
-				temp_grid[0] = mes_renta
-				temp_grid[1] = mes_tarifas
-				temp_grid[2] = mes_herencia
-				temp_grid[3] = mes_exportaciones
-				temp_grid[4] = mes_sueldos
-				temp_grid[5] = mes_mantenimiento
-				temp_grid[6] = mes_construccion
-				temp_grid[7] = mes_importaciones
-				temp_grid[8] = mes_compra_interna
-				temp_grid[9] = mes_venta_interna
-				temp_grid[10] = mes_privatizacion
-				temp_grid[11] = mes_estatizacion
-				temp_grid[12] = mes_impuestos
-				temp_text_array[0] = "Renta"
-				temp_text_array[1] = "Tarifas"
-				temp_text_array[2] = "Herencia"
-				temp_text_array[3] = "Exportaciones"
-				temp_text_array[4] = "Sueldos"
-				temp_text_array[5] = "Mantenimiento"
-				temp_text_array[6] = "Construcción"
-				temp_text_array[7] = "Importaciones"
-				temp_text_array[8] = "Compra a Privados"
-				temp_text_array[9] = "Venta a Privados"
-				temp_text_array[10] = "Privatización"
-				temp_text_array[11] = "Estatización"
-				temp_text_array[12] = "Impuestos"
+					temp_grid[0] = mes_renta
+					temp_grid[1] = mes_tarifas
+					temp_grid[2] = mes_herencia
+					temp_grid[3] = mes_exportaciones
+					temp_grid[4] = mes_sueldos
+					temp_grid[5] = mes_mantenimiento
+					temp_grid[6] = mes_construccion
+					temp_grid[7] = mes_importaciones
+					temp_grid[8] = mes_compra_interna
+					temp_grid[9] = mes_venta_interna
+					temp_grid[10] = mes_privatizacion
+					temp_grid[11] = mes_estatizacion
+					temp_grid[12] = mes_impuestos
+					temp_text_array[0] = "Renta"
+					temp_text_array[1] = "Tarifas"
+					temp_text_array[2] = "Herencia"
+					temp_text_array[3] = "Exportaciones"
+					temp_text_array[4] = "Sueldos"
+					temp_text_array[5] = "Mantenimiento"
+					temp_text_array[6] = "Construcción"
+					temp_text_array[7] = "Importaciones"
+					temp_text_array[8] = "Compra a Privados"
+					temp_text_array[9] = "Venta a Privados"
+					temp_text_array[10] = "Privatización"
+					temp_text_array[11] = "Estatización"
+					temp_text_array[12] = "Impuestos"
 				#endregion
 				for(var a = 0; a < 13; a++){
 					count[a] = 0
@@ -751,8 +751,9 @@ else{
 					}
 				pos = 100
 				draw_set_color(c_black)
-				draw_text_pos(500, pos, "Mercado internacional")
+				//Menú general
 				if subministerio = -1{
+					draw_text_pos(500, pos, "Mercado internacional")
 					var max_width = 0, last_pos = 160, max_width_2 = 0
 					if mouse_wheel_up()
 						show_scroll--
@@ -829,65 +830,95 @@ else{
 							draw_line(800 + b * 10, 350 - 200 * (recurso_historial[a, b] - mini) / maxa, 800 + (b + 1) * 10, 350 - 200 * (recurso_historial[a, b + 1] - mini) / maxa)
 					}
 				}
+				//Menú por recurso
 				else{
-					var width = 510
-					draw_text_pos(500, pos, recurso_nombre[subministerio])
-					draw_text_pos(500, pos, $"precio ${recurso_precio[subministerio]}")
-					pos += 20
-					if draw_boton(510, pos, $"Exportar: {recurso_exportado[subministerio] ? "Sí" : "No"}")
-						recurso_exportado[subministerio] = not recurso_exportado[subministerio]
-					draw_text_pos(510, pos, $"Importación puntual: {recurso_importado[subministerio]}")
-					pos -= last_height
-					width = 510 + last_width
-					if recurso_importado[subministerio] > 0{
-						if draw_boton(width, pos, " - ")
-							recurso_importado[subministerio] -= 100
-						pos -= last_height
-						width += last_width
+					draw_text_pos(500, pos, "Detalles por Recurso")
+					if mouse_wheel_up()
+						show_scroll--
+					if mouse_wheel_down()
+						show_scroll++
+					show_scroll = clamp(show_scroll, 0, array_length(recurso_nombre) - 20)
+					var width = 0
+					for(var a = 0; a < 20; a++)
+						width = max(width, string_width(recurso_nombre[a + show_scroll]) + 10)
+					if draw_menu(500, pos, recurso_nombre[subministerio], 8){
+						draw_set_color(c_ltgray)
+						draw_rectangle(510, pos, 510 + width, pos + last_height * 20, false)
+						draw_set_color(c_black)
+						draw_rectangle(510, pos, 510 + width, pos + last_height * 20, true)
+						for(var a = 0; a < 20; a++)
+							if draw_boton(515, pos, recurso_nombre[a + show_scroll]){
+								subministerio = a + show_scroll
+								show[8] = false
+							}
 					}
-					if draw_boton(width, pos, " + ")
-						recurso_importado[subministerio] += 100
-					draw_text_pos(510, pos, $"Importación anual: {recurso_importado_fijo[subministerio]}")
-					pos -= last_height
-					width = 510 + last_width
-					if recurso_importado_fijo[subministerio] > 0{
-						if draw_boton(width, pos, " - ")
-							recurso_importado_fijo[subministerio] -= 100
-						pos -= last_height
-						width += last_width
-					}
-					if draw_boton(width, pos, " + ")
-						recurso_importado_fijo[subministerio] += 100
-					pos += 10
-					if draw_boton(510, pos, $"Banda de precio: {recurso_banda[subministerio] ? "Sí" : "No"}"){
-						recurso_banda[subministerio] = not recurso_banda[subministerio]
-						recurso_banda_min[subministerio] = recurso_precio[subministerio] * 0.9
-						recurso_banda_max[subministerio] = recurso_precio[subministerio] * 1.1
-					}
-					if recurso_banda[subministerio]{
-						draw_text_pos(520, pos, $"Precio mínimo: {recurso_banda_min[subministerio]}")
-						pos -= last_height
-						width = 520 + last_width
-						if draw_boton(width, pos, " - ")
-							recurso_banda_min[subministerio] *= 0.9
-						pos -= last_height
-						width += last_width
-						if draw_boton(width, pos, " + "){
-							recurso_banda_min[subministerio] /= 0.9
-							recurso_banda_max[subministerio] = max(recurso_banda_min[subministerio], recurso_banda_max[subministerio])
+					else{
+						draw_text_pos(500, pos, $"precio ${recurso_precio[subministerio]}")
+						pos += 20
+						if draw_boton(510, pos, $"Exportar: {recurso_exportado[subministerio] ? "Sí" : "No"}")
+							recurso_exportado[subministerio] = not recurso_exportado[subministerio]
+						wpos = 510
+						draw_text_pos(wpos, pos, $"Importación puntual: ", false)
+						if recurso_importado[subministerio] > 0
+							if draw_boton(wpos, pos, " - ",,,,,, false)
+								recurso_importado[subministerio] -= 100
+						if draw_boton(wpos, pos, " + ",,,,,, false)
+							recurso_importado[subministerio] += 100
+						draw_text_pos(wpos, pos, recurso_importado[subministerio])
+						wpos = 510
+						draw_text_pos(wpos, pos, $"Importación anual: ", false)
+						if recurso_importado_fijo[subministerio] > 0
+							if draw_boton(wpos, pos, " - ",,,,,, false)
+								recurso_importado_fijo[subministerio] -= 100
+						if draw_boton(wpos, pos, " + ",,,,,, false)
+							recurso_importado_fijo[subministerio] += 100
+						draw_text_pos(wpos, pos, recurso_importado_fijo[subministerio])
+						if array_contains(recurso_comida, subministerio) or array_contains(recurso_lujo, subministerio){
+							pos += 10
+							if draw_boton(510, pos, $"Banda de precio: {recurso_banda[subministerio] ? "Sí" : "No"}"){
+								recurso_banda[subministerio] = not recurso_banda[subministerio]
+								recurso_banda_min[subministerio] = recurso_precio[subministerio] * 0.9
+								recurso_banda_max[subministerio] = recurso_precio[subministerio] * 1.1
+							}
+							if recurso_banda[subministerio]{
+								wpos = 520
+								draw_text_pos(wpos, pos, $"Precio mínimo: {recurso_banda_min[subministerio]}", false)
+								if draw_boton(wpos, pos, " - ",,,,,, false)
+									recurso_banda_min[subministerio] *= 0.9
+								if draw_boton(wpos, pos, " + "){
+									recurso_banda_min[subministerio] /= 0.9
+									recurso_banda_max[subministerio] = max(recurso_banda_min[subministerio], recurso_banda_max[subministerio])
+								}
+								wpos = 520
+								draw_text_pos(wpos, pos, $"Precio máximo: {recurso_banda_max[subministerio]}", false)
+								if draw_boton(wpos, pos, " - ",,,,,, false){
+									recurso_banda_max[subministerio] *= 0.9
+									recurso_banda_min[subministerio] = min(recurso_banda_min[subministerio], recurso_banda_max[subministerio])
+								}
+								if draw_boton(wpos, pos, " + ")
+									recurso_banda_max[subministerio] /= 0.9
+							}
 						}
-						draw_text_pos(520, pos, $"Precio máximo: {recurso_banda_max[subministerio]}")
-						pos -= last_height
-						width = 520 + last_width
-						if draw_boton(width, pos, " - "){
-							recurso_banda_max[subministerio] *= 0.9
-							recurso_banda_min[subministerio] = min(recurso_banda_min[subministerio], recurso_banda_max[subministerio])
-						}
-						pos -= last_height
-						width += last_width
-						if draw_boton(width, pos, " + ")
-							recurso_banda_max[subministerio] /= 0.9
 					}
+					#region gráfico
+						draw_line(800, 150, 800, 350)
+						draw_line(800, 350, 1040, 350)
+						var mini = recurso_precio[subministerio], maxa = recurso_precio[subministerio]
+						for(b = 0; b < 24; b++){
+							mini = min(mini, recurso_historial[subministerio, b])
+							maxa = max(maxa, recurso_historial[subministerio, b])
+						}
+						draw_set_halign(fa_right)
+						draw_text(800, 150, $"${maxa}")
+						draw_text(800, 350, $"${mini}")
+						draw_set_halign(fa_center)
+						draw_text(920, 350, $"{recurso_nombre[subministerio]}")
+						draw_set_halign(fa_left)
+						maxa = maxa - mini
+						draw_text(1040, 350 - 200 * (recurso_historial[subministerio, 23] - mini) / maxa, $"${recurso_precio[subministerio]}")
+						for(b = 0; b < 23; b++)
+							draw_line(800 + b * 10, 350 - 200 * (recurso_historial[subministerio, b] - mini) / maxa, 800 + (b + 1) * 10, 350 - 200 * (recurso_historial[subministerio, b + 1] - mini) / maxa)
+					#endregion
 				}
 			}
 			//Ministerio de Exterior
@@ -2180,6 +2211,8 @@ else{
 						//Comprar productos de lujo
 						for(var b = 0; b < array_length(recurso_lujo); b++){
 							var c = recurso_lujo[b], temp_precio = recurso_precio[c]
+							if recurso_banda[c]
+								temp_precio = clamp(temp_precio, recurso_banda_min[c], recurso_banda_max[c])
 							if persona.familia.sueldo > 0 and persona.familia.riqueza > temp_precio and random(1) < recurso_lujo_prbabilidad[b] and array_length(edificio_count[35]) > 0{
 								var tienda = edificio_count[35, irandom(array_length(edificio_count[35]) - 1)]
 								if tienda.almacen[c] >= 1{
@@ -2944,6 +2977,8 @@ else{
 										edificio.almacen[d] += e
 										if tienda.privado{
 											var temp_precio = round(e * recurso_precio[d])
+											if recurso_banda[d]
+												temp_precio = clamp(temp_precio, recurso_banda_min[d], recurso_banda_max[d])
 											dinero -= temp_precio
 											dinero_privado += temp_precio
 											mes_compra_interna[current_mes] += temp_precio
@@ -2955,6 +2990,8 @@ else{
 										edificio.almacen[d] += tienda.almacen[d]
 										if tienda.privado{
 											var temp_precio = round(tienda.almacen[d] * recurso_precio[d])
+											if recurso_banda[d]
+												temp_precio = clamp(temp_precio, recurso_banda_min[d], recurso_banda_max[d])
 											dinero -= temp_precio
 											dinero_privado += temp_precio
 											mes_compra_interna[current_mes] += temp_precio
