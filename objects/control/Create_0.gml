@@ -44,6 +44,7 @@ debug = false
 						"Permite que los ciudadanos construyan tomas cuando no logran encontrar un hogar"]
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
+	subministerio = -1
 	null_construccion = {
 		x : 0,
 		y : 0,
@@ -509,6 +510,9 @@ debug = false
 	for(a = 0; a < array_length(recurso_nombre); a++){
 		array_push(null_edificio.almacen, 0)
 		array_push(null_edificio.pedido, 0)
+		recurso_banda[a] = false
+		recurso_banda_min[a] = 0
+		recurso_banda_max[a] = 0
 	}
 	current_mes = 0
 #endregion

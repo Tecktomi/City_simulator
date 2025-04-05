@@ -270,6 +270,7 @@ else{
 		sel_info = false
 		build_type = 0
 		ministerio = -1
+		subministerio = -1
 		if tutorial = 4
 			tutorial_complete = true
 	}
@@ -751,61 +752,63 @@ else{
 				pos = 100
 				draw_set_color(c_black)
 				draw_text_pos(500, pos, "Mercado internacional")
-				var max_width = 0, last_pos = 160, max_width_2 = 0
-				if mouse_wheel_up()
-					show_scroll--
-				if mouse_wheel_down()
-					show_scroll++
-				show_scroll = clamp(show_scroll, 0, array_length(recurso_nombre) - 20)
-				for(var a = 0; a < 20; a++){
-					draw_text_pos(420, last_pos + a * 20, recurso_nombre[a + show_scroll])
-					max_width = max(max_width, last_width)
-				}
-				pos = 120
-				draw_text_pos(420 + max_width, pos, "Exportar")
-				pos += 20
-				for(var a = 0; a < 20; a++)
-					recurso_exportado[a + show_scroll] = draw_boton_rectangle(420 + max_width + last_width / 2 - 5, pos + a * 20, 420 + max_width + last_width / 2 + 13, pos + a * 20 + 18, recurso_exportado[a + show_scroll])
-				max_width += last_width + 10
-				pos = 120
-				draw_text_pos(420 + max_width, pos, "Importar")
-				pos = 140
-				draw_text_pos(420 + max_width, pos, "Única")
-				max_width_2 = max(max_width_2, last_width)
-				last_pos = pos
-				for(var a = 0; a < 20; a++){
-					if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado[a + show_scroll]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Shift para reducir")})
-						if not keyboard_check(vk_lshift)
-							recurso_importado[a + show_scroll] += 100
-						else if recurso_importado[a + show_scroll] > 0
-							recurso_importado[a + show_scroll] -= 100
-					max_width_2  = max(max_width_2, last_width)
-				}
-				max_width += max_width_2 + 10
-				pos = 140
-				draw_text_pos(420 + max_width, pos, "Anual")
-				max_width_2 = last_width
-				for(var a = 0; a < 20; a++){
-					if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado_fijo[a + show_scroll]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Importación fija mensual")})
-						if not keyboard_check(vk_lshift)
-							recurso_importado_fijo[a + show_scroll] += 100
-						else if recurso_importado_fijo[a + show_scroll] > 0
-							recurso_importado_fijo[a + show_scroll] -= 100
-					max_width_2 = max(max_width_2, last_width)
-				}
-				max_width += max_width_2 + 10
-				pos = 120
-				draw_text_pos(420 + max_width, pos, "Balance")
-				pos += 20
-				for(var a = 0; a < 20; a++){
-					if draw_sprite_boton(spr_icono, 4 + (recurso_historial[a + show_scroll, 23] < recurso_historial[a + show_scroll, 0]), 420 + max_width, pos + a * 20, 20, 20){
-						var flag = show[a + show_scroll + 8]
-						close_show()
-						show[a + show_scroll + 8] = not flag
+				if subministerio = -1{
+					var max_width = 0, last_pos = 160, max_width_2 = 0
+					if mouse_wheel_up()
+						show_scroll--
+					if mouse_wheel_down()
+						show_scroll++
+					show_scroll = clamp(show_scroll, 0, array_length(recurso_nombre) - 20)
+					for(var a = 0; a < 20; a++){
+						if draw_boton(420, last_pos + a * 20, recurso_nombre[a + show_scroll])
+							subministerio = a + show_scroll
+						max_width = max(max_width, last_width)
 					}
-					draw_line(420, pos + a * 20, 460 + max_width, pos + a * 20)
-				}
-				for(var a = 0; a < array_length(recurso_nombre); a++)
+					pos = 120
+					draw_text_pos(420 + max_width, pos, "Exportar")
+					pos += 20
+					for(var a = 0; a < 20; a++)
+						recurso_exportado[a + show_scroll] = draw_boton_rectangle(420 + max_width + last_width / 2 - 5, pos + a * 20, 420 + max_width + last_width / 2 + 13, pos + a * 20 + 18, recurso_exportado[a + show_scroll])
+					max_width += last_width + 10
+					pos = 120
+					draw_text_pos(420 + max_width, pos, "Importar")
+					pos = 140
+					draw_text_pos(420 + max_width, pos, "Única")
+					max_width_2 = max(max_width_2, last_width)
+					last_pos = pos
+					for(var a = 0; a < 20; a++){
+						if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado[a + show_scroll]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Shift para reducir")})
+							if not keyboard_check(vk_lshift)
+								recurso_importado[a + show_scroll] += 100
+							else if recurso_importado[a + show_scroll] > 0
+								recurso_importado[a + show_scroll] -= 100
+						max_width_2  = max(max_width_2, last_width)
+					}
+					max_width += max_width_2 + 10
+					pos = 140
+					draw_text_pos(420 + max_width, pos, "Anual")
+					max_width_2 = last_width
+					for(var a = 0; a < 20; a++){
+						if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado_fijo[a + show_scroll]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Importación fija mensual")})
+							if not keyboard_check(vk_lshift)
+								recurso_importado_fijo[a + show_scroll] += 100
+							else if recurso_importado_fijo[a + show_scroll] > 0
+								recurso_importado_fijo[a + show_scroll] -= 100
+						max_width_2 = max(max_width_2, last_width)
+					}
+					max_width += max_width_2 + 10
+					pos = 120
+					draw_text_pos(420 + max_width, pos, "Balance")
+					pos += 20
+					for(var a = 0; a < 20; a++){
+						if draw_sprite_boton(spr_icono, 4 + (recurso_historial[a + show_scroll, 23] < recurso_historial[a + show_scroll, 0]), 420 + max_width, pos + a * 20, 20, 20){
+							var flag = show[a + show_scroll + 8]
+							close_show()
+							show[a + show_scroll + 8] = not flag
+						}
+						draw_line(420, pos + a * 20, 460 + max_width, pos + a * 20)
+					}
+					for(var a = 0; a < array_length(recurso_nombre); a++)
 					if show[a + 8]{
 						draw_line(800, 150, 800, 350)
 						draw_line(800, 350, 1040, 350)
@@ -825,6 +828,67 @@ else{
 						for(b = 0; b < 23; b++)
 							draw_line(800 + b * 10, 350 - 200 * (recurso_historial[a, b] - mini) / maxa, 800 + (b + 1) * 10, 350 - 200 * (recurso_historial[a, b + 1] - mini) / maxa)
 					}
+				}
+				else{
+					var width = 510
+					draw_text_pos(500, pos, recurso_nombre[subministerio])
+					draw_text_pos(500, pos, $"precio ${recurso_precio[subministerio]}")
+					pos += 20
+					if draw_boton(510, pos, $"Exportar: {recurso_exportado[subministerio] ? "Sí" : "No"}")
+						recurso_exportado[subministerio] = not recurso_exportado[subministerio]
+					draw_text_pos(510, pos, $"Importación puntual: {recurso_importado[subministerio]}")
+					pos -= last_height
+					width = 510 + last_width
+					if recurso_importado[subministerio] > 0{
+						if draw_boton(width, pos, " - ")
+							recurso_importado[subministerio] -= 100
+						pos -= last_height
+						width += last_width
+					}
+					if draw_boton(width, pos, " + ")
+						recurso_importado[subministerio] += 100
+					draw_text_pos(510, pos, $"Importación anual: {recurso_importado_fijo[subministerio]}")
+					pos -= last_height
+					width = 510 + last_width
+					if recurso_importado_fijo[subministerio] > 0{
+						if draw_boton(width, pos, " - ")
+							recurso_importado_fijo[subministerio] -= 100
+						pos -= last_height
+						width += last_width
+					}
+					if draw_boton(width, pos, " + ")
+						recurso_importado_fijo[subministerio] += 100
+					pos += 10
+					if draw_boton(510, pos, $"Banda de precio: {recurso_banda[subministerio] ? "Sí" : "No"}"){
+						recurso_banda[subministerio] = not recurso_banda[subministerio]
+						recurso_banda_min[subministerio] = recurso_precio[subministerio] * 0.9
+						recurso_banda_max[subministerio] = recurso_precio[subministerio] * 1.1
+					}
+					if recurso_banda[subministerio]{
+						draw_text_pos(520, pos, $"Precio mínimo: {recurso_banda_min[subministerio]}")
+						pos -= last_height
+						width = 520 + last_width
+						if draw_boton(width, pos, " - ")
+							recurso_banda_min[subministerio] *= 0.9
+						pos -= last_height
+						width += last_width
+						if draw_boton(width, pos, " + "){
+							recurso_banda_min[subministerio] /= 0.9
+							recurso_banda_max[subministerio] = max(recurso_banda_min[subministerio], recurso_banda_max[subministerio])
+						}
+						draw_text_pos(520, pos, $"Precio máximo: {recurso_banda_max[subministerio]}")
+						pos -= last_height
+						width = 520 + last_width
+						if draw_boton(width, pos, " - "){
+							recurso_banda_max[subministerio] *= 0.9
+							recurso_banda_min[subministerio] = min(recurso_banda_min[subministerio], recurso_banda_max[subministerio])
+						}
+						pos -= last_height
+						width += last_width
+						if draw_boton(width, pos, " + ")
+							recurso_banda_max[subministerio] /= 0.9
+					}
+				}
 			}
 			//Ministerio de Exterior
 			else if ministerio = 6{
