@@ -624,11 +624,19 @@ else{
 					num_impor += recurso_importado_fijo[recurso_comida[a]]
 				if num_impor > 0
 					draw_text_pos(120, pos, $"({num_impor} alimentos importados)")
+				//Fujo de agua
 				if (dia / 365) > 50{
 					pos += 10
 					draw_text_pos(120, pos, $"Entrada máxima de agua: {agua_input}")
 					draw_text_pos(120, pos, $"Salida máxima de agua: {agua_output}")
 					draw_text_pos(120, pos, $"Eficiencia: {min(100, 100 * agua_input / agua_output)}%")
+				}
+				//Flujo de energía
+				if (dia / 365) > 90{
+					pos += 10
+					draw_text_pos(120, pos, $"Entrada máxima de energía: {energia_input}")
+					draw_text_pos(120, pos, $"Salida máxima de energía: {energia_output}")
+					draw_text_pos(120, pos, $"Eficiencia: {min(100, 100 * energia_input / energia_output)}%")
 				}
 			}
 			//Ministerio de Educación
@@ -1051,8 +1059,9 @@ else{
 			//Leyes
 			else if ministerio = 8{
 				for(var a = 0; a < array_length(ley_nombre); a++)
-					if draw_boton(110, pos, $"{ley_nombre[a]}: {ley_eneabled[a] ? "Legal" : "Ilegal"}", , , function(a){draw_text(100, room_height - 120, $"{ley_descripcion[a]} ($250)")}, a){
+					if (dia / 365) > ley_anno[a] and draw_boton(110, pos, $"{ley_nombre[a]}: {ley_eneabled[a] ? "Legal" : "Ilegal"}", , , function(a){draw_text(100, room_height - 140, $"{ley_descripcion[a]} ($250)\n{ley_tiempo[a] = 0 ? "" : "debes esperar " + string(ley_tiempo[a]) + "meses para cambiarla de nuevo"}")}, a) and ley_tiempo[a] = 0{
 						dinero -= 250
+						ley_tiempo[a] = 12
 						ley_eneabled[a] = not ley_eneabled[a]
 						//Permitir divorcios
 						if a = 0 and ley_eneabled[0]
@@ -1481,7 +1490,7 @@ else{
 								}
 					pos += 40
 					draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[index] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
-						edificio_es_casa[index] ? "Calidad vivienda: " + string(sel_edificio.vivienda_calidad) + "  Renta: $" + string(edificio_familias_renta[index]) + "\n" : ""}{
+						edificio_es_casa[index] ? "Calidad vivienda: " + string(sel_edificio.vivienda_calidad) + "  Renta: $" + string(sel_edificio.vivienda_renta) + "\n" : ""}{
 						(edificio_servicio_calidad[index] > 0) ? "Calidad servicio: " + string(sel_edificio.servicio_calidad) + ((edificio_servicio_tarifa[index] > 0) ? "  Tarifa: $" + string(edificio_servicio_tarifa[index]) : "  Sin tarifa") + "\n" : ""}")
 				#endregion
 				//Prisiones
@@ -1502,6 +1511,26 @@ else{
 								sel_familia = sel_edificio.familias[a]
 								sel_tipo = 1
 							}
+					if draw_boton(room_width - 20, pos, sel_edificio.vivienda_renta = 0 ? "Generar tarifas" : "Subensionar vivienda"){
+						if sel_edificio.vivienda_renta = 0
+							for(var a = 0; a < array_length(sel_edificio.familias); a++){
+								var familia = sel_edificio.familias[a]
+								if familia.padre != null_persona
+									familia.padre.felicidad_temporal -= 25
+								if familia.madre != null_persona
+									familia.madre.felicidad_temporal -= 25
+							}
+						if sel_edificio.vivienda_renta > 0
+							for(var a = 0; a < array_length(sel_edificio.familias); a++){
+								var familia = sel_edificio.familias[a]
+								if familia.padre != null_persona
+									familia.padre.felicidad_temporal += 25
+								if familia.madre != null_persona
+									familia.madre.felicidad_temporal += 25
+							}
+						sel_edificio.vivienda_renta = edificio_familias_renta[index] - sel_edificio.vivienda_renta
+						set_calidad_vivienda(sel_edificio)
+					}
 				}
 				//Información trabajadores
 				if edificio_es_trabajo[index]{
@@ -1587,7 +1616,7 @@ else{
 					}
 					if var_edificio_nombre = "Bomba de Agua"{
 						draw_text_pos(room_width - 20, pos, $"Empujando {sel_edificio.count} agua")
-						if sel_edificio.almacen[9] = 0
+						if sel_edificio.almacen[1] + sel_edificio.almacen[9] + sel_edificio.almacen[27] = 0
 							draw_text_pos(room_width - 30, pos, "Necesita combustible!")
 					}
 				}
@@ -1601,19 +1630,18 @@ else{
 							}
 				}
 				//Conexión al agua potable
-				if edificio_bool_agua[index]{
-					if not sel_edificio.tuberias and (dia / 365) > 50 and draw_boton(room_width - 20, pos, "Conectar agua potable $200") and dinero >= 200{
-						sel_edificio.tuberias = true
-						dinero -= 200
-						mes_construccion[current_mes] += 200
-						agua_output += edificio_agua[index]
-						if edificio_es_casa[index]
-							set_calidad_vivienda(sel_edificio)
-						else
-							set_calidad_servicio(sel_edificio)
-					}
+				if edificio_bool_agua[index] and (dia / 365) > 50{
+					if not sel_edificio.tuberias and draw_boton(room_width - 20, pos, "Conectar agua potable $400")
+						add_tuberias(sel_edificio)
 					if sel_edificio.tuberias
 						draw_text_pos(room_width - 20, pos, $"Consumiendo {edificio_agua[index]} agua")
+				}
+				//Coneccion eléctrica
+				if edificio_bool_energia[index] and (dia / 365) > 90{
+					if not sel_edificio.electricidad and draw_boton(room_width - 20, pos, "Conectar cablado público $200")
+						add_energia(sel_edificio)
+					if sel_edificio.electricidad
+						draw_text_pos(room_width - 20, pos, $"Consumiendo {edificio_energia[index]} energía")
 				}
 				//Almacen / edificios cercanos
 				if not sel_edificio.privado{
@@ -1870,8 +1898,10 @@ else{
 			//Avanzar en construcciones
 			if array_length(cola_construccion) > 0{
 				var b = 0
-				for(var a = 0; a < array_length(edificio_count[20]); a++)
-					b += array_length(edificio_count[20, a].trabajadores) * (0.8 + 0.1 * edificio_count[20, a].presupuesto) * edificio_count[20, a].eficiencia * edificio_experiencia[20]
+				for(var a = 0; a < array_length(edificio_count[20]); a++){
+					var edificio = edificio_count[20, a]
+					b += round(array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[20] * (edificio.electricidad ? 1 + min(1, energia_input / energia_output) : 1))
+				}
 				var next_build = cola_construccion[0]
 				next_build.tiempo -= b
 				//Edificio_terminado
@@ -1881,11 +1911,15 @@ else{
 			//Mover recursos
 			if array_length(encargos) > 0{
 				var c = 0, rss_in = [], rss_out = []
-				for(var a = 0; a < array_length(edificio_count[22]); a++)
-					c += 3 * array_length(edificio_count[22, a].trabajadores) * (0.8 + 0.1 * edificio_count[22, a].presupuesto) * edificio_count[22, a].eficiencia * edificio_experiencia[22]
-				for(var a = 0; a < array_length(edificio_count[13]); a++)
-					if not (current_mes = edificio_count[13, a].mes_creacion or current_mes = (edificio_count[13, a].mes_creacion + 6) mod 12)
-						c += 2 * array_length(edificio_count[13, a].trabajadores) * (0.8 + 0.1 * edificio_count[13, a].presupuesto) * edificio_count[13, a].eficiencia * edificio_experiencia[22]
+				for(var a = 0; a < array_length(edificio_count[22]); a++){
+					var edificio = edificio_count[22, a]
+					c += 3 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[22] * (edificio.electricidad ? 1 + min(1, energia_input / energia_output) : 1)
+				}
+				for(var a = 0; a < array_length(edificio_count[13]); a++){
+					var edificio = edificio_count[13, a]
+					if not (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12)
+						c += 2 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[22] * (edificio.electricidad ? 1 + min(1, energia_input / energia_output) : 1)
+				}
 				c = round(c)
 				for(var a = 0; a < array_length(recurso_nombre); a++){
 					array_push(rss_in, false)
@@ -1965,6 +1999,9 @@ else{
 					array_set(mes_compra_recurso[current_mes], a, 0)
 					array_set(mes_venta_recurso[current_mes], a, 0)
 				}
+				for(var a = 0; a < array_length(ley_nombre); a++)
+					if ley_tiempo[a] > 0
+						ley_tiempo[a]--
 				//Actualizar precios de recursos y tratados comerciales
 				for(var a = 0; a < array_length(recurso_nombre); a++){
 					recurso_precio[a] *= power(random_range(1, 1.05), 2 * irandom(1) - 1)
@@ -2605,13 +2642,12 @@ else{
 								add_encargo(recurso_cultivo[edificio.modo], edificio.almacen[recurso_cultivo[edificio.modo]] - b, edificio)
 								edificio.almacen[recurso_cultivo[edificio.modo]] = b
 							}
-					
 						}
 						//Aserradero
 						else if var_edificio_nombre = "Aserradero"{
 							//Cortar árboles
 							if array_length(edificio.array_complex) > 0{
-								b = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index])
+								b = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * (edificio.electricidad ? 1 + 2 * min(1, energia_input / energia_output) : 1))
 								var e = b, flag = false
 								while b > 0 and array_length(edificio.array_complex) > 0{
 									var complex = edificio.array_complex[0]
@@ -2687,7 +2723,7 @@ else{
 						}
 						//Minas
 						else if var_edificio_nombre = "Mina"{
-							b = round(edificio.trabajo_mes / 2 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index])
+							b = round(edificio.trabajo_mes / 2 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * (edificio.electricidad ? 1 + min(1, energia_input / energia_output) : 1))
 							var e = b, f = min(xsize - 1, edificio.x + width + 1), g = min(ysize - 1, edificio.y + height + 1)
 							for(var c = max(0, edificio.x - 1); c < f; c++){
 								for(var d = max(0, edificio.y - 1); d < g; d++)
@@ -2752,7 +2788,7 @@ else{
 						//Muelle
 						else if var_edificio_nombre = "Muelle"{
 							if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
-								var c = round(edificio.trabajo_mes * 5 * (0.8 + 0.1 * edificio.presupuesto))
+								var c = round(edificio.trabajo_mes * 5 * (0.8 + 0.1 * edificio.presupuesto) * (edificio.electricidad ? 1 + min(1, energia_input / energia_output) : 1))
 								for(b = 0; b < array_length(recurso_nombre) and c > 0; b++){
 									//Importacion por construccion
 									if recurso_construccion[b] > 0{
@@ -2869,7 +2905,7 @@ else{
 									}
 								}
 								if max_rss > 0{
-									b = max(0, min(max_rss, round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index] * edificio.eficiencia * edificio_experiencia[index])))
+									b = max(0, min(max_rss, round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index] * edificio.eficiencia * edificio_experiencia[index] * (edificio.tuberias ? 0.5 + min(1, agua_input / agua_output) : 1) * (edificio.electricidad ? 0.5 + min(1, energia_input / energia_output) : 1))))
 									if edificio_industria_vapor[index] and edificio.almacen[9] = 0
 										b = 0
 									if b > 0{
@@ -2886,7 +2922,7 @@ else{
 								var temp_array = []
 								for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
 									array_push(temp_array, edificio.almacen[edificio_industria_input_id[index, c]] / edificio_industria_input_num[index, c])
-								b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index] * edificio.eficiencia)))
+								b = max(0, min(min_array(temp_array), round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio_industria_velocidad[index] * edificio.eficiencia * (edificio.tuberias ? 0.5 + min(1, agua_input / agua_output) : 1) * (edificio.electricidad ? 0.5 + min(1, energia_input / energia_output) : 1))))
 								if edificio_industria_vapor[index] and edificio.almacen[9] = 0
 									b = 0
 								if b > 0{
@@ -2943,7 +2979,7 @@ else{
 						}
 						//Pozo Petrolífero
 						else if var_edificio_nombre = "Pozo Petrolífero"{
-							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * min(1, agua_input / agua_output))
+							b = round(edificio.trabajo_mes / 7 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * min(1, agua_input / agua_output) * (edificio.electricidad ? 0.5 + min(1, energia_input / energia_output) : 1))
 							var e = b, f = edificio.x + width, g = edificio.y + height
 							for(var c = edificio.x; c < f; c++){
 								for(var d = edificio.x; d < g; d++)
@@ -2994,13 +3030,9 @@ else{
 									c = edificio.almacen[temp_inputs[d]] * temp_inputs_2[d]
 									e = d
 								}
-							show_debug_message($"C: {c}")
 							b = min(c, round(edificio.trabajo_mes * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]))
-							show_debug_message($"B: {b}")
-							if e != -1{
-								show_debug_message($"E: {ceil(b / temp_inputs_2[e])}")
+							if e != -1
 								edificio.almacen[temp_inputs[e]] -= ceil(b / temp_inputs_2[e])
-							}
 							for(var d = 0; d < array_length(temp_inputs); d++){
 								c = temp_inputs[d]
 								edificio.ganancia -= round(recurso_precio[c] * (edificio.almacen[c] + edificio.pedido[c] - 100))
@@ -3009,6 +3041,29 @@ else{
 							}
 							edificio.count = b
 							agua_input += b
+						}
+						//Planta Termoeléctrica
+						else if var_edificio_nombre = "Planta Termoeléctrica"{
+							energia_input -= edificio.count
+							b = 0
+							var c = 0, temp_inputs = [1, 9, 27], temp_inputs_2 = [12, 25, 40], e = -1
+							for(var d = 0; d < array_length(temp_inputs); d++)
+								if edificio.almacen[temp_inputs[d]] * temp_inputs_2[d] > c{
+									c = edificio.almacen[temp_inputs[d]] * temp_inputs_2[d]
+									e = d
+								}
+							if e != -1{
+								b = min(c, round(edificio.trabajo_mes * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]))
+								edificio.almacen[temp_inputs[e]] -= ceil(b / temp_inputs_2[e])
+								for(var d = 0; d < array_length(temp_inputs); d++){
+									c = temp_inputs[d]
+									edificio.ganancia -= round(recurso_precio[c] * (edificio.almacen[c] + edificio.pedido[c] - 100))
+									add_encargo(c, edificio.almacen[c] + edificio.pedido[c] - 100, edificio)
+									edificio.pedido[c] = 100 - edificio.almacen[c]
+								}
+							}
+							edificio.count = b
+							energia_input += b
 						}
 					}
 				}
@@ -3020,7 +3075,7 @@ else{
 						continue
 					}
 					set_calidad_vivienda(edificio)
-					var b = edificio_familias_renta[index] * array_length(edificio.familias)
+					var b = edificio.vivienda_renta * array_length(edificio.familias)
 					edificio.ganancia += b
 					if edificio.privado{
 						dinero_privado += b
@@ -3030,9 +3085,19 @@ else{
 						dinero += b
 						mes_renta[current_mes] += b
 					}
+					if var_edificio_nombre != "Toma" and ley_eneabled[8] and not edificio.tuberias
+						add_tuberias(edificio)
 					var poblacion = 0
-					for(b = 0; b < array_length(edificio.familias); b++)
-						poblacion += edificio.familias[b].integrantes
+					for(b = 0; b < array_length(edificio.familias); b++){
+						var familia = edificio.familias[b]
+						poblacion += familia.integrantes
+						if ley_eneabled[9]{
+							var c = array_length(familia.hijos)
+							familia.riqueza += c
+							dinero -= c
+							mes_mantenimiento[current_mes] += c
+						}
+					}
 					//Conseguir alimento
 					for(b = 0; b < array_length(edificio_almacen_index); b++)
 						if array_length(almacenes[edificio_almacen_index[b]]) > 0{
@@ -3154,7 +3219,7 @@ else{
 					if edificio != homeless
 						for(b = 0; b < array_length(edificio.familias); b++){
 							var familia = edificio.familias[b]
-							familia.riqueza -= edificio_familias_renta[index]
+							familia.riqueza -= edificio.vivienda_renta
 							if familia.riqueza <= -30{
 								cambiar_casa(familia, homeless)
 								b--
@@ -3223,23 +3288,23 @@ else{
 				edificio.trabajo_mes = 28 * array_length(edificio.trabajadores)
 			}
 			#region Bancarrota
-			//Entrar a bancarrota
-			if not deuda and dinero < 0{
-				deuda = true
-				deuda_dia = dia
-				show_message("Te has quedado sin dinero, tienes dos años para pagar tu deuda externa")
-			}
-			//Salid de bancarrota
-			if deuda and dinero > 0
-				deuda = false
-			//Perder por bancarrota
-			if deuda and dia = deuda_dia + 730{
-				show_message("HAS PERDIDO\n\nNo has sido capaz de pagar tu deuda externa a tiempo")
-				if show_question("¿Volver a jugar?")
-					game_restart()
-				else
-					game_end()
-			}
+				//Entrar a bancarrota
+				if not deuda and dinero < 0{
+					deuda = true
+					deuda_dia = dia
+					show_message("Te has quedado sin dinero, tienes dos años para pagar tu deuda externa")
+				}
+				//Salid de bancarrota
+				if deuda and dinero > 0
+					deuda = false
+				//Perder por bancarrota
+				if deuda and dia = deuda_dia + 730{
+					show_message("HAS PERDIDO\n\nNo has sido capaz de pagar tu deuda externa a tiempo")
+					if show_question("¿Volver a jugar?")
+						game_restart()
+					else
+						game_end()
+				}
 			#endregion
 		}
 	}

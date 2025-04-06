@@ -15,7 +15,7 @@ function buscar_casa(persona = control.null_persona){
 				a += calcular_felicidad_transporte(casa, persona.pareja.trabajo)
 				b += calcular_felicidad_transporte(familia.casa, persona.pareja.trabajo)
 			}
-			if casa != homeless and casa != familia.casa and array_length(casa.familias) < edificio_familias_max[casa.tipo] and (familia.sueldo - familia.integrantes + max(0, familia.riqueza / 60)) >= edificio_familias_renta[casa.tipo] and (casa.vivienda_calidad + a) > (familia.casa.vivienda_calidad + b){
+			if casa != homeless and casa != familia.casa and array_length(casa.familias) < edificio_familias_max[casa.tipo] and (familia.sueldo - familia.integrantes - (ley_eneabled[9] ? array_length(familia.hijos) : 0) + max(0, familia.riqueza / 60)) >= casa.vivienda_renta and (casa.vivienda_calidad + a) > (familia.casa.vivienda_calidad + b){
 				cambiar_casa(familia, casa)
 				return true
 			}

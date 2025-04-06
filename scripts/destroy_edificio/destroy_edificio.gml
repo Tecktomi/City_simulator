@@ -2,7 +2,7 @@ function destroy_edificio(edificio = control.null_edificio){
 	with control{
 		if debug
 			show_debug_message(fecha(dia) + $" destroy_edificio ({edificio.nombre})")
-		var tipo = edificio.tipo, width = edificio.width, height = edificio.height
+		var tipo = edificio.tipo, width = edificio.width, height = edificio.height, var_edificio_nombre = edificio_nombre[tipo]
 		array_set(bool_draw_edificio[edificio.x], edificio.y, false)
 		array_set(draw_edificio[edificio.x], edificio.y, null_edificio)
 		if array_length(edificio.trabajadores) < edificio.trabajadores_max and not edificio.paro
@@ -28,12 +28,14 @@ function destroy_edificio(edificio = control.null_edificio){
 			array_remove(trabajos, edificio, "eliminar trabajo")
 			for(var a = 0; a < array_length(edificio.casas_cerca); a++)
 				array_remove(edificio.casas_cerca[a].trabajos_cerca[edificio_trabajo_educacion[edificio.tipo]], edificio, "eliminar trabajo de las casas cercanas")
-			if edificio_nombre[tipo] = "Bomba de Agua"
+			if var_edificio_nombre = "Bomba de Agua"
 				agua_input -= edificio.count
+			else if var_edificio_nombre = "Planta Termoeléctrica"
+				energia_input -= edificio.count
 		}
 		if edificio_es_casa[tipo]{
 			array_remove(casas, edificio, "eliminar casa")
-			if edificio_nombre[tipo] != "Toma"{
+			if var_edificio_nombre != "Toma"{
 				for(var b = 0; b < array_length(educacion_nombre); b++)
 					for(var a = 0; a < array_length(edificio.trabajos_cerca[b]); a++)
 						array_remove(edificio.trabajos_cerca[b][a].casas_cerca, edificio, "eliminar casa de los edificios cercanos")
@@ -41,8 +43,10 @@ function destroy_edificio(edificio = control.null_edificio){
 					array_remove(casas_libres, edificio, "elminar casa libre")
 			}
 		}
-		if edificio.tuberias
+		if edificio_bool_agua[tipo] and edificio.tuberias
 			agua_output -= edificio_agua[tipo]
+		if edificio_bool_energia[tipo] and edificio.electricidad
+			energia_output -= edificio_energia[tipo]
 		for(var a = 0; a < array_length(edificio.familias); a++){
 			var familia = edificio.familias[a]
 			if familia.padre != null_persona
@@ -60,7 +64,7 @@ function destroy_edificio(edificio = control.null_edificio){
 			array_remove(almacenes[tipo], edificio)
 		array_remove(dia_trabajo[edificio.dia_factura], edificio, "eliminar edificio del dia de trabajo")
 		array_remove(edificio_count[tipo], edificio, "eliminar edificio del edificio_count")
-		if edificio_nombre[tipo] = "Muelle"
+		if var_edificio_nombre = "Muelle"
 			for(var a = 0; a < array_length(edificios); a++)
 				if edificios[a].muelle_cercano = edificio
 					buscar_muelle_cercano(edificios[a])
