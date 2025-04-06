@@ -76,9 +76,15 @@ function add_familia(origen = -1, generada = true){
 					array_push(familia.hijos, hijo)
 					familia.integrantes++
 				}
-				if ley_eneabled[2] and array_length(familia.hijos) > 0{
-					add_felicidad_ley(persona, -10)
-					add_felicidad_ley(persona_2, -10)
+				if array_length(familia.hijos) > 0{
+					if ley_eneabled[2]{
+						add_felicidad_ley(persona, -10)
+						add_felicidad_ley(persona_2, -10)
+					}
+					if ley_eneabled[9]{
+						add_felicidad_ley(persona, 10)
+						add_felicidad_ley(persona_2, 10)
+					}
 				}
 			}
 			mes_inmigrantes[mes(dia)]++

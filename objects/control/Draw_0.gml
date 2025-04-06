@@ -1121,6 +1121,37 @@ else{
 						if a = 6 and not ley_eneabled[6] and array_length(cola_construccion) = 0
 							for(b = 0; b < array_length(edificio_count[20]); b++)
 								set_paro(false, edificio_count[20, b])
+							for(b = 0; b < array_length(personas); b++)
+								if personas[b].religion
+									add_felicidad_ley(personas[b], 10)
+						//Subvención por hijos
+						if a = 2 and ley_eneabled[9]
+							for(b = 0; b < array_length(familias); b++){
+								var flag = false
+								for(var c = 0; c < array_length(familias[b].hijos); c++)
+									if familias[b].hijos[c].edad > 12{
+										cambiar_trabajo(familias[b].hijos[c], null_edificio)
+										flag = true
+									}
+								if flag{
+									add_felicidad_ley(familias[b].padre, 10)
+									add_felicidad_ley(familias[b].madre, 10)
+								}
+							}
+						//Prohibir Subvención por hijos
+						if a = 2 and not ley_eneabled[9]
+							for(b = 0; b < array_length(familias); b++){
+								var flag = false
+								for(var c = 0; c < array_length(familias[b].hijos); c++)
+									if familias[b].hijos[c].edad > 12{
+										cambiar_trabajo(familias[b].hijos[c], null_edificio)
+										flag = true
+									}
+								if flag{
+									add_felicidad_ley(familias[b].padre, -10)
+									add_felicidad_ley(familias[b].madre, -10)
+								}
+							}
 					}
 				if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
 					credibilidad_financiera += floor(sueldo_minimo / 2)
@@ -1511,7 +1542,7 @@ else{
 								sel_familia = sel_edificio.familias[a]
 								sel_tipo = 1
 							}
-					if draw_boton(room_width - 20, pos, sel_edificio.vivienda_renta = 0 ? "Generar tarifas" : "Subensionar vivienda"){
+					if draw_boton(room_width - 20, pos, sel_edificio.vivienda_renta = 0 ? "Generar tarifas" : "Subvencionar vivienda"){
 						if sel_edificio.vivienda_renta = 0
 							for(var a = 0; a < array_length(sel_edificio.familias); a++){
 								var familia = sel_edificio.familias[a]
