@@ -14,8 +14,10 @@ function destroy_edificio(edificio = control.null_edificio){
 		}
 		if edificio_es_medico[tipo]{
 			array_remove(medicos, edificio, "eliminar médico")
-			for(var a = 0; a < array_length(edificio.clientes); a++)
-				buscar_atencion_medica(edificio.clientes[a])
+			while array_length(edificio.clientes) > 0{
+				var persona = array_shift(edificio.clientes)
+				buscar_atencion_medica(persona)
+			}
 		}
 		if edificio_es_escuela[tipo]{
 			array_remove(escuelas, edificio, "eliminar escuela")
@@ -26,9 +28,7 @@ function destroy_edificio(edificio = control.null_edificio){
 			array_remove(trabajos, edificio, "eliminar trabajo")
 			for(var a = 0; a < array_length(edificio.casas_cerca); a++)
 				array_remove(edificio.casas_cerca[a].trabajos_cerca[edificio_trabajo_educacion[edificio.tipo]], edificio, "eliminar trabajo de las casas cercanas")
-			if edificio_nombre[tipo] = "Pozo Petrolífero"
-				agua_output -= edificio_agua[tipo]
-			else if edificio_nombre[tipo] = "Bomba de Agua"
+			if edificio_nombre[tipo] = "Bomba de Agua"
 				agua_input -= edificio.count
 		}
 		if edificio_es_casa[tipo]{
@@ -40,9 +40,9 @@ function destroy_edificio(edificio = control.null_edificio){
 				if array_length(edificio.familias) != edificio_familias_max[tipo]
 					array_remove(casas_libres, edificio, "elminar casa libre")
 			}
-			if edificio.tuberias
-				agua_output -= edificio_agua[tipo]
 		}
+		if edificio.tuberias
+			agua_output -= edificio_agua[tipo]
 		for(var a = 0; a < array_length(edificio.familias); a++){
 			var familia = edificio.familias[a]
 			if familia.padre != null_persona

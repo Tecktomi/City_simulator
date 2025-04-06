@@ -215,7 +215,7 @@ debug = false
 		"Fábrica a vapor que requiere combustible y lana o algodón para producir tela a una gran velocidad.",
 		"Aquí mismo se extrae la arcilla y se cosen ladrillos",
 		"Produce grandes cantidades de ladrillos utilizando hornos a vapor",
-		"Extrae petróleo de bajo tierra",
+		"Extrae petróleo de bajo tierra, consume agua potable",
 		"Utiliza combustible para dar presión de agua, necesario para mejorar las condiciones de alcantarillado"]
 	#region arreglos vacíos
 		edificio_nombre = []

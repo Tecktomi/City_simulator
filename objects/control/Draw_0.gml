@@ -1601,15 +1601,19 @@ else{
 							}
 				}
 				//Conexión al agua potable
-				if edificio_bool_agua[index] and not sel_edificio.tuberias and (dia / 365) > 50 and draw_boton(room_width - 20, pos, "Conectar agua potable $200") and dinero >= 200{
-					sel_edificio.tuberias = true
-					dinero -= 200
-					mes_construccion[current_mes] += 200
-					agua_output += edificio_agua[index]
-					if edificio_es_casa[index]
-						set_calidad_vivienda(sel_edificio)
-					else
-						set_calidad_servicio(sel_edificio)
+				if edificio_bool_agua[index]{
+					if not sel_edificio.tuberias and (dia / 365) > 50 and draw_boton(room_width - 20, pos, "Conectar agua potable $200") and dinero >= 200{
+						sel_edificio.tuberias = true
+						dinero -= 200
+						mes_construccion[current_mes] += 200
+						agua_output += edificio_agua[index]
+						if edificio_es_casa[index]
+							set_calidad_vivienda(sel_edificio)
+						else
+							set_calidad_servicio(sel_edificio)
+					}
+					if sel_edificio.tuberias
+						draw_text_pos(room_width - 20, pos, $"Consumiendo {edificio_agua[index]} agua")
 				}
 				//Almacen / edificios cercanos
 				if not sel_edificio.privado{
