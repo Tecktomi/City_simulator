@@ -3,7 +3,7 @@ function buscar_escuela(persona = control.null_persona){
 		var escuela = null_edificio
 		if array_length(escuelas) > 0{
 			escuela = escuelas[irandom(array_length(escuelas) - 1)]
-			if array_length(escuela.clientes) < edificio_clientes_max[escuela.tipo]{
+			if array_length(escuela.clientes) < edificio_servicio_clientes[escuela.tipo]{
 				cambiar_escuela(persona, escuela)
 				return true
 			}

@@ -1,10 +1,16 @@
 function set_presupuesto(presupuesto, edificio = control.null_edificio){
-	edificio.mantenimiento -= edificio.presupuesto
-	edificio.presupuesto = presupuesto
-	edificio.vivienda_calidad += edificio.presupuesto
-	edificio.mantenimiento += edificio.presupuesto
-	if edificio_es_casa[edificio.tipo]
-		set_calidad_vivienda(edificio)
-	edificio.trabajo_sueldo = max(control.sueldo_minimo, edificio_trabajo_sueldo[edificio.tipo] + presupuesto - 2)
-	edificio.trabajo_riesgo = control.edificio_trabajo_riesgo[edificio.tipo] * power(2, 3 - presupuesto)
+	var index = edificio.tipo
+	with control{
+		edificio.presupuesto = presupuesto
+		edificio.mantenimiento = round(edificio_mantenimiento[index] * (1 + 0.2 * (presupuesto - 2)))
+		if edificio_es_casa[index]
+			set_calidad_vivienda(edificio)
+		if edificio_servicio_calidad[index] != 0
+			set_calidad_servicio(edificio)
+		if edificio_es_trabajo[index]{
+			edificio.trabajo_calidad = edificio_trabajo_calidad[index] + 3 * (presupuesto - 2)
+			edificio.trabajo_sueldo = max(sueldo_minimo, edificio_trabajo_sueldo[index] + presupuesto - 2)
+			edificio.trabajo_riesgo = edificio_trabajo_riesgo[index] * power(2, 3 - presupuesto)
+		}
+	}
 }

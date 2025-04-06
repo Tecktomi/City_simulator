@@ -4,12 +4,18 @@ cursor = cr_arrow
 if menu_principal{
 	pos = 100
 	draw_set_font(font_big)
-	if draw_boton(room_width / 2, pos, "Empezar partida", true){
-		draw_set_font(Font1)
-		draw_set_halign(fa_left)
+	if draw_boton(room_width / 2, pos, iniciado ? "Continuar partida" : "Empezar partida", true){
 		menu_principal = false
+		iniciado = true
 	}
 	pos += 10
+	if iniciado{
+		if draw_boton(room_width / 2, pos, "Nueva partida", true){
+			menu_principal = false
+			game_restart()
+		}
+		pos += 10	
+	}
 	if draw_boton(room_width / 2, pos, $"Fecha inicial: {1800  + floor(dia / 365)}", true,,,,false)
 		if keyboard_check(vk_lshift)
 			dia = max(0, dia - 365)
@@ -17,8 +23,6 @@ if menu_principal{
 			dia = min(dia + 365, 73000)
 	pos += 20
 	if draw_boton(room_width / 2, pos, "Tutorial", true){
-		draw_set_font(Font1)
-		draw_set_halign(fa_left)
 		tutorial = 0
 		tutorial_bool = true
 		velocidad = 0
@@ -27,6 +31,15 @@ if menu_principal{
 	pos += 20
 	if keyboard_check_pressed(vk_escape) or draw_boton(room_width / 2, pos, "Salir", true)
 		game_end()
+	//Imagen de carga
+	if not menu_principal{
+		draw_set_color(c_black)
+		draw_rectangle(0, 0, room_width, room_height, false)
+		draw_set_color(c_white)
+		draw_text(room_width / 2, 100, "CARGANDO...")
+		draw_set_font(Font1)
+		draw_set_halign(fa_left)
+	}
 }
 else{
 	#region Visual
@@ -319,9 +332,9 @@ else{
 							text += $"{recurso_nombre[edificio_recursos_id[b, a]]}: {edificio_recursos_num[b, a]}   "
 						draw_text(100, room_height - 100, text + $"\n{edificio_es_casa[b] ? "Espacio para " + string(edificio_familias_max[b]) + " familias\n" : ""}{
 							edificio_es_trabajo[b] ? "Necesita " + string(edificio_trabajadores_max[b]) + " trabajadores " + ((edificio_trabajo_educacion[b] = 0) ? "sin educación" : "con " + educacion_nombre[edificio_trabajo_educacion[b]]) + "\n" : ""}{
-							edificio_es_escuela[b] ? "Enseña a " + string(edificio_clientes_max[b]) + " alumnos\n" : ""}{
-							edificio_es_medico[b] ? "Atiende a " + string(edificio_clientes_max[b]) + " pacientes\n" : ""}{
-							edificio_es_ocio[b] or edificio_es_iglesia[b] ? "Acepta " + string(edificio_clientes_max[b]) + " visitantes\n" : ""}{edificio_descripcion[b]}")
+							edificio_es_escuela[b] ? "Enseña a " + string(edificio_servicio_clientes[b]) + " alumnos\n" : ""}{
+							edificio_es_medico[b] ? "Atiende a " + string(edificio_servicio_clientes[b]) + " pacientes\n" : ""}{
+							edificio_es_ocio[b] or edificio_es_iglesia[b] ? "Acepta " + string(edificio_servicio_clientes[b]) + " visitantes\n" : ""}{edificio_descripcion[b]}")
 						draw_set_valign(fa_top)
 					}, b) and dinero + 2500 >= edificio_precio[b]{
 					build_index = b
@@ -1450,25 +1463,26 @@ else{
 				else if sel_edificio.exigencia != null_exigencia
 					draw_text_pos(room_width - 20, pos, $"Esperando que cumplas {exigencia_nombre[sel_edificio.huelga_motivo]}")
 				#region presupuesto
-				if not sel_edificio.privado and var_edificio_nombre != "Toma"
-					for(var a = 0; a < 5; a++)
-						if draw_sprite_boton(spr_icono, 3 - (a > sel_edificio.presupuesto), room_width - 200 + a * 40, pos, 40, 40)
-							for(var b = 0; b < array_length(edificio_count[index]); b++){
-								var edificio = undefined
-								if keyboard_check(vk_lshift){
-									edificio = edificio_count[index, b]
-									if edificio.privado
-										continue
+					if not sel_edificio.privado and var_edificio_nombre != "Toma"
+						for(var a = 0; a < 5; a++)
+							if draw_sprite_boton(spr_icono, 3 - (a > sel_edificio.presupuesto), room_width - 200 + a * 40, pos, 40, 40)
+								for(var b = 0; b < array_length(edificio_count[index]); b++){
+									var edificio = undefined
+									if keyboard_check(vk_lshift){
+										edificio = edificio_count[index, b]
+										if edificio.privado
+											continue
+									}
+									else{
+										b = array_length(edificio_count[index])
+										edificio = sel_edificio
+									}
+									set_presupuesto(a, edificio)
 								}
-								else{
-									b = array_length(edificio_count[index])
-									edificio = sel_edificio
-								}
-								set_presupuesto(a, edificio)
-							}
-				pos += 40
-				draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[index] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
-					edificio_es_casa[index] ? "Calidad de vivienda: " + string(sel_edificio.vivienda_calidad) + "\n" : ""}")
+					pos += 40
+					draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[index] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
+						edificio_es_casa[index] ? "Calidad vivienda: " + string(sel_edificio.vivienda_calidad) + "  Renta: $" + string(edificio_familias_renta[index]) + "\n" : ""}{
+						(edificio_servicio_calidad[index] > 0) ? "Calidad servicio: " + string(sel_edificio.servicio_calidad) + ((edificio_servicio_tarifa[index] > 0) ? "  Tarifa: $" + string(edificio_servicio_tarifa[index]) : "  Sin tarifa") + "\n" : ""}")
 				#endregion
 				//Prisiones
 				if var_edificio_nombre = "Comisaría"
@@ -1488,13 +1502,6 @@ else{
 								sel_familia = sel_edificio.familias[a]
 								sel_tipo = 1
 							}
-					if not sel_edificio.tuberias and (dia / 365) > 50 and draw_boton(room_width - 20, pos, "Conectar agua potable $200") and dinero >= 200{
-						sel_edificio.tuberias = true
-						dinero -= 200
-						mes_construccion[current_mes] += 200
-						agua_output += edificio_agua[index]
-						set_calidad_vivienda(sel_edificio)
-					}
 				}
 				//Información trabajadores
 				if edificio_es_trabajo[index]{
@@ -1578,15 +1585,31 @@ else{
 						else
 							draw_text_pos(room_width - 20, pos, "Depósito vacío")
 					}
+					if var_edificio_nombre = "Bomba de Agua"{
+						draw_text_pos(room_width - 20, pos, $"Empujando {sel_edificio.count} agua")
+						if sel_edificio.almacen[9] = 0
+							draw_text_pos(room_width - 30, pos, "Necesita combustible!")
+					}
 				}
 				//Información escuelas / consultas
 				if edificio_es_escuela[index] or edificio_es_medico[index]{
-					if draw_menu(room_width - 20, pos, $"{edificio_es_escuela[index] ? "Estudientes" : "Clientes"}: {array_length(sel_edificio.clientes)}/{edificio_clientes_max[index]}", 2)
+					if draw_menu(room_width - 20, pos, $"{edificio_es_escuela[index] ? "Estudientes" : "Clientes"}: {array_length(sel_edificio.clientes)}/{edificio_servicio_clientes[index]}", 2)
 						for(var a = 0; a < array_length(sel_edificio.clientes); a++)
 							if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a])){
 								sel_persona = sel_edificio.clientes[a]
 								sel_tipo = 2
 							}
+				}
+				//Conexión al agua potable
+				if edificio_bool_agua[index] and not sel_edificio.tuberias and (dia / 365) > 50 and draw_boton(room_width - 20, pos, "Conectar agua potable $200") and dinero >= 200{
+					sel_edificio.tuberias = true
+					dinero -= 200
+					mes_construccion[current_mes] += 200
+					agua_output += edificio_agua[index]
+					if edificio_es_casa[index]
+						set_calidad_vivienda(sel_edificio)
+					else
+						set_calidad_servicio(sel_edificio)
 				}
 				//Almacen / edificios cercanos
 				if not sel_edificio.privado{
@@ -1792,7 +1815,7 @@ else{
 		draw_set_halign(fa_left)
 	}
 	#region Movimiento de la cámara
-	if not tutorial_bool or tutorial_camara[tutorial]{
+	if (not tutorial_bool or tutorial_camara[tutorial]) and not menu{
 		if keyboard_check(vk_lcontrol){
 			if mouse_wheel_up() and tile_width < 64{
 				var center_x = ((room_width / 2 + xpos) / tile_width + (room_height / 2 + ypos) / tile_height) / 2
@@ -2252,9 +2275,10 @@ else{
 						for(var b = 0; b < array_length(temp_array); b++)
 							if array_length(edificio_count[temp_array[b]]) > 0 and (persona.edad > 12 or (edificio_nombre[temp_array[b]] != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (edificio_nombre[temp_array[b]] != "Circo")) and ((not persona.sexo and persona.edad > 15) or (edificio_nombre[temp_array[b]] != "Cabaret")){
 								var ocio = edificio_count[temp_array[b], irandom(array_length(edificio_count[temp_array[b]]) - 1)]
-								if ocio.count < edificio_clientes_max[temp_array[b]] and persona.familia.riqueza >= edificio_clientes_tarifa[temp_array[b]]{
-									var c = edificio_clientes_tarifa[temp_array[b]]
-									persona.familia.riqueza -= edificio_clientes_tarifa[temp_array[b]]
+								set_calidad_servicio(ocio)
+								if ocio.count < edificio_servicio_clientes[temp_array[b]] and persona.familia.riqueza >= edificio_servicio_tarifa[temp_array[b]]{
+									var c = edificio_servicio_tarifa[temp_array[b]]
+									persona.familia.riqueza -= edificio_servicio_tarifa[temp_array[b]]
 									ocio.ganancia += c
 									if ocio.privado{
 										dinero_privado += c
@@ -2265,7 +2289,7 @@ else{
 										mes_tarifas[current_mes] += c
 									}
 									ocio.count++
-									persona.ocios[b] = edificio_clientes_calidad[temp_array[b]]
+									persona.ocios[b] = edificio_servicio_calidad[temp_array[b]]
 									persona.felicidad_ocio += persona.ocios[b]
 								}
 								else{
@@ -2290,9 +2314,9 @@ else{
 						}
 						else
 							iglesia = iglesias[irandom(array_length(iglesias) - 1)]
-						if iglesia.count < edificio_clientes_max[iglesia.tipo]{
+						if iglesia.count < edificio_servicio_clientes[iglesia.tipo]{
 							iglesia.count++
-							persona.felicidad_religion = min(110, persona.felicidad_religion + edificio_clientes_calidad[iglesia.tipo])
+							persona.felicidad_religion = min(110, persona.felicidad_religion + edificio_servicio_calidad[iglesia.tipo])
 						}
 					}
 					#region Calculo de felicidad
@@ -2310,12 +2334,12 @@ else{
 							temp_contaminacion = 100 * temp_contaminacion
 							persona.felicidad_salud = floor((persona.felicidad_salud + 3 * temp_contaminacion) / 4)
 						}
-						persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
 						set_calidad_vivienda(persona.familia.casa)
+						persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
 						var temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley, persona.felicidad_crimen]
 						persona.felicidad_crimen = min(persona.felicidad_crimen + 5, 100)
 						if persona.es_hijo{
-							persona.felicidad_educacion = floor((persona.felicidad_educacion + 3 * edificio_clientes_calidad[persona.escuela.tipo]) / 4)
+							persona.felicidad_educacion = floor((persona.felicidad_educacion + 3 * edificio_servicio_calidad[persona.escuela.tipo]) / 4)
 							array_push(temp_array, persona.felicidad_educacion)
 						}
 						if persona.trabajo != null_edificio{
@@ -2803,7 +2827,7 @@ else{
 								persona.preso = false
 								cambiar_trabajo(persona, null_edificio)
 							}
-							for(b = irandom(edificio.trabajo_mes / 14 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]); b > 0 and array_length(edificio.clientes) < edificio_clientes_max[index]; b--){
+							for(b = irandom(edificio.trabajo_mes / 14 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]); b > 0 and array_length(edificio.clientes) < edificio_servicio_clientes[index]; b--){
 								var temp_edificio = edificio.casas_cerca[irandom(array_length(edificio.casas_cerca) - 1)]
 								if temp_edificio.ladron != null_persona{
 									var persona = temp_edificio.ladron
@@ -2960,11 +2984,25 @@ else{
 						//Bomba de Agua
 						else if var_edificio_nombre = "Bomba de Agua"{
 							agua_input -= edificio.count
-							b = min(edificio.almacen[9] * 25, round(edificio.trabajo_mes * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]))
-							edificio.almacen[9] -= ceil(b / 25)
-							edificio.ganancia -= round(recurso_precio[9] * ceil(b / 25))
-							add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 100, edificio)
-							edificio.pedido[9] = 100 - edificio.almacen[9]
+							var c = 10, temp_inputs = [1, 9, 27], temp_inputs_2 = [12, 25, 40], e = -1
+							for(var d = 0; d < array_length(temp_inputs); d++)
+								if edificio.almacen[temp_inputs[d]] * temp_inputs_2[d] > c{
+									c = edificio.almacen[temp_inputs[d]] * temp_inputs_2[d]
+									e = d
+								}
+							show_debug_message($"C: {c}")
+							b = min(c, round(edificio.trabajo_mes * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]))
+							show_debug_message($"B: {b}")
+							if e != -1{
+								show_debug_message($"E: {ceil(b / temp_inputs_2[e])}")
+								edificio.almacen[temp_inputs[e]] -= ceil(b / temp_inputs_2[e])
+							}
+							for(var d = 0; d < array_length(temp_inputs); d++){
+								c = temp_inputs[d]
+								edificio.ganancia -= round(recurso_precio[c] * (edificio.almacen[c] + edificio.pedido[c] - 100))
+								add_encargo(c, edificio.almacen[c] + edificio.pedido[c] - 100, edificio)
+								edificio.pedido[c] = 100 - edificio.almacen[c]
+							}
 							edificio.count = b
 							agua_input += b
 						}
@@ -3122,9 +3160,9 @@ else{
 				//Edificios médicos
 				if edificio_es_medico[index]{
 					//Curar pacientes
-					repeat(min(array_length(edificio.clientes), round(edificio_clientes_calidad[index] * edificio.trabajo_mes / 1400 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]))){
+					repeat(min(array_length(edificio.clientes), round(edificio_servicio_calidad[index] * edificio.trabajo_mes / 1400 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]))){
 						var persona = array_shift(edificio.clientes)
-						persona.felicidad_salud = edificio_clientes_calidad[index]
+						persona.felicidad_salud = edificio_servicio_calidad[index]
 						persona.medico = null_edificio
 						traer_paciente_en_espera(edificio)
 					}
@@ -3172,6 +3210,7 @@ else{
 				}
 				//Edificios de ocio y religiosos
 				if edificio_es_ocio[index] or edificio_es_iglesia[index]{
+					set_calidad_servicio(edificio)
 					if edificio.trabajadores_max = 0
 						edificio.count = 0
 					else

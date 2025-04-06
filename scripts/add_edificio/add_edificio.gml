@@ -29,6 +29,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			exigencia_fallida : false,
 			privado : false,
 			vivienda_calidad : edificio_familias_calidad[tipo],
+			servicio_calidad : edificio_servicio_calidad[tipo],
 			trabajadores_max : edificio_trabajadores_max[tipo], 
 			trabajo_calidad : edificio_trabajo_calidad[tipo],
 			trabajo_sueldo : max(control.sueldo_minimo, edificio_trabajo_sueldo[tipo]),
@@ -86,7 +87,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			}
 			if edificio_es_medico[tipo]{
 				array_push(medicos, edificio)
-				repeat(min(edificio_clientes_max[tipo], array_length(desausiado.clientes)))
+				repeat(min(edificio_servicio_clientes[tipo], array_length(desausiado.clientes)))
 					traer_paciente_en_espera(edificio)
 				cumplir_exigencia(0)
 			}
@@ -112,8 +113,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
 			}
-			else if var_edificio_nombre = "Pozo Petrolífero"
+			else if var_edificio_nombre = "Pozo Petrolífero"{
+				edificio.tuberias = true
 				agua_output += edificio_agua[tipo]
+			}
 			if var_edificio_nombre != "Muelle"
 				buscar_muelle_cercano(edificio)
 			else{

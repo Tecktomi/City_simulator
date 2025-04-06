@@ -28,6 +28,8 @@ function destroy_edificio(edificio = control.null_edificio){
 				array_remove(edificio.casas_cerca[a].trabajos_cerca[edificio_trabajo_educacion[edificio.tipo]], edificio, "eliminar trabajo de las casas cercanas")
 			if edificio_nombre[tipo] = "Pozo Petrolífero"
 				agua_output -= edificio_agua[tipo]
+			else if edificio_nombre[tipo] = "Bomba de Agua"
+				agua_input -= edificio.count
 		}
 		if edificio_es_casa[tipo]{
 			array_remove(casas, edificio, "eliminar casa")
