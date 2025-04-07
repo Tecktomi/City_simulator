@@ -1059,8 +1059,14 @@ else{
 			//Leyes
 			else if ministerio = 8{
 				for(var a = 0; a < array_length(ley_nombre); a++)
-					if (dia / 365) > ley_anno[a] and draw_boton(110, pos, $"{ley_nombre[a]}: {ley_eneabled[a] ? "Legal" : "Ilegal"}", , , function(a){draw_text(100, room_height - 140, $"{ley_descripcion[a]} ($250)\n{ley_tiempo[a] = 0 ? "" : "debes esperar " + string(ley_tiempo[a]) + "meses para cambiarla de nuevo"}")}, a) and ley_tiempo[a] = 0{
-						dinero -= 250
+					if (dia / 365) > ley_anno[a] and draw_boton(110, pos, $"{ley_nombre[a]}: {ley_eneabled[a] ? "Legal" : "Ilegal"}", , ,
+					function(a){
+						draw_set_valign(fa_bottom)
+						draw_text(100, room_height - 100, $"{ley_economia[a] = 0 ? "" : politica_economia_nombre[ley_economia[a]] + "  "}{ley_sociocultural[a] = 0 ? "" : politica_sociocultural_nombre[ley_sociocultural[a]]}\n{ley_descripcion[a]} (${ley_precio[a]}){ley_tiempo[a] = 0 ? "" : "\nDebes esperar " + string(ley_tiempo[a]) + " meses para cambiar esta ley de nuevo"}")
+						draw_set_valign(fa_top)
+					}, a) and ley_tiempo[a] = 0{
+						dinero -= ley_precio[a]
+						mes_mantenimiento[current_mes] += ley_precio[a]
 						ley_tiempo[a] = 12
 						ley_eneabled[a] = not ley_eneabled[a]
 						//Permitir divorcios
@@ -1160,7 +1166,8 @@ else{
 					for(var a = 0; a < array_length(edificios); a++)
 						edificios[a].trabajo_sueldo = max(sueldo_minimo, edificio_trabajo_sueldo[edificios[a].tipo] + edificios[a].presupuesto - 2)
 				}
-				var b = 0, c = 0
+				b = 0
+				var c = 0
 				for(var a = 0; a < array_length(ley_nombre); a++){
 					b += ley_eneabled[a] * ley_economia[a]
 					c += ley_eneabled[a] * ley_sociocultural[a]
@@ -1181,6 +1188,10 @@ else{
 				draw_set_color(c_white)
 				draw_circle(400 + 50 * politica_economia, 550 - 50 * politica_sociocultural, 10, false)
 				draw_set_color(c_black)
+				draw_set_alpha(0.5)
+				for(var a = 0; a < array_length(personas); a++)
+					draw_circle(400 + 50 * personas[a].politica_economia, 550 - 50 * personas[a].politica_sociocultural, 4, false)
+				draw_set_alpha(1)
 			}
 		}
 	}

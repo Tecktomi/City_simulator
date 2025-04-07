@@ -36,6 +36,7 @@ debug = false
 	ley_eneabled = [false, true, false, true, true, true, false, true, false, false]
 	ley_tiempo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0]
+	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500]
 	ley_descripcion = [	"Permite a los ciudadanos separarse legalmente, molestará a los ciudadanos religiosos",
 						"Permite la entrada de inmigrantes a la isla",
 						"Permite trabajar a los niños mayores de 12 años, molestará a todo ciudadano con hijos",
@@ -48,8 +49,8 @@ debug = false
 						"El estado mantiene económicamente a los hijos"]
 	ley_economia = [2, 4, 5, 1, 1, 4, 0, 5, 1, 2]
 	ley_sociocultural = [1, 1, 5, 3, 2, 1, 1, 4, 2, 3]
-	politica_economica_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
-	politica_sociocultura_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]
+	politica_economia_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
+	politica_sociocultural_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]
 	politica_economia = 3
 	politica_sociocultural = 3
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
@@ -115,7 +116,9 @@ debug = false
 		relacion : null_relacion,
 		ladron : undefined,
 		preso : false,
-		empresa : undefined
+		empresa : undefined,
+		politica_economia : 3,
+		politica_sociocultural : 3
 	}
 	null_persona.pareja = null_persona
 	null_relacion.persona = null_persona

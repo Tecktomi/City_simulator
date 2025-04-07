@@ -41,7 +41,9 @@ function add_persona(){
 			},
 			ladron : null_edificio,
 			preso : false,
-			empresa : null_empresa
+			empresa : null_empresa,
+			politica_economia : 3 + 3 * (2 * brandom() - 1) * sqr(random(1)),
+			politica_sociocultural : 3 + 3 * (2 * brandom() - 1) * sqr(random(1))
 		}
 		if debug
 			show_debug_message(fecha(dia) + $" add_persona ({name(persona)})")
