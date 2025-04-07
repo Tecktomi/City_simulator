@@ -46,6 +46,12 @@ debug = false
 						"Permite que los ciudadanos construyan tomas cuando no logran encontrar un hogar",
 						"Asegura que todas las casas tengan acceso a agua potable",
 						"El estado mantiene económicamente a los hijos"]
+	ley_economia = [2, 4, 5, 1, 1, 4, 0, 5, 1, 2]
+	ley_sociocultural = [1, 1, 5, 3, 2, 1, 1, 4, 2, 3]
+	politica_economica_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
+	politica_sociocultura_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]
+	politica_economia = 3
+	politica_sociocultural = 3
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
 	subministerio = -1

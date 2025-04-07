@@ -1160,6 +1160,27 @@ else{
 					for(var a = 0; a < array_length(edificios); a++)
 						edificios[a].trabajo_sueldo = max(sueldo_minimo, edificio_trabajo_sueldo[edificios[a].tipo] + edificios[a].presupuesto - 2)
 				}
+				var b = 0, c = 0
+				for(var a = 0; a < array_length(ley_nombre); a++){
+					b += ley_eneabled[a] * ley_economia[a]
+					c += ley_eneabled[a] * ley_sociocultural[a]
+				}
+				politica_economia = b / array_length(ley_nombre)
+				politica_sociocultural = c / array_length(ley_nombre)
+				draw_set_color(c_red)
+				draw_rectangle(400, 250, 550, 400, false)
+				draw_set_color(c_green)
+				draw_rectangle(400, 550, 550, 400, false)
+				draw_set_color(c_blue)
+				draw_rectangle(700, 250, 550, 400, false)
+				draw_set_color(c_yellow)
+				draw_rectangle(700, 550, 550, 400, false)
+				draw_set_color(c_black)
+				draw_line(400, 400, 700, 400)
+				draw_line(550, 250, 550, 550)
+				draw_set_color(c_white)
+				draw_circle(400 + 50 * politica_economia, 550 - 50 * politica_sociocultural, 10, false)
+				draw_set_color(c_black)
 			}
 		}
 	}
