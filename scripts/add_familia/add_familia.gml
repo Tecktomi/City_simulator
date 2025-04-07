@@ -53,6 +53,8 @@ function add_familia(origen = -1, generada = true){
 					familia.padre = persona_2
 				else
 					familia.madre = persona_2
+				persona_2.politica_economia = clamp(persona.politica_economia + random_range(-1, 1), 0, 6)
+				persona_2.politica_sociocultural = clamp(persona.politica_sociocultural + random_range(-1, 1), 0, 6)
 				if persona_2.religion and ley_eneabled[0]
 					add_felicidad_ley(persona_2, -10)
 				if ley_eneabled[5]
@@ -71,6 +73,8 @@ function add_familia(origen = -1, generada = true){
 					hijo.relacion.padre = persona.relacion
 					hijo.relacion.madre = persona_2.relacion
 					hijo.relacion.nombre = name(hijo)
+					hijo.politica_economia = clamp(persona.politica_economia + random_range(-1, 1), 0, 6)
+					hijo.politica_sociocultural = clamp(persona.politica_sociocultural + random_range(-1, 1), 0, 6)
 					array_push(persona.relacion.hijos, hijo.relacion)
 					array_push(persona_2.relacion.hijos, hijo.relacion)
 					array_push(familia.hijos, hijo)

@@ -1,6 +1,6 @@
 randomize()
 var a, b
-debug = false
+debug = true
 #region Save
 	roaming = game_save_id
 	directory_create(roaming + "Personas")
@@ -32,7 +32,7 @@ debug = false
 			array_push(pais_current, a)
 		array_push(pais_relacion, 0)
 	}
-	ley_nombre = ["Legalizar divorcios", "Aceptar inmigrantes", "Trabajo infantil", "Jubilación", "Comida gratis", "Aceptar emigración", "Trabajo temporal", "Legalizar tomas", "Agua potable universal", "Subsidio infantil"]
+	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil"]
 	ley_eneabled = [false, true, false, true, true, true, false, true, false, false]
 	ley_tiempo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0]
@@ -599,8 +599,8 @@ debug = false
 #endregion
 //Settings
 #region diseño del mundo
-	xsize = 240
-	ysize = 240
+	xsize = 240 / (1 + debug)
+	ysize = 240 / (1 + debug)
 	for(a = 0; a < array_length(recurso_cultivo); a++)
 		cultivo[a] = perlin(xsize, ysize, 1, false, 6)
 	var mineral_grid

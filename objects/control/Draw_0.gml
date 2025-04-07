@@ -67,7 +67,8 @@ else{
 					draw_clear_alpha(c_black, 0)
 					for(var c = 0; c < 16; c++)
 						for(var d = 0; d < 16; d++)
-							draw_sprite_ext(spr_tile, 0, tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, 1, 1, 0, altura_color[a * 16 + c, b * 16 + d], 1)
+							if a * 16 + c < xsize and b * 16 + d < ysize
+								draw_sprite_ext(spr_tile, 0, tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, 1, 1, 0, altura_color[a * 16 + c, b * 16 + d], 1)
 					var sprite = sprite_create_from_surface(surf, 0, 0, tile_width * 32, tile_height * 32, true, false, 0, 0)
 					array_set(chunk[a], b, sprite)
 					surface_reset_target()
@@ -1059,15 +1060,16 @@ else{
 			//Leyes
 			else if ministerio = 8{
 				for(var a = 0; a < array_length(ley_nombre); a++)
-					if (dia / 365) > ley_anno[a] and draw_boton(110, pos, $"{ley_nombre[a]}: {ley_eneabled[a] ? "Legal" : "Ilegal"}", , ,
+					if (dia / 365) > ley_anno[a] and draw_boton(110, pos, $"{ley_eneabled[a] ? "Prohibir" : "Permitir"} {ley_nombre[a]}",,,
 					function(a){
 						draw_set_valign(fa_bottom)
-						draw_text(100, room_height - 100, $"{ley_economia[a] = 0 ? "" : politica_economia_nombre[ley_economia[a]] + "  "}{ley_sociocultural[a] = 0 ? "" : politica_sociocultural_nombre[ley_sociocultural[a]]}\n{ley_descripcion[a]} (${ley_precio[a]}){ley_tiempo[a] = 0 ? "" : "\nDebes esperar " + string(ley_tiempo[a]) + " meses para cambiar esta ley de nuevo"}")
+						draw_text(100, room_height - 100, $"{ley_eneabled[a] ? "Prohibir" : "Permitir"} {ley_nombre[a]}    {ley_economia[a] = 3 ? "" : politica_economia_nombre[ley_economia[a]] + "    "}{ley_sociocultural[a] = 3 ? "" : politica_sociocultural_nombre[ley_sociocultural[a]]}\n{ley_descripcion[a]} (${ley_precio[a]}){ley_tiempo[a] = 0 ? "" : "\nDebes esperar " + string(ley_tiempo[a]) + " meses para cambiar esta ley de nuevo"}")
 						draw_set_valign(fa_top)
 					}, a) and ley_tiempo[a] = 0{
 						dinero -= ley_precio[a]
 						mes_mantenimiento[current_mes] += ley_precio[a]
-						ley_tiempo[a] = 12
+						if not debug
+							ley_tiempo[a] = 12
 						ley_eneabled[a] = not ley_eneabled[a]
 						//Permitir divorcios
 						if a = 0 and ley_eneabled[0]
@@ -1167,13 +1169,22 @@ else{
 						edificios[a].trabajo_sueldo = max(sueldo_minimo, edificio_trabajo_sueldo[edificios[a].tipo] + edificios[a].presupuesto - 2)
 				}
 				b = 0
-				var c = 0
-				for(var a = 0; a < array_length(ley_nombre); a++){
-					b += ley_eneabled[a] * ley_economia[a]
-					c += ley_eneabled[a] * ley_sociocultural[a]
+				var c = 0, d = 0
+				for(var a = 0; a < array_length(ley_nombre); a++)
+					if ley_eneabled[a]{
+						d++
+						b += ley_economia[a]
+						c += ley_sociocultural[a]
+					}
+				if d = 0{
+					politica_economia = 3
+					politica_sociocultural = 3
 				}
-				politica_economia = b / array_length(ley_nombre)
-				politica_sociocultural = c / array_length(ley_nombre)
+				else{
+					politica_economia = b / d
+					politica_sociocultural = c / d
+				}
+				draw_set_alpha(0.5)
 				draw_set_color(c_red)
 				draw_rectangle(400, 250, 550, 400, false)
 				draw_set_color(c_green)
@@ -1183,9 +1194,22 @@ else{
 				draw_set_color(c_yellow)
 				draw_rectangle(700, 550, 550, 400, false)
 				draw_set_color(c_black)
+				draw_set_font(font_small)
+				draw_set_alpha(1)
 				draw_line(400, 400, 700, 400)
 				draw_line(550, 250, 550, 550)
+				draw_text(400, 250, "Izquierda autoritaria")
+				draw_set_valign(fa_bottom)
+				draw_text(400, 550, "Izquierda liberal")
+				draw_set_halign(fa_right)
+				draw_text(700, 550, "Derecha liberal")
+				draw_set_valign(fa_top)
+				draw_text(700, 250, "Derecha autoritaria")
+				draw_set_halign(fa_left)
+				draw_set_font(Font1)
+				draw_set_valign(fa_top)
 				draw_set_color(c_white)
+				draw_text(400, 600, $"{politica_economia} {politica_sociocultural}")
 				draw_circle(400 + 50 * politica_economia, 550 - 50 * politica_sociocultural, 10, false)
 				draw_set_color(c_black)
 				draw_set_alpha(0.5)
