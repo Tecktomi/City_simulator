@@ -3274,7 +3274,7 @@ else{
 						for(b = 0; b < array_length(edificio.familias); b++){
 							var familia = edificio.familias[b]
 							familia.riqueza -= edificio.vivienda_renta
-							if familia.riqueza <= -30{
+							if edificio.vivienda_renta > 0 and familia.riqueza <= -30{
 								cambiar_casa(familia, homeless)
 								b--
 							}
