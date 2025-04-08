@@ -1,6 +1,6 @@
 randomize()
 var a, b
-debug = true
+debug = false
 #region Save
 	roaming = game_save_id
 	directory_create(roaming + "Personas")
@@ -40,13 +40,13 @@ debug = true
 	ley_descripcion = [	"Permite a los ciudadanos separarse legalmente, molestará a los ciudadanos religiosos",
 						"Permite la entrada de inmigrantes a la isla",
 						"Permite trabajar a los niños mayores de 12 años, molestará a todo ciudadano con hijos",
-						"Permite jubilarse a los ciudadanos mayores de 65 años entregando una pensión mínima",
+						"Permite jubilarse a los ciudadanos mayores de 65 años, le agradará a los beneficiados",
 						"La comida es gratis, le permite a todos los habitantes acceder a ella",
 						"Le permite a los ciudadanos molestos irse del país si lo desean",
 						"Despide automáticamente a los trabajadores de las constructoras cuando no hay proyectos pendientes",
 						"Permite que los ciudadanos construyan tomas cuando no logran encontrar un hogar",
 						"Asegura que todas las casas tengan acceso a agua potable",
-						"El estado mantiene económicamente a los hijos"]
+						"El estado mantiene económicamente a los hijos, alegrará a todos los ciudadanos con hijos"]
 	ley_economia = [2, 4, 5, 1, 1, 4, 0, 5, 1, 2]
 	ley_sociocultural = [1, 1, 5, 3, 2, 1, 1, 4, 2, 3]
 	politica_economia_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
@@ -351,7 +351,7 @@ debug = true
 		def_edificio_base("Taberna", 2, 1, 200, 240, [1, 10, 26], [10, 2, 20], 3, 30,, false); def_edificio_servicio(, true,,,, 5, 25, 1, true, 5); def_edificio_trabajo(true, 2, 35, 5)
 		def_edificio_base("Circo", 4, 4, 500, 240, [1, 16], [10, 20], 6, 30,, false); def_edificio_servicio(, true,,,, 16, 20, 1); def_edificio_trabajo(true, 8, 25, 4,, 0.02)
 		def_edificio_base("Muelle", 6, 6, 2200, 1080, [1, 10, 24, 26], [40, 40, 10, 40], 10, 30, 15,, true, true); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 6, 30, 6, 1, 0.02)
-		def_edificio_base("Pescadería", 5, 5, 800, 360, [1, 10], [20, 10], 6, 25, 10, false, true, true); def_edificio_servicio(); def_edificio_trabajo(true, 6, 25, 5,, 0.04)
+		def_edificio_base("Pescadería", 5, 5, 200, 360, [1, 10, 17], [10, 5, 2], 6, 25, 10, false, true, true); def_edificio_servicio(); def_edificio_trabajo(true, 6, 25, 5,, 0.04)
 		def_edificio_base("Mina", 4, 3, 800, 720, [1, 10, 26], [20, 10, 10], 10, 25, 15, false); def_edificio_servicio(,,,,,,,,,, true, 10); def_edificio_trabajo(true, 8, 20, 5,, 0.04)
 		def_edificio_base("Capilla", 4, 3, 1100, 600, [1, 10, 26], [20, 5, 30], 10, 65); def_edificio_servicio(,, true,,, 12, 40); def_edificio_trabajo(true, 2, 60, 6, 1)
 		def_edificio_base("Hospicio", 4, 3, 1500, 1080, [1, 10, 24, 26], [20, 5, 5, 30], 15, 50); def_edificio_servicio(true,, true,,, 10, 30,, true, 20); def_edificio_trabajo(true, 5, 60, 8, 2)
@@ -845,9 +845,13 @@ debug = true
 		mes_accidentes[a] = 0
 		for(b = 0; b < array_length(recurso_nombre); b++){
 			mes_exportaciones_recurso[a, b] = 0
+			mes_exportaciones_recurso_num[a, b] = 0
 			mes_importaciones_recurso[a, b] = 0
+			mes_importaciones_recurso_num[a, b] = 0
 			mes_compra_recurso[a, b] = 0
+			mes_compra_recurso_num[a, b] = 0
 			mes_venta_recurso[a, b] = 0
+			mes_venta_recurso_num[a, b] = 0
 		}
 	}
 	for(a = 0; a < array_length(edificio_nombre) * 2; a++)

@@ -17,10 +17,12 @@ function add_encargo(recurso, cantidad, edificio = control.null_edificio){
 				if cantidad > 0{
 					mes_compra_interna[current_mes] += a
 					array_set(mes_compra_recurso[current_mes], recurso, mes_compra_recurso[current_mes, recurso] + a)
+					array_set(mes_compra_recurso_num[current_mes], recurso, mes_compra_recurso_num[current_mes, recurso] + cantidad)
 				}
 				else{
 					mes_venta_interna[current_mes] -= a
 					array_set(mes_venta_recurso[current_mes], recurso, mes_venta_recurso[current_mes, recurso] - a)
+					array_set(mes_venta_recurso_num[current_mes], recurso, mes_venta_recurso_num[current_mes, recurso] - cantidad)
 				}
 			}
 		}

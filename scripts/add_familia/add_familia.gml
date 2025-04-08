@@ -26,10 +26,6 @@ function add_familia(origen = -1, generada = true){
 				familia.madre = persona
 			else
 				familia.padre = persona
-			if persona.religion and ley_eneabled[0]
-				add_felicidad_ley(persona, -10)
-			if ley_eneabled[5]
-				add_felicidad_ley(persona, -10)
 			if brandom(){
 				mes_inmigrantes[mes(dia)]++
 				var persona_2 = add_persona()
@@ -55,10 +51,6 @@ function add_familia(origen = -1, generada = true){
 					familia.madre = persona_2
 				persona_2.politica_economia = clamp(persona.politica_economia + random_range(-1, 1), 0, 6)
 				persona_2.politica_sociocultural = clamp(persona.politica_sociocultural + random_range(-1, 1), 0, 6)
-				if persona_2.religion and ley_eneabled[0]
-					add_felicidad_ley(persona_2, -10)
-				if ley_eneabled[5]
-					add_felicidad_ley(persona_2, -10)
 				familia.integrantes++
 				repeat(irandom(3)){
 					mes_inmigrantes[mes(dia)]++
@@ -79,16 +71,6 @@ function add_familia(origen = -1, generada = true){
 					array_push(persona_2.relacion.hijos, hijo.relacion)
 					array_push(familia.hijos, hijo)
 					familia.integrantes++
-				}
-				if array_length(familia.hijos) > 0{
-					if ley_eneabled[2]{
-						add_felicidad_ley(persona, -10)
-						add_felicidad_ley(persona_2, -10)
-					}
-					if ley_eneabled[9]{
-						add_felicidad_ley(persona, 10)
-						add_felicidad_ley(persona_2, 10)
-					}
 				}
 			}
 			mes_inmigrantes[mes(dia)]++

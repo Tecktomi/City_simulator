@@ -414,7 +414,7 @@ else{
 				//Felicidad
 				if draw_menu(120, pos, $"Felicidad: {floor(felicidad_total)}", 3, , true){
 					draw_text_pos(130, pos, $"Mínimo esperado: {felicidad_minima}")
-					var fel_tra = 0, fel_edu = 0, fel_viv = 0, fel_sal = 0, num_tra = 0, num_edu = 0, fel_oci = 0, fel_ali = 0, c = 0, fel_tran = 0, num_tran = 0, fel_rel = 0, num_rel = 0, fel_ley = 0, fel_cri = 0, fel_temp = 0, len = array_length(personas)
+					var fel_tra = 0, fel_edu = 0, fel_viv = 0, fel_sal = 0, num_tra = 0, num_edu = 0, fel_oci = 0, fel_ali = 0, c = 0, fel_tran = 0, num_tran = 0, fel_rel = 0, num_rel = 0, fel_ley = 0, num_ley = 0, fel_cri = 0, fel_temp = 0, len = array_length(personas)
 					b = 0
 					for(var a = 0; a < array_length(personas); a++){
 						var persona = personas[a]
@@ -422,7 +422,6 @@ else{
 						fel_viv += persona.familia.felicidad_vivienda
 						fel_ali += persona.familia.felicidad_alimento
 						fel_oci += persona.felicidad_ocio
-						fel_ley += persona.felicidad_ley
 						fel_cri += persona.felicidad_crimen
 						fel_temp += persona.felicidad_temporal
 						if persona.familia.casa != homeless and (personas[a].escuela != null_edificio or not in(persona.trabajo, null_edificio, jubilado, delincuente)){
@@ -432,6 +431,10 @@ else{
 						if persona.es_hijo{
 							fel_edu += persona.felicidad_educacion
 							num_edu++
+						}
+						else{
+							fel_ley += persona.felicidad_ley
+							num_ley++
 						}
 						if not persona.es_hijo or (ley_eneabled[2] and persona.trabajo != null_edificio){
 							fel_tra += personas[a].felicidad_trabajo
@@ -454,7 +457,7 @@ else{
 					draw_text_pos(130, pos, $"Entretenimiento: {floor(fel_oci / len)}")
 					draw_text_pos(130, pos, $"Transporte: {floor(fel_tran / num_tran)}")
 					draw_text_pos(130, pos, $"Religión: {floor(fel_rel / num_rel)}")
-					draw_text_pos(130, pos, $"Legislación: {floor(fel_ley / len)}")
+					draw_text_pos(130, pos, $"Legislación: {floor(fel_ley / num_ley)}")
 					draw_text_pos(130, pos, $"Delincuencia: {floor(fel_cri / len)}")
 					draw_text_pos(130, pos, $"Eventos recientes: {floor(fel_temp / len)}")
 				}
@@ -668,7 +671,7 @@ else{
 			}
 			//Ministerio de Economía
 			else if ministerio = 5{
-				var temp_array, temp_grid, temp_text_array, count, maxi, temp_exportaciones, temp_importaciones, temp_compra, temp_venta
+				var temp_array, temp_grid, temp_text_array, count, maxi, temp_exportaciones, temp_exportaciones_id, temp_importaciones, temp_importaciones_id, temp_compra, temp_compra_id, temp_venta, temp_venta_id
 				#region Definición de variables
 					temp_grid[0] = mes_renta
 					temp_grid[1] = mes_tarifas
@@ -703,9 +706,13 @@ else{
 				}
 				for(var a = 0; a < array_length(recurso_nombre); a++){
 					temp_exportaciones[a] = 0
+					temp_exportaciones_id[a] = 0
 					temp_importaciones[a] = 0
+					temp_importaciones_id[a] = 0
 					temp_compra[a] = 0
+					temp_compra_id[a] = 0
 					temp_venta[a] = 0
+					temp_venta_id[a] = 0
 				}
 				for(var a = 0; a < 12; a++){
 					for(b = 0; b < 13; b++){
@@ -714,9 +721,13 @@ else{
 					}
 					for(b = 0; b < array_length(recurso_nombre); b++){
 						temp_exportaciones[b] += mes_exportaciones_recurso[a, b]
+						temp_exportaciones_id[b] += mes_exportaciones_recurso_num[a, b]
 						temp_importaciones[b] += mes_importaciones_recurso[a, b]
+						temp_importaciones_id[b] += mes_importaciones_recurso_num[a, b]
 						temp_compra[b] += mes_compra_recurso[a, b]
+						temp_compra_id[b] += mes_compra_recurso_num[a, b]
 						temp_venta[b] += mes_venta_recurso[a, b]
+						temp_venta_id[b] += mes_venta_recurso_num[a, b]
 					}
 				}
 				for(var a = 0; a < 13; a++){
@@ -731,11 +742,11 @@ else{
 					if draw_menu(120, pos, $"{temp_text_array[3]}: ${count[3]}", 1)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_exportaciones[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_exportaciones[c]}")
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_exportaciones[c]} ({temp_exportaciones_id[c]})")
 					if draw_menu(120, pos, $"{temp_text_array[9]}: ${count[9]}", 6)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_venta[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_venta[c]}")
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_venta[c]} ({temp_venta_id[c]})")
 					draw_text_pos(120, pos, $"{temp_text_array[10]}: ${count[10]}")
 					draw_text_pos(120, pos, $"{temp_text_array[12]}: ${count[12]}")
 				}
@@ -746,11 +757,11 @@ else{
 					if draw_menu(120, pos, $"{temp_text_array[7]}: ${count[7]}", 3)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_importaciones[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_importaciones[c]}")
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_importaciones[c]} ({temp_importaciones_id[c]})")
 					if draw_menu(120, pos, $"{temp_text_array[8]}: ${count[8]}", 7)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_compra[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_compra[c]}")
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_compra[c]} ({temp_compra_id[c]})")
 					draw_text_pos(120, pos, $"{temp_text_array[11]}: ${count[11]}")
 				}
 				draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11]}")
@@ -1071,52 +1082,22 @@ else{
 						if not debug
 							ley_tiempo[a] = 12
 						ley_eneabled[a] = not ley_eneabled[a]
-						//Permitir divorcios
-						if a = 0 and ley_eneabled[0]
-							for(b = 0; b < array_length(personas); b++)
-								if personas[b].religion
-									add_felicidad_ley(personas[b], -10)
-						//Prohibir divorcios
-						if a = 0 and not ley_eneabled[0]
-							for(b = 0; b < array_length(personas); b++)
-								if personas[b].religion
-									add_felicidad_ley(personas[b], 10)
 						//Prohibir trabajo infantil
 						if a = 2 and not ley_eneabled[2]
-							for(b = 0; b < array_length(familias); b++){
-								var flag = false
+							for(b = 0; b < array_length(familias); b++)
 								for(var c = 0; c < array_length(familias[b].hijos); c++)
-									if familias[b].hijos[c].edad > 12{
+									if familias[b].hijos[c].edad > 12
 										cambiar_trabajo(familias[b].hijos[c], null_edificio)
-										flag = true
-									}
-								if flag{
-									add_felicidad_ley(familias[b].padre, 10)
-									add_felicidad_ley(familias[b].madre, 10)
-								}
-							}
 						//Crear jubilaciones
 						if a = 3 and ley_eneabled[3]
 							for(b = 0; b < array_length(personas); b++)
-								if personas[a].edad > 65{
+								if personas[a].edad > 65
 									cambiar_trabajo(personas[a], jubilado)
-									add_felicidad_ley(personas[a], 10)
-								}
 						//Prohibir jubilaciones
 						if a = 3 and not ley_eneabled[3]
 							for(b = 0; b < array_length(personas); b++)
-								if personas[a].edad > 65{
+								if personas[a].edad > 65
 									cambiar_trabajo(personas[a], null_edificio)
-									add_felicidad_ley(personas[a], -10)
-								}
-						//Permitir emigración
-						if a = 5 and ley_eneabled[5]
-							for(b = 0; b < array_length(personas); b++)
-								add_felicidad_ley(personas[b], 10)
-						//Prohibir emigración
-						if a = 5 and not ley_eneabled[5]
-							for(b = 0; b < array_length(personas); b++)
-								add_felicidad_ley(personas[b], -10)
 						//Aprobar trabajo temporal
 						if a = 6 and ley_eneabled[6] and array_length(cola_construccion) = 0
 							for(b = 0; b < array_length(edificio_count[20]); b++){
@@ -1129,37 +1110,6 @@ else{
 						if a = 6 and not ley_eneabled[6] and array_length(cola_construccion) = 0
 							for(b = 0; b < array_length(edificio_count[20]); b++)
 								set_paro(false, edificio_count[20, b])
-							for(b = 0; b < array_length(personas); b++)
-								if personas[b].religion
-									add_felicidad_ley(personas[b], 10)
-						//Subvención por hijos
-						if a = 2 and ley_eneabled[9]
-							for(b = 0; b < array_length(familias); b++){
-								var flag = false
-								for(var c = 0; c < array_length(familias[b].hijos); c++)
-									if familias[b].hijos[c].edad > 12{
-										cambiar_trabajo(familias[b].hijos[c], null_edificio)
-										flag = true
-									}
-								if flag{
-									add_felicidad_ley(familias[b].padre, 10)
-									add_felicidad_ley(familias[b].madre, 10)
-								}
-							}
-						//Prohibir Subvención por hijos
-						if a = 2 and not ley_eneabled[9]
-							for(b = 0; b < array_length(familias); b++){
-								var flag = false
-								for(var c = 0; c < array_length(familias[b].hijos); c++)
-									if familias[b].hijos[c].edad > 12{
-										cambiar_trabajo(familias[b].hijos[c], null_edificio)
-										flag = true
-									}
-								if flag{
-									add_felicidad_ley(familias[b].padre, -10)
-									add_felicidad_ley(familias[b].madre, -10)
-								}
-							}
 					}
 				if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
 					credibilidad_financiera += floor(sueldo_minimo / 2)
@@ -1168,54 +1118,59 @@ else{
 					for(var a = 0; a < array_length(edificios); a++)
 						edificios[a].trabajo_sueldo = max(sueldo_minimo, edificio_trabajo_sueldo[edificios[a].tipo] + edificios[a].presupuesto - 2)
 				}
-				b = 0
-				var c = 0, d = 0
-				for(var a = 0; a < array_length(ley_nombre); a++)
-					if ley_eneabled[a]{
-						d++
-						b += ley_economia[a]
-						c += ley_sociocultural[a]
+				#region Mapa político
+					b = 0
+					var c = 0, d = 0, tempx = 600, tempy = 150
+					draw_text(tempx, tempy - 20, "Mapa político")
+					for(var a = 0; a < array_length(ley_nombre); a++)
+						if ley_eneabled[a]{
+							d++
+							b += ley_economia[a]
+							c += ley_sociocultural[a]
+						}
+					if d = 0{
+						politica_economia = 3
+						politica_sociocultural = 3
 					}
-				if d = 0{
-					politica_economia = 3
-					politica_sociocultural = 3
-				}
-				else{
-					politica_economia = b / d
-					politica_sociocultural = c / d
-				}
-				draw_set_alpha(0.5)
-				draw_set_color(c_red)
-				draw_rectangle(400, 250, 550, 400, false)
-				draw_set_color(c_green)
-				draw_rectangle(400, 550, 550, 400, false)
-				draw_set_color(c_blue)
-				draw_rectangle(700, 250, 550, 400, false)
-				draw_set_color(c_yellow)
-				draw_rectangle(700, 550, 550, 400, false)
-				draw_set_color(c_black)
-				draw_set_font(font_small)
-				draw_set_alpha(1)
-				draw_line(400, 400, 700, 400)
-				draw_line(550, 250, 550, 550)
-				draw_text(400, 250, "Izquierda autoritaria")
-				draw_set_valign(fa_bottom)
-				draw_text(400, 550, "Izquierda liberal")
-				draw_set_halign(fa_right)
-				draw_text(700, 550, "Derecha liberal")
-				draw_set_valign(fa_top)
-				draw_text(700, 250, "Derecha autoritaria")
-				draw_set_halign(fa_left)
-				draw_set_font(Font1)
-				draw_set_valign(fa_top)
-				draw_set_color(c_white)
-				draw_text(400, 600, $"{politica_economia} {politica_sociocultural}")
-				draw_circle(400 + 50 * politica_economia, 550 - 50 * politica_sociocultural, 10, false)
-				draw_set_color(c_black)
-				draw_set_alpha(0.5)
-				for(var a = 0; a < array_length(personas); a++)
-					draw_circle(400 + 50 * personas[a].politica_economia, 550 - 50 * personas[a].politica_sociocultural, 4, false)
-				draw_set_alpha(1)
+					else{
+						politica_economia = b / d
+						politica_sociocultural = c / d
+					}
+					draw_set_alpha(0.5)
+					draw_set_color(c_red)
+					draw_rectangle(tempx, tempy, tempx + 150, tempy + 150, false)
+					draw_set_color(c_green)
+					draw_rectangle(tempx, tempy + 300, tempx + 150, tempy + 150, false)
+					draw_set_color(c_blue)
+					draw_rectangle(tempx + 300, tempy, tempx + 150, tempy + 150, false)
+					draw_set_color(c_yellow)
+					draw_rectangle(tempx + 300, tempy + 300, tempx + 150, tempy + 150, false)
+					draw_set_color(c_black)
+					draw_set_font(font_small)
+					draw_set_alpha(1)
+					draw_line(tempx, tempy + 150, tempx + 300, tempy + 150)
+					draw_line(tempx + 150, tempy, tempx + 150, tempy + 300)
+					draw_text(tempx, tempy, "Izquierda autoritaria")
+					draw_set_valign(fa_bottom)
+					draw_text(tempx, tempy + 300, "Izquierda liberal")
+					draw_set_halign(fa_right)
+					draw_text(tempx + 300, tempy + 300, "Derecha liberal")
+					draw_set_valign(fa_top)
+					draw_text(tempx + 300, tempy, "Derecha autoritaria")
+					draw_set_halign(fa_left)
+					draw_set_font(Font1)
+					draw_set_valign(fa_top)
+					draw_set_color(c_white)
+					draw_circle(tempx + 50 * politica_economia, tempy + 300 - 50 * politica_sociocultural, 10, false)
+					draw_set_color(c_black)
+					if draw_menu(tempx, tempy + 300, "Mostrar votantes", 0){
+						draw_set_alpha(0.5)
+						for(var a = 0; a < array_length(personas); a++)
+							if not personas[a].es_hijo
+								draw_circle(tempx + 50 * personas[a].politica_economia, tempy + 300 - 50 * personas[a].politica_sociocultural, 4, false)
+						draw_set_alpha(1)
+					}
+				#endregion
 			}
 		}
 	}
@@ -2082,9 +2037,13 @@ else{
 				mes_accidentes[current_mes] = 0
 				for(var a = 0; a < array_length(recurso_nombre); a++){
 					array_set(mes_exportaciones_recurso[current_mes], a, 0)
+					array_set(mes_exportaciones_recurso_num[current_mes], a, 0)
 					array_set(mes_importaciones_recurso[current_mes], a, 0)
+					array_set(mes_importaciones_recurso_num[current_mes], a, 0)
 					array_set(mes_compra_recurso[current_mes], a, 0)
+					array_set(mes_compra_recurso_num[current_mes], a, 0)
 					array_set(mes_venta_recurso[current_mes], a, 0)
+					array_set(mes_venta_recurso_num[current_mes], a, 0)
 				}
 				for(var a = 0; a < array_length(ley_nombre); a++)
 					if ley_tiempo[a] > 0
@@ -2207,18 +2166,7 @@ else{
 					//Trabajo infantil :D
 					if ley_eneabled[2] and persona.es_hijo and persona.edad > 12 and not persona.preso{
 						cambiar_escuela(persona, null_edificio)
-						if buscar_trabajo(persona){
-							var flag = false
-							for(var b = 0; b < array_length(persona.familia.hijos); b++)
-								if persona != persona.familia.hijos[b] and persona.familia.hijos[b].trabajo != null_edificio{
-									flag = true
-									break
-								}
-							if not flag{
-								add_felicidad_ley(persona.familia.padre, -10)
-								add_felicidad_ley(persona.familia.madre, -10)
-							}
-						}
+						buscar_trabajo(persona)
 					}
 					//Independizarse
 					if persona.edad > 18 and (irandom_range(persona.edad, 24) = 24 or persona.edad > 24) and persona.es_hijo and not persona.preso{
@@ -2239,10 +2187,6 @@ else{
 							persona.familia = familia
 							persona.es_hijo = false
 						}
-						if persona.religion and ley_eneabled[0]
-							add_felicidad_ley(persona, -10)
-						if ley_eneabled[5]
-							add_felicidad_ley(persona, -10)
 					}
 					//Adultez
 					else if persona.edad > 24 and persona.edad < 60 and not persona.preso{
@@ -2348,10 +2292,8 @@ else{
 					else if persona.edad > 60{
 						//Jubilarse
 						if not persona.preso
-							if ley_eneabled[3] and persona.edad >= 65 - 5 * persona.sexo{
+							if ley_eneabled[3] and persona.edad >= 65 - 5 * persona.sexo
 								cambiar_trabajo(persona, jubilado)
-								add_felicidad_ley(persona, 10)
-							}
 							else{
 								buscar_trabajo(persona)
 								buscar_casa(persona)
@@ -2464,11 +2406,30 @@ else{
 						}
 						set_calidad_vivienda(persona.familia.casa)
 						persona.familia.felicidad_vivienda = floor((persona.familia.felicidad_vivienda + 3 * persona.familia.casa.vivienda_calidad) / 4)
-						var temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_ley, persona.felicidad_crimen]
+						var temp_array = [persona.felicidad_salud, persona.familia.felicidad_vivienda, persona.felicidad_ocio, persona.familia.felicidad_alimento, persona.felicidad_crimen]
 						persona.felicidad_crimen = min(persona.felicidad_crimen + 5, 100)
 						if persona.es_hijo{
 							persona.felicidad_educacion = floor((persona.felicidad_educacion + 3 * edificio_servicio_calidad[persona.escuela.tipo]) / 4)
 							array_push(temp_array, persona.felicidad_educacion)
+						}
+						else{
+							var c = 0, d = 0, familia = persona.familia
+							for(var b = 0; b < array_length(ley_nombre); b++)
+								if ley_eneabled[b]{
+									c += sqrt(sqr(persona.politica_economia - ley_economia[b]) + sqr(persona.politica_sociocultural - ley_sociocultural[b]))
+									d++
+								}
+							c = round(100 * (1 - c / (d * 6 * sqrt(2))))
+							d = 0
+							if ley_eneabled[0] and persona.religion
+								d -= 10
+							if (persona = familia.padre or persona = familia.madre) and array_length(familia.hijos) > 0
+								d += -20 * ley_eneabled[2] + 10 * ley_eneabled[9]
+							if persona.edad > 65 and ley_eneabled[3]
+								d += 15
+							c = clamp(c + d, 0, 100)
+							persona.felicidad_ley = floor((persona.felicidad_ley + c) / 2)
+							array_push(temp_array, persona.felicidad_ley)
 						}
 						if persona.trabajo != null_edificio{
 							var b = 1 + real(persona.es_hijo and ley_eneabled[2])
@@ -2882,7 +2843,8 @@ else{
 										var total = min(c, recurso_construccion[b]), d = floor(total * recurso_precio[b] * 1.2)
 										dinero -= d
 										mes_importaciones[current_mes] += d
-										array_set(mes_importaciones_recurso[current_mes], b, d)
+										array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
+										array_set(mes_importaciones_recurso_num[current_mes], b, mes_importaciones_recurso_num[current_mes, b] + total)
 										recurso_construccion[b] -= total
 									}
 									//Exportaciones
@@ -2907,6 +2869,7 @@ else{
 											d = floor(temp_factor * d * recurso_precio[b])
 											mes_exportaciones[current_mes] += d
 											array_set(mes_exportaciones_recurso[current_mes], b, mes_exportaciones_recurso[current_mes, b] + d)
+											array_set(mes_exportaciones_recurso_num[current_mes], b, mes_exportaciones_recurso_num[current_mes, b] + d)
 											dinero += d
 										}
 										c -= total
@@ -2918,6 +2881,7 @@ else{
 										dinero -= d
 										mes_importaciones[current_mes] += d
 										array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
+										array_set(mes_importaciones_recurso_num[current_mes], b, mes_importaciones_recurso_num[current_mes, b] + total)
 										recurso_importado[b] -= total
 										c -= total
 										total = min(c, recurso_importado_fijo[b] / 2 / array_length(edificio_count[13]))
@@ -2926,6 +2890,7 @@ else{
 										dinero -= d
 										mes_importaciones[current_mes] += d
 										array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
+										array_set(mes_importaciones_recurso_num[current_mes], b, mes_importaciones_recurso_num[current_mes, b] + total)
 										c -= total
 									#endregion
 								}
@@ -3204,6 +3169,7 @@ else{
 											dinero_privado += temp_precio
 											mes_compra_interna[current_mes] += temp_precio
 											array_set(mes_compra_recurso[current_mes], d, mes_compra_recurso[current_mes, d] + temp_precio)
+											array_set(mes_compra_recurso_num[current_mes], d, mes_compra_recurso_num[current_mes, d] + e)
 											edificio.empresa.dinero += temp_precio
 										}
 									}
@@ -3217,6 +3183,7 @@ else{
 											dinero_privado += temp_precio
 											mes_compra_interna[current_mes] += temp_precio
 											array_set(mes_compra_recurso[current_mes], d, mes_compra_recurso[current_mes, d] + temp_precio)
+											array_set(mes_compra_recurso_num[current_mes], d, mes_compra_recurso_num[current_mes, d] + tienda.almacen[d])
 										}
 										tienda.almacen[d] = 0
 									}

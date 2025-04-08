@@ -13,18 +13,8 @@ function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 			familia.padre = null_persona
 		else if familia.madre = persona
 			familia.madre = null_persona
-		else{
+		else
 			array_remove(familia.hijos, persona, "eliminar hijos")
-			for(var a = 0; a < array_length(familia.hijos); a++)
-				if familia.hijos[a].trabajo != null_edificio{
-					flag = true
-					break
-				}
-			if not flag{
-				add_felicidad_ley(familia.padre, 10)
-				add_felicidad_ley(familia.madre, 10)
-			}
-		}
 		flag = false
 		familia.integrantes--
 		if familia.integrantes = 0{

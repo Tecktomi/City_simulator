@@ -30,7 +30,6 @@
     {"id":{"name":"add_energia","path":"scripts/add_energia/add_energia.yy",},},
     {"id":{"name":"add_exigencia","path":"scripts/add_exigencia/add_exigencia.yy",},},
     {"id":{"name":"add_familia","path":"scripts/add_familia/add_familia.yy",},},
-    {"id":{"name":"add_felicidad_ley","path":"scripts/add_felicidad_ley/add_felicidad_ley.yy",},},
     {"id":{"name":"add_huelga","path":"scripts/add_huelga/add_huelga.yy",},},
     {"id":{"name":"add_persona","path":"scripts/add_persona/add_persona.yy",},},
     {"id":{"name":"add_tratado","path":"scripts/add_tratado/add_tratado.yy",},},
