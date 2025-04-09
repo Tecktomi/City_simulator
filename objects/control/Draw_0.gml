@@ -1180,9 +1180,10 @@ else{
 						for(var a = 0; a < array_length(candidatos); a++){
 							var persona = candidatos[a]
 							draw_set_color(make_color_hsv(a * 255 / array_length(candidatos), 127, 255))
-								draw_circle(tempx + 50 * persona.politica_economia, tempy + 300 - 50 * persona.politica_sociocultural, 8, false)	
+							draw_circle(tempx + 50 * persona.politica_economia, tempy + 300 - 50 * persona.politica_sociocultural, 8, false)
+							draw_circle(tempx + 30, pos + last_height / 2, 6, false)
 							draw_set_color(c_black)
-							if draw_boton(tempx + 20, pos, name(persona)){
+							if draw_boton(tempx + 40, pos, $"{name(persona)} (~{floor(100 * candidatos_votos[a + 1] / candidatos_votos_total)}%)"){
 								sel_build = false
 								sel_info = true
 								sel_tipo = 2
@@ -1873,6 +1874,13 @@ else{
 			}
 			else
 				draw_text_pos(room_width - 20, pos, $"San{ao(sel_persona)}")
+			if elecciones and sel_persona.candidato{
+				var a = 0
+				for(a = 0; a < array_length(candidatos); a++)
+					if sel_persona = candidatos[a]
+						break
+				draw_text_pos(room_width, pos, $"Candidato electoral (~{floor(100 * candidatos_votos[a + 1] / candidatos_votos_total)}%)")
+			}
 			draw_text_pos(room_width, pos, $"Felicidad: {sel_persona.felicidad}")
 			draw_text_pos(room_width - 20, pos, $"Legislación: {sel_persona.felicidad_ley}")
 			draw_text_pos(room_width - 20, pos, $"Delincuencia: {sel_persona.felicidad_crimen}")
@@ -2126,6 +2134,18 @@ else{
 					if fel_ali / array_length(familias) >= 50
 						cumplir_exigencia(6)
 				}
+				if elecciones{
+					for(var a = 0; a <= array_length(candidatos); a++)
+						candidatos_votos[a] = 0
+					candidatos_votos_total = 0
+					repeat(40){
+						var a = voto_persona(personas[irandom(array_length(personas) - 1)])
+						if a != -1{
+							candidatos_votos[a]++
+							candidatos_votos_total++
+						}
+					}
+				}
 			}
 			//Eventos anuales
 			if (dia mod 365) = 0{
@@ -2154,17 +2174,9 @@ else{
 						array_push(votos, 0)
 					var e = 0
 					for(var a = 0; a < array_length(personas); a++){
-						var persona = personas[a]
-						if persona.edad > 18 and not persona.candidato{
-							var c = 0, p_ec = persona.politica_economia, p_sc = persona.politica_sociocultural, d = sqrt(sqr(p_ec - politica_economia) + sqr(p_sc - politica_sociocultural)) / sqrt(persona.felicidad / felicidad_minima)
-							for(var b = 0; b < array_length(candidatos); b++){
-								var candidato = candidatos[b], c_ec = candidato.politica_economia, c_sc = candidato.politica_sociocultural, dis = sqrt(sqr(p_ec - c_ec) + sqr(p_sc - c_sc))
-								if dis < d{
-									d = dis
-									c = b + 1
-								}
-							}
-							votos[c]++
+						var persona = personas[a], b = voto_persona(persona)
+						if b != -1{
+							votos[b]++
 							e++
 						}
 					}
@@ -2173,7 +2185,7 @@ else{
 						if a = 0
 							temp_text += $"Su Alteza: {votos[a]}"
 						else
-							temp_text += $"\n{name(candidato[a - 1])}: {votos[a]}"
+							temp_text += $"\n{name(candidatos[a - 1])}: {votos[a]}"
 						if votos[a] > b{
 							b = votos[a]
 							c = a
@@ -2184,23 +2196,35 @@ else{
 					if c = 0
 						show_message($"Has ganado las elecciones con {b} votos!")
 					else{
-						show_message($"Has perdido las elecciones\n\nAhora el poder lo tiene un tal {name(candidato[c - 1])}")
+						show_message($"Has perdido las elecciones\n\nAhora el poder lo tiene un tal {name(candidatos[c - 1])}")
 						if show_question("Volver a jugar?")
 							game_restart()
 						else
 							game_end()
 					}
-					while array_length(candidatos) > 0
-						array_shift(candidatos).candidato = false
+					while array_length(candidatos) > 0{
+						var persona = array_shift(candidatos)
+						persona.candidato = false
+					}
+					candidatos_votos = [0]
 					elecciones = false
 				}
 				if (anno mod 6) = 0 and anno > 0{
+					candidatos_votos = [0]
 					repeat(5){
 						var persona = personas[irandom(array_length(personas) - 1)]
 						if persona.edad > 30 and persona.edad < 65 and not persona.candidato and persona.medico = null_edificio and (persona.pareja = null_persona or not persona.pareja.candidato){
 							persona.candidato = true
 							array_push(candidatos, persona)
+							array_push(candidatos_votos, 0)
 							elecciones = true
+						}
+					}
+					repeat(40){
+						var a = voto_persona(personas[irandom(array_length(personas) - 1)])
+						if a != -1{
+							candidatos_votos[a]++
+							candidatos_votos_total++
 						}
 					}
 				}
@@ -3472,6 +3496,9 @@ else{
 			dinero += 1000
 			mes_herencia[current_mes] += 1000
 		}
+		//Acelerar elección
+		if keyboard_check_pressed(ord("E")) and keyboard_check(vk_lcontrol)
+			dia = 6 * 365 * ceil(dia / (6 * 365)) - 1
 	#endregion
 	//Tutorial
 	if tutorial_bool and not menu{

@@ -10,4 +10,5 @@ function array_remove(array, value, from = ""){
 		show_error("Error en array_remove", true)
 	}
 	array_delete(array, a, 1)
+	return a
 }

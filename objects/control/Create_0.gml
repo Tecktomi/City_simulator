@@ -127,6 +127,8 @@ debug = false
 	array_pop(personas)
 	candidatos = [null_persona]
 	array_pop(candidatos)
+	candidatos_votos = []
+	candidatos_votos_total = 0
 	elecciones = false
 	for(a = 0; a < 365; a++){
 		cumples[a] = [null_persona]

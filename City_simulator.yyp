@@ -84,6 +84,7 @@
     {"id":{"name":"traer_paciente_en_espera","path":"scripts/traer_paciente_en_espera/traer_paciente_en_espera.yy",},},
     {"id":{"name":"tutorial_set","path":"scripts/tutorial_set/tutorial_set.yy",},},
     {"id":{"name":"valorizar_edificio","path":"scripts/valorizar_edificio/valorizar_edificio.yy",},},
+    {"id":{"name":"voto_persona","path":"scripts/voto_persona/voto_persona.yy",},},
     {"id":{"name":"spr_1x1","path":"sprites/spr_1x1/spr_1x1.yy",},},
     {"id":{"name":"spr_arbol","path":"sprites/spr_arbol/spr_arbol.yy",},},
     {"id":{"name":"spr_icono","path":"sprites/spr_icono/spr_icono.yy",},},
