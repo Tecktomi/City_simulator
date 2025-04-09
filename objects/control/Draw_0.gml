@@ -183,10 +183,17 @@ else{
 		velocidad = 1
 	if draw_sprite_boton(spr_icono, 8, 70, room_height - last_height - 20) and not tutorial_bool
 		velocidad = 2.5
-	pos -= 20
+	pos -= 40
 	for(var a = 0; a < array_length(exigencia_nombre); a++)
 		if exigencia_pedida[a]
 			draw_text_pos(0, pos, $"{exigencia_nombre[a]} {exigencia[a].expiracion - dia} días restantes")
+	if elecciones
+		if draw_boton(0, pos, $"Elecciones en {365 - (dia mod 365)} días"){
+			sel_info = false
+			sel_build = true
+			ministerio = 8
+			show[1] = true
+		}
 	draw_set_valign(fa_top)
 	draw_set_alpha(1)
 	#endregion
@@ -1160,16 +1167,32 @@ else{
 					draw_set_halign(fa_left)
 					draw_set_font(Font1)
 					draw_set_valign(fa_top)
-					draw_set_color(c_white)
-					draw_circle(tempx + 50 * politica_economia, tempy + 300 - 50 * politica_sociocultural, 10, false)
-					draw_set_color(c_black)
-					if draw_menu(tempx, tempy + 300, "Mostrar votantes", 0){
+					pos = tempy + 300
+					if draw_menu(tempx, pos, "Mostrar votantes", 0){
 						draw_set_alpha(0.5)
+						draw_set_color(c_black)
 						for(var a = 0; a < array_length(personas); a++)
-							if not personas[a].es_hijo
+							if not personas[a].es_hijo and not personas[a].candidato
 								draw_circle(tempx + 50 * personas[a].politica_economia, tempy + 300 - 50 * personas[a].politica_sociocultural, 4, false)
 						draw_set_alpha(1)
 					}
+					if elecciones and draw_menu(tempx, pos, "Mostrar candidatos", 1){
+						for(var a = 0; a < array_length(candidatos); a++){
+							var persona = candidatos[a]
+							draw_set_color(make_color_hsv(a * 255 / array_length(candidatos), 127, 255))
+								draw_circle(tempx + 50 * persona.politica_economia, tempy + 300 - 50 * persona.politica_sociocultural, 8, false)	
+							draw_set_color(c_black)
+							if draw_boton(tempx + 20, pos, name(persona)){
+								sel_build = false
+								sel_info = true
+								sel_tipo = 2
+								sel_persona = persona
+							}
+						}
+					}
+					draw_set_color(c_white)
+					draw_circle(tempx + 50 * politica_economia, tempy + 300 - 50 * politica_sociocultural, 10, false)
+					draw_set_color(c_black)
 				#endregion
 			}
 		}
@@ -1398,10 +1421,12 @@ else{
 		}
 	}
 	//Seleccionar edificio
-	if mouse_check_button_pressed(mb_left){
-		var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
-		var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-		if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build{
+	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
+	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
+	if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build{
+		if bool_edificio[mx, my] or construccion_reservada[mx, my]
+			cursor = cr_handpoint
+		if mouse_check_button_pressed(mb_left){
 			mouse_clear(mb_left)
 			sel_info = bool_edificio[mx, my] or construccion_reservada[mx, my]
 			if sel_info{
@@ -2007,7 +2032,8 @@ else{
 			}
 			//Random tick
 			repeat(max(xsize * ysize / 10000, 1)){
-				var mx = irandom(xsize - 1), my = irandom(ysize - 1)
+				mx = irandom(xsize - 1)
+				my = irandom(ysize - 1)
 				if bosque[mx, my]{
 					array_set(bosque_madera[mx], my, max(bosque_max[mx, my], min(200, bosque_madera[mx, my] + 20)))
 					array_set(bosque_alpha[mx], my, 0.5 + bosque_madera[mx, my] / 400)
@@ -2119,6 +2145,63 @@ else{
 								if recurso_tratados[b, c].pais = pais_current[a]
 									array_delete(recurso_tratados[b], c--, 1)
 						array_delete(pais_current, a, 1)
+					}
+				}
+				//Elecciones
+				if elecciones{
+					var votos = [0]
+					for(var a = 0; a < array_length(candidatos); a++)
+						array_push(votos, 0)
+					var e = 0
+					for(var a = 0; a < array_length(personas); a++){
+						var persona = personas[a]
+						if persona.edad > 18 and not persona.candidato{
+							var c = 0, p_ec = persona.politica_economia, p_sc = persona.politica_sociocultural, d = sqrt(sqr(p_ec - politica_economia) + sqr(p_sc - politica_sociocultural)) / sqrt(persona.felicidad / felicidad_minima)
+							for(var b = 0; b < array_length(candidatos); b++){
+								var candidato = candidatos[b], c_ec = candidato.politica_economia, c_sc = candidato.politica_sociocultural, dis = sqrt(sqr(p_ec - c_ec) + sqr(p_sc - c_sc))
+								if dis < d{
+									d = dis
+									c = b + 1
+								}
+							}
+							votos[c]++
+							e++
+						}
+					}
+					var b = 0, c = 0, temp_text = $"Resultados:\nVotantes: {e}\n\n"
+					for(var a = 0; a < array_length(votos); a++){
+						if a = 0
+							temp_text += $"Su Alteza: {votos[a]}"
+						else
+							temp_text += $"\n{name(candidato[a - 1])}: {votos[a]}"
+						if votos[a] > b{
+							b = votos[a]
+							c = a
+						}
+					}
+					show_message(temp_text)
+					show_debug_message(temp_text)
+					if c = 0
+						show_message($"Has ganado las elecciones con {b} votos!")
+					else{
+						show_message($"Has perdido las elecciones\n\nAhora el poder lo tiene un tal {name(candidato[c - 1])}")
+						if show_question("Volver a jugar?")
+							game_restart()
+						else
+							game_end()
+					}
+					while array_length(candidatos) > 0
+						array_shift(candidatos).candidato = false
+					elecciones = false
+				}
+				if (anno mod 6) = 0 and anno > 0{
+					repeat(5){
+						var persona = personas[irandom(array_length(personas) - 1)]
+						if persona.edad > 30 and persona.edad < 65 and not persona.candidato and persona.medico = null_edificio and (persona.pareja = null_persona or not persona.pareja.candidato){
+							persona.candidato = true
+							array_push(candidatos, persona)
+							elecciones = true
+						}
 					}
 				}
 			}

@@ -118,12 +118,16 @@ debug = false
 		preso : false,
 		empresa : undefined,
 		politica_economia : 3,
-		politica_sociocultural : 3
+		politica_sociocultural : 3,
+		candidato : false
 	}
 	null_persona.pareja = null_persona
 	null_relacion.persona = null_persona
 	personas = [null_persona]
 	array_pop(personas)
+	candidatos = [null_persona]
+	array_pop(candidatos)
+	elecciones = false
 	for(a = 0; a < 365; a++){
 		cumples[a] = [null_persona]
 		array_pop(cumples[a])
