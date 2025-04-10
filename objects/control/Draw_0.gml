@@ -226,46 +226,16 @@ else{
 			game_restart()
 		pos += 20
 		if draw_menu(room_width / 2, pos, $"Resolucion: {window_get_width()} x {window_get_height()}", 0){
-			if draw_boton(room_width / 2, pos, "1120 x 630", , , function f1(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1120 x 630");draw_set_halign(fa_center)}){
-				window_set_size(1120, 630)
-				window_center()
-				ini_open(roaming + "config.txt")
-				ini_write_real("MAIN", "view_width", 1120)
-				ini_write_real("MAIN", "view_height", 630)
-				ini_close()
-			}
-			if draw_boton(room_width / 2, pos, "1280 x 720", , , function f2(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1280 x 720");draw_set_halign(fa_center)}){
-				window_set_size(1280, 720)
-				window_center()
-				ini_open(roaming + "config.txt")
-				ini_write_real("MAIN", "view_width", 1280)
-				ini_write_real("MAIN", "view_height", 720)
-				ini_close()
-			}
-			if draw_boton(room_width / 2, pos, "1366 x 768", , , function f3(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1366 x 768");draw_set_halign(fa_center)}){
-				window_set_size(1366, 768)
-				window_center()
-				ini_open(roaming + "config.txt")
-				ini_write_real("MAIN", "view_width", 1366)
-				ini_write_real("MAIN", "view_height", 768)
-				ini_close()
-			}
-			if draw_boton(room_width / 2, pos, "1600 x 900", , , function f4(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1600 x 900");draw_set_halign(fa_center)}){
-				window_set_size(1600, 900)
-				window_center()
-				ini_open(roaming + "config.txt")
-				ini_write_real("MAIN", "view_width", 1600)
-				ini_write_real("MAIN", "view_height", 900)
-				ini_close()
-			}
-			if draw_boton(room_width / 2, pos, "1920 x 1080", , , function f5(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1920 x 1080");draw_set_halign(fa_center)}){
-				window_set_size(1920, 1080)
-				window_center()
-				ini_open(roaming + "config.txt")
-				ini_write_real("MAIN", "view_width", 1920)
-				ini_write_real("MAIN", "view_height", 1080)
-				ini_close()
-			}
+			if draw_boton(room_width / 2, pos, "1120 x 630", , , function f1(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1120 x 630");draw_set_halign(fa_center)})
+				scr_room_resize(1120, 630)
+			if draw_boton(room_width / 2, pos, "1280 x 720", , , function f2(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1280 x 720");draw_set_halign(fa_center)})
+				scr_room_resize(1280, 720)
+			if draw_boton(room_width / 2, pos, "1366 x 768", , , function f3(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1366 x 768");draw_set_halign(fa_center)})
+				scr_room_resize(1366, 768)
+			if draw_boton(room_width / 2, pos, "1600 x 900", , , function f4(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1600 x 900");draw_set_halign(fa_center)})
+				scr_room_resize(1600, 900)
+			if draw_boton(room_width / 2, pos, "1920 x 1080", , , function f5(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "1920 x 1080");draw_set_halign(fa_center)})
+				scr_room_resize(1920, 1080)
 		}
 		if draw_boton(room_width / 2, pos, "Pantalla completa",,, function f6(){draw_set_halign(fa_left);draw_text(mouse_x + 10, mouse_y, "fullscreen");draw_set_halign(fa_center)}){
 			window_set_fullscreen(not window_get_fullscreen())
@@ -1697,6 +1667,9 @@ else{
 								sel_tipo = 2
 							}
 				}
+				//Información edificios de ocio
+				if edificio_es_ocio[index]
+					draw_text_pos(room_width - 20, pos, $"{sel_edificio.count} visitantes este mes")
 				//Conexión al agua potable
 				if edificio_bool_agua[index] and (dia / 365) > 50{
 					if not sel_edificio.tuberias and draw_boton(room_width - 20, pos, "Conectar agua potable $400")
@@ -1834,16 +1807,13 @@ else{
 		//Información personas
 		else if sel_tipo = 2 and sel_persona != null_persona{
 			draw_text_pos(room_width, pos, name(sel_persona))
-			draw_text_pos(room_width - 20, pos, $"Nacionalidad: {pais_nombre[sel_persona.nacionalidad]}")
-			if sel_persona.religion
-				draw_text_pos(room_width - 20, pos, "Creyente")
-			else
-				draw_text_pos(room_width - 20, pos, $"Ate{ao(sel_persona)}")
 			draw_text_pos(room_width - 20, pos, $"Edad: {sel_persona.edad} ({fecha(sel_persona.cumple, false)})")
+			draw_text_pos(room_width - 20, pos, $"Nacionalidad: {pais_nombre[sel_persona.nacionalidad]}")
 			if draw_boton(room_width - 20, pos, name_familia(sel_persona.familia)){
 				sel_familia = sel_persona.familia
 				sel_tipo = 1
 			}
+			pos += 10
 			if sel_persona.familia.casa = homeless
 				draw_text_pos(room_width - 20, pos, "Sin hogar")
 			else if draw_boton(room_width - 20, pos, "Vive en: " + sel_persona.familia.casa.nombre){
@@ -1872,8 +1842,10 @@ else{
 					sel_tipo = 0
 				}
 			}
+			if sel_persona.religion
+				draw_text_pos(room_width - 20, pos, "Creyente")
 			else
-				draw_text_pos(room_width - 20, pos, $"San{ao(sel_persona)}")
+				draw_text_pos(room_width - 20, pos, $"Ate{ao(sel_persona)}")
 			if elecciones and sel_persona.candidato{
 				var a = 0
 				for(a = 0; a < array_length(candidatos); a++)
@@ -1881,10 +1853,28 @@ else{
 						break
 				draw_text_pos(room_width, pos, $"Candidato electoral (~{floor(100 * candidatos_votos[a + 1] / candidatos_votos_total)}%)")
 			}
-			draw_text_pos(room_width, pos, $"Felicidad: {sel_persona.felicidad}")
-			draw_text_pos(room_width - 20, pos, $"Legislación: {sel_persona.felicidad_ley}")
-			draw_text_pos(room_width - 20, pos, $"Delincuencia: {sel_persona.felicidad_crimen}")
-			draw_relacion(room_width - 150, room_height - 50, sel_persona.relacion)
+			pos += 10
+			if draw_menu(room_width, pos, $"Felicidad: {sel_persona.felicidad}", 0){
+				draw_text_pos(room_width - 20, pos, $"Vivienda: {sel_persona.familia.felicidad_vivienda}")
+				if not sel_persona.es_hijo or (ley_eneabled[2] and persona.trabajo != null_edificio)
+					draw_text_pos(room_width - 20, pos, $"Trabajo: {sel_persona.felicidad_trabajo}")
+				draw_text_pos(room_width - 20, pos, $"Salud: {sel_persona.felicidad_salud}")
+				if sel_persona.es_hijo
+					draw_text_pos(room_width - 20, pos, $"Educación: {sel_persona.felicidad_educacion}")
+				draw_text_pos(room_width - 20, pos, $"Alimentación: {sel_persona.familia.felicidad_alimento}")
+				draw_text_pos(room_width - 20, pos, $"Entretenimiento: {sel_persona.felicidad_ocio}")
+				draw_text_pos(room_width - 20, pos, $"Transporte: {sel_persona.felicidad_transporte}")
+				if sel_persona.religion
+					draw_text_pos(room_width - 20, pos, $"Religión: {sel_persona.felicidad_religion}")
+				if not sel_persona.es_hijo
+					draw_text_pos(room_width - 20, pos, $"Legislación: {sel_persona.felicidad_ley}")
+				draw_text_pos(room_width - 20, pos, $"Delincuencia: {sel_persona.felicidad_crimen}")
+			}
+			if draw_menu(room_width, pos, "Opinión política", 1){
+				draw_text_pos(room_width - 20, pos, politica_economia_nombre[sel_persona.politica_economia])
+				draw_text_pos(room_width - 20, pos, politica_sociocultural_nombre[sel_persona.politica_sociocultural])
+			}
+			draw_relacion(room_width - 150, room_height - 80, sel_persona.relacion)
 		}
 		//Información construcciones
 		else if sel_tipo = 3 and sel_construccion != null_construccion{
@@ -2139,7 +2129,7 @@ else{
 						candidatos_votos[a] = 0
 					candidatos_votos_total = 0
 					repeat(40){
-						var a = voto_persona(personas[irandom(array_length(personas) - 1)])
+						var a = voto_persona(array_pick(personas))
 						if a != -1{
 							candidatos_votos[a]++
 							candidatos_votos_total++
@@ -2150,7 +2140,7 @@ else{
 			//Eventos anuales
 			if (dia mod 365) = 0{
 				var anno = floor(dia / 365)
-				felicidad_minima = floor(10 + 50 * (1 + anno) / (100 + anno))
+				felicidad_minima = floor(20 + 50 * (1 + anno) / (100 + anno))
 				//Credibilidad financiera
 				credibilidad_financiera = clamp(credibilidad_financiera + sign((dinero_privado + inversion_privada) - prev_beneficio_privado), 1, 10)
 				prev_beneficio_privado = dinero_privado + inversion_privada
@@ -2212,7 +2202,7 @@ else{
 				if (anno mod 6) = 0 and anno > 0{
 					candidatos_votos = [0]
 					repeat(5){
-						var persona = personas[irandom(array_length(personas) - 1)]
+						var persona = array_pick(personas)
 						if persona.edad > 30 and persona.edad < 65 and not persona.candidato and persona.medico = null_edificio and (persona.pareja = null_persona or not persona.pareja.candidato){
 							persona.candidato = true
 							array_push(candidatos, persona)
@@ -2221,7 +2211,7 @@ else{
 						}
 					}
 					repeat(40){
-						var a = voto_persona(personas[irandom(array_length(personas) - 1)])
+						var a = voto_persona(array_pick(personas))
 						if a != -1{
 							candidatos_votos[a]++
 							candidatos_votos_total++
@@ -2254,7 +2244,7 @@ else{
 						}
 						//Mudarse a un albergue
 						if persona.familia.padre = null_persona and persona.familia.madre = null_persona and edificio_nombre[persona.familia.casa.tipo] != "Albergue" and array_length(edificio_count[18]) > 0{
-							var edificio = edificio_count[18, irandom(array_length(edificio_count[18]) - 1)]
+							var edificio = array_pick(edificio_count[18])
 							var b = 0
 							if array_length(edificio.familias) = edificio_familias_max[18]{
 								for(b = 0; b < array_length(edificio.familias); b++)
@@ -2299,7 +2289,7 @@ else{
 					else if persona.edad > 24 and persona.edad < 60 and not persona.preso{
 						//Casarse
 						if persona.pareja = null_persona{
-							var persona_2 = personas[irandom(array_length(personas) - 1)]
+							var persona_2 = array_pick(personas)
 							if persona.sexo != persona_2.sexo and persona_2.edad > 18 and abs(persona.edad - persona_2.edad) < 8 and persona_2.pareja = null_persona and (persona_2.familia.padre = persona_2 or persona_2.familia.madre = persona_2) and persona.familia != persona_2.familia{
 								persona.pareja = persona_2
 								persona_2.pareja = persona
@@ -2316,6 +2306,8 @@ else{
 									persona.familia.padre = persona_2
 								else
 									persona.familia.madre = persona_2
+								persona.relacion.pareja = persona_2.relacion
+								persona_2.relacion.pareja = persona.relacion
 							}
 						}
 						//Divorcio
@@ -2334,6 +2326,8 @@ else{
 							persona.familia = familia
 							persona.pareja = null_persona
 							persona_2.pareja = null_persona
+							persona.relacion.pareja = null_relacion
+							persona_2.relacion.pareja = null_relacion
 							for(var b = 0; b < array_length(old_familia.hijos); b++)
 								if brandom(){
 									var hijo = old_familia.hijos[b]
@@ -2356,7 +2350,7 @@ else{
 							cambiar_trabajo(persona, delincuente)
 						//Delinquir
 						if persona.trabajo = delincuente{
-							var familia = familias[irandom(array_length(familias) - 1)]
+							var familia = array_pick(familias)
 							if familia != persona.familia and (familia.casa = homeless or familia.casa.ladron = null_persona){
 								if familia.casa != homeless{
 									familia.casa.ladron = persona
@@ -2427,7 +2421,7 @@ else{
 							if recurso_banda[c]
 								temp_precio = clamp(temp_precio, recurso_banda_min[c], recurso_banda_max[c])
 							if persona.familia.sueldo > 0 and persona.familia.riqueza > temp_precio and random(1) < recurso_lujo_prbabilidad[b] and array_length(edificio_count[35]) > 0{
-								var tienda = edificio_count[35, irandom(array_length(edificio_count[35]) - 1)]
+								var tienda = array_pick(edificio_count[35])
 								if tienda.almacen[c] >= 1{
 									tienda.almacen[c]--
 									persona.felicidad_ocio += 10
@@ -2449,37 +2443,39 @@ else{
 					if not persona.preso{
 						var temp_array = array_shuffle(edificios_ocio_index)
 						persona.felicidad_ocio = 0
-						for(var b = 0; b < array_length(temp_array); b++)
-							if array_length(edificio_count[temp_array[b]]) > 0 and (persona.edad > 12 or (edificio_nombre[temp_array[b]] != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (edificio_nombre[temp_array[b]] != "Circo")) and ((not persona.sexo and persona.edad > 15) or (edificio_nombre[temp_array[b]] != "Cabaret")){
-								var ocio = edificio_count[temp_array[b], irandom(array_length(edificio_count[temp_array[b]]) - 1)]
+						for(var b = 0; b < array_length(temp_array); b++){
+							var c = temp_array[b], var_edificio_nombre = edificio_nombre[c]
+							if array_length(edificio_count[c]) > 0 and (persona.edad > 12 or (var_edificio_nombre != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (var_edificio_nombre != "Circo")) and ((not persona.sexo and persona.edad > 15) or (var_edificio_nombre != "Cabaret")) and (persona.educacion > 0 or (var_edificio_nombre != "Periódico")){
+								var ocio = array_pick(edificio_count[c]), temp_precio = edificio_servicio_tarifa[c]
 								set_calidad_servicio(ocio)
-								if ocio.count < edificio_servicio_clientes[temp_array[b]] and persona.familia.riqueza >= edificio_servicio_tarifa[temp_array[b]]{
-									var c = edificio_servicio_tarifa[temp_array[b]]
-									persona.familia.riqueza -= edificio_servicio_tarifa[temp_array[b]]
-									ocio.ganancia += c
+								if ocio.count < edificio_servicio_clientes[c] and persona.familia.riqueza >= temp_precio{
+									persona.familia.riqueza -= temp_precio
+									ocio.ganancia += temp_precio
 									if ocio.privado{
-										dinero_privado += c
-										ocio.empresa.dinero += c
+										dinero_privado += temp_precio
+										ocio.empresa.dinero += temp_precio
 									}
 									else{
-										dinero += c
-										mes_tarifas[current_mes] += c
+										dinero += temp_precio
+										mes_tarifas[current_mes] += temp_precio
 									}
+									if var_edificio_nombre = "Periódico"
+										persona.informado = true
 									ocio.count++
-									persona.ocios[b] = edificio_servicio_calidad[temp_array[b]]
+									persona.ocios[b] = ocio.servicio_calidad
 									persona.felicidad_ocio += persona.ocios[b]
 								}
 								else{
-									persona.ocios[b] = floor(persona.ocios[b] / 2)
+									persona.ocios[b] /= 2
 									persona.felicidad_ocio += persona.ocios[b]
 								}
 							}
 							else{
-								persona.ocios[b] = floor(persona.ocios[b] / 2)
+								persona.ocios[b] /= 2
 								persona.felicidad_ocio += persona.ocios[b]
 							}
-						if persona.felicidad_ocio > 100
-							persona.felicidad_ocio = 100
+						}
+						persona.felicidad_ocio = clamp(floor(persona.felicidad_ocio), 0, 100)
 					}
 					//Ir a la iglesia
 					if array_length(iglesias) > 0 and (persona.religion or (persona.edad < 12 and random(1) < 0.1)) and not persona.preso{
@@ -2487,10 +2483,10 @@ else{
 						var iglesia= null_edificio
 						if persona.familia.casa != homeless{
 							if array_length(persona.familia.casa.iglesias_cerca) > 0
-								iglesia = persona.familia.casa.iglesias_cerca[irandom(array_length(persona.familia.casa.iglesias_cerca) - 1)]
+								iglesia = array_pick(persona.familia.casa.iglesias_cerca)
 						}
 						else
-							iglesia = iglesias[irandom(array_length(iglesias) - 1)]
+							iglesia = array_pick(iglesias)
 						if iglesia.count < edificio_servicio_clientes[iglesia.tipo]{
 							iglesia.count++
 							persona.felicidad_religion = min(110, persona.felicidad_religion + edificio_servicio_calidad[iglesia.tipo])
@@ -2537,6 +2533,10 @@ else{
 							c = clamp(c + d, 0, 100)
 							persona.felicidad_ley = floor((persona.felicidad_ley + c) / 2)
 							array_push(temp_array, persona.felicidad_ley)
+							if persona.informado{
+								array_push(temp_array, persona.felicidad_ley)
+								persona.informado = false
+							}
 						}
 						if persona.trabajo != null_edificio{
 							var b = 1 + real(persona.es_hijo and ley_eneabled[2])
@@ -3027,7 +3027,7 @@ else{
 								cambiar_trabajo(persona, null_edificio)
 							}
 							for(b = irandom(edificio.trabajo_mes / 14 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]); b > 0 and array_length(edificio.clientes) < edificio_servicio_clientes[index]; b--){
-								var temp_edificio = edificio.casas_cerca[irandom(array_length(edificio.casas_cerca) - 1)]
+								var temp_edificio = array_pick(edificio.casas_cerca)
 								if temp_edificio.ladron != null_persona{
 									var persona = temp_edificio.ladron
 									array_push(edificio.clientes, persona)
@@ -3260,7 +3260,7 @@ else{
 					//Conseguir alimento
 					for(b = 0; b < array_length(edificio_almacen_index); b++)
 						if array_length(almacenes[edificio_almacen_index[b]]) > 0{
-							var tienda = almacenes[edificio_almacen_index[b]][irandom(array_length(almacenes[edificio_almacen_index[b]]) - 1)]
+							var tienda = array_pick(almacenes[edificio_almacen_index[b]])
 							for(var c = 0; c < array_length(recurso_comida); c++){
 								var d = recurso_comida[c]
 								if edificio.almacen[d] < poblacion and tienda.almacen[d] > 0{

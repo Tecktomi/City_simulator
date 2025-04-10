@@ -49,6 +49,8 @@ function add_familia(origen = -1, generada = true){
 					familia.padre = persona_2
 				else
 					familia.madre = persona_2
+				persona.relacion.pareja = persona_2.relacion
+				persona_2.relacion.pareja = persona.relacion
 				persona_2.politica_economia = clamp(persona.politica_economia + random_range(-1, 1), 0, 6)
 				persona_2.politica_sociocultural = clamp(persona.politica_sociocultural + random_range(-1, 1), 0, 6)
 				familia.integrantes++

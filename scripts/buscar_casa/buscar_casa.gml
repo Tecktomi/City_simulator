@@ -3,9 +3,9 @@ function buscar_casa(persona = control.null_persona){
 		if array_length(casas_libres) > 0{
 			var casa = homeless, familia = persona.familia
 			if (familia.padre = null_persona or in(familia.padre.trabajo, null_edificio, jubilado, delincuente)) and (familia.madre = null_persona or in(familia.madre.trabajo, null_edificio, jubilado, delincuente))
-				casa = casas_libres[irandom(array_length(casas_libres) - 1)]
+				casa = array_pick(casas_libres)
 			else if array_length(persona.trabajo.casas_cerca) > 0
-				casa = persona.trabajo.casas_cerca[irandom(array_length(persona.trabajo.casas_cerca) - 1)]
+				casa = array_pick(persona.trabajo.casas_cerca)
 			var a = 0, b = 0
 			if not in(persona.trabajo, null_edificio, jubilado, delincuente){
 				a = calcular_felicidad_transporte(casa, persona.trabajo)

@@ -1,27 +1,26 @@
-function draw_relacion(xx, yy, relacion = null_relacion, iter = 0){
-	if iter = 5
-		return
-	draw_sprite(spr_icono, relacion.sexo, xx, yy)
-	if not relacion.vivo
-		draw_set_color(c_black)
-	else
-		if relacion.sexo
-			draw_set_color(c_fuchsia)
-		else
-			draw_set_color(c_aqua)
-	draw_circle(xx, yy, 8, false)
-	draw_set_color(c_black)
-	if mouse_x > xx - 10 and mouse_y > yy - 10 and mouse_x < xx + 10 and mouse_y < yy + 10{
-		draw_text(mouse_x, mouse_y, relacion.nombre)
-		cursor = cr_handpoint
-		if mouse_check_button_pressed(mb_left){
-			mouse_clear(mb_left)
-			if relacion.vivo
-				sel_persona = relacion.persona
+function draw_relacion(xx, yy, relacion = control.null_relacion){
+	with control{
+		var a = xx, color = draw_get_color()
+		if relacion.pareja != null_relacion{
+			a -= 20
+			draw_line(a, yy, a + 40, yy)
+			if draw_sprite_boton(spr_icono, relacion.pareja.sexo, a + 40, yy) and relacion.pareja.vivo
+				sel_persona = relacion.pareja.persona
 		}
+		draw_set_color(c_red)
+		draw_set_alpha(0.5)
+		draw_circle(a, yy, 12, false)
+		draw_set_color(color)
+		draw_set_alpha(1)
+		draw_sprite(spr_icono, relacion.sexo, a, yy)
+		if relacion.padre != null_relacion
+			if draw_sprite_boton(spr_icono, relacion.padre.sexo, a - 20, yy - 40) and relacion.padre.vivo
+				sel_persona = relacion.padre.persona
+		if relacion.madre != null_relacion
+			if draw_sprite_boton(spr_icono, relacion.madre.sexo, a + 20, yy - 40) and relacion.madre.vivo
+				sel_persona = relacion.madre.persona
+		for(var b = 0; b < array_length(relacion.hijos); b++)
+			if draw_sprite_boton(spr_icono, relacion.hijos[b].sexo, a - 20 * (array_length(relacion.hijos) - 1) + b * 40, yy + 40) and relacion.hijos[b].vivo
+				sel_persona = relacion.hijos[b].persona
 	}
-	if relacion.padre != null_relacion
-		draw_relacion(xx - 15 * (4 - iter), yy - 30, relacion.padre, iter + 1)
-	if relacion.madre != null_relacion
-		draw_relacion(xx + 15 * (4 - iter), yy - 30, relacion.madre, iter + 1)
 }

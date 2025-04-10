@@ -6,7 +6,7 @@ function buscar_trabajo(persona = control.null_persona){
 			var trabajo = null_edificio
 			for(var a = persona.educacion; a >= 0; a--)
 				if array_length(trabajo_educacion[a]) > 0{
-					trabajo = trabajo_educacion[a, irandom(array_length(trabajo_educacion[a]) - 1)]
+					trabajo = array_pick(trabajo_educacion[a])
 					var c = 0, b = 0
 					if not in(persona.trabajo, null_edificio, jubilado, delincuente){
 						c = calcular_felicidad_transporte(persona.familia.casa, trabajo)
