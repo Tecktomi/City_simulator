@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"year_history",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"year_history",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

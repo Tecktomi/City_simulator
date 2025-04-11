@@ -14,7 +14,7 @@ function add_tratado(pais, recurso, cantidad, factor, tiempo){
 }
 function add_tratado_oferta(){
 	with control{
-		var a = irandom(array_length(recurso_nombre) - 1)
+		var a = array_pick(recurso_current)
 		var tratado = {
 			pais: pais_current[irandom_range(1, array_length(pais_current) - 1)],
 			recurso : a,

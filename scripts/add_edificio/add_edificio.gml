@@ -120,6 +120,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 				edificio.tuberias = true
 				agua_output += edificio_agua[tipo]
 			}
+			else if var_edificio_nombre = "Periódico"
+				array_push(edificio.array_complex, {a : -1, b : 0})
 			if var_edificio_nombre != "Muelle"
 				buscar_muelle_cercano(edificio)
 			else{

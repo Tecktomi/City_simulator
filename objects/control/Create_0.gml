@@ -19,11 +19,13 @@ debug = false
 #endregion
 #region Definiciones independientes
 	dia = 1
-	pais_nombre = ["Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana", "Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos", "Gran Colombia", "Provincias Unidas de Centroamérica", "España", "Francia", "Inglaterra", "Portugal", "Holanda", "Virreinato de Nueva España", "Virreinato de Nueva Granada"]
-	pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88, 90, 92, 88, 88, 77, 86, 96, 78, 90, 90, 80, 70, 70, 80, 70, 90, 90]
-	pais_inicio = [0, 95, 21, 41, 38, 38, 103, 38, 4, 44, 31, 31, 22, 181, 162, 38, 173, 0, 19, 19, 23, 0, 0, 0, 0, 0, 0, 0]
-	pais_fin = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 40, 0, 0, 0, 0, 0, 21, 19]
-	pais_idioma = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 3, 3, 0, 3, 3, 0, 0, 0, 1, 3, 2, 4, 0, 0]
+	pais_nombre = [	"Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana",
+					"Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos", "Gran Colombia", "Provincias Unidas de Centroamérica",
+					"España", "Francia", "Inglaterra", "Portugal", "Holanda", "Virreinato de Nueva España", "Virreinato de Nueva Granada"]
+	pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88,	90, 92, 88, 88, 77, 86, 96, 78, 80, 80,		90, 70, 70, 80, 70, 80, 80]
+	pais_inicio =	[0, 95, 21, 41, 38, 38, 103, 38, 4, 44,		31, 31, 22, 181, 162, 38, 173, 0, 19, 23,	0, 0, 0, 0, 0, 0, 0]
+	pais_fin =		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,				0, 0, 0, 0, 0, 0, 0, 0, 31, 40,				0, 0, 0, 0, 0, 21, 19]
+	pais_idioma =	[0, 0, 0, 0, 0, 0, 0, 0, 1, 0,				0, 0, 2, 3, 3, 0, 3, 3, 0, 0,				0, 1, 3, 2, 4, 0, 0]
 	idioma_nombre = ["Español", "Francés", "Portugués", "Inglés", "Alemán"]
 	pais_relacion = []
 	pais_current = []
@@ -122,6 +124,7 @@ debug = false
 		politica_economia : 3,
 		politica_sociocultural : 3,
 		candidato : false,
+		candidato_popularidad : 1,
 		informado : false
 	}
 	null_persona.pareja = null_persona
@@ -170,6 +173,11 @@ debug = false
 #region recursos
 	recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo"]
 	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 4]
+	recurso_anno = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60]
+	recurso_current = []
+	for(a = 0; a < array_length(recurso_nombre); a++)
+		if floor(dia / 365) >= recurso_anno[a]
+			array_push(recurso_current, a)
 	recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23]

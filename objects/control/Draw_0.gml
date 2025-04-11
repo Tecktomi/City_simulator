@@ -39,6 +39,7 @@ if menu_principal{
 		draw_text(room_width / 2, 100, "CARGANDO...")
 		draw_set_font(Font1)
 		draw_set_halign(fa_left)
+		year_history(floor(dia / 365))
 	}
 }
 else{
@@ -785,17 +786,20 @@ else{
 						show_scroll--
 					if mouse_wheel_down()
 						show_scroll++
-					show_scroll = clamp(show_scroll, 0, array_length(recurso_nombre) - 20)
+					show_scroll = clamp(show_scroll, 0, array_length(recurso_current) - 20)
 					for(var a = 0; a < 20; a++){
-						if draw_boton(420, last_pos + a * 20, recurso_nombre[a + show_scroll])
-							subministerio = a + show_scroll
+						b = recurso_current[a + show_scroll]
+						if draw_boton(420, last_pos + a * 20, recurso_nombre[b])
+							subministerio = b
 						max_width = max(max_width, last_width)
 					}
 					pos = 120
 					draw_text_pos(420 + max_width, pos, "Exportar")
 					pos += 20
-					for(var a = 0; a < 20; a++)
-						recurso_exportado[a + show_scroll] = draw_boton_rectangle(420 + max_width + last_width / 2 - 5, pos + a * 20, 420 + max_width + last_width / 2 + 13, pos + a * 20 + 18, recurso_exportado[a + show_scroll])
+					for(var a = 0; a < 20; a++){
+						b = recurso_current[a + show_scroll]
+						recurso_exportado[b] = draw_boton_rectangle(420 + max_width + last_width / 2 - 5, pos + a * 20, 420 + max_width + last_width / 2 + 13, pos + a * 20 + 18, recurso_exportado[b])
+					}
 					max_width += last_width + 10
 					pos = 120
 					draw_text_pos(420 + max_width, pos, "Importar")
@@ -804,11 +808,12 @@ else{
 					max_width_2 = max(max_width_2, last_width)
 					last_pos = pos
 					for(var a = 0; a < 20; a++){
-						if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado[a + show_scroll]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Shift para reducir")})
+						b = recurso_current[a + show_scroll]
+						if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado[b]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Shift para reducir")})
 							if not keyboard_check(vk_lshift)
-								recurso_importado[a + show_scroll] += 100
-							else if recurso_importado[a + show_scroll] > 0
-								recurso_importado[a + show_scroll] -= 100
+								recurso_importado[b] += 100
+							else if recurso_importado[b] > 0
+								recurso_importado[b] -= 100
 						max_width_2  = max(max_width_2, last_width)
 					}
 					max_width += max_width_2 + 10
@@ -816,11 +821,12 @@ else{
 					draw_text_pos(420 + max_width, pos, "Anual")
 					max_width_2 = last_width
 					for(var a = 0; a < 20; a++){
-						if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado_fijo[a + show_scroll]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Importación fija mensual")})
+						b = recurso_current[a + show_scroll]
+						if draw_boton(420 + max_width, last_pos + a * 20, $"{recurso_importado_fijo[b]}", , , function() {draw_text(mouse_x + 20, mouse_y, "Importación fija mensual")})
 							if not keyboard_check(vk_lshift)
-								recurso_importado_fijo[a + show_scroll] += 100
-							else if recurso_importado_fijo[a + show_scroll] > 0
-								recurso_importado_fijo[a + show_scroll] -= 100
+								recurso_importado_fijo[b] += 100
+							else if recurso_importado_fijo[b] > 0
+								recurso_importado_fijo[b] -= 100
 						max_width_2 = max(max_width_2, last_width)
 					}
 					max_width += max_width_2 + 10
@@ -828,33 +834,34 @@ else{
 					draw_text_pos(420 + max_width, pos, "Balance")
 					pos += 20
 					for(var a = 0; a < 20; a++){
-						if draw_sprite_boton(spr_icono, 4 + (recurso_historial[a + show_scroll, 23] < recurso_historial[a + show_scroll, 0]), 420 + max_width, pos + a * 20, 20, 20){
-							var flag = show[a + show_scroll + 8]
+						b = recurso_current[a + show_scroll]
+						if draw_sprite_boton(spr_icono, 4 + (recurso_historial[b, 23] < recurso_historial[b, 0]), 420 + max_width, pos + a * 20, 20, 20){
+							var flag = show[b + 8]
 							close_show()
-							show[a + show_scroll + 8] = not flag
+							show[b + 8] = not flag
 						}
 						draw_line(420, pos + a * 20, 460 + max_width, pos + a * 20)
 					}
 					for(var a = 0; a < array_length(recurso_nombre); a++)
-					if show[a + 8]{
-						draw_line(800, 150, 800, 350)
-						draw_line(800, 350, 1040, 350)
-						var mini = recurso_precio[a], maxa = recurso_precio[a]
-						for(b = 0; b < 24; b++){
-							mini = min(mini, recurso_historial[a, b])
-							maxa = max(maxa, recurso_historial[a, b])
+						if show[a + 8]{
+							draw_line(800, 150, 800, 350)
+							draw_line(800, 350, 1040, 350)
+							var mini = recurso_precio[a], maxa = recurso_precio[a]
+							for(b = 0; b < 24; b++){
+								mini = min(mini, recurso_historial[a, b])
+								maxa = max(maxa, recurso_historial[a, b])
+							}
+							draw_set_halign(fa_right)
+							draw_text(800, 150, $"${maxa}")
+							draw_text(800, 350, $"${mini}")
+							draw_set_halign(fa_center)
+							draw_text(920, 350, $"{recurso_nombre[a]}")
+							draw_set_halign(fa_left)
+							maxa = maxa - mini
+							draw_text(1040, 350 - 200 * (recurso_historial[a, 23] - mini) / maxa, $"${recurso_precio[a]}")
+							for(b = 0; b < 23; b++)
+								draw_line(800 + b * 10, 350 - 200 * (recurso_historial[a, b] - mini) / maxa, 800 + (b + 1) * 10, 350 - 200 * (recurso_historial[a, b + 1] - mini) / maxa)
 						}
-						draw_set_halign(fa_right)
-						draw_text(800, 150, $"${maxa}")
-						draw_text(800, 350, $"${mini}")
-						draw_set_halign(fa_center)
-						draw_text(920, 350, $"{recurso_nombre[a]}")
-						draw_set_halign(fa_left)
-						maxa = maxa - mini
-						draw_text(1040, 350 - 200 * (recurso_historial[a, 23] - mini) / maxa, $"${recurso_precio[a]}")
-						for(b = 0; b < 23; b++)
-							draw_line(800 + b * 10, 350 - 200 * (recurso_historial[a, b] - mini) / maxa, 800 + (b + 1) * 10, 350 - 200 * (recurso_historial[a, b + 1] - mini) / maxa)
-					}
 				}
 				//Menú por recurso
 				else{
@@ -863,20 +870,24 @@ else{
 						show_scroll--
 					if mouse_wheel_down()
 						show_scroll++
-					show_scroll = clamp(show_scroll, 0, array_length(recurso_nombre) - 20)
+					show_scroll = clamp(show_scroll, 0, array_length(recurso_current) - 20)
 					var width = 0
-					for(var a = 0; a < 20; a++)
-						width = max(width, string_width(recurso_nombre[a + show_scroll]) + 10)
+					for(var a = 0; a < 20; a++){
+						b = recurso_current[a + show_scroll]
+						width = max(width, string_width(recurso_nombre[b]) + 10)
+					}
 					if draw_menu(500, pos, recurso_nombre[subministerio], 8){
 						draw_set_color(c_ltgray)
 						draw_rectangle(510, pos, 510 + width, pos + last_height * 20, false)
 						draw_set_color(c_black)
 						draw_rectangle(510, pos, 510 + width, pos + last_height * 20, true)
-						for(var a = 0; a < 20; a++)
-							if draw_boton(515, pos, recurso_nombre[a + show_scroll]){
-								subministerio = a + show_scroll
+						for(var a = 0; a < 20; a++){
+							b = recurso_current[a + show_scroll]
+							if draw_boton(515, pos, recurso_nombre[b]){
+								subministerio = b
 								show[8] = false
 							}
+						}
 					}
 					else{
 						draw_text_pos(500, pos, $"precio ${recurso_precio[subministerio]}")
@@ -1638,10 +1649,11 @@ else{
 									}
 								}
 					}
-					if var_edificio_nombre = "Pescadería"
+					else if var_edificio_nombre = "Pescadería"{
 						if contaminacion[sel_edificio.x, sel_edificio.y] > 0
 							draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
-					if var_edificio_nombre = "Mina"{
+					}
+					else if var_edificio_nombre = "Mina"{
 						draw_text_pos(room_width - 20, pos, $"Extrayendo {recurso_nombre[recurso_mineral[sel_edificio.modo]]}")
 						var c = 0, d = min(xsize - 1, sel_edificio.x + width + 1), e = min(xsize - 1, sel_edificio.y + height + 1)
 						for(var a = max(0, sel_edificio.x - 1); a < d; a++)
@@ -1662,7 +1674,7 @@ else{
 									}
 								}
 					}
-					if var_edificio_nombre = "Rancho"{
+					else if var_edificio_nombre = "Rancho"{
 						if contaminacion[sel_edificio.x, sel_edificio.y] > 0
 							draw_text_pos(room_width - 40, pos, $"Contaminación: -{floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
 						draw_text_pos(room_width - 20, pos, $"Produciendo {ganado_nombre[sel_edificio.modo]}")
@@ -1675,11 +1687,11 @@ else{
 									show[3] = false
 								}
 					}
-					if var_edificio_nombre = "Aserradero"{
+					else if var_edificio_nombre = "Aserradero"{
 						if draw_boton(room_width - 20, pos, $"{(sel_edificio.modo = 0) ? "Despejar bosque" : "Reforestación"}")
 							sel_edificio.modo = 1 - sel_edificio.modo
 					}
-					if var_edificio_nombre = "Pozo Petrolífero"{
+					else if var_edificio_nombre = "Pozo Petrolífero"{
 						var c = 0, d = x + width, e = y + height
 						for(var a = x; a < d; a++)
 							for(var b = y; b < e; b++)
@@ -1689,10 +1701,30 @@ else{
 						else
 							draw_text_pos(room_width - 20, pos, "Depósito vacío")
 					}
-					if var_edificio_nombre = "Bomba de Agua"{
+					else if var_edificio_nombre = "Bomba de Agua"{
 						draw_text_pos(room_width - 20, pos, $"Empujando {sel_edificio.count} agua")
 						if sel_edificio.almacen[1] + sel_edificio.almacen[9] + sel_edificio.almacen[27] = 0
 							draw_text_pos(room_width - 30, pos, "Necesita combustible!")
+					}
+					else if var_edificio_nombre = "Periódico"{
+						if elecciones{
+							draw_text_pos(room_width - 20, pos, "Acciones de campaña")
+							if draw_menu(room_width - 40, pos, "Difamar candidato", 3){
+								for(var a = 0; a < array_length(candidatos); a++)
+									if draw_boton(room_width - 60, pos, name(candidatos[a])){
+										sel_edificio.array_complex[0].a = a
+										set_calidad_servicio(sel_edificio)
+										show[3] = false
+									}
+								if draw_boton(room_width - 60, pos, "Cancelar"){
+									sel_edificio.array_complex[0].a = -1
+									set_calidad_servicio(sel_edificio)
+									show[3] = false
+								}
+							}
+							if sel_edificio.array_complex[0].a >= 0
+								draw_text_pos(room_width - 40, pos, $"Difamando a {name(candidatos[sel_edificio.array_complex[0].a])}")
+						}
 					}
 				}
 				//Información escuelas / consultas
@@ -2162,8 +2194,11 @@ else{
 						cumplir_exigencia(6)
 				}
 				if elecciones{
-					for(var a = 0; a <= array_length(candidatos); a++)
+					for(var a = 0; a <= array_length(candidatos); a++){
 						candidatos_votos[a] = 0
+						if a < array_length(candidatos)
+							candidatos[a].candidato_popularidad *= random_range(0.9, 1.1)
+					}
 					candidatos_votos_total = 0
 					repeat(40){
 						var a = voto_persona(array_pick(personas))
@@ -2183,17 +2218,7 @@ else{
 				prev_beneficio_privado = dinero_privado + inversion_privada
 				if array_length(empresas) < irandom(credibilidad_financiera)
 					add_empresa(irandom_range(1000, 2000))
-				for(var a = 0; a < array_length(pais_nombre); a++){
-					if anno = pais_inicio[a]
-						array_push(pais_current, a)
-					else if anno = pais_fin[a]{
-						for(var b = 0; b < array_length(recurso_nombre); b++)
-							for(var c = 0; c > array_length(recurso_tratados[b]); c++)
-								if recurso_tratados[b, c].pais = pais_current[a]
-									array_delete(recurso_tratados[b], c--, 1)
-						array_delete(pais_current, a, 1)
-					}
-				}
+				year_history(anno)
 				//Elecciones
 				if elecciones{
 					var votos = [0]
@@ -2235,6 +2260,8 @@ else{
 					}
 					candidatos_votos = [0]
 					elecciones = false
+					for(var a = 0; a < array_length(edificio_count[43]); a++)
+						edificio_count[43, a].array_complex[0].a = -1
 				}
 				if (anno mod 6) = 0 and anno > 0{
 					candidatos_votos = [0]
@@ -2567,6 +2594,10 @@ else{
 								d += -20 * ley_eneabled[2] + 10 * ley_eneabled[9]
 							if persona.edad > 65 and ley_eneabled[3]
 								d += 15
+							if persona.trabajo.comisaria != null_edificio
+								d -= 10
+							if persona.familia.casa.comisaria != null_edificio
+								d -= 10
 							c = clamp(c + d, 0, 100)
 							persona.felicidad_ley = floor((persona.felicidad_ley + c) / 2)
 							array_push(temp_array, persona.felicidad_ley)
@@ -2615,7 +2646,7 @@ else{
 							}
 						}
 						//Protestas
-						else if not in(persona.trabajo, null_edificio, jubilado, delincuente) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado and not persona.preso and persona.trabajo.comisaria = null_edificio and edificio_nombre[persona.trabajo] != "Comisaría"{
+						else if not in(persona.trabajo, null_edificio, jubilado, delincuente) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado and not persona.preso and persona.trabajo.comisaria = null_edificio and edificio_nombre[persona.trabajo] != "Comisaría" and persona.familia.casa.comisaria = null_edificio{
 							var edificio = persona.trabajo, fel_ali = 0, fel_sal = 0, fel_edu = 0, num_edu = 0, fel_div = 0, fel_rel = 0
 							for(var b = 0; b < array_length(edificio.trabajadores); b++){
 								var trabajador = edificio.trabajadores[b]
@@ -3260,6 +3291,15 @@ else{
 							}
 							edificio.count = b
 							energia_input += b
+						}
+						//Periódico
+						else if var_edificio_nombre = "Periódico"{
+							if elecciones and edificio.array_complex[0].a >= 0{
+								candidatos[edificio.array_complex[0].a].candidato_popularidad *= 0.9
+								edificio.ganancia -= 100
+								dinero -= 100
+								mes_mantenimiento[current_mes] += 100
+							}
 						}
 					}
 				}
