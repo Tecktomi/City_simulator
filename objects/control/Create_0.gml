@@ -441,6 +441,7 @@ debug = false
 		trabajos_cerca : [[]],
 		casas_cerca : [],
 		iglesias_cerca : [],
+		comisaria : undefined,
 		x : 0,
 		y : 0,
 		tipo : 0,
@@ -492,6 +493,7 @@ debug = false
 	array_push(null_edificio.iglesias_cerca, null_edificio)
 	array_pop(null_edificio.iglesias_cerca)
 	null_edificio.muelle_cercano = null_edificio
+	null_edificio.comisaria = null_edificio
 	edificios = [null_edificio]
 	array_pop(edificios)
 	escuelas = [null_edificio]
@@ -747,6 +749,7 @@ debug = false
 	sel_build = false
 	sel_modo = false
 	sel_cerca = false
+	sel_comisaria = false
 	build_sel = false
 	build_index = 0
 	build_type = 0

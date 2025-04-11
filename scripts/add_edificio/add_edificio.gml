@@ -10,6 +10,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			trabajos_cerca : [[null_edificio]],
 			casas_cerca : [null_edificio],
 			iglesias_cerca : [null_edificio],
+			comisaria : null_edificio,
 			x : x,
 			y : y,
 			tipo : tipo,

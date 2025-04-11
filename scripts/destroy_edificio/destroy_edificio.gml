@@ -47,6 +47,8 @@ function destroy_edificio(edificio = control.null_edificio){
 			agua_output -= edificio_agua[tipo]
 		if edificio_bool_energia[tipo] and edificio.electricidad
 			energia_output -= edificio_energia[tipo]
+		if edificio.comisaria != null_edificio
+			edificio.comisaria.comisaria = null_edificio
 		for(var a = 0; a < array_length(edificio.familias); a++){
 			var familia = edificio.familias[a]
 			if familia.padre != null_persona
