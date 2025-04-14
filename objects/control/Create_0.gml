@@ -34,11 +34,13 @@ debug = false
 			array_push(pais_current, a)
 		array_push(pais_relacion, 0)
 	}
-	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil"]
-	ley_eneabled = [false, true, false, true, true, true, false, true, false, false]
-	ley_tiempo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0]
-	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500]
+	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil", "Sufragio universal", "Policía armada"]
+	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, true]
+	ley_tiempo = []
+	for(a = 0; a < array_length(ley_nombre); a++)
+		array_push(ley_tiempo, 0)
+	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0]
+	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500, 800, 1000]
 	ley_descripcion = [	"Permite a los ciudadanos separarse legalmente, molestará a los ciudadanos religiosos",
 						"Permite la entrada de inmigrantes a la isla",
 						"Permite trabajar a los niños mayores de 12 años, molestará a todo ciudadano con hijos",
@@ -48,9 +50,11 @@ debug = false
 						"Despide automáticamente a los trabajadores de las constructoras cuando no hay proyectos pendientes",
 						"Permite que los ciudadanos construyan tomas cuando no logran encontrar un hogar",
 						"Asegura que todas las casas tengan acceso a agua potable",
-						"El estado mantiene económicamente a los hijos, alegrará a todos los ciudadanos con hijos"]
-	ley_economia = [2, 4, 5, 1, 1, 4, 0, 5, 1, 2]
-	ley_sociocultural = [1, 1, 5, 3, 2, 1, 1, 4, 2, 3]
+						"El estado mantiene económicamente a los hijos, alegrará a todos los ciudadanos con hijos",
+						"Permite a mujeres y analfabetos votarle a su majestad",
+						"Le da a la policía las herramientas para hacer bien su trabajo"]
+	ley_economia = [2, 4, 5, 1, 1, 4, 4, 1, 1, 2, 3, 5]
+	ley_sociocultural = [1, 1, 5, 3, 2, 1, 4, 1, 2, 3, 1, 6]
 	politica_economia_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
 	politica_sociocultural_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]
 	politica_economia = 3

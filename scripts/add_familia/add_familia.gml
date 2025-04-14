@@ -21,6 +21,8 @@ function add_familia(origen = -1, generada = true){
 				persona.nacionalidad = irandom_range(1, pais_current[array_length(pais_current) - 1])
 			else
 				persona.nacionalidad = origen
+			persona.nombre = gen_nombre(persona.sexo, pais_idioma[persona.nacionalidad])
+			persona.apellido = gen_apellido(pais_idioma[persona.nacionalidad])
 			persona.religion = (irandom(100) < pais_religion[persona.nacionalidad])
 			if persona.sexo
 				familia.madre = persona
@@ -44,6 +46,8 @@ function add_familia(origen = -1, generada = true){
 					persona_2.nacionalidad = choose(persona.nacionalidad, irandom_range(1, pais_current[array_length(pais_current) - 1]))
 				else
 					persona_2.nacionalidad = origen
+				persona_2.nombre = gen_nombre(persona_2.sexo, pais_idioma[persona_2.nacionalidad])
+				persona_2.apellido = gen_apellido(pais_idioma[persona_2.nacionalidad])
 				persona_2.religion = choose(persona.religion, (irandom(100) < pais_religion[persona_2.nacionalidad]))
 				if persona.sexo
 					familia.padre = persona_2

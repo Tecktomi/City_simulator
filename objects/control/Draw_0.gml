@@ -183,7 +183,7 @@ else{
 		if draw_sprite_boton(spr_icono, 7, 40, room_height - last_height - 20) and not tutorial_bool
 			velocidad = 1
 		if draw_sprite_boton(spr_icono, 8, 70, room_height - last_height - 20) and not tutorial_bool
-			velocidad = 2.5
+			velocidad = 6
 		pos -= 40
 		for(var a = 0; a < array_length(exigencia_nombre); a++)
 			if exigencia_pedida[a]
@@ -835,7 +835,7 @@ else{
 					pos += 20
 					for(var a = 0; a < 20; a++){
 						b = recurso_current[a + show_scroll]
-						if draw_sprite_boton(spr_icono, 4 + (recurso_historial[b, 23] < recurso_historial[b, 0]), 420 + max_width, pos + a * 20, 20, 20){
+						if draw_sprite_boton(spr_icono, 4 + (recurso_historial[b, 23] < recurso_historial[b, 0]), 430 + max_width, pos + a * 20, 20, 20){
 							var flag = show[b + 8]
 							close_show()
 							show[b + 8] = not flag
@@ -1532,14 +1532,27 @@ else{
 					if array_length(edificio_count[34]) > 0 and draw_boton(room_width - 40, pos, "Que la policía haga su trabajo"){
 						sel_edificio.huelga = false
 						set_paro(false, sel_edificio)
+						var flag = false
 						for(a = 0; a < array_length(sel_edificio.trabajadores); a++){
 							var persona = sel_edificio.trabajadores[a]
-							if brandom()
-								buscar_atencion_medica(persona)
+							if brandom(){
+								if ley_eneabled[11] and brandom(){
+									destroy_persona(persona,, "Muerto por la policía")
+									mes_muertos[current_mes]++
+									flag = true
+									a--
+									continue
+								}
+								else
+									buscar_atencion_medica(persona)
+							}
 							persona.felicidad_temporal -= 40
 							if persona.pareja != null_persona
 								persona.pareja.felicidad_temporal -= 25
 						}
+						if flag
+							for(var a = 0; a < array_length(personas); a++)
+								personas[a].felicidad_temporal -= 5
 					}
 					draw_set_alpha(0.5)
 				}
@@ -2164,7 +2177,22 @@ else{
 				#endregion
 				//Inmigración
 				if ley_eneabled[1] and (irandom(felicidad_total) > felicidad_minima or irandom(credibilidad_financiera) > 7 or dia < 365){
-					var familia = add_familia()
+					var b = 0, origen = -1
+					if brandom(){
+						for(var a = 0; a < array_length(pais_current); a++)
+							b += pais_relacion[pais_current[a]]
+						if b > 0{
+							b = irandom(b - 1)
+							for(var a = 0; a < array_length(pais_current); a++)
+								if pais_relacion[pais_current[a]] <= b
+									b -= pais_relacion[pais_current[a]]
+								else{
+									origen = pais_current[a]
+									break
+								}
+						}
+					}
+					var familia = add_familia(origen)
 					if familia.padre != null_persona{
 						buscar_trabajo(familia.padre)
 						buscar_casa(familia.padre)
@@ -2594,6 +2622,8 @@ else{
 								d += -20 * ley_eneabled[2] + 10 * ley_eneabled[9]
 							if persona.edad > 65 and ley_eneabled[3]
 								d += 15
+							if (persona.sexo or persona.educacion = 0) and not ley_eneabled[10]
+								d -= 10
 							if persona.trabajo.comisaria != null_edificio
 								d -= 10
 							if persona.familia.casa.comisaria != null_edificio
@@ -2646,7 +2676,7 @@ else{
 							}
 						}
 						//Protestas
-						else if not in(persona.trabajo, null_edificio, jubilado, delincuente) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado and not persona.preso and persona.trabajo.comisaria = null_edificio and edificio_nombre[persona.trabajo] != "Comisaría" and persona.familia.casa.comisaria = null_edificio{
+						else if not in(persona.trabajo, null_edificio, jubilado, delincuente) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado and not persona.preso and persona.trabajo.comisaria = null_edificio and edificio_nombre[persona.trabajo.tipo] != "Comisaría" and persona.familia.casa.comisaria = null_edificio{
 							var edificio = persona.trabajo, fel_ali = 0, fel_sal = 0, fel_edu = 0, num_edu = 0, fel_div = 0, fel_rel = 0
 							for(var b = 0; b < array_length(edificio.trabajadores); b++){
 								var trabajador = edificio.trabajadores[b]
@@ -3094,7 +3124,7 @@ else{
 								persona.preso = false
 								cambiar_trabajo(persona, null_edificio)
 							}
-							for(b = irandom(edificio.trabajo_mes / 14 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]); b > 0 and array_length(edificio.clientes) < edificio_servicio_clientes[index]; b--){
+							for(b = irandom(edificio.trabajo_mes / 14 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * (1 + ley_eneabled[11])); b > 0 and array_length(edificio.clientes) < edificio_servicio_clientes[index]; b--){
 								var temp_edificio = array_pick(edificio.casas_cerca)
 								if temp_edificio.ladron != null_persona{
 									var persona = temp_edificio.ladron

@@ -6,7 +6,7 @@ function draw_sprite_boton(sprite, subsprite, x, y, w = 0, h = 0){
 	}
 	else
 		draw_sprite_stretched(sprite, subsprite, x, y, w, h)
-	if mouse_x > x - w / 2 and mouse_y > y - h / 2 and mouse_x < x + w / 2 and mouse_y < y + h / 2{
+	if mouse_x > x and mouse_y > y and mouse_x < x + w and mouse_y < y + h{
 		cursor = cr_handpoint
 		if mouse_check_button_pressed(mb_left){
 			mouse_clear(mb_left)
