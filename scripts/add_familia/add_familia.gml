@@ -67,6 +67,7 @@ function add_familia(origen = -1, generada = true){
 					hijo.educacion = max(0, random((hijo.edad - 4) / 5))
 					hijo.es_hijo = true
 					hijo.nacionalidad = choose(persona.nacionalidad, persona_2.nacionalidad)
+					hijo.nombre = gen_nombre(hijo.sexo, pais_idioma[hijo.nacionalidad])
 					hijo.religion = choose(persona.religion, persona_2.religion)
 					hijo.relacion.padre = persona.relacion
 					hijo.relacion.madre = persona_2.relacion
