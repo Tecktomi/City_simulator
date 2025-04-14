@@ -976,6 +976,20 @@ else{
 								if tratado.pais = e
 									draw_text_pos(130, pos, $"{tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+ {floor(tratado.factor * 100) - 100}%)")
 							}
+					if array_length(pais_guerras[e]) > 0{
+						text = ""
+						for(b = 0; b < array_length(pais_guerras[e]); b++){
+							var guerra = pais_guerras[e, b]
+							if array_contains(guerra.bando_a, e){
+								for(var c = 0; c < array_length(guerra.bando_b); c++)
+									text += $" {pais_nombre[guerra.bando_b[c]]}"
+							}
+							else
+								for(var c = 0; c < array_length(guerra.bando_a); c++)
+									text += $" {pais_nombre[guerra.bando_a[c]]}"
+						}
+						draw_text_pos(120, pos, $"En guerra con{text}")
+					}
 				}
 				pos = 120
 				draw_text_pos(480, pos, "Ofertas disponibles")
@@ -1551,7 +1565,7 @@ else{
 								persona.pareja.felicidad_temporal -= 25
 						}
 						if flag
-							for(var a = 0; a < array_length(personas); a++)
+							for(a = 0; a < array_length(personas); a++)
 								personas[a].felicidad_temporal -= 5
 					}
 					draw_set_alpha(0.5)
@@ -2180,12 +2194,12 @@ else{
 					var b = 0, origen = -1
 					if brandom(){
 						for(var a = 0; a < array_length(pais_current); a++)
-							b += pais_relacion[pais_current[a]]
+							b += max(pais_relacion[pais_current[a]], 0)
 						if b > 0{
 							b = irandom(b - 1)
 							for(var a = 0; a < array_length(pais_current); a++)
-								if pais_relacion[pais_current[a]] <= b
-									b -= pais_relacion[pais_current[a]]
+								if max(pais_relacion[pais_current[a]], 0) <= b
+									b -= max(pais_relacion[pais_current[a]], 0)
 								else{
 									origen = pais_current[a]
 									break
@@ -3066,6 +3080,21 @@ else{
 												if tratado.cantidad = 0{
 													show_debug_message($"Has cumplido el tratado comercial de {recurso_nombre[b]} con {pais_nombre[tratado.pais]}")
 													pais_relacion[tratado.pais]++
+													for(var e = 0; e < array_length(pais_guerras[tratado.pais]); e++){
+														var guerra = pais_guerras[tratado.pais, e]
+														if array_contains(guerra.bando_a, tratado.pais){
+															for(var f = 0; f < array_length(guerra.bando_a); f++)
+																pais_relacion[guerra.bando_a[f]] += 0.5
+															for(var f = 0; f < array_length(guerra.bando_b); f++)
+																pais_relacion[guerra.bando_b[f]] -= 0.5
+														}
+														else{
+															for(var f = 0; f < array_length(guerra.bando_a); f++)
+																pais_relacion[guerra.bando_a[f]] -= 0.5
+															for(var f = 0; f < array_length(guerra.bando_b); f++)
+																pais_relacion[guerra.bando_b[f]] += 0.5
+														}
+													}
 													array_shift(recurso_tratados[b])
 													credibilidad_financiera = clamp(credibilidad_financiera + 1, 1, 10)
 												}

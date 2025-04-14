@@ -51,6 +51,7 @@
     {"id":{"name":"cambiar_trabajo","path":"scripts/cambiar_trabajo/cambiar_trabajo.yy",},},
     {"id":{"name":"close_show","path":"scripts/close_show/close_show.yy",},},
     {"id":{"name":"cumplir_exigencia","path":"scripts/cumplir_exigencia/cumplir_exigencia.yy",},},
+    {"id":{"name":"def_guerra","path":"scripts/def_guerra/def_guerra.yy",},},
     {"id":{"name":"destroy_edificio","path":"scripts/destroy_edificio/destroy_edificio.yy",},},
     {"id":{"name":"destroy_empresa","path":"scripts/destroy_empresa/destroy_empresa.yy",},},
     {"id":{"name":"destroy_familia","path":"scripts/destroy_familia/destroy_familia.yy",},},

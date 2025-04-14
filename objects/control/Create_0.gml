@@ -1,6 +1,6 @@
 randomize()
 var a, b
-debug = false
+debug = true
 #region Save
 	roaming = game_save_id
 	directory_create(roaming + "Personas")
@@ -19,6 +19,17 @@ debug = false
 #endregion
 #region Definiciones independientes
 	dia = 1
+	null_guerra = {
+		nombre : "null_guerra",
+		anno_inicio : 0,
+		anno_fin : 0,
+		bando_a : [0],
+		bando_b : [0]
+	}
+	guerras = [null_guerra]
+	array_pop(guerras)
+	guerras_current = [null_guerra]
+	array_pop(guerras_current)
 	pais_nombre = [	"Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana",
 					"Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos", "Gran Colombia", "Provincias Unidas de Centroamérica",
 					"España", "Francia", "Inglaterra", "Portugal", "Holanda", "Virreinato de Nueva España", "Virreinato de Nueva Granada"]
@@ -29,11 +40,17 @@ debug = false
 	idioma_nombre = ["Español", "Francés", "Portugués", "Inglés", "Alemán"]
 	pais_relacion = []
 	pais_current = []
+	pais_guerras = []
 	for(a = 0; a < array_length(pais_nombre); a++){
 		if pais_inicio[a] = 0
 			array_push(pais_current, a)
 		array_push(pais_relacion, 0)
+		array_push(pais_guerras, [null_guerra])
+		array_pop(pais_guerras[a])
 	}
+	def_guerra("", 10, 18, [20], [25, 26])
+	def_guerra("", 19, 23, [20], [18])
+	def_guerra("", 23, 26, [20], [19])
 	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil", "Sufragio universal", "Policía armada"]
 	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, true]
 	ley_tiempo = []
