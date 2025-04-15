@@ -963,32 +963,49 @@ else{
 				draw_text_pos(100, pos, "Relaciones Exteriores")
 				for(var a = 1; a < array_length(pais_current); a++){
 					var e = pais_current[a]
-					draw_text_pos(110, pos, $"{pais_nombre[e]} ({pais_relacion[e]})")
 					var d = 0
 					for(b = 0; b < array_length(recurso_nombre); b++)
 						for(var c = 0; c < array_length(recurso_tratados[b]); c++)
-							if recurso_tratados[b, c].pais = e
-								d++
-					if d > 0 and draw_menu(120, pos, $"{d} tratados comerciales", a)
-						for(b = 0; b < array_length(recurso_nombre); b++)
-							for(var c = 0; c < array_length(recurso_tratados[b]); c++){
-								var tratado = recurso_tratados[b, c]
-								if tratado.pais = e
-									draw_text_pos(130, pos, $"{tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+ {floor(tratado.factor * 100) - 100}%)")
+							d += (recurso_tratados[b, c].pais = e)
+					if draw_menu(110, pos, $"{pais_nombre[e]}{d > 0 ? "(" + string(d) + ")" : ""}", a){
+						if d > 0{
+							draw_text_pos(120, pos, $"{d} tratados comerciales activos")
+							for(b = 0; b < array_length(recurso_nombre); b++)
+								for(var c = 0; c < array_length(recurso_tratados[b]); c++){
+									var tratado = recurso_tratados[b, c]
+									if tratado.pais = e
+										draw_text_pos(130, pos, $"{tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+ {floor(tratado.factor * 100) - 100}%)")
+								}
+						}
+						if array_length(pais_guerras[e]) > 0{
+							var temp_array = [], flag = false
+							for(b = 0; b < array_length(pais_nombre); b++)
+								array_push(temp_array, false)
+							for(b = 0; b < array_length(pais_guerras[e]); b++){
+								var guerra = pais_guerras[e, b]
+								if array_contains(guerra.bando_a, e){
+									for(var c = 0; c < array_length(guerra.bando_b); c++){
+										temp_array[guerra.bando_b[c]] = true
+										flag = true
+									}
+								}
+								else
+									for(var c = 0; c < array_length(guerra.bando_a); c++){
+										temp_array[guerra.bando_a[c]] = true
+										flag = true
+									}
 							}
-					if array_length(pais_guerras[e]) > 0{
-						text = ""
-						for(b = 0; b < array_length(pais_guerras[e]); b++){
-							var guerra = pais_guerras[e, b]
-							if array_contains(guerra.bando_a, e){
-								for(var c = 0; c < array_length(guerra.bando_b); c++)
-									text += $" {pais_nombre[guerra.bando_b[c]]}"
+							if flag{
+								draw_text_pos(120, pos, "En guerra con:")
+								for(b = 0; b < array_length(pais_nombre); b++)
+									if temp_array[b]
+										draw_text_pos(130, pos, pais_nombre[b])
 							}
 							else
-								for(var c = 0; c < array_length(guerra.bando_a); c++)
-									text += $" {pais_nombre[guerra.bando_a[c]]}"
+								draw_text_pos(120, pos, "Solo guerras internas")
 						}
-						draw_text_pos(120, pos, $"En guerra con{text}")
+						else
+							draw_text_pos(120, pos, "Sin guerras")
 					}
 				}
 				pos = 120
