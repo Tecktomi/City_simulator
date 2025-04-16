@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"add_tratado",
+  "%Name":"aceptar_tratado",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"add_tratado",
+  "name":"aceptar_tratado",
   "parent":{
     "name":"City_simulator",
     "path":"City_simulator.yyp",

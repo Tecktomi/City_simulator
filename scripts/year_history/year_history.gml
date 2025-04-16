@@ -12,9 +12,9 @@ function year_history(anno){
 			var d = pais_current[a]
 			if pais_fin[d] > 0 and anno >= pais_fin[d]{
 				for(var b = 0; b < array_length(recurso_nombre); b++)
-					for(var c = 0; c > array_length(recurso_tratados[b]); c++)
-						if recurso_tratados[b, c].pais = d
-							array_delete(recurso_tratados[b], c--, 1)
+					for(var c = 0; c > array_length(recurso_tratados_venta[b]); c++)
+						if recurso_tratados_venta[b, c].pais = d
+							array_delete(recurso_tratados_venta[b], c--, 1)
 				if debug
 					show_debug_message($"Elimiado: {pais_nombre[d]}")
 				array_delete(pais_current, a--, 1)

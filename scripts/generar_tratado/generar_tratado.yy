@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"ao",
+  "%Name":"generar_tratado",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"ao",
+  "name":"generar_tratado",
   "parent":{
     "name":"City_simulator",
     "path":"City_simulator.yyp",

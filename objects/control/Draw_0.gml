@@ -224,7 +224,7 @@ else{
 		draw_text_pos(room_width / 2, pos, "Isla Latina")
 		draw_set_font(Font1)
 		pos += 40
-		if draw_boton(room_width / 2, pos, "Salir"){
+		if draw_boton(room_width / 2, pos, "Salir al menú principal"){
 			menu = false
 			menu_principal = true
 			exit
@@ -813,7 +813,7 @@ else{
 							if not keyboard_check(vk_lshift)
 								recurso_importado[b] += 100
 							else if recurso_importado[b] > 0
-								recurso_importado[b] -= 100
+								recurso_importado[b] = max(0, recurso_importado[b] - 100)
 						max_width_2  = max(max_width_2, last_width)
 					}
 					max_width += max_width_2 + 10
@@ -963,19 +963,28 @@ else{
 				draw_text_pos(100, pos, "Relaciones Exteriores")
 				for(var a = 1; a < array_length(pais_current); a++){
 					var e = pais_current[a]
-					var d = 0
-					for(b = 0; b < array_length(recurso_nombre); b++)
-						for(var c = 0; c < array_length(recurso_tratados[b]); c++)
-							d += (recurso_tratados[b, c].pais = e)
-					if draw_menu(110, pos, $"{pais_nombre[e]}{d > 0 ? "(" + string(d) + ")" : ""}", a){
-						if d > 0{
-							draw_text_pos(120, pos, $"{d} tratados comerciales activos")
-							for(b = 0; b < array_length(recurso_nombre); b++)
-								for(var c = 0; c < array_length(recurso_tratados[b]); c++){
-									var tratado = recurso_tratados[b, c]
+					var d = 0, f = 0
+					for(b = 0; b < array_length(recurso_nombre); b++){
+						for(var c = 0; c < array_length(recurso_tratados_venta[b]); c++)
+							d += (recurso_tratados_venta[b, c].pais = e)
+						for(var c = 0; c < array_length(recurso_tratados_compra[b]); c++)
+							f += (recurso_tratados_compra[b, c].pais = e)
+					}
+					if draw_menu(110, pos, $"{pais_nombre[e]}: {pais_relacion[e]} {d + f > 0 ? "(" + string(d + f) + ")" : ""}", a){
+						if d + f > 0{
+							draw_text_pos(120, pos, $"{d + f} tratados comerciales activos")
+							for(b = 0; b < array_length(recurso_nombre); b++){
+								for(var c = 0; c < array_length(recurso_tratados_venta[b]); c++){
+									var tratado = recurso_tratados_venta[b, c]
 									if tratado.pais = e
-										draw_text_pos(130, pos, $"{tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+ {floor(tratado.factor * 100) - 100}%)")
+										draw_text_pos(130, pos, $"Vender {tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+{floor(tratado.factor * 100) - 100}%)")
 								}
+								for(var c = 0; c < array_length(recurso_tratados_compra[b]); c++){
+									var tratado = recurso_tratados_compra[b, c]
+									if tratado.pais = e
+										draw_text_pos(130, pos, $"Comprar {tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (-{floor(tratado.factor * 100) - 100}%)")
+								}
+							}
 						}
 						if array_length(pais_guerras[e]) > 0{
 							var temp_array = [], flag = false
@@ -1009,40 +1018,40 @@ else{
 					}
 				}
 				pos = 120
-				draw_text_pos(480, pos, "Ofertas disponibles")
+				draw_text_pos(580, pos, "Ofertas disponibles")
 				for(var a = 0; a < array_length(tratados_ofertas); a++){
 					var tratado = tratados_ofertas[a]
-					var width = 500
-					if draw_boton(width, pos, $"{tratado.cantidad} de "){
-						add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+					var width = 600
+					if draw_boton(width, pos, $"{tratado.cantidad > 0 ? "Vender" : "Comprar"} {abs(tratado.cantidad)} de "){
+						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
 					pos -= last_height
-					width += string_width($"{tratado.cantidad} de ")
+					width += last_width
 					draw_set_color(c_blue)
 					if draw_boton(width, pos, $"{recurso_nombre[tratado.recurso]}"){
-						add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
 					pos -= last_height
 					width += string_width($"{recurso_nombre[tratado.recurso]}")
 					draw_set_color(c_black)
 					if draw_boton(width, pos, $" a  "){
-						add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
 					pos -= last_height
 					width += string_width($" a  ")
 					draw_set_color(c_red)
 					if draw_boton(width, pos, $"{pais_nombre[tratado.pais]}"){
-						add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
 					pos -= last_height
 					width += string_width($"{pais_nombre[tratado.pais]}")
 					draw_set_color(c_black)
-					if draw_boton(width, pos, $" +{floor(100 * (tratado.factor - 1))}%"){
-						add_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+					if draw_boton(width, pos, $" {tratado.tipo ? "+" : "-"}{floor(100 * (tratado.factor - 1))}%"){
+						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
 				}
@@ -1947,7 +1956,7 @@ else{
 			else if sel_persona.es_hijo
 				draw_text_pos(room_width - 40, pos, "Sin escolarizar")
 			if sel_persona.medico != null_edificio{
-				draw_text_pos(room_width - 20, pos, $"Enferm{ao(sel_persona)}")
+				draw_text_pos(room_width - 20, pos, $"Enferm{sel_persona.sexo ? "a" : "o"}")
 				if sel_persona.medico = desausiado
 					draw_text_pos(room_width - 40, pos, "Sin tratamiento")
 				else if draw_boton(room_width - 40, pos, "Tratándose en " + sel_persona.medico.nombre){
@@ -1958,13 +1967,13 @@ else{
 			if sel_persona.religion
 				draw_text_pos(room_width - 20, pos, "Creyente")
 			else
-				draw_text_pos(room_width - 20, pos, $"Ate{ao(sel_persona)}")
+				draw_text_pos(room_width - 20, pos, $"Ate{sel_persona.sexo ? "a" : "o"}")
 			if elecciones and sel_persona.candidato{
 				var a = 0
 				for(a = 0; a < array_length(candidatos); a++)
 					if sel_persona = candidatos[a]
 						break
-				draw_text_pos(room_width, pos, $"Candidato electoral (~{floor(100 * candidatos_votos[a + 1] / candidatos_votos_total)}%)")
+				draw_text_pos(room_width, pos, $"Candidat{sel_persona.sexo ? "a" : "o"} electoral (~{floor(100 * candidatos_votos[a + 1] / candidatos_votos_total)}%)")
 			}
 			pos += 10
 			if draw_menu(room_width, pos, $"Felicidad: {sel_persona.felicidad}", 0){
@@ -2146,7 +2155,7 @@ else{
 				mx = irandom(xsize - 1)
 				my = irandom(ysize - 1)
 				if bosque[mx, my]{
-					array_set(bosque_madera[mx], my, max(bosque_max[mx, my], min(200, bosque_madera[mx, my] + 20)))
+					array_set(bosque_madera[mx], my, min(200, bosque_madera[mx, my] + 20, bosque_max[mx, my]))
 					array_set(bosque_alpha[mx], my, 0.5 + bosque_madera[mx, my] / 400)
 				}
 			}
@@ -2190,19 +2199,31 @@ else{
 					recurso_precio[a] *= power(random_range(1, 1.05), 2 * irandom(1) - 1)
 					array_shift(recurso_historial[a])
 					array_push(recurso_historial[a], recurso_precio[a])
-					for(var b = 0; b < array_length(recurso_tratados[a]); b++){
-						var tratado = recurso_tratados[a, b]
+					for(var b = 0; b < array_length(recurso_tratados_venta[a]); b++){
+						var tratado = recurso_tratados_venta[a, b]
 						tratado.tiempo--
 						if tratado.tiempo = 0{
-							show_debug_message($"No has podido cumplir el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
+							if debug
+								show_debug_message($"{fecha(dia)} No has podido cumplir el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
 							pais_relacion[tratado.pais]--
-							array_delete(recurso_tratados[a], b--, 1)
+							array_delete(recurso_tratados_venta[a], b--, 1)
+							credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
+						}
+					}
+					for(var b = 0; b < array_length(recurso_tratados_compra[a]); b++){
+						var tratado = recurso_tratados_compra[a, b]
+						tratado.tiempo--
+						if tratado.tiempo = 0{
+							if debug
+								show_debug_message($"{fecha(dia)} No has podido cumplir el tratado de importar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
+							pais_relacion[tratado.pais]--
+							array_delete(recurso_tratados_compra[a], b--, 1)
 							credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
 						}
 					}
 				}
 				#region Nuevas ofertas de tratados
-				add_tratado_oferta()
+				generar_tratado()
 				if array_length(tratados_ofertas) > 15
 					array_shift(tratados_ofertas)
 				#endregion
@@ -2304,7 +2325,7 @@ else{
 					}
 					show_message(temp_text)
 					show_debug_message(temp_text)
-					if c = 0
+					if c = 0 and debug
 						show_message($"Has ganado las elecciones con {b} votos!")
 					else{
 						show_message($"Has perdido las elecciones\n\nAhora el poder lo tiene un tal {name(candidatos[c - 1])}")
@@ -2936,7 +2957,7 @@ else{
 								while b > 0 and array_length(edificio.array_complex) > 0{
 									var complex = edificio.array_complex[0]
 									if b < bosque_madera[complex.a, complex.b]{
-										array_set(bosque_madera[complex.a], complex.b, bosque_madera[complex.a, complex.b] - b)
+										array_add(bosque_madera[complex.a], complex.b, -b)
 										array_set(bosque_alpha[complex.a], complex.b, 0.5 + bosque_madera[complex.a, complex.b] / 400)
 										b = 0
 									}
@@ -3019,7 +3040,7 @@ else{
 												break
 										}
 										else{
-											array_set(mineral_cantidad[edificio.modo, c], d, mineral_cantidad[edificio.modo][c, d] - b)
+											array_add(mineral_cantidad[edificio.modo, c], d, -b)
 											b = 0
 											break
 										}
@@ -3079,8 +3100,8 @@ else{
 										var total = min(c, recurso_construccion[b]), d = floor(total * recurso_precio[b] * 1.2)
 										dinero -= d
 										mes_importaciones[current_mes] += d
-										array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
-										array_set(mes_importaciones_recurso_num[current_mes], b, mes_importaciones_recurso_num[current_mes, b] + total)
+										array_add(mes_importaciones_recurso[current_mes], b, d)
+										array_add(mes_importaciones_recurso_num[current_mes], b, total)
 										recurso_construccion[b] -= total
 									}
 									//Exportaciones
@@ -3089,59 +3110,65 @@ else{
 										edificio.almacen[b] -= total
 										while total > 0{
 											var d = total, temp_factor = 1
-											if array_length(recurso_tratados[b]) > 0{
-												var tratado = recurso_tratados[b, 0]
+											if array_length(recurso_tratados_venta[b]) > 0{
+												var tratado = recurso_tratados_venta[b, 0]
 												temp_factor = tratado.factor
 												d = min(total, tratado.cantidad)
 												tratado.cantidad -= d
-												if tratado.cantidad = 0{
-													show_debug_message($"Has cumplido el tratado comercial de {recurso_nombre[b]} con {pais_nombre[tratado.pais]}")
-													pais_relacion[tratado.pais]++
-													for(var e = 0; e < array_length(pais_guerras[tratado.pais]); e++){
-														var guerra = pais_guerras[tratado.pais, e]
-														if array_contains(guerra.bando_a, tratado.pais){
-															for(var f = 0; f < array_length(guerra.bando_a); f++)
-																pais_relacion[guerra.bando_a[f]] += 0.5
-															for(var f = 0; f < array_length(guerra.bando_b); f++)
-																pais_relacion[guerra.bando_b[f]] -= 0.5
-														}
-														else{
-															for(var f = 0; f < array_length(guerra.bando_a); f++)
-																pais_relacion[guerra.bando_a[f]] -= 0.5
-															for(var f = 0; f < array_length(guerra.bando_b); f++)
-																pais_relacion[guerra.bando_b[f]] += 0.5
-														}
-													}
-													array_shift(recurso_tratados[b])
-													credibilidad_financiera = clamp(credibilidad_financiera + 1, 1, 10)
-												}
+												if tratado.cantidad = 0
+													cumplir_tratado(tratado)
 											}
 											total -= d
 											d = floor(temp_factor * d * recurso_precio[b])
 											mes_exportaciones[current_mes] += d
-											array_set(mes_exportaciones_recurso[current_mes], b, mes_exportaciones_recurso[current_mes, b] + d)
-											array_set(mes_exportaciones_recurso_num[current_mes], b, mes_exportaciones_recurso_num[current_mes, b] + d)
+											array_add(mes_exportaciones_recurso[current_mes], b, d)
+											array_add(mes_exportaciones_recurso_num[current_mes], b, d)
 											dinero += d
 										}
 										c -= total
 									}
 									#region Importaciones
-										var total = min(c, recurso_importado[b])
+										var total = min(c, recurso_importado[b]), temp_factor = 1, d = 0
 										edificio.almacen[b] += total
-										var d = floor(total * recurso_precio[b] * 1.2)
-										dinero -= d
-										mes_importaciones[current_mes] += d
-										array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
-										array_set(mes_importaciones_recurso_num[current_mes], b, mes_importaciones_recurso_num[current_mes, b] + total)
-										recurso_importado[b] -= total
+										while total > 0{
+											d = total
+											if array_length(recurso_tratados_compra[b]) > 0{
+												var tratado = recurso_tratados_compra[b, 0]
+												temp_factor = tratado.factor
+												d = min(total, tratado.cantidad)
+												tratado.cantidad -= d
+												if tratado.cantidad = 0
+													cumplir_tratado(tratado)
+											}
+											total -= d
+											array_add(mes_importaciones_recurso_num[current_mes], b, d)
+											recurso_importado[b] -= d
+											d = floor(d * recurso_precio[b] * 1.2 / temp_factor)
+											dinero -= d
+											mes_importaciones[current_mes] += d
+											array_add(mes_importaciones_recurso[current_mes], b, d)
+										}
 										c -= total
 										total = min(c, recurso_importado_fijo[b] / 2 / array_length(edificio_count[13]))
+										temp_factor = 1
 										edificio.almacen[b] += total
-										d = floor(total * recurso_precio[b] * 1.2)
-										dinero -= d
-										mes_importaciones[current_mes] += d
-										array_set(mes_importaciones_recurso[current_mes], b, mes_importaciones_recurso[current_mes, b] + d)
-										array_set(mes_importaciones_recurso_num[current_mes], b, mes_importaciones_recurso_num[current_mes, b] + total)
+										while total > 0{
+											d = total
+											if array_length(recurso_tratados_compra[b]) > 0{
+												var tratado = recurso_tratados_compra[b, 0]
+												temp_factor = tratado.factor
+												d = min(total, tratado.cantidad)
+												tratado.cantidad -= d
+												if tratado.cantidad = 0
+													cumplir_tratado(tratado)
+											}
+											total -= d
+											array_add(mes_importaciones_recurso_num[current_mes], b, d)
+											d = floor(d * recurso_precio[b] * 1.2 / temp_factor)
+											dinero -= d
+											mes_importaciones[current_mes] += d
+											array_add(mes_importaciones_recurso[current_mes], b, d)
+										}
 										c -= total
 									#endregion
 								}
@@ -3288,7 +3315,7 @@ else{
 								for(var d = edificio.x; d < g; d++)
 									if petroleo[c, d] > 0{
 										if petroleo[c, d] > b{
-											array_set(petroleo[c], d, petroleo[c, d] - b)
+											array_add(petroleo[c], d, -b)
 											b = 0
 										}
 										else{
@@ -3428,8 +3455,8 @@ else{
 											dinero -= temp_precio
 											dinero_privado += temp_precio
 											mes_compra_interna[current_mes] += temp_precio
-											array_set(mes_compra_recurso[current_mes], d, mes_compra_recurso[current_mes, d] + temp_precio)
-											array_set(mes_compra_recurso_num[current_mes], d, mes_compra_recurso_num[current_mes, d] + e)
+											array_add(mes_compra_recurso[current_mes], d, temp_precio)
+											array_add(mes_compra_recurso_num[current_mes], d, e)
 											edificio.empresa.dinero += temp_precio
 										}
 									}
@@ -3442,8 +3469,8 @@ else{
 											dinero -= temp_precio
 											dinero_privado += temp_precio
 											mes_compra_interna[current_mes] += temp_precio
-											array_set(mes_compra_recurso[current_mes], d, mes_compra_recurso[current_mes, d] + temp_precio)
-											array_set(mes_compra_recurso_num[current_mes], d, mes_compra_recurso_num[current_mes, d] + tienda.almacen[d])
+											array_add(mes_compra_recurso[current_mes], d, temp_precio)
+											array_add(mes_compra_recurso_num[current_mes], d, tienda.almacen[d])
 										}
 										tienda.almacen[d] = 0
 									}

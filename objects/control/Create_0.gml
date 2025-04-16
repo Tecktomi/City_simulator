@@ -37,6 +37,7 @@ debug = true
 	pais_inicio =	[0, 95, 21, 41, 38, 38, 103, 38, 4, 44,		31, 31, 22, 181, 162, 38, 173, 0, 19, 23,	0, 0, 0, 0, 0, 0, 0]
 	pais_fin =		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,				0, 0, 0, 0, 0, 0, 0, 0, 31, 40,				0, 0, 0, 0, 0, 21, 19]
 	pais_idioma =	[0, 0, 0, 0, 0, 0, 0, 0, 1, 0,				0, 0, 2, 3, 3, 0, 3, 3, 0, 0,				0, 1, 3, 2, 4, 0, 0]
+	pais_industria =[0, 0.3, 0.3, 0.2, 0.2, 0.2, 0.3, 0.2, 0.1, 0.2,  0.3, 0.3, 0.5, 0.2, 0.2, 0.2, 0.2, 0.9, 0.3, 0.3,  0.6, 0.7, 1, 0.6, 0.5, 0.3, 0.3]
 	idioma_nombre = ["Español", "Francés", "Portugués", "Inglés", "Alemán"]
 	pais_relacion = []
 	pais_current = []
@@ -273,12 +274,30 @@ debug = true
 	recurso_mineral_rareza = [0.8, 0.85, 0.95, 0.75, 0.85, 0.9]
 	ganado_nombre = ["Vacas", "Cabras", "Ovejas", "Cerdos"]
 	ganado_produccion = [[18, 21], [19], [20], [18]]
+	recurso_prima = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true, true, false, false, false, false, true, true]
+	for(a = 0; a < array_length(pais_nombre); a++){
+		var industria = pais_industria[a], c = 0, d = 0, text = $"{pais_nombre[a]}: ["
+		pais_recursos[a] = []
+		for(b = 0; b < array_length(recurso_nombre); b++){
+			d = (recurso_prima[b] ? random(1) - industria : random(1) + industria - 1)
+			d = sign(d) * sqrt(abs(d))
+			array_push(pais_recursos[a], d)
+			c += abs(d)
+		}
+		for(b = 0; b < array_length(recurso_nombre); b++){
+			d = pais_recursos[a, b] / c
+			array_set(pais_recursos[a], b, d)
+			text += $"{d}, "
+		}
+		show_debug_message(text + "]")
+	}
 	null_tratado = {
 		pais : 0,
 		recurso : 0,
 		cantidad : 0,
 		factor : 1,
-		tiempo : 0
+		tiempo : 0,
+		tipo : false
 	}
 	tratados_ofertas = [null_tratado]
 	array_pop(tratados_ofertas)
@@ -286,12 +305,15 @@ debug = true
 		recurso_importado[a] = 0
 		recurso_exportado[a] = true
 		recurso_importado_fijo[a] = 0
-		recurso_tratados[a] = [null_tratado]
+		recurso_tratados_venta[a] = [null_tratado]
+		recurso_tratados_compra[a] = [null_tratado]
 		recurso_construccion[a] = 0
-		array_pop(recurso_tratados[a])
+		array_pop(recurso_tratados_venta[a])
+		array_pop(recurso_tratados_compra[a])
 		for(b = 0; b < 24; b++)
 			recurso_historial[a, b] = recurso_precio[a]
 	}
+	
 #endregion
 //Edificios
 #region edificios
@@ -976,11 +998,12 @@ debug = true
 	null_encargo = {
 		recurso : 0,
 		cantidad : 0,
-		edificio : null_edificio}
+		edificio : null_edificio
+	}
 	encargos = [null_encargo]
 	array_pop(encargos)
 	repeat(10)
-		add_tratado_oferta()
+		generar_tratado()
 	repeat(10)
 		add_empresa(power(10, random_range(3, 4.2)))
 	while array_length(personas) < 50
