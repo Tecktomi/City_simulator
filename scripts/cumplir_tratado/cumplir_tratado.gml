@@ -23,5 +23,6 @@ function cumplir_tratado(tratado = control.null_tratado){
 		else
 			array_shift(recurso_tratados_compra[tratado.recurso])
 		credibilidad_financiera = clamp(credibilidad_financiera + 1, 1, 10)
+		tratados_num--
 	}
 }

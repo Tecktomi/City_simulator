@@ -42,12 +42,17 @@ debug = true
 	pais_relacion = []
 	pais_current = []
 	pais_guerras = []
+	pais_dia = array_create(365, 0)
 	for(a = 0; a < array_length(pais_nombre); a++){
 		if pais_inicio[a] = 0
 			array_push(pais_current, a)
 		array_push(pais_relacion, 0)
 		array_push(pais_guerras, [null_guerra])
 		array_pop(pais_guerras[a])
+		do
+			b = irandom(364)
+		until pais_dia[b] = 0
+		pais_dia[b] = a
 	}
 	#region Definición de guerras
 		def_guerra("Guerras Revolucionarias Francesas", 0, 4, [20, 21, 24], [8, 17, 22])
@@ -289,7 +294,8 @@ debug = true
 			array_set(pais_recursos[a], b, d)
 			text += $"{d}, "
 		}
-		show_debug_message(text + "]")
+		if debug
+			show_debug_message(text + "]")
 	}
 	null_tratado = {
 		pais : 0,
@@ -991,6 +997,8 @@ debug = true
 	dinero_privado = 0
 	prev_beneficio_privado = 0
 	credibilidad_financiera = 3
+	tratados_num = 0
+	tratados_max = 2
 	pos = 0
 	wpos = 0
 	deuda = false

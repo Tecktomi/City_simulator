@@ -17,6 +17,7 @@ function aceptar_tratado(pais, recurso, cantidad, factor, tiempo){
 			array_push(recurso_tratados_compra[recurso], tratado)
 			array_sort(recurso_tratados_compra[recurso], function(a, b){return a.factor > b.factor})
 		}
+		tratados_num++
 		return tratado
 	}
 }

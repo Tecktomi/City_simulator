@@ -1019,38 +1019,39 @@ else{
 				}
 				pos = 120
 				draw_text_pos(580, pos, "Ofertas disponibles")
+				draw_text_pos(590, pos, $"{tratados_num} aceptados de {tratados_max}")
 				for(var a = 0; a < array_length(tratados_ofertas); a++){
 					var tratado = tratados_ofertas[a]
 					var width = 600
-					if draw_boton(width, pos, $"{tratado.cantidad > 0 ? "Vender" : "Comprar"} {abs(tratado.cantidad)} de "){
+					if draw_boton(width, pos, $"{tratado.cantidad > 0 ? "Vender" : "Comprar"} {abs(tratado.cantidad)} de ") and tratados_num < tratados_max{
 						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
 					pos -= last_height
 					width += last_width
 					draw_set_color(c_blue)
-					if draw_boton(width, pos, $"{recurso_nombre[tratado.recurso]}"){
+					if draw_boton(width, pos, $"{recurso_nombre[tratado.recurso]}") and tratados_num < tratados_max{
 						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
 					pos -= last_height
 					width += string_width($"{recurso_nombre[tratado.recurso]}")
 					draw_set_color(c_black)
-					if draw_boton(width, pos, $" a  "){
+					if draw_boton(width, pos, $" a  ") and tratados_num < tratados_max{
 						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
 					pos -= last_height
 					width += string_width($" a  ")
 					draw_set_color(c_red)
-					if draw_boton(width, pos, $"{pais_nombre[tratado.pais]}"){
+					if draw_boton(width, pos, $"{pais_nombre[tratado.pais]}") and tratados_num < tratados_max{
 						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
 					pos -= last_height
 					width += string_width($"{pais_nombre[tratado.pais]}")
 					draw_set_color(c_black)
-					if draw_boton(width, pos, $" {tratado.tipo ? "+" : "-"}{floor(100 * (tratado.factor - 1))}%"){
+					if draw_boton(width, pos, $" {tratado.tipo ? "+" : "-"}{floor(100 * (tratado.factor - 1))}%") and tratados_num < tratados_max{
 						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
@@ -2074,6 +2075,26 @@ else{
 		repeat(1 + 29 * (keyboard_check(vk_space) and keyboard_check(vk_lshift))){
 			dia++
 			current_mes = mes(dia)
+			//Día nacional
+			if pais_dia[dia mod 365] > 0 and array_contains(pais_current, pais_dia[dia mod 365]){
+				var pais = pais_dia[dia mod 365], industria = pais_industria[pais], b = 0, c = 0
+				text = $"{fecha(dia)} {pais_nombre[pais]}: ["
+				for(var a = 0; a < array_length(recurso_nombre); a++){
+					if array_contains(recurso_prima, a)
+						b = pais_recursos[pais, a] + random_range(-0.02 * industria, 0.02 * (1 - industria))
+					else
+						b = pais_recursos[pais, a] + random_range(-0.02 * (1 - industria), 0.02 * industria)
+					array_set(pais_recursos[pais], a, b)
+					c += abs(b)
+				}
+				for(var a = 0; a < array_length(recurso_nombre); a++){
+					b = pais_recursos[pais, a] / c
+					array_set(pais_recursos[pais], a, b)
+					text += $"{b}, "
+				}
+				if debug
+					show_debug_message(text + "]")
+			}
 			//Actualizar exigencias
 			for(var a = 0; a < array_length(exigencia_nombre); a++)
 				if exigencia_pedida[a] and dia = exigencia[a].expiracion{
@@ -2222,11 +2243,9 @@ else{
 						}
 					}
 				}
-				#region Nuevas ofertas de tratados
 				generar_tratado()
-				if array_length(tratados_ofertas) > 15
+				if array_length(tratados_ofertas) > 20
 					array_shift(tratados_ofertas)
-				#endregion
 				//Inmigración
 				if ley_eneabled[1] and (irandom(felicidad_total) > felicidad_minima or irandom(credibilidad_financiera) > 7 or dia < 365){
 					var b = 0, origen = -1
