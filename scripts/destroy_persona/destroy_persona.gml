@@ -69,12 +69,8 @@ function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 			else
 				game_end()
 		}
-		if elecciones and persona.candidato{
-			var a = array_remove(candidatos, persona)
-			array_delete(candidatos_votos, a, 1)
-			if array_length(candidatos) = 0
-				elecciones = false
-		}
+		if elecciones and persona.candidato
+			delete_candidato(persona)
 		persona.relacion.vivo = false
 		persona.relacion.persona = undefined
 		return flag

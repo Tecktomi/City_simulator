@@ -1624,7 +1624,7 @@ else{
 				#endregion
 				//Prisiones
 				if var_edificio_nombre = "Comisaría"{
-					if draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.clientes)} presxs.", 2)
+					if draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.clientes)} preso{array_length(sel_edificio.clientes) = 1 ? "" : "s"}", 2)
 						for(var a = 0; a < array_length(sel_edificio.clientes); a++)
 							if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a])){
 								sel_persona = sel_edificio.clientes[a]
@@ -1776,8 +1776,12 @@ else{
 									show[3] = false
 								}
 							}
-							if sel_edificio.array_complex[0].a >= 0
-								draw_text_pos(room_width - 40, pos, $"Difamando a {name(candidatos[sel_edificio.array_complex[0].a])}")
+							var a = sel_edificio.array_complex[0].a
+							if a >= 0
+								if draw_boton(room_width - 40, pos, $"Difamando a {name(candidatos[a])}"){
+									sel_tipo = 2
+									sel_persona = candidatos[a]
+								}
 						}
 					}
 				}
@@ -1930,6 +1934,8 @@ else{
 		//Información personas
 		else if sel_tipo = 2 and sel_persona != null_persona{
 			draw_text_pos(room_width, pos, name(sel_persona))
+			if sel_persona.preso
+				draw_text_pos(room_width - 20, pos, $"Pres{sel_persona.sexo ? "a" : "o"}")
 			draw_text_pos(room_width - 20, pos, $"Edad: {sel_persona.edad} ({fecha(sel_persona.cumple, false)})")
 			draw_text_pos(room_width - 20, pos, $"Nacionalidad: {pais_nombre[sel_persona.nacionalidad]}")
 			if draw_boton(room_width - 20, pos, name_familia(sel_persona.familia)){
@@ -1970,11 +1976,73 @@ else{
 			else
 				draw_text_pos(room_width - 20, pos, $"Ate{sel_persona.sexo ? "a" : "o"}")
 			if elecciones and sel_persona.candidato{
-				var a = 0
+				var a = 0, b = 0, flag = false, edificio
 				for(a = 0; a < array_length(candidatos); a++)
 					if sel_persona = candidatos[a]
 						break
 				draw_text_pos(room_width, pos, $"Candidat{sel_persona.sexo ? "a" : "o"} electoral (~{floor(100 * candidatos_votos[a + 1] / candidatos_votos_total)}%)")
+				for(b = 0; b < array_length(edificio_count[43]); b++){
+					edificio = edificio_count[43, b]
+					if edificio.array_complex[0].a = -1{
+						flag = true
+						break
+					}
+				}
+				if flag and draw_boton(room_width - 20, pos, $"Difamar ({edificio.nombre})"){
+					edificio.array_complex[0].a = a
+					set_calidad_servicio(edificio)
+				}
+			}
+			if not sel_persona.es_hijo and array_length(edificio_count[34]) > 0{
+				if not sel_persona.preso and draw_boton(room_width - 20, pos, $"Arrestar opositor{sel_persona.sexo ? "a" : ""} $ 500"){
+					dinero -= 500
+					mes_mantenimiento[current_mes] += 500
+					if elecciones and sel_persona.candidato{
+						var a
+						for(a = 0; a < array_length(candidatos); a++)
+							if sel_persona = candidatos[a]
+								break
+						for(var b = 0; b < array_length(personas); b++){
+							var persona = personas[b]
+							persona.felicidad_temporal -= 25
+							if voto_persona(persona) = a
+								persona.felicidad_temporal -= 40
+						}
+						credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
+					}
+					arrestar_persona(array_pick(edificio_count[34]), sel_persona, 24)
+				}
+				if ley_eneabled[11] and draw_boton(room_width - 20, pos, $"Silenciar opositor{sel_persona.sexo ? "a" : ""} $1000"){
+					dinero -= 1000
+					mes_mantenimiento[current_mes] += 1000
+					if sel_persona.pareja != null_persona
+						sel_persona.pareja.felicidad_temporal -= 50
+					if sel_persona.familia.padre != null_persona
+						sel_persona.familia.padre.felicidad_temporal -= 50
+					if sel_persona.familia.madre != null_persona
+						sel_persona.familia.madre.felicidad_temporal -= 50
+					for(var a = 0; a < array_length(sel_persona.familia.hijos); a++)
+						sel_persona.familia.hijos[a].felicidad_temporal -= 50
+					if not in(edificio_nombre[sel_persona.trabajo.tipo], "Sin trabajo", "Jubilado", "Delincuente")
+						for(var a = 0; a < array_length(sel_persona.trabajo.trabajadores); a++)
+							sel_persona.trabajo.trabajadores[a].felicidad_temporal -= 50
+					if elecciones and sel_persona.candidato{
+						var a
+						for(a = 0; a < array_length(candidatos); a++)
+							if sel_persona = candidatos[a]
+								break
+						for(var b = 0; b < array_length(personas); b++){
+							var persona = personas[b]
+							persona.felicidad_temporal -= 50
+							if voto_persona(persona) = a
+								persona.felicidad_temporal -= 50
+						}
+						credibilidad_financiera = clamp(floor(credibilidad_financiera / 2), 1, 10)
+					}
+					destroy_persona(sel_persona)
+					sel_persona = null_persona
+					sel_info = false
+				}
 			}
 			pos += 10
 			if draw_menu(room_width, pos, $"Felicidad: {sel_persona.felicidad}", 0){
@@ -1992,6 +2060,7 @@ else{
 				if not sel_persona.es_hijo
 					draw_text_pos(room_width - 20, pos, $"Legislación: {sel_persona.felicidad_ley}")
 				draw_text_pos(room_width - 20, pos, $"Delincuencia: {sel_persona.felicidad_crimen}")
+				draw_text_pos(room_width - 20, pos, $"Eventos recientes: {sel_persona.felicidad_temporal}")
 			}
 			if draw_menu(room_width, pos, "Opinión política", 1){
 				draw_text_pos(room_width - 20, pos, politica_economia_nombre[sel_persona.politica_economia])
@@ -3211,25 +3280,20 @@ else{
 						}
 						//Comisaría
 						else if var_edificio_nombre = "Comisaría"{
-							while array_length(edificio.clientes) > 0{
-								var persona = array_shift(edificio.clientes)
-								persona.preso = false
-								cambiar_trabajo(persona, null_edificio)
+							for(b = 0; b < array_length(edificio.clientes); b++){
+								edificio.array_complex[b].a--
+								if edificio.array_complex[b].a = 0{
+									array_delete(edificio.array_complex, b, 1)
+									var persona = edificio.clientes[b]
+									array_delete(edificio.clientes, b--, 1)
+									persona.preso = false
+									cambiar_trabajo(persona, null_edificio)
+								}
 							}
 							for(b = irandom(edificio.trabajo_mes / 14 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * (1 + ley_eneabled[11])); b > 0 and array_length(edificio.clientes) < edificio_servicio_clientes[index]; b--){
 								var temp_edificio = array_pick(edificio.casas_cerca)
-								if temp_edificio.ladron != null_persona{
-									var persona = temp_edificio.ladron
-									array_push(edificio.clientes, persona)
-									persona.preso = true
-									temp_edificio.ladron = null_persona
-									persona.ladron = null_edificio
-									persona.felicidad_temporal -= 40
-									if persona.pareja != null_persona
-										persona.pareja.felicidad_temporal -= 25
-									for(var c = 0; c < array_length(persona.familia.hijos); c++)
-										persona.familia.hijos[c].felicidad_temporal -= 15
-								}
+								if temp_edificio.ladron != null_persona
+									arrestar_persona(edificio, temp_edificio.ladron)
 								for(var c = 0; c < array_length(temp_edificio.familias); c++){
 									var familia = temp_edificio.familias[c]
 									if familia.padre != null_persona

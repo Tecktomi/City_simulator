@@ -15,7 +15,7 @@
   "isEcma":false,
   "LibraryEmitters":[],
   "MetaData":{
-    "IDEVersion":"2024.13.0.190",
+    "IDEVersion":"2024.13.1.193",
   },
   "name":"City_simulator",
   "resources":[
@@ -38,6 +38,7 @@
     {"id":{"name":"array_add","path":"scripts/array_add/array_add.yy",},},
     {"id":{"name":"array_pick","path":"scripts/array_pick/array_pick.yy",},},
     {"id":{"name":"array_remove","path":"scripts/array_remove/array_remove.yy",},},
+    {"id":{"name":"arrestar_persona","path":"scripts/arrestar_persona/arrestar_persona.yy",},},
     {"id":{"name":"brandom","path":"scripts/brandom/brandom.yy",},},
     {"id":{"name":"buscar_atencion_medica","path":"scripts/buscar_atencion_medica/buscar_atencion_medica.yy",},},
     {"id":{"name":"buscar_casa","path":"scripts/buscar_casa/buscar_casa.yy",},},
@@ -53,6 +54,7 @@
     {"id":{"name":"cumplir_exigencia","path":"scripts/cumplir_exigencia/cumplir_exigencia.yy",},},
     {"id":{"name":"cumplir_tratado","path":"scripts/cumplir_tratado/cumplir_tratado.yy",},},
     {"id":{"name":"def_guerra","path":"scripts/def_guerra/def_guerra.yy",},},
+    {"id":{"name":"delete_candidato","path":"scripts/delete_candidato/delete_candidato.yy",},},
     {"id":{"name":"destroy_edificio","path":"scripts/destroy_edificio/destroy_edificio.yy",},},
     {"id":{"name":"destroy_empresa","path":"scripts/destroy_empresa/destroy_empresa.yy",},},
     {"id":{"name":"destroy_familia","path":"scripts/destroy_familia/destroy_familia.yy",},},
