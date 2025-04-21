@@ -32,13 +32,14 @@ debug = false
 	array_pop(guerras_current)
 	pais_nombre = [	"Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana",
 					"Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos", "Gran Colombia", "Provincias Unidas de Centroamérica",
-					"España", "Francia", "Inglaterra", "Portugal", "Holanda", "Virreinato de Nueva España", "Virreinato de Nueva Granada"]
-	pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88,	90, 92, 88, 88, 77, 86, 96, 78, 80, 80,		90, 70, 70, 80, 70, 80, 80]
-	pais_inicio =	[0, 95, 21, 41, 38, 38, 103, 38, 4, 44,		31, 31, 22, 181, 162, 38, 173, 0, 19, 23,	0, 0, 0, 0, 0, 0, 0]
-	pais_fin =		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,				0, 0, 0, 0, 0, 0, 0, 0, 31, 40,				0, 0, 0, 0, 0, 21, 19]
-	pais_idioma =	[0, 0, 0, 0, 0, 0, 0, 0, 1, 0,				0, 0, 2, 3, 3, 0, 3, 3, 0, 0,				0, 1, 3, 2, 4, 0, 0]
-	pais_industria =[0, 0.3, 0.3, 0.2, 0.2, 0.2, 0.3, 0.2, 0.1, 0.2,  0.3, 0.3, 0.5, 0.2, 0.2, 0.2, 0.2, 0.9, 0.3, 0.3,  0.6, 0.7, 1, 0.6, 0.5, 0.3, 0.3]
-	idioma_nombre = ["Español", "Francés", "Portugués", "Inglés", "Alemán"]
+					"España", "Francia", "Inglaterra", "Portugal", "Holanda", "Virreinato de Nueva España", "Virreinato de Nueva Granada", "Imperio Alemán", "Alemania Nazi", "URSS",
+					"China"]
+	pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88,	90, 92, 88, 88, 77, 86, 96, 78, 80, 80,		90, 70, 70, 80, 70, 80, 80, 60, 70, 10, 0]
+	pais_inicio =	[0, 95, 21, 41, 38, 38, 103, 38, 0, 44,		31, 31, 22, 181, 162, 38, 173, 0, 19, 23,	0, 0, 0, 0, 0, 0, 0, 71, 133, 122, 112]
+	pais_fin =		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,				0, 0, 0, 0, 0, 0, 0, 0, 31, 40,				0, 0, 0, 0, 0, 21, 19, 118, 145, 191, 0]
+	pais_idioma =	[0, 0, 0, 0, 0, 0, 0, 0, 1, 0,				0, 0, 2, 3, 3, 0, 3, 3, 0, 0,				0, 1, 3, 2, 4, 0, 0, 4, 4, 5, 6]
+	pais_industria =[0, 0.3, 0.3, 0.2, 0.2, 0.2, 0.3, 0.2, 0.1, 0.2,  0.3, 0.3, 0.5, 0.2, 0.2, 0.2, 0.2, 0.9, 0.3, 0.3,  0.6, 0.7, 1, 0.6, 0.5, 0.3, 0.3, 0.7, 1, 0.7, 0.6]
+	idioma_nombre = ["Español", "Francés", "Portugués", "Inglés", "Alemán", "Ruso", "Chino"]
 	pais_relacion = []
 	pais_current = []
 	pais_guerras = []
@@ -82,7 +83,7 @@ debug = false
 		def_guerra("Bloqueo internacional a Venezuela", 102, 103, [10, 17], [2, 20, 22])
 		def_guerra("Guerrita de agosto", 106, 106, [1, 17], [])
 		def_guerra("Revolución mexicana", 110, 120, [2], [17, 22])
-		def_guerra("Primera Guerra Mundial", 114, 118, [17, 21, 22], [])
+		def_guerra("Primera Guerra Mundial", 114, 118, [17, 21, 22, 30], [27])
 		def_guerra("Primera guerra civil de Honduras", 119, 119, [2, 5, 17], [3])
 		def_guerra("Guerra de Coto", 121, 121, [4], [6])
 		def_guerra("Segunda guerra civil de Honduras", 24, 24, [5], [17])
@@ -91,7 +92,7 @@ debug = false
 		def_guerra("La Violencia", 130, 160, [11], [])
 		def_guerra("Segunda guerra cristera", 134, 138, [2], [])
 		def_guerra("Guerra civil española", 136, 139, [2, 21], [20, 23])
-		def_guerra("Segunda Guerra Mundial", 139, 145, [2, 12, 17, 21, 22, 24], [20])
+		def_guerra("Segunda Guerra Mundial", 139, 145, [2, 12, 17, 21, 22, 24, 29, 30], [20, 28])
 		def_guerra("Guerra civil de Costa Rica", 148, 148, [4], [])
 		def_guerra("Crisis del Archipielago Los Monjes", 152, 152, [10], [11])
 		def_guerra("Revolución Cubana", 153, 159, [1], [17])
@@ -110,11 +111,11 @@ debug = false
 		def_guerra("Independencia de Guinea-Bisau", 164, 174, [1], [23])
 		def_guerra("Crisis del Congo", 165, 165, [1], [])
 		def_guerra("Guerra civil dominicana", 165, 165, [17], [9])
-		def_guerra("Guerra de desgaste", 168, 170, [1], [])
-		def_guerra("Guerra de Yom Kipur", 173, 173, [1], [17, 21, 22])
+		def_guerra("Guerra de desgaste", 168, 170, [1, 29], [])
+		def_guerra("Guerra de Yom Kipur", 173, 173, [1, 29], [17, 21, 22])
 		def_guerra("Independencia de Eritrea", 177, 191, [1], [])
 		def_guerra("Revolución Sandinista", 179, 190, [5, 15, 17], [1])
-		def_guerra("Guerra civil de El Salvador", 179, 192, [3, 15, 17], [])
+		def_guerra("Guerra civil de El Salvador", 179, 192, [3, 15, 17], [30])
 		def_guerra("operación Charly", 179, 181, [3, 5, 7, 15], [])
 		def_guerra("Invasión de Granada", 183, 183, [17], [1])
 		def_guerra("Invasiónde Panamá", 189, 190, [6], [17])
@@ -164,6 +165,13 @@ debug = false
 	}
 	cola_construccion = [null_construccion]
 	array_delete(cola_construccion, 0, 1)
+	null_noticia = {
+		dia : 0,
+		titulo : "null_noticia",
+		descripcion : ""
+	}
+	noticias = [null_noticia]
+	array_pop(noticias)
 #endregion
 //Personas
 #region Personas
@@ -264,9 +272,9 @@ debug = false
 #endregion
 //Recursos
 #region recursos
-	recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo"]
-	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 4]
-	recurso_anno = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60]
+	recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo", "Armas"]
+	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 4, 40]
+	recurso_anno = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60, 0]
 	recurso_current = []
 	for(a = 0; a < array_length(recurso_nombre); a++)
 		if floor(dia / 365) >= recurso_anno[a]
@@ -281,7 +289,7 @@ debug = false
 	recurso_mineral_rareza = [0.8, 0.85, 0.95, 0.75, 0.85, 0.9]
 	ganado_nombre = ["Vacas", "Cabras", "Ovejas", "Cerdos"]
 	ganado_produccion = [[18, 21], [19], [20], [18]]
-	recurso_prima = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true, true, false, false, false, false, true, true]
+	recurso_prima = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true, true, false, false, false, false, true, true, false]
 	for(a = 0; a < array_length(pais_nombre); a++){
 		var industria = pais_industria[a], c = 0, d = 0, text = $"{pais_nombre[a]}: ["
 		pais_recursos[a] = []
@@ -364,7 +372,8 @@ debug = false
 		"Utiliza combustible para dar presión de agua, necesario para mejorar las condiciones de alcantarillado",
 		"Genera energía elétrica a partir de la quema de combustibles fósiles",
 		"Entrega entretenimiento e información a la gente que sepa leer",
-		"Evita que se produzcan incendios en la isla"]
+		"Evita que se produzcan incendios en la isla",
+		"Utiliza madera, níquel y acero para producir armas, es un edificio bastante peligroso"]
 	#region arreglos vacíos
 		edificio_nombre = []
 		edificio_width = []
@@ -519,10 +528,11 @@ debug = false
 		def_edificio_base("Bomba de Agua", 3, 3, 2500, 640, [15, 26], [40, 10], 15, 30, -15,,,,,,,,,, 50); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 4, 20, 4,, 0.01)
 		def_edificio_base("Planta Termoeléctrica", 6, 3, 6000, 1800, [12, 15, 26], [100, 50, 50], 30, 25, -30,,,,,,,,,, 90); def_edificio_servicio(); def_edificio_trabajo(true, 6, 35, 7, 1, 0.01)
 		def_edificio_base("Periódico", 4, 3, 1000, 800, [1, 15, 26], [20, 10, 10], 10, 60); def_edificio_servicio(, true,,,, 5, 30, 1); def_edificio_trabajo(true, 6, 50, 7, 2)
-		def_edificio_base("Oficina de Bomberos", 4, 4, 1400, 1200, [15, 26], [30, 50], 12); def_edificio_servicio(); def_edificio_trabajo(true, 5, 40, 4, 2, 0.03)
+		def_edificio_base("Oficina de Bomberos", 4, 4, 1400, 1200, [15, 26], [30, 50], 12); def_edificio_servicio(,,,,,,,, true, 50); def_edificio_trabajo(true, 5, 40, 4, 2, 0.03)
+		def_edificio_base("Armaría", 5, 4, 6000, 1095, [1, 15, 24, 26], [20, 30, 30, 40], 30, 20, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 8, 40, 8, 1, 0.05, true, [1, 14, 15], [1, 1, 1], [28], [1], 0.4)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
-	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35, 43, 44], [13, 20, 22, 41, 42], [23, 25, 26, 28, 29, 30, 36, 37, 39]]
+	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35, 43], [13, 20, 22, 41, 42, 44], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45]]
 	edificio_color = []
 	for(a = 0; a < array_length(edificio_nombre); a++){
 		var flag = false
@@ -1008,6 +1018,7 @@ debug = false
 	}
 	for(a = 0; a < array_length(edificio_nombre) * 2; a++)
 		show[a] = false
+	show_noticia = -1
 	felicidad_total = 50
 	dinero = 20000
 	inversion_privada = 0

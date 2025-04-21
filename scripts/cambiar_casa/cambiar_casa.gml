@@ -12,10 +12,9 @@ function cambiar_casa(familia = control.null_familia, casa = control.null_edific
 		if casa != homeless and edificio_nombre[casa.tipo] != "Toma" and array_length(casa.familias) = edificio_familias_max[casa.tipo]
 			array_remove(casas_libres, casa, "la casa ya no está disponible")
 		if casa != homeless{
-			if familia.padre != null_persona and not in(familia.padre.trabajo, null_edificio, jubilado, delincuente)
-				familia.padre.felicidad_transporte = calcular_felicidad_transporte(casa, familia.padre.trabajo)
-			if familia.madre != null_persona and not in(familia.madre.trabajo, null_edificio, jubilado, delincuente)
-				familia.madre.felicidad_transporte = calcular_felicidad_transporte(casa, familia.madre.trabajo)
+			for_familia(function(persona = control.null_persona){
+				persona.felicidad_transporte = calcular_felicidad_transporte(persona.familia.casa, persona.trabajo)
+			}, familia, false)
 			for(var a  = 0; a < array_length(familia.hijos); a++)
 				if familia.hijos[a].escuela != null_edificio
 					familia.hijos[a].felicidad_transporte = calcular_felicidad_transporte(casa, familia.hijos[a].escuela)

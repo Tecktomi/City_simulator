@@ -5,8 +5,7 @@ function year_history(anno){
 			if anno >= pais_inicio[a] and (pais_fin[a] = 0 or anno < pais_fin[a]) and not array_contains(pais_current, a){
 				array_push(pais_current, a)
 				array_push(pais_relacion, 0)
-				if debug
-					show_debug_message($"Añadido: {pais_nombre[a]}")
+				add_noticia("Nuevo país", $"Has establecido relaciones diplomáticas con {pais_nombre[a]}")
 			}
 		//Paises que dejan de existir
 		for(var a = 0; a < array_length(pais_current); a++){
@@ -16,8 +15,7 @@ function year_history(anno){
 					for(var c = 0; c > array_length(recurso_tratados_venta[b]); c++)
 						if recurso_tratados_venta[b, c].pais = d
 							array_delete(recurso_tratados_venta[b], c--, 1)
-				if debug
-					show_debug_message($"Elimiado: {pais_nombre[d]}")
+				add_noticia("País destruido", $"Se han perdido las relaciones diplomáticas con {pais_nombre[d]}")
 				array_delete(pais_current, a--, 1)
 			}
 		}
@@ -34,6 +32,7 @@ function year_history(anno){
 					array_push(pais_guerras[guerra.bando_a[b]], guerra)
 				for(var b = 0; b < array_length(guerra.bando_b); b++)
 					array_push(pais_guerras[guerra.bando_b[b]], guerra)
+				add_noticia("Nueva guerra", $"Ha emprezado la guerra {guerra.nombre}")
 			}
 		}
 		//Fin de las guerras
@@ -44,8 +43,7 @@ function year_history(anno){
 					array_remove(pais_guerras[guerra.bando_a[b]], guerra, "Eliminar guerra de un país")
 				for(var b = 0; b < array_length(guerra.bando_b); b++)
 					array_remove(pais_guerras[guerra.bando_b[b]], guerra, "Eliminar guerra de un país")
-				if debug
-					show_debug_message($"Eliminada la guerra {guerra.nombre}")
+				add_noticia("Guerra terminada", $"Ha terminado la guerra {guerra.nombre}")
 				array_delete(guerras_current, a--, 1)
 			}
 		}

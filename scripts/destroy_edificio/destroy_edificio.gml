@@ -51,12 +51,9 @@ function destroy_edificio(edificio = control.null_edificio){
 			edificio.comisaria.comisaria = null_edificio
 		for(var a = 0; a < array_length(edificio.familias); a++){
 			var familia = edificio.familias[a]
-			if familia.padre != null_persona
-				familia.padre.felicidad_temporal -= 25
-			if familia.madre != null_persona
-				familia.madre.felicidad_temporal -= 25
-			for(var b = 0; b < array_length(familia.hijos); b++)
-				familia.hijos[b].felicidad_temporal -= 15
+			for_familia(function(persona = control.null_persona){
+				persona.felicidad_temporal -= 25
+			}, familia)
 			cambiar_casa(familia, homeless)
 		}
 		if edificio_es_iglesia[tipo]

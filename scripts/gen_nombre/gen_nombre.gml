@@ -29,6 +29,18 @@ function gen_nombre(sexo, idioma = 0){
 		else
 			return choose("Otto", "Swen", "Stefan", "Friedich", "Karl", "Ernst", "Franz")
 	}
+	else if idioma = 5{
+		if sexo
+			return choose("Tatiana", "Svetlana", "Valentina", "Irina", "Larisa", "Olga")
+		else
+			return choose("Dmitri", "Yuri", "Alexei", "Sergei", "Vladimir", "Nikolai")
+	}
+	else if idioma = 6{
+		if sexo
+			return choose("Mei", "Lan", "Xiu", "Fang", "Ling", "Hua")
+		else
+			return choose("Wei", "Jun", "Ming", "Hao", "Qiang", "Zhen")
+	}
 }
 function gen_apellido(idioma = 0){
 	if idioma = 0
@@ -41,6 +53,10 @@ function gen_apellido(idioma = 0){
 		return choose("Smith", "Brown", "Johnson", "Taylor", "Wilson", "Clark", "Wright", "Hall", "Baker", "Harris")
 	else if idioma = 4
 		return choose("Müler", "Schimdt", "Schneider", "Fischer", "Weber", "Meyer", "Wagner", "Becker", "Hoffmann", "Schäfer")
+	else if idioma = 5
+		return choose("Ivanov", "Petrov", "Sokolov", "Morozov", "Smirnov", "Volkov", "Kalashnikov")
+	else if idioma = 5
+		return choose("Li", "Wang", "Zhang", "Chen", "Yang", "Zhao", "Wu", "Sun")
 }
 function gen_nombre_empresa(){
 	with control{

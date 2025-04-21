@@ -1,12 +1,11 @@
 function acelerar_edificio(construccion = control.null_construccion){
 	with control{
-		if debug
-			show_debug_message(string(dia) + " acelerar_edificio")
 		array_remove(cola_construccion, construccion)
 		x = construccion.x
 		y = construccion.y
 		var index = construccion.id, width = construccion.width, height = construccion.height, var_edificio_nombre = edificio_nombre[index]
 		var edificio = add_edificio(x, y, index, , construccion.rotado)
+		add_noticia("Edificio terminado", $"Se ha terminado de construir {edificio.nombre}")
 		if not edificio_es_costero[index] and var_edificio_nombre != "Rancho"{
 			var c = construccion.altura
 			world_update = true

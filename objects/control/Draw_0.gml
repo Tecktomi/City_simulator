@@ -201,6 +201,44 @@ else{
 				show[1] = true
 			}
 		draw_set_valign(fa_top)
+		if array_length(noticias) > 0{
+			draw_set_halign(fa_right)
+			if draw_menu(room_width - 300, 0, "Noticias", 0, true){
+				var width = 0, height = 0
+				for(var a = 0; a < min(20, array_length(noticias)); a++){
+					width = max(width, string_width(noticias[a].titulo))
+					height += string_height(noticias[a].titulo)
+				}
+				pos = 20
+				draw_set_color(c_ltgray)
+				draw_rectangle(room_width - 300, pos, room_width - 302 - width, pos + height, false)
+				draw_set_color(c_black)
+				draw_rectangle(room_width - 300, pos, room_width - 302 - width, pos + height, true)
+				for(var a = 0; a < min(20, array_length(noticias)); a++)
+					if draw_boton(room_width - 301, pos, noticias[a].titulo)
+						show_noticia = a
+			}
+			draw_set_halign(fa_left)
+			if show_noticia >= 0{
+				draw_set_color(c_black)
+				draw_set_alpha(0.25)
+				draw_rectangle(0, 0, room_width, room_height, false)
+				var noticia = noticias[show_noticia], text = fecha(noticia.dia) + "\n" + noticia.descripcion, width = string_width(text), height = string_height(text)
+				draw_set_alpha(1)
+				draw_set_color(c_ltgray)
+				draw_rectangle((room_width - width) / 2, (room_height - height) / 2, (room_width + width) / 2, (room_height + height) / 2, false)
+				draw_set_color(c_black)
+				draw_rectangle((room_width - width) / 2, (room_height - height) / 2, (room_width + width) / 2, (room_height + height) / 2, true)
+				draw_set_halign(fa_center)
+				draw_text(room_width / 2, (room_height - height) / 2, text)
+				if mouse_check_button_pressed(mb_left) or mouse_check_button_pressed(mb_right){
+					show_noticia = -1
+					mouse_clear(mb_left)
+					mouse_clear(mb_right)
+				}
+				draw_set_halign(fa_left)
+			}
+		}
 		draw_set_alpha(1)
 		if sel_comisaria{
 			draw_set_color(c_white)
@@ -1185,6 +1223,10 @@ else{
 						if a = 6 and not ley_eneabled[6] and array_length(cola_construccion) = 0
 							for(b = 0; b < array_length(edificio_count[20]); b++)
 								set_paro(false, edificio_count[20, b])
+						//Armas para la policía
+						if a = 11 and ley_eneabled[11]
+							recurso_construccion[28] += 10 * array_length(edificio_count[34])
+								
 					}
 				if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
 					credibilidad_financiera += floor(sueldo_minimo / 2)
@@ -1493,6 +1535,8 @@ else{
 				mes_construccion[current_mes] += temp_precio
 				if tutorial_bool and tutorial = 8
 					tutorial_complete = true
+				if ley_eneabled[11] and edificio_nombre[build_index] = "Comisaría"
+					recurso_construccion[28] += 10
 			}
 		}
 		if mouse_check_button_pressed(mb_right){
@@ -1698,22 +1742,20 @@ else{
 								sel_familia = sel_edificio.familias[a]
 								sel_tipo = 1
 							}
-					if draw_boton(room_width - 20, pos, sel_edificio.vivienda_renta = 0 ? "Generar tarifas" : "Subvencionar vivienda"){
+					if edificio_nombre[sel_edificio.tipo] != "Toma" and draw_boton(room_width - 20, pos, sel_edificio.vivienda_renta = 0 ? "Generar tarifas" : "Subvencionar vivienda"){
 						if sel_edificio.vivienda_renta = 0
 							for(var a = 0; a < array_length(sel_edificio.familias); a++){
 								var familia = sel_edificio.familias[a]
-								if familia.padre != null_persona
-									familia.padre.felicidad_temporal -= 25
-								if familia.madre != null_persona
-									familia.madre.felicidad_temporal -= 25
+								for_familia(function(persona = null_persona){
+									persona.felicidad_temporal -= 25
+								}, familia)
 							}
 						if sel_edificio.vivienda_renta > 0
 							for(var a = 0; a < array_length(sel_edificio.familias); a++){
 								var familia = sel_edificio.familias[a]
-								if familia.padre != null_persona
-									familia.padre.felicidad_temporal += 25
-								if familia.madre != null_persona
-									familia.madre.felicidad_temporal += 25
+								for_familia(function(persona= null_persona){
+									persona.felicidad_temporal += 25
+								}, familia, false)
 							}
 						sel_edificio.vivienda_renta = edificio_familias_renta[index] - sel_edificio.vivienda_renta
 						set_calidad_vivienda(sel_edificio)
@@ -2297,16 +2339,29 @@ else{
 				}
 			}
 			//Incendios
-			if random(1) < 0.005{
+			if random(1) < 0.005 and array_length(edificios) > 0{
 				var edificio = array_pick(edificios)
 				if edificio.seguro_fuego = 0 and edificio_nombre[edificio.tipo] != "Estación de Bomberos" and random(1) < 0.05 + edificio.trabajo_riesgo{
+					var b = 0
 					for(var a = 0; a < array_length(edificio.trabajadores); a++)
 						if random(1) < 0.2{
+							b++
 							destroy_persona(edificio.trabajadores[a--],, "Muerto en un incendio")
 							mes_muertos_accidentes[current_mes]++
 						}
+					for(var a = 0; a < array_length(edificio.familias); a++){
+						var familia = edificio.familias[a]
+						for_familia(function(persona = null_persona){
+							if random(1) < 0.2{
+								destroy_persona(persona,, "Muerto en un incendio")
+								mes_muertos_accidentes[current_mes]++
+								b++
+							}
+						}, familia)
+					}
+					add_noticia("Incendio", $"Se ha quemado {edificio.nombre}{b = 0 ? "" : $", ha{b = 1 ? "" : "n"} muerto {b} persona{b = 1 ? "" : "s"}"}")
 					for(var a = edificio.x; a < edificio.x + edificio.width; a++)
-						for(var b = edificio.y; b < edificio.y + edificio.height; b++){
+						for(b = edificio.y; b < edificio.y + edificio.height; b++){
 							array_set(escombros[a], b, true)
 							array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
 						}
@@ -2360,8 +2415,7 @@ else{
 						var tratado = recurso_tratados_venta[a, b]
 						tratado.tiempo--
 						if tratado.tiempo = 0{
-							if debug
-								show_debug_message($"{fecha(dia)} No has podido cumplir el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
+							add_noticia("Tratado fallido", $"No has podido cumplir el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
 							pais_relacion[tratado.pais]--
 							array_delete(recurso_tratados_venta[a], b--, 1)
 							credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
@@ -2371,8 +2425,7 @@ else{
 						var tratado = recurso_tratados_compra[a, b]
 						tratado.tiempo--
 						if tratado.tiempo = 0{
-							if debug
-								show_debug_message($"{fecha(dia)} No has podido cumplir el tratado de importar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
+							add_noticia("Tratado fallido", $"No has podido cumplir el tratado de importar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
 							pais_relacion[tratado.pais]--
 							array_delete(recurso_tratados_compra[a], b--, 1)
 							credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
@@ -2400,14 +2453,10 @@ else{
 						}
 					}
 					var familia = add_familia(origen)
-					if familia.padre != null_persona{
-						buscar_trabajo(familia.padre)
-						buscar_casa(familia.padre)
-					}
-					if familia.madre != null_persona{
-						buscar_trabajo(familia.madre)
-						buscar_casa(familia.madre)
-					}
+					for_familia(function(persona = null_persona){
+						buscar_trabajo(persona)
+						buscar_casa(persona)
+					}, familia, false)
 				}
 				//Cooldown exigencias cumplidas
 				for(var a = 0; a < array_length(exigencia_nombre); a++){
@@ -2499,6 +2548,7 @@ else{
 						edificio_count[43, a].array_complex[0].a = -1
 				}
 				if (anno mod 6) = 0 and anno > 0{
+					var text = ""
 					candidatos_votos = [0]
 					repeat(5){
 						var persona = array_pick(personas)
@@ -2507,8 +2557,10 @@ else{
 							array_push(candidatos, persona)
 							array_push(candidatos_votos, 0)
 							elecciones = true
+							text += (text = "" ? "" : ", ") + name(persona)
 						}
 					}
+					add_noticia("Elecciones", $"Se han presentado {array_length(candidatos)} candidatos: " + text)
 					repeat(40){
 						var a = voto_persona(array_pick(personas))
 						if a != -1{
@@ -2659,12 +2711,9 @@ else{
 								if b > 0{
 									familia.riqueza -= b
 									persona.familia.riqueza += b
-									if familia.padre != null_persona
-										familia.padre.felicidad_crimen = max(0, familia.padre.felicidad_crimen - 2 * b - 5)
-									if familia.madre != null_persona
-										familia.madre.felicidad_crimen = max(0, familia.madre.felicidad_crimen - 2 * b - 5)
-									for(var c = 0; c < array_length(familia.hijos); c++)
-										familia.hijos[c].felicidad_crimen = max(0, familia.hijos[c].felicidad_crimen - b - 5)
+									for_familia(function(persona = null_persona, a = 0){
+										persona.felicidad_crimen = max(0, persona.felicidad_crimen - a)
+									}, familia,, 2 * b - 5)
 								}
 							}
 						}
@@ -2672,9 +2721,8 @@ else{
 						else if persona.empresa = null_empresa and irandom(persona.familia.riqueza) > 750{
 							var empresa = add_empresa(500, true, persona)
 							persona.empresa = empresa
-							if debug
-								show_debug_message($"Se ha creado una empresa nacional: {empresa.nombre}")
 							persona.familia.riqueza -= 500
+							add_noticia("Empresa nacional", $"Se ha creado la empresa {empresa.nombre}")
 						}
 						//Mudarse
 						if not buscar_casa(persona) and persona.familia.casa = homeless and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente){
@@ -2711,6 +2759,7 @@ else{
 						if persona.trabajo != null_edificio and random(1) < persona.trabajo.trabajo_riesgo{
 							mes_accidentes[current_mes]++
 							if persona.medico != null_edificio{
+								add_noticia("Accidente", $"Ha muerto {name(persona)} en un accidente laboral en {persona.trabajo.nombre}")
 								destroy_persona(persona,, "Accidente laboral")
 								mes_muertos_accidentes[current_mes]++
 							}
@@ -2870,19 +2919,10 @@ else{
 						if ley_eneabled[5] and persona.familia.riqueza >= 10 * real(persona.familia.integrantes) and brandom() and not persona.preso{
 							var familia = persona.familia
 							if familia.padre.felicidad < 15 and familia.madre.felicidad < 15{
-								if familia.padre != null_persona{
-									destroy_persona(familia.padre, false, "Padre emigrado")
+								for_familia(function(persona = null_persona){
+									destroy_persona(persona, false, "Emigrado")
 									mes_emigrantes[current_mes]++
-								}
-								if array_contains(familias, familia) and familia.madre != null_persona{
-									destroy_persona(familia.madre, false, "Madre emigrada")
-									mes_emigrantes[current_mes]++
-								}
-								if array_contains(familias, familia)
-									for(var b = 0; b < array_length(familia.hijos); b++){
-										destroy_persona(familia.hijos[b], false, "Hijo emigrado")
-										mes_emigrantes[current_mes]++
-									}
+								}, familia)
 							}
 						}
 						//Protestas
@@ -3368,12 +3408,9 @@ else{
 									arrestar_persona(edificio, temp_edificio.ladron)
 								for(var c = 0; c < array_length(temp_edificio.familias); c++){
 									var familia = temp_edificio.familias[c]
-									if familia.padre != null_persona
-										familia.padre.felicidad_crimen = min(100, familia.padre.felicidad_crimen + 4)
-									if familia.madre != null_persona
-										familia.madre.felicidad_crimen = min(100, familia.madre.felicidad_crimen + 4)
-									for(var d = 0; d < array_length(familia.hijos); d++)
-										familia.hijos[d].felicidad_crimen = min(100, familia.hijos[d].felicidad_crimen + 4)
+									for_familia(function(persona = null_persona){
+										persona.felicidad_crimen = min(100, persona.felicidad_crimen + 4)
+									}, familia)
 								}
 							}
 						}
@@ -3758,18 +3795,10 @@ else{
 						persona.felicidad_salud = floor(persona.felicidad_salud) / 2
 						if irandom(10) > persona.felicidad_salud{
 							var familia = persona.familia
-							if familia.padre != null_persona{
-								familia.padre.felicidad_salud = floor(familia.padre.felicidad_salud / 2)
-								familia.padre.felicidad_temporal -= 50
-							}
-							if familia.madre != null_persona{
-								familia.madre.felicidad_salud= floor(familia.madre.felicidad_salud / 2)
-								familia.madre.felicidad_temporal -= 50
-							}
-							for(var c = 0; c < array_length(persona.familia.hijos); c++){
-								familia.hijos[c].felicidad_salud = floor(familia.hijos[c].felicidad_salud / 2)
-								familia.hijos[c].felicidad_temporal -= 25
-							}
+							for_familia(function(persona = null_persona){
+								persona.felicidad_salud = floor(persona.felicidad_salud / 2)
+								persona.felicidad_temporal -= 50
+							}, familia)
 							if not in(persona.trabajo, null_edificio, jubilado, delincuente)
 								for(var c = 0; c < array_length(persona.trabajo.trabajadores); c++)
 									persona.trabajo.trabajadores[c].felicidad_salud = floor(persona.trabajo.trabajadores[c].felicidad_salud * 0.75)
