@@ -5,7 +5,8 @@ function year_history(anno){
 			if anno >= pais_inicio[a] and (pais_fin[a] = 0 or anno < pais_fin[a]) and not array_contains(pais_current, a){
 				array_push(pais_current, a)
 				array_push(pais_relacion, 0)
-				show_debug_message($"Añadido: {pais_nombre[a]}")
+				if debug
+					show_debug_message($"Añadido: {pais_nombre[a]}")
 			}
 		//Paises que dejan de existir
 		for(var a = 0; a < array_length(pais_current); a++){

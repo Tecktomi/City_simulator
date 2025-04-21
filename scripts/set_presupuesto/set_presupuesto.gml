@@ -2,7 +2,9 @@ function set_presupuesto(presupuesto, edificio = control.null_edificio){
 	var index = edificio.tipo
 	with control{
 		edificio.presupuesto = presupuesto
+		array_remove(edificios_por_mantenimiento[min(20, edificio.mantenimiento)], edificio)
 		edificio.mantenimiento = round(edificio_mantenimiento[index] * (1 + 0.2 * (presupuesto - 2)))
+		array_push(edificios_por_mantenimiento[min(20, edificio.mantenimiento)], edificio)
 		if edificio_es_casa[index]
 			set_calidad_vivienda(edificio)
 		if edificio_servicio_calidad[index] != 0

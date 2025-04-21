@@ -147,6 +147,7 @@ debug = false
 	politica_sociocultural_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]
 	politica_economia = 3
 	politica_sociocultural = 3
+	politica_religion = 0.5
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
 	subministerio = -1
@@ -362,7 +363,8 @@ debug = false
 		"Extrae petróleo de bajo tierra, consume agua potable",
 		"Utiliza combustible para dar presión de agua, necesario para mejorar las condiciones de alcantarillado",
 		"Genera energía elétrica a partir de la quema de combustibles fósiles",
-		"Entrega entretenimiento e información a la gente que sepa leer"]
+		"Entrega entretenimiento e información a la gente que sepa leer",
+		"Evita que se produzcan incendios en la isla"]
 	#region arreglos vacíos
 		edificio_nombre = []
 		edificio_width = []
@@ -517,9 +519,10 @@ debug = false
 		def_edificio_base("Bomba de Agua", 3, 3, 2500, 640, [15, 26], [40, 10], 15, 30, -15,,,,,,,,,, 50); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 4, 20, 4,, 0.01)
 		def_edificio_base("Planta Termoeléctrica", 6, 3, 6000, 1800, [12, 15, 26], [100, 50, 50], 30, 25, -30,,,,,,,,,, 90); def_edificio_servicio(); def_edificio_trabajo(true, 6, 35, 7, 1, 0.01)
 		def_edificio_base("Periódico", 4, 3, 1000, 800, [1, 15, 26], [20, 10, 10], 10, 60); def_edificio_servicio(, true,,,, 5, 30, 1); def_edificio_trabajo(true, 6, 50, 7, 2)
+		def_edificio_base("Oficina de Bomberos", 4, 4, 1400, 1200, [15, 26], [30, 50], 12); def_edificio_servicio(); def_edificio_trabajo(true, 5, 40, 4, 2, 0.03)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
-	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35, 43], [13, 20, 22, 41, 42], [23, 25, 26, 28, 29, 30, 36, 37, 39]]
+	edificio_categoria = [[8, 9, 10, 31], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35, 43, 44], [13, 20, 22, 41, 42], [23, 25, 26, 28, 29, 30, 36, 37, 39]]
 	edificio_color = []
 	for(a = 0; a < array_length(edificio_nombre); a++){
 		var flag = false
@@ -606,7 +609,8 @@ debug = false
 		height : 0,
 		ladron : null_persona,
 		venta : false,
-		es_almacen : false
+		es_almacen : false,
+		seguro_fuego : 0
 	}
 	array_pop(null_edificio.familias)
 	array_pop(null_edificio.trabajadores)
@@ -632,6 +636,11 @@ debug = false
 	array_pop(trabajos)
 	iglesias = [null_edificio]
 	array_pop(iglesias)
+	edificios_por_mantenimiento = []
+	for(a = 0; a < 21; a++){
+		array_push(edificios_por_mantenimiento, [null_edificio])
+		array_pop(edificios_por_mantenimiento[a])
+	}
 	null_persona.trabajo = null_edificio
 	null_persona.escuela = null_edificio
 	null_persona.medico = null_edificio
@@ -764,6 +773,7 @@ debug = false
 			bool_draw_construccion[a, b] = false
 			draw_construccion[a, b] = null_construccion
 			draw_edificio_flip[a, b] = brandom()
+			escombros[a, b] = false
 			bosque[a, b] = grid[# a, b] > 0.6 and c > 0.62
 			if bosque[a, b]{
 				bosque_madera[a, b] = floor(200 * grid[# a, b])
@@ -965,7 +975,9 @@ debug = false
 	for(a = 0; a < 12; a++){
 		mes_enfermos[a] = 0
 		mes_emigrantes[a]  = 0
-		mes_muertos[a] = 0
+		mes_muertos_viejos[a] = 0
+		mes_muertos_accidentes[a] = 0
+		mes_muertos_asesinados[a] = 0
 		mes_inanicion[a] = 0
 		mes_inmigrantes[a] = 0
 		mes_nacimientos[a] = 0

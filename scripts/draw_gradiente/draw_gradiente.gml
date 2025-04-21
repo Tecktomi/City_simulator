@@ -94,5 +94,28 @@ function draw_gradiente(tipo, modo){
 			if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height
 				draw_text(0, 20, petroleo[mx, my])
 		}
+		if modo = 7{
+			draw_set_color(c_white)
+			draw_text(0, 0, "Protección contra incendios")
+			for(var a = 0; a < array_length(edificios); a++){
+				var edificio = edificios[a]
+				draw_set_color(c_gray)
+				draw_rombo_coord(edificio.x, edificio.y, edificio.width, edificio.height, false)
+				draw_set_color(make_color_hsv(edificio.seguro_fuego * 12, 255, 255))
+				draw_set_alpha(0.5)
+				draw_rombo_coord(edificio.x, edificio.y, edificio.width, edificio.height, false)
+				draw_set_alpha(1)
+			}
+			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
+			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
+			if bool_edificio[mx, my]{
+				var a = id_edificio[mx, my].seguro_fuego
+				draw_set_color(c_white)
+				if a = 0
+					draw_text(0, 20, "Este edificio podría incendiarse")
+				else
+					draw_text(0, 20, $"Seguro por {a} mes{a = 1 ? "" : "es"}")
+			}
+		}
 	}
 }

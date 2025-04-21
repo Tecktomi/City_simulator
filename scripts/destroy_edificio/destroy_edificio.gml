@@ -116,5 +116,6 @@ function destroy_edificio(edificio = control.null_edificio){
 			sel_edificio = null_edificio
 			sel_info = false
 		}
+		array_remove(edificios_por_mantenimiento[min(20, edificio.mantenimiento)], edificio)
 	}
 }

@@ -60,22 +60,25 @@ else{
 			var prev_tile_width = tile_width
 			tile_width = 32
 			tile_height = 16
+			var surf = surface_create(tile_width * 32, tile_height * 32)
+			surface_set_target(surf)
 			for(var a = 0; a < xsize / 16; a++)
 				for(var b = 0; b < ysize / 16; b++)
 					if chunk_update[a, b]{
-						var surf = surface_create(tile_width * 32, tile_height * 32)
-						surface_set_target(surf)
 						draw_clear_alpha(c_black, 0)
-						for(var c = 0; c < 16; c++)
-							for(var d = 0; d < 16; d++)
-								if a * 16 + c < xsize and b * 16 + d < ysize
+						var e = min(16, xsize - a * 16), f = min(16, ysize - b * 16)
+						for(var c = 0; c < e; c++)
+							for(var d = 0; d < f; d++)
+								if escombros[a * 16 + c, b * 16 + d]
+									draw_sprite_ext(spr_tile, 0, tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, 1, 1, 0, c_ltgray, 1)
+								else
 									draw_sprite_ext(spr_tile, 0, tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, 1, 1, 0, altura_color[a * 16 + c, b * 16 + d], 1)
 						var sprite = sprite_create_from_surface(surf, 0, 0, tile_width * 32, tile_height * 32, true, false, 0, 0)
 						array_set(chunk[a], b, sprite)
-						surface_reset_target()
-						surface_free(surf)
 						array_set(chunk_update[a], b, false)
 					}
+			surface_reset_target()
+			surface_free(surf)
 			world_update = false
 			tile_width = prev_tile_width
 			tile_height = prev_tile_width / 2
@@ -165,7 +168,9 @@ else{
 			if keyboard_check(ord("V"))
 				draw_gradiente(0, 4)
 			if keyboard_check(ord("T"))
-			draw_gradiente(0, 5)
+				draw_gradiente(0, 5)
+			if keyboard_check(ord("F"))
+				draw_gradiente(0, 7)
 		#endregion
 		//Información general
 		draw_set_alpha(0.5)
@@ -346,16 +351,18 @@ else{
 			pos += 20
 			//Ministerio de Población
 			if ministerio = 0{
-				var temp_nacimientos = 0, temp_muertos = 0, temp_inmigrados = 0, temp_emigrados = 0, temp_inanicion = 0, temp_enfermos = 0
+				var temp_nacimientos = 0, temp_muertos_viejos = 0, temp_muertos_accidentes = 0, temp_muertos_asesinados = 0, temp_inmigrados = 0, temp_emigrados = 0, temp_inanicion = 0, temp_enfermos = 0
 				for(var a = 0; a < 12; a++){
 					temp_nacimientos += mes_nacimientos[a]
-					temp_muertos += mes_muertos[a]
+					temp_muertos_viejos += mes_muertos_viejos[a]
+					temp_muertos_accidentes += mes_muertos_accidentes[a]
+					temp_muertos_asesinados += mes_muertos_asesinados[a]
 					temp_inmigrados += mes_inmigrantes[a]
 					temp_emigrados += mes_emigrantes[a]
 					temp_inanicion += mes_inanicion[a]
 					temp_enfermos += mes_enfermos[a]
 				}
-				var temp_total = temp_nacimientos + temp_inmigrados - temp_muertos - temp_emigrados - temp_inanicion - temp_enfermos
+				var temp_total = temp_nacimientos + temp_inmigrados - temp_muertos_viejos - temp_muertos_accidentes - temp_muertos_asesinados - temp_emigrados - temp_inanicion - temp_enfermos
 				draw_text_pos(110, pos, $"Población: {array_length(personas)}")
 				if temp_total >= 0
 					var temp_text = "Crecimiento "
@@ -366,11 +373,18 @@ else{
 					draw_text_pos(130, pos, $"Nacimientos: {temp_nacimientos}")
 					draw_text_pos(130, pos, $"Inmigración: {temp_inmigrados}")
 					draw_set_color(c_red)
-					if draw_menu(130, pos, $"Muertos: {temp_muertos + temp_inanicion + temp_enfermos}", 2){
-						draw_text_pos(140, pos, $"Causas naturales: {temp_muertos}")
-						draw_text_pos(140, pos, $"Inanición: {temp_inanicion}")
-						if draw_boton(140, pos, $"Enfermedades: {temp_enfermos}")
-							ministerio = 3
+					if draw_menu(130, pos, $"Muertos: {temp_muertos_viejos + temp_muertos_accidentes + temp_muertos_asesinados + temp_inanicion + temp_enfermos}", 2){
+						if temp_muertos_viejos > 0
+							draw_text_pos(140, pos, $"Causas naturales: {temp_muertos_viejos}")
+						if temp_muertos_accidentes > 0
+							draw_text_pos(140, pos, $"Accidentes laborales: {temp_muertos_accidentes}")
+						if temp_muertos_asesinados > 0
+							draw_text_pos(140, pos, $"Asesinatos: {temp_muertos_asesinados}")
+						if temp_inanicion > 0
+							draw_text_pos(140, pos, $"Inanición: {temp_inanicion}")
+						if temp_enfermos > 0
+							if draw_boton(140, pos, $"Enfermedades: {temp_enfermos}")
+								ministerio = 3
 					}
 					draw_text_pos(130, pos, $"Emigración: {temp_emigrados}")
 					draw_set_color(c_black)
@@ -987,22 +1001,35 @@ else{
 							}
 						}
 						if array_length(pais_guerras[e]) > 0{
-							var temp_array = [], flag = false
-							for(b = 0; b < array_length(pais_nombre); b++)
+							var temp_array = [], temp_array_2 = [], flag = false, flag_2 = false
+							for(b = 0; b < array_length(pais_nombre); b++){
 								array_push(temp_array, false)
+								array_push(temp_array_2, false)
+							}
 							for(b = 0; b < array_length(pais_guerras[e]); b++){
 								var guerra = pais_guerras[e, b]
 								if array_contains(guerra.bando_a, e){
+									for(var c = 0; c < array_length(guerra.bando_a); c++)
+										if guerra.bando_a[c] != e{
+											temp_array_2[guerra.bando_a[c]] = true
+											flag_2 = true
+										}
 									for(var c = 0; c < array_length(guerra.bando_b); c++){
 										temp_array[guerra.bando_b[c]] = true
 										flag = true
 									}
 								}
-								else
+								else{
 									for(var c = 0; c < array_length(guerra.bando_a); c++){
 										temp_array[guerra.bando_a[c]] = true
 										flag = true
 									}
+									for(var c = 0; c < array_length(guerra.bando_b); c++)
+										if guerra.bando_b[c] != e{
+											temp_array_2[guerra.bando_b[c]] = true
+											flag_2 = true
+										}
+								}
 							}
 							if flag{
 								draw_text_pos(120, pos, "En guerra con:")
@@ -1012,11 +1039,18 @@ else{
 							}
 							else
 								draw_text_pos(120, pos, "Solo guerras internas")
+							if flag_2{
+								draw_text_pos(120, pos, "Aliado con:")
+								for(b = 0; b < array_length(pais_nombre); b++)
+									if temp_array_2[b]
+										draw_text_pos(130, pos, pais_nombre[b])
+							}
 						}
 						else
 							draw_text_pos(120, pos, "Sin guerras")
 					}
 				}
+				//Ofertas disponibles
 				pos = 120
 				draw_text_pos(580, pos, "Ofertas disponibles")
 				draw_text_pos(590, pos, $"{tratados_num} aceptados de {tratados_max}")
@@ -1121,6 +1155,8 @@ else{
 						if not debug
 							ley_tiempo[a] = 12
 						ley_eneabled[a] = not ley_eneabled[a]
+						if a = 0
+							politica_religion = (1 + ley_eneabled[0]) / 3
 						//Prohibir trabajo infantil
 						if a = 2 and not ley_eneabled[2]
 							for(b = 0; b < array_length(familias); b++)
@@ -1167,12 +1203,13 @@ else{
 							b += ley_economia[a]
 							c += ley_sociocultural[a]
 						}
+					b += 6 - sueldo_minimo
 					if d = 0{
 						politica_economia = 3
 						politica_sociocultural = 3
 					}
 					else{
-						politica_economia = b / d
+						politica_economia = b / (d + 1)
 						politica_sociocultural = c / d
 					}
 					draw_set_alpha(0.5)
@@ -1390,11 +1427,12 @@ else{
 					temp_precio += coste_aplanar
 				}
 			}
-			var coste_terreno = 0, coste_deforestar = 0
+			var coste_terreno = 0, coste_deforestar = 0, coste_escombros = 0
 			for(var a = mx; a < c; a++)
 				for(var b = my; b < d; b++){
 					coste_terreno += 10 * zona_privada[a, b]
 					coste_deforestar += 10 * bosque[a, b]
+					coste_escombros += 25 * escombros[a, b]
 				}
 			if coste_terreno > 0{
 				text += $"\Estatizar terreno: ${coste_terreno}"
@@ -1403,6 +1441,10 @@ else{
 			if coste_deforestar > 0{
 				text += $"\nDeforestar terreno: ${coste_deforestar}"
 				temp_precio += coste_deforestar
+			}
+			if coste_escombros > 0{
+				text += $"\nRemover escombros: ${coste_escombros}"
+				temp_precio += coste_escombros
 			}
 		}
 		if text != ""
@@ -1432,6 +1474,11 @@ else{
 						}
 						if bool_edificio[a, b] and id_edificio[a, b].tipo = 32
 							destroy_edificio(id_edificio[a, b])
+						if escombros[a, b]{
+							array_set(escombros[a], b, false)
+							array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
+							world_update = true
+						}
 						array_set(draw_construccion[a], b, next_build)
 					}
 				if array_length(cola_construccion) = 0 and ley_eneabled[6]
@@ -1579,7 +1626,7 @@ else{
 							if brandom(){
 								if ley_eneabled[11] and brandom(){
 									destroy_persona(persona,, "Muerto por la policía")
-									mes_muertos[current_mes]++
+									mes_muertos_asesinados[current_mes]++
 									flag = true
 									a--
 									continue
@@ -2249,11 +2296,31 @@ else{
 					array_set(bosque_alpha[mx], my, 0.5 + bosque_madera[mx, my] / 400)
 				}
 			}
+			//Incendios
+			if random(1) < 0.005{
+				var edificio = array_pick(edificios)
+				if edificio.seguro_fuego = 0 and edificio_nombre[edificio.tipo] != "Estación de Bomberos" and random(1) < 0.05 + edificio.trabajo_riesgo{
+					for(var a = 0; a < array_length(edificio.trabajadores); a++)
+						if random(1) < 0.2{
+							destroy_persona(edificio.trabajadores[a--],, "Muerto en un incendio")
+							mes_muertos_accidentes[current_mes]++
+						}
+					for(var a = edificio.x; a < edificio.x + edificio.width; a++)
+						for(var b = edificio.y; b < edificio.y + edificio.height; b++){
+							array_set(escombros[a], b, true)
+							array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
+						}
+					world_update = true
+					destroy_edificio(edificio)
+				}
+			}
 			//Eventos mensuales
 			if dia_mes(dia) = 0{
 				mes_enfermos[current_mes] = 0
 				mes_emigrantes[current_mes] = 0
-				mes_muertos[current_mes] = 0
+				mes_muertos_viejos[current_mes] = 0
+				mes_muertos_accidentes[current_mes] = 0
+				mes_muertos_asesinados[current_mes] = 0
 				mes_inmigrantes[current_mes] =0
 				mes_nacimientos[current_mes] = 0
 				mes_inanicion[current_mes] = 0
@@ -2413,7 +2480,7 @@ else{
 					}
 					show_message(temp_text)
 					show_debug_message(temp_text)
-					if c = 0 and debug
+					if c = 0
 						show_message($"Has ganado las elecciones con {b} votos!")
 					else{
 						show_message($"Has perdido las elecciones\n\nAhora el poder lo tiene un tal {name(candidatos[c - 1])}")
@@ -2605,7 +2672,8 @@ else{
 						else if persona.empresa = null_empresa and irandom(persona.familia.riqueza) > 750{
 							var empresa = add_empresa(500, true, persona)
 							persona.empresa = empresa
-							show_debug_message($"Se ha creado una empresa nacional: {empresa.nombre}")
+							if debug
+								show_debug_message($"Se ha creado una empresa nacional: {empresa.nombre}")
 							persona.familia.riqueza -= 500
 						}
 						//Mudarse
@@ -2642,8 +2710,10 @@ else{
 						//Accidentes laborales
 						if persona.trabajo != null_edificio and random(1) < persona.trabajo.trabajo_riesgo{
 							mes_accidentes[current_mes]++
-							if persona.medico != null_edificio
+							if persona.medico != null_edificio{
 								destroy_persona(persona,, "Accidente laboral")
+								mes_muertos_accidentes[current_mes]++
+							}
 							else
 								buscar_atencion_medica(persona)
 						}
@@ -2886,7 +2956,7 @@ else{
 				while array_length(muerte[dia mod 365]) > 0{
 					var persona = array_shift(muerte[dia mod 365])
 					destroy_persona(persona,, "Muerte de causa natural")
-					mes_muertos[current_mes]++
+					mes_muertos_viejos[current_mes]++
 				}
 			#endregion
 			//Ciclo de las empresas
@@ -2999,6 +3069,8 @@ else{
 					edificio.ladron.ladron = null_edificio
 					edificio.ladron = null_persona
 				}
+				if var_edificio_nombre != "Estación de Bomberos"
+					edificio.seguro_fuego = max(0, edificio.seguro_fuego - (1 + 0.5 * edificio.tuberias))
 				//Edificios de trabajo
 				if edificio_es_trabajo[index]{
 					if edificio.huelga{
@@ -3207,10 +3279,10 @@ else{
 													cumplir_tratado(tratado)
 											}
 											total -= d
+											array_add(mes_exportaciones_recurso_num[current_mes], b, d)
 											d = floor(temp_factor * d * recurso_precio[b])
 											mes_exportaciones[current_mes] += d
 											array_add(mes_exportaciones_recurso[current_mes], b, d)
-											array_add(mes_exportaciones_recurso_num[current_mes], b, d)
 											dinero += d
 										}
 										c -= total
@@ -3486,6 +3558,27 @@ else{
 								dinero -= 100
 								mes_mantenimiento[current_mes] += 100
 							}
+						}
+						//Oficina de Bomberos
+						else if var_edificio_nombre = "Oficina de Bomberos"{
+							 b = round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index])
+							 if b > 0{
+								 var flag = false
+								 for(var c = 20; c >= 0; c--){
+									 for(var d = 0; d < array_length(edificios_por_mantenimiento[c]); d++){
+										 var temp_edificio = edificios_por_mantenimiento[c, d]
+										 if temp_edificio.seguro_fuego < 2{
+											temp_edificio.seguro_fuego = 6
+											if --b = 0{
+												flag = true
+												break
+											}
+										 }
+									}
+									if flag
+										break
+								 }
+							 }
 						}
 					}
 				}

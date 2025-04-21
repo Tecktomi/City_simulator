@@ -50,7 +50,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			ladron : null_persona,
 			empresa : null_empresa,
 			venta : false,
-			es_almacen : edificio_es_almacen[tipo]
+			es_almacen : edificio_es_almacen[tipo],
+			seguro_fuego : 0
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
@@ -80,6 +81,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			array_set(bool_draw_edificio[x], y, true)
 			array_set(draw_edificio[x], y, edificio)
 			array_push(edificios, edificio)
+			array_push(edificios_por_mantenimiento[min(20, edificio.mantenimiento)], edificio)
 			if edificio_es_trabajo[tipo]{
 				array_push(trabajos, edificio)
 				array_push(trabajo_educacion[edificio_trabajo_educacion[tipo]], edificio)
