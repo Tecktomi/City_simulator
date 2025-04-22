@@ -10,7 +10,8 @@ function add_familia(origen = -1, generada = true){
 			felicidad_alimento : 50,
 			riqueza : irandom_range(30, 50),
 			integrantes : 1,
-			index : ++familia_count
+			index : ++familia_count,
+			banco : false
 		}
 		array_pop(familia.hijos)
 		if generada{
