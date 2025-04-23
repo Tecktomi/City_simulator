@@ -12,7 +12,7 @@ function print_familia(familia = control.null_familia){
 		text += "Sin hijos\n"
 	else
 		for(var a = 0; a < array_length(familia.hijos); a++)
-			text += "Hijo " + string(a) + ") " + name(familia.hijos[a]) + "\n"
+			text += $"Hijo {a}) {name(familia.hijos[a])}\n"
 	text += "Viven en " + familia.casa.nombre
 	return text
 }

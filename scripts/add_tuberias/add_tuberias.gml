@@ -2,6 +2,7 @@ function add_tuberias(edificio = control.null_edificio){
 	var index = edificio.tipo
 	with control
 		if edificio.privado or dinero >= 400{
+			recurso_construccion[12] += 20
 			edificio.tuberias = true
 			agua_output += edificio_agua[index]
 			if edificio_es_casa[index]

@@ -62,10 +62,8 @@ function acelerar_edificio(construccion = control.null_construccion){
 			if tutorial = 17 and var_edificio_nombre = "Escuela"
 				tutorial_complete = true
 		}
-		if sel_info and sel_tipo = 3 and sel_construccion = construccion{
-			sel_tipo = 0
-			sel_edificio = edificio
-		}
+		if sel_info and sel_tipo = 3 and sel_construccion = construccion
+			select(edificio)
 		return edificio
 	}
 }

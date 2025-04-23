@@ -1,7 +1,7 @@
 function destroy_edificio(edificio = control.null_edificio){
 	with control{
 		if debug
-			show_debug_message(fecha(dia) + $" destroy_edificio ({edificio.nombre})")
+			show_debug_message($"{fecha(dia)} destroy_edificio ({edificio.nombre})")
 		var tipo = edificio.tipo, width = edificio.width, height = edificio.height, var_edificio_nombre = edificio_nombre[tipo]
 		array_set(bool_draw_edificio[edificio.x], edificio.y, false)
 		array_set(draw_edificio[edificio.x], edificio.y, null_edificio)

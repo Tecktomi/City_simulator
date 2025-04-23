@@ -1,31 +1,31 @@
 function fecha(dia, anno = true){
 	var day = dia mod 365, text
 	if day < 31
-		text = string(day) + " de enero"
+		text = $"{day} de enero"
 	else if day < 59
-		text = string(day - 30) + " de febrero"
+		text = $"{day - 30} de febrero"
 	else if day < 90
-		text = string(day - 58) + " de marzo"
+		text = $"{day - 58} de marzo"
 	else if day < 120
-		text = string(day - 89) + " de abril"
+		text = $"{day - 89} de abril"
 	else if day < 151
-		text = string(day - 119) + " de mayo"
+		text = $"{day - 119} de mayo"
 	else if day < 181
-		text = string(day - 150) + " de junio"
+		text = $"{day - 150} de junio"
 	else if day < 212
-		text = string(day - 180) + " de julio"
+		text = $"{day - 180} de julio"
 	else if day < 243
-		text = string(day - 211) + " de agosto"
+		text = $"{day - 211} de agosto"
 	else if day < 273
-		text = string(day - 242) + " de septiembre"
+		text = $"{day - 242} de septiembre"
 	else if day < 304
-		text = string(day - 272) + " de octubre"
+		text = $"{day - 272} de octubre"
 	else if day < 334
-		text = string(day - 303) + " de noviembre"
+		text = $"{day - 303} de noviembre"
 	else
-		text = string(day - 333) + " de diciembre"
+		text = $"{day - 333} de diciembre"
 	if anno
-		return text + ", " + string(1800 + floor(dia / 365))
+		return $"{text}, {1800 + floor(dia / 365)}"
 	else
 		return text
 }

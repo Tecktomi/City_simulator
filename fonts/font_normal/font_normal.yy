@@ -1,6 +1,6 @@
 {
   "$GMFont":"",
-  "%Name":"Font1",
+  "%Name":"font_normal",
   "AntiAlias":1,
   "applyKerning":0,
   "ascender":14,
@@ -283,7 +283,7 @@
   "last":0,
   "lineHeight":18,
   "maintainGms1Font":false,
-  "name":"Font1",
+  "name":"font_normal",
   "parent":{
     "name":"City_simulator",
     "path":"City_simulator.yyp",
@@ -299,10 +299,7 @@
   "sdfSpread":8,
   "size":12.0,
   "styleName":"Bold",
-  "textureGroupId":{
-    "name":"Default",
-    "path":"texturegroups/Default",
-  },
+  "textureGroupId":null,
   "TTFName":"",
   "usesSDF":false,
 }

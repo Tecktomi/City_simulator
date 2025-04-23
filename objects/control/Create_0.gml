@@ -500,7 +500,7 @@ debug = false
 		def_edificio_base("Pescadería", 5, 5, 200, 360, [1, 15, 17], [10, 5, 2], 6, 25, 10, false, true, true); def_edificio_servicio(); def_edificio_trabajo(true, 6, 25, 5,, 0.04)
 		def_edificio_base("Mina", 4, 3, 800, 720, [1, 15, 26], [20, 10, 10], 10, 25, 15, false); def_edificio_servicio(,,,,,,,,,, true, 10); def_edificio_trabajo(true, 8, 20, 5,, 0.04)
 		def_edificio_base("Capilla", 4, 3, 1100, 600, [1, 15, 26], [20, 5, 30], 10, 65); def_edificio_servicio(,, true,,, 12, 40); def_edificio_trabajo(true, 2, 60, 6, 1)
-		def_edificio_base("Hospicio", 4, 3, 1500, 1080, [1, 15, 24, 26], [20, 5, 5, 30], 15, 50); def_edificio_servicio(true,, true,,, 10, 30,, true, 20); def_edificio_trabajo(true, 5, 60, 8, 2)
+		def_edificio_base("Hospicio", 4, 3, 1500, 1080, [1, 15, 24, 26], [20, 5, 5, 30], 15, 50); def_edificio_servicio(true,, true,,, 6, 30,, true, 20); def_edificio_trabajo(true, 5, 60, 8, 2)
 		def_edificio_base("Albergue", 4, 3, 1300, 600, [1, 15, 26], [20, 5, 30], 12, 40,,,,,,, true, 10, 25); def_edificio_servicio(,, true,,, 10, 30,, true, 10); def_edificio_trabajo(true, 3, 50, 5, 1)
 		def_edificio_base("Escuela parroquial", 4, 3, 1300, 720, [1, 15, 26], [20, 5, 30], 12, 45); def_edificio_servicio(,, true, true, 1, 10, 35, 10); def_edificio_trabajo(true, 5, 60, 6, 2)
 		//20
@@ -888,7 +888,7 @@ debug = false
 	}
 #endregion
 #region setings
-	draw_set_font(Font1)
+	draw_set_font(font_normal)
 	sel_info = false
 	sel_edificio = null_edificio
 	sel_familia = null_familia
@@ -1023,6 +1023,11 @@ debug = false
 	for(a = 0; a < array_length(edificio_nombre) * 2; a++)
 		show[a] = false
 	show_noticia = -1
+	getstring = false
+	getstring_title = ""
+	getstring_default = ""
+	getstring_function = undefined
+	getstring_param = []
 	felicidad_total = 50
 	dinero = 20000
 	inversion_privada = 0

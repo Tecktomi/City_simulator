@@ -50,7 +50,7 @@ function add_persona(){
 			informado : false
 		}
 		if debug
-			show_debug_message(fecha(dia) + $" add_persona ({name(persona)})")
+			show_debug_message($"{fecha(dia)} add_persona ({name(persona)})")
 		array_push(null_edificio.trabajadores, persona)
 		array_push(personas, persona)
 		array_push(cumples[persona.cumple], persona)

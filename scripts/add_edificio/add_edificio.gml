@@ -1,9 +1,9 @@
 function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 	with control{
 		if debug
-			show_debug_message(fecha(dia) + $" add_edificio ({edificio_nombre[tipo]} {edificio_number[tipo]})")
+			show_debug_message($"{fecha(dia)} add_edificio ({edificio_nombre[tipo]} {edificio_number[tipo]})")
 		var edificio = {
-			nombre : edificio_nombre[tipo] + " " + string(++edificio_number[tipo]),
+			nombre : $"{edificio_nombre[tipo]} {++edificio_number[tipo]}",
 			familias : [null_familia],
 			trabajadores : [null_persona],
 			clientes : [null_persona],
@@ -124,6 +124,12 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			}
 			else if var_edificio_nombre = "Periódico"
 				array_push(edificio.array_complex, {a : -1, b : 0})
+			else if var_edificio_nombre = "Granja"
+				edificio.nombre = $"{edificio_nombre[tipo]} de {recurso_nombre[recurso_cultivo[edificio.modo]]} {edificio_number[tipo]}"
+			else if var_edificio_nombre = "Mina"
+				edificio.nombre = $"{edificio_nombre[tipo]} de {recurso_nombre[recurso_mineral[edificio.modo]]} {edificio_number[tipo]}"
+			else if var_edificio_nombre = "Rancho"
+				edificio.nombre = $"{edificio_nombre[tipo]} de {ganado_nombre[edificio.modo]} {edificio_number[tipo]}"
 			if var_edificio_nombre != "Muelle"
 				buscar_muelle_cercano(edificio)
 			else{

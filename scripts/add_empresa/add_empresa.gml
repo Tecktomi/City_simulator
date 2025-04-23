@@ -16,7 +16,7 @@ function add_empresa(inversion, nacional = false, persona = control.null_persona
 		if nacional{
 			persona.empresa = empresa
 			persona.familia.riqueza -= inversion
-			empresa.nombre = persona.apellido + " " + choose("Ldta.", "S.A.", "Hmns.", "Corp.", "Asociados")
+			empresa.nombre = $"{persona.apellido} {choose("Ldta.", "S.A.", "Hmns.", "Corp.", "Asociados")}"
 		}
 		else
 			empresa.nombre = gen_nombre_empresa()
