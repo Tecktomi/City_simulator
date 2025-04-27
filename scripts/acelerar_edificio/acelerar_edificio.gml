@@ -5,7 +5,13 @@ function acelerar_edificio(construccion = control.null_construccion){
 		y = construccion.y
 		var index = construccion.id, width = construccion.width, height = construccion.height, var_edificio_nombre = edificio_nombre[index]
 		var edificio = add_edificio(x, y, index, , construccion.rotado)
-		add_noticia("Edificio terminado", $"Se ha terminado de construir {edificio.nombre}")
+		if construccion.privado{
+			edificio.privado = true
+			edificio.empresa = construccion.empresa
+			array_push(edificio.empresa.edificios, edificio)
+		}
+		else
+			add_noticia("Edificio terminado", $"Se ha terminado de construir {edificio.nombre}")
 		if not edificio_es_costero[index] and var_edificio_nombre != "Rancho"{
 			var c = construccion.altura
 			world_update = true
@@ -33,9 +39,16 @@ function acelerar_edificio(construccion = control.null_construccion){
 					c += cultivo[index][# b, c]
 			edificio.eficiencia = c / width / height
 			edificio.modo = construccion.tipo
+			edificio.nombre = $"{edificio_nombre[edificio.tipo]} de {recurso_nombre[recurso_cultivo[edificio.modo]]} {edificio_number[edificio.tipo]}"
 		}
-		else if in(var_edificio_nombre, "Mina", "Rancho")
+		else if var_edificio_nombre = "Mina"{
 			edificio.modo = construccion.tipo
+			edificio.nombre = $"{edificio_nombre[edificio.tipo]} de {recurso_nombre[recurso_mineral[edificio.modo]]} {edificio_number[edificio.tipo]}"
+		}
+		else if var_edificio_nombre = "Rancho"{
+			edificio.modo = construccion.tipo
+			edificio.nombre = $"{edificio_nombre[edificio.tipo]} de {ganado_nombre[edificio.modo]} {edificio_number[edificio.tipo]}"
+		}
 		else if var_edificio_nombre = "Tejar"{
 			var c = 0
 			for(var a = x; a < x + width; a++)

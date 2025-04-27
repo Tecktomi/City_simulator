@@ -63,10 +63,12 @@ function destroy_edificio(edificio = control.null_edificio){
 			array_remove(almacenes[tipo], edificio)
 		array_remove(dia_trabajo[edificio.dia_factura], edificio, "eliminar edificio del dia de trabajo")
 		array_remove(edificio_count[tipo], edificio, "eliminar edificio del edificio_count")
-		if var_edificio_nombre = "Muelle"
+		if var_edificio_nombre = "Muelle"{
+			tratados_max--
 			for(var a = 0; a < array_length(edificios); a++)
 				if edificios[a].muelle_cercano = edificio
 					buscar_muelle_cercano(edificios[a])
+		}
 		for(var a = edificio.x; a < edificio.x + width; a++)
 			for(var b = edificio.y; b < edificio.y + height; b++)
 				array_set(bool_edificio[a], b, false)
@@ -98,7 +100,7 @@ function destroy_edificio(edificio = control.null_edificio){
 					if bool_edificio[a, b]{
 						var edificio_2 = id_edificio[a, b]
 						if edificio_es_casa[edificio_2.tipo]
-							edificio_2.vivienda_calidad = edificio_familias_calidad[edificio_2.tipo] + round((min(100, max(0, belleza[a, b])) - 50) / 10)
+							set_calidad_vivienda(edificio_2)
 					}
 				}
 		}

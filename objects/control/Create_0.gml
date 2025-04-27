@@ -152,19 +152,6 @@ debug = false
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
 	subministerio = -1
-	null_construccion = {
-		x : 0,
-		y : 0,
-		id : 0,
-		tipo : 0,
-		tiempo : 0,
-		altura : 0,
-		rotado : false,
-		width : 0,
-		height : 0
-	}
-	cola_construccion = [null_construccion]
-	array_delete(cola_construccion, 0, 1)
 	null_noticia = {
 		dia : 0,
 		titulo : "null_noticia",
@@ -273,7 +260,9 @@ debug = false
 #endregion
 //Recursos
 #region recursos
-	recurso_nombre = ["Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón", "Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche", "Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo", "Armas"]
+	recurso_nombre = [	"Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón",
+						"Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche",
+						"Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo", "Armas"]
 	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 4, 40]
 	recurso_anno = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60, 0]
 	recurso_current = []
@@ -375,7 +364,10 @@ debug = false
 		"Entrega entretenimiento e información a la gente que sepa leer",
 		"Evita que se produzcan incendios en la isla",
 		"Utiliza madera, níquel y acero para producir armas, es un edificio bastante peligroso",
-		"Toma el dinero de la gente y lo distribuye para mejorar la vida de todos"]
+		"Toma el dinero de la gente y lo distribuye para mejorar la vida de todos",
+		"Vivienda de altísima calidad, el objetivo de toda la sociedad es permitirle a sus dueños virir aquí",
+		"Vivienda urbana moderna, permite a varias familias convivir en vivendas pareadas",
+		"Bloque de casas organizadas para maximizar las familias por metro cuadrado a bajo costo"]
 	#region arreglos vacíos
 		edificio_nombre = []
 		edificio_width = []
@@ -516,7 +508,7 @@ debug = false
 		def_edificio_base("Quesería Artesanal", 5, 4, 2500, 720, [1, 15, 24, 26], [25, 10, 25, 40], 15, 40, 5, false,, true); def_edificio_servicio(); def_edificio_trabajo(true, 8, 40, 5,,, true, [19], [3], [23], [3], 0.5)
 		//30
 		def_edificio_base("Herrería", 5, 4, 3500, 1080, [1, 15, 24, 26], [25, 30, 20, 40], 20, 30, 15, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, 0.01, true, [1, 15], [2, 1], [24], [2], 0.5)
-		def_edificio_base("Vecindad", 3, 3, 1000, 720, [1, 15, 25, 26], [10, 10, 10, 30], 4,, 15, false,,,,,true, 8, 40, 5, 20); def_edificio_servicio(,,,,,,,, true, 25, true, 25); def_edificio_trabajo()
+		def_edificio_base("Conventillo", 3, 3, 1000, 720, [1, 15, 25, 26], [10, 10, 10, 30], 4,, 15, false,,,,,true, 10, 40, 5, 20); def_edificio_servicio(,,,,,,,, true, 25, true, 25); def_edificio_trabajo()
 		def_edificio_base("Toma", 1, 1,,,,,, 20, 5,,,,true ,, true, 1, 15); def_edificio_servicio(); def_edificio_trabajo()
 		def_edificio_base("Delincuente"); def_edificio_servicio(); def_edificio_trabajo(,,10,,, 0.05)
 		def_edificio_base("Comisaría", 4, 2, 900, 720, [1, 15, 26], [20, 25, 25], 12, 40); def_edificio_servicio(,,,,, 8); def_edificio_trabajo(true, 4, 40, 7,, 0.04)
@@ -533,9 +525,13 @@ debug = false
 		def_edificio_base("Oficina de Bomberos", 4, 4, 1400, 1200, [15, 26], [30, 50], 12); def_edificio_servicio(,,,,,,,, true, 50); def_edificio_trabajo(true, 5, 40, 4, 2, 0.03)
 		def_edificio_base("Armaría", 5, 4, 6000, 1095, [1, 15, 24, 26], [20, 30, 30, 40], 30, 20, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 8, 40, 8, 1, 0.05, true, [1, 14, 15], [1, 1, 1], [28], [1], 0.4)
 		def_edificio_base("Banco", 6, 4, 2000, 1095, [1, 15, 26], [20, 15, 10], 8, 70,, false); def_edificio_servicio(,,,,,,,,,, true, 20); def_edificio_trabajo(true, 4, 70, 13, 3)
+		def_edificio_base("Mansión", 3, 2, 1000, 720, [11, 15, 25, 26], [10, 10, 20, 30], 8, 90,, false,,,,,true, 2, 80, 40, 50); def_edificio_servicio(,,,,,,,, true, 10, true, 10); def_edificio_trabajo(true, 3, 50, 3, 1)
+		def_edificio_base("Departamentos", 5, 3, 1200, 1095, [15, 25, 26], [20, 10, 50], 6, 60, 20, false,,,,,true, 10, 50, 6, 100); def_edificio_servicio(,,,,,,,, true, 25, true, 25); def_edificio_trabajo()
+		def_edificio_base("Bloque Habitacional", 4, 4, 1500, 1440, [15, 25, 26], [20, 10, 40], 12,, 15, false,,,,,true, 24, 30, 3, 130); def_edificio_servicio(,,,,,,,, true, 30, true, 40); def_edificio_trabajo()
+		//50
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
-	edificio_categoria = [[8, 9, 10, 18, 31], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35, 43, 46], [13, 20, 22, 41, 42, 44], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45]]
+	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35, 43, 46], [13, 20, 22, 41, 42, 44], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45]]
 	edificio_color = []
 	for(a = 0; a < array_length(edificio_nombre); a++){
 		var flag = false
@@ -658,6 +654,8 @@ debug = false
 	null_persona.escuela = null_edificio
 	null_persona.medico = null_edificio
 	null_persona.ladron = null_edificio
+#endregion
+#region Empresas
 	null_empresa = {
 		jefe : null_persona,
 		dinero : 0,
@@ -667,7 +665,8 @@ debug = false
 		quiebra : false,
 		dia_factura : irandom(27),
 		terreno : [{a : 0, b : 0}],
-		ventas : []
+		ventas : [],
+		construcciones : undefined
 	}
 	array_pop(null_empresa.edificios)
 	array_pop(null_empresa.terreno)
@@ -679,6 +678,11 @@ debug = false
 		array_pop(dia_empresas[a])
 	}
 	empresa_comprado = null_empresa
+	null_construccion = add_construccion(true)
+	null_empresa.construcciones = [null_construccion]
+	array_pop(null_empresa.construcciones)
+	cola_construccion = [null_construccion]
+	array_pop(cola_construccion)
 	null_venta = {
 		edificio : null_edificio,
 		precio : 0,
@@ -774,7 +778,8 @@ debug = false
 	a = ds_grid_get_max(altura, 0, 0, xsize, ysize)
 	ds_grid_multiply_region(altura, 0, 0, xsize, ysize, 1 / a)
 	//Matriz del mundo
-	var mar_checked, land_checked, land_matrix
+	var mar_checked, land_checked, land_matrix, time = current_time, mares = [[{a : 0, b : 0}]], prev_mar = mares[0], prev_mar_bool = true, temp_mar
+	array_pop(mares[0])
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
 			var c = altura[# a, b]
@@ -793,12 +798,43 @@ debug = false
 				bosque_alpha[a, b] = 0.5 + bosque_madera[a, b] / 400
 				bosque_max[a, b] = bosque_madera[a, b]
 			}
-			mar[a, b] = c < 0.5
+			mar[a, b] = false
+			if c < 0.5{
+				if not prev_mar_bool{
+					if a > 0 and mar[a - 1, b]
+						prev_mar = temp_mar[a - 1, b]
+					else{
+						prev_mar = [{a : a, b : b}]
+						array_push(mares, prev_mar)
+					}
+				}
+				else if a > 0 and mar[a - 1, b] and temp_mar[a - 1, b] != prev_mar{
+					if array_length(temp_mar[a - 1, b]) > array_length(prev_mar)
+						var new_array = temp_mar[a - 1, b]
+					else{
+						new_array = prev_mar
+						prev_mar = temp_mar[a - 1, b]
+					}
+					while array_length(prev_mar) > 0{
+						var complex = array_shift(prev_mar)
+						temp_mar[complex.a, complex.b] = new_array
+						array_push(new_array, complex)
+					}
+					array_remove(mares, prev_mar)
+					prev_mar = new_array
+				}
+				array_set(mar[a], b, true)
+				temp_mar[a, b] = prev_mar
+				array_push(prev_mar, {a : a, b : b})
+				prev_mar_bool = true
+			}
+			else
+				prev_mar_bool = false
 			#region altura color
 			if mar[a, b]
 				altura_color[a, b] = make_color_rgb(63 * c, 63 * c, 255 * c)
 			else if c < 0.6
-				altura_color[a, b] = make_color_rgb(255 / 0.6 * (1.1 - c), 255 / 0.6 * (1.1 - c), 127)
+				altura_color[a, b] = make_color_rgb(255 / 0.65 * (1.1 - c), 255 / 0.65 * (1.1 - c), 127)
 			else
 				altura_color[a, b] = make_color_rgb(31 + 96 * c, 127, 31 + 96 * c)
 			#endregion
@@ -827,42 +863,16 @@ debug = false
 			chunk[a, b] = spr_arbol
 			chunk_update[a, b] = true
 		}
-	var not_mar = [], yes_mar = [{a : 0, b : 0}], yes_land = [{a : floor(xsize / 2), b : floor(ysize / 2)}]
-	array_set(mar_checked[0], 0, true)
+	for(a = 1; a < array_length(mares); a++)
+		for(b = 0; b < array_length(mares[a]); b++){
+			var complex = mares[a, b], c = complex.a, d = complex.b, e = 0.45 + altura[# c, d] / 10
+			array_set(mar[c], d, false)
+			ds_grid_set(altura, c, d, e)
+			array_set(altura_color[c], d, make_color_rgb(255 / 0.65 * (1.1 - e), 255 / 0.65 * (1.1 - e), 127))
+		}
+	var yes_land = [{a : floor(xsize / 2), b : floor(ysize / 2)}]
 	array_set(land_checked[floor(xsize / 2)], floor(ysize / 2), true)
 	array_set(land_matrix[floor(xsize / 2)], floor(ysize / 2), true)
-	while array_length(yes_mar) > 0{
-		var complex = array_shift(yes_mar)
-		a = complex.a
-		b = complex.b
-		var a1 = max(0, a - 1), b1 = max(0, b - 1), a2 = min(xsize - 1, a + 1), b2 = min(ysize - 1, b + 1)
-		if mar[a1, b] and not mar_checked[a1, b]{
-			array_set(mar_checked[a1], b, true)
-			array_push(yes_mar, {a : a1, b : b})
-		}
-		if mar[a, b1] and not mar_checked[a, b1]{
-			array_set(mar_checked[a], b1, true)
-			array_push(yes_mar, {a : a, b : b1})
-		}
-		if mar[a, b2] and not mar_checked[a, b2]{
-			array_set(mar_checked[a], b2, true)
-			array_push(yes_mar, {a : a, b : b2})
-		}
-		if mar[a2, b] and not mar_checked[a2, b]{
-			array_set(mar_checked[a2], b, true)
-			array_push(yes_mar, {a : a2, b : b})
-		}
-	}
-	for(a = 0; a < xsize; a++)
-		for(b = 0; b < ysize; b++)
-			if mar[a, b] and not mar_checked[a, b]
-				array_push(not_mar, {a : a, b : b})
-	while array_length(not_mar) > 0{
-		var complex = array_shift(not_mar)
-		array_set(mar[complex.a], complex.b, false)
-		ds_grid_set(altura, complex.a, complex.b, 0.5)
-		array_set(altura_color[complex.a], complex.b, make_color_rgb(255, 255 ,127))
-	}
 	while array_length(yes_land) > 0{
 		var complex = array_shift(yes_land)
 		a = complex.a
@@ -886,6 +896,8 @@ debug = false
 			array_push(yes_land, {a : a, b : b2})
 		}
 	}
+	if debug
+		show_debug_message($"{current_time - time} milisegundos")
 #endregion
 #region setings
 	draw_set_font(font_normal)
@@ -982,17 +994,18 @@ debug = false
 	impuesto_minero = 0.2
 	impuesto_petrolifero = 0.2
 	impuesto_trabajador = 0
+	valor_terreno = 10
 	agua_input = 0
 	agua_output = 0
 	energia_input = 0
 	energia_output = 0
 	for(a = 0; a < 12; a++){
-		mes_enfermos[a] = 0
+		mes_muertos_enfermos[a] = 0
 		mes_emigrantes[a]  = 0
 		mes_muertos_viejos[a] = 0
 		mes_muertos_accidentes[a] = 0
 		mes_muertos_asesinados[a] = 0
-		mes_inanicion[a] = 0
+		mes_muertos_inanicion[a] = 0
 		mes_inmigrantes[a] = 0
 		mes_nacimientos[a] = 0
 		mes_renta[a] = 0
@@ -1009,6 +1022,8 @@ debug = false
 		mes_privatizacion[a] = 0
 		mes_impuestos[a] = 0
 		mes_accidentes[a] = 0
+		mes_entrada_micelaneo[a] = 0
+		mes_salida_micelaneo[a] = 0
 		for(b = 0; b < array_length(recurso_nombre); b++){
 			mes_exportaciones_recurso[a, b] = 0
 			mes_exportaciones_recurso_num[a, b] = 0
@@ -1026,7 +1041,7 @@ debug = false
 	getstring = false
 	getstring_title = ""
 	getstring_default = ""
-	getstring_function = undefined
+	getstring_function = function(a, b){}
 	getstring_param = []
 	felicidad_total = 50
 	dinero = 20000
@@ -1071,7 +1086,7 @@ debug = false
 	min_camy = max(0, floor((ypos / tile_height - (xpos + room_width) / tile_width) / 2))
 	max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
 	max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
-	var coord, checked = [], c = edificios[0].x - 15, d = edificios[0].x + 15, e = edificios[0].y - 15, f = edificios[0].y + 15
+	var coord, checked = [], c = max(0, edificios[0].x - 15), d = min(xsize - 1, edificios[0].x + 15), e = max(0, edificios[0].y - 15), f = min(ysize - 1, edificios[0].y + 15)
 	for(a = c; a < d; a++)
 		for(b = e; b < f; b++){
 			coord = {x : a, y : b}

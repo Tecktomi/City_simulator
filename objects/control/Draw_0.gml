@@ -16,7 +16,7 @@ if menu_principal{
 		}
 		pos += 10	
 	}
-	if draw_boton(room_width / 2, pos, $"Fecha inicial: {1800  + floor(dia / 365)}", true,,,,false, true)
+	if draw_boton(room_width / 2, pos, $"Fecha inicial: {1800  + floor(dia / 365)}", true,,,,false,, true)
 		if mouse_lastbutton = mb_right
 			dia = max(0, dia - 365)
 		else
@@ -435,8 +435,8 @@ else{
 					temp_muertos_asesinados += mes_muertos_asesinados[a]
 					temp_inmigrados += mes_inmigrantes[a]
 					temp_emigrados += mes_emigrantes[a]
-					temp_inanicion += mes_inanicion[a]
-					temp_enfermos += mes_enfermos[a]
+					temp_inanicion += mes_muertos_inanicion[a]
+					temp_enfermos += mes_muertos_enfermos[a]
 				}
 				var temp_total = temp_nacimientos + temp_inmigrados - temp_muertos_viejos - temp_muertos_accidentes - temp_muertos_asesinados - temp_emigrados - temp_inanicion - temp_enfermos
 				draw_text_pos(110, pos, $"Población: {array_length(personas)}")
@@ -653,7 +653,7 @@ else{
 					}
 				draw_text_pos(110, pos, $"Satisfación sanitaria: {floor(fel_sal / array_length(personas))}")
 				for(var a = 0; a < 12; a++){
-					temp_enfermos += mes_enfermos[a]
+					temp_enfermos += mes_muertos_enfermos[a]
 					temp_accidentes += mes_accidentes[a]
 				}
 				draw_text_pos(110, pos, $"{temp_enfermos} muerte{temp_enfermos = 1 ? "" : "s"} por enfermedad el último año")
@@ -727,7 +727,7 @@ else{
 			}
 			//Ministerio de Economía
 			else if ministerio = 5{
-				var temp_array, temp_grid, temp_text_array, count, maxi, temp_exportaciones, temp_exportaciones_id, temp_importaciones, temp_importaciones_id, temp_compra, temp_compra_id, temp_venta, temp_venta_id
+				var temp_array, temp_grid, temp_text_array, count, maxi, temp_exportaciones, temp_exportaciones_id, temp_importaciones, temp_importaciones_id, temp_compra, temp_compra_id, temp_venta, temp_venta_id, temp_entrada_micelaneo, temp_salida_micelaneo
 				#region Definición de variables
 					temp_grid[0] = mes_renta
 					temp_grid[1] = mes_tarifas
@@ -742,6 +742,8 @@ else{
 					temp_grid[10] = mes_privatizacion
 					temp_grid[11] = mes_estatizacion
 					temp_grid[12] = mes_impuestos
+					temp_grid[13] = mes_entrada_micelaneo
+					temp_grid[14] = mes_salida_micelaneo
 					temp_text_array[0] = "Renta"
 					temp_text_array[1] = "Tarifas"
 					temp_text_array[2] = "Herencia"
@@ -755,8 +757,10 @@ else{
 					temp_text_array[10] = "Privatización"
 					temp_text_array[11] = "Estatización"
 					temp_text_array[12] = "Impuestos"
+					temp_text_array[13] = "Otros"
+					temp_text_array[14] = "Otros"
 				#endregion
-				for(var a = 0; a < 13; a++){
+				for(var a = 0; a < 15; a++){
 					count[a] = 0
 					maxi[a] = 0
 				}
@@ -786,12 +790,12 @@ else{
 						temp_venta_id[b] += mes_venta_recurso_num[a, b]
 					}
 				}
-				for(var a = 0; a < 13; a++){
+				for(var a = 0; a < 15; a++){
 					count[a] = round(count[a])
 					maxi[a] = round(maxi[a])
 				}
 				#region Ingresos
-				if draw_menu(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12]}", 0){
+				if draw_menu(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] + count[13]}", 0){
 					draw_text_pos(120, pos, $"{temp_text_array[0]}: ${count[0]}")
 					draw_text_pos(120, pos, $"{temp_text_array[1]}: ${count[1]}")
 					draw_text_pos(120, pos, $"{temp_text_array[2]}: ${count[2]}")
@@ -805,8 +809,9 @@ else{
 								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_venta[c]} ({temp_venta_id[c]})")
 					draw_text_pos(120, pos, $"{temp_text_array[10]}: ${count[10]}")
 					draw_text_pos(120, pos, $"{temp_text_array[12]}: ${count[12]}")
+					draw_text_pos(120, pos, $"{temp_text_array[13]}: ${count[13]}")
 				}
-				if draw_menu(110, pos, $"Pérdidas: ${count[4] + count[5] + count[6] + count[7] + count[8] + count[11]}", 2){
+				if draw_menu(110, pos, $"Pérdidas: ${count[4] + count[5] + count[6] + count[7] + count[8] + count[11] + count[14]}", 2){
 					draw_text_pos(120, pos, $"{temp_text_array[4]}: ${count[4]}")
 					draw_text_pos(120, pos, $"{temp_text_array[5]}: ${count[5]}")
 					draw_text_pos(120, pos, $"{temp_text_array[6]}: ${count[6]}")
@@ -819,8 +824,9 @@ else{
 							if temp_compra[c] > 0
 								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_compra[c]} ({temp_compra_id[c]})")
 					draw_text_pos(120, pos, $"{temp_text_array[11]}: ${count[11]}")
+					draw_text_pos(120, pos, $"{temp_text_array[14]}: ${count[14]}")
 				}
-				draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11]}")
+				draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] + count[13] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11] - count[14]}")
 				if draw_menu(110, pos, $"{array_length(encargos)} encargo{array_length(encargos) = 1 ? "" : "s"}", 4)
 					for(var a = 0; a < array_length(encargos); a++){
 						var encargo = encargos[a]
@@ -1184,7 +1190,7 @@ else{
 						draw_set_valign(fa_bottom)
 						draw_text(100, room_height - 100, $"{ley_eneabled[a] ? "Prohibir" : "Permitir"} {ley_nombre[a]}    {ley_economia[a] = 3 ? "" : politica_economia_nombre[ley_economia[a]] + "    "}{ley_sociocultural[a] = 3 ? "" : politica_sociocultural_nombre[ley_sociocultural[a]]}\n{ley_descripcion[a]} (${ley_precio[a]}){ley_tiempo[a] = 0 ? "" : "\nDebes esperar " + string(ley_tiempo[a]) + " meses para cambiar esta ley de nuevo"}")
 						draw_set_valign(fa_top)
-					}, a) and ley_tiempo[a] = 0{
+					}, a) and ley_tiempo[a] = 0 and dinero >= ley_precio[a]{
 						dinero -= ley_precio[a]
 						mes_mantenimiento[current_mes] += ley_precio[a]
 						if not debug
@@ -1469,7 +1475,7 @@ else{
 			var coste_terreno = 0, coste_deforestar = 0, coste_escombros = 0
 			for(var a = mx; a < c; a++)
 				for(var b = my; b < d; b++){
-					coste_terreno += 10 * zona_privada[a, b]
+					coste_terreno += valor_terreno * zona_privada[a, b]
 					coste_deforestar += 10 * bosque[a, b]
 					coste_escombros += 25 * escombros[a, b]
 				}
@@ -1492,41 +1498,7 @@ else{
 		if mouse_check_button_pressed(mb_left){
 			mouse_clear(mb_left)
 			if flag{
-				var next_build = {
-					x : mx,
-					y : my,
-					id : build_index,
-					tipo : build_type,
-					tiempo : temp_tiempo,
-					altura : temp_altura,
-					rotado : rotado,
-					width : width,
-					height : height
-				}
-				for(var a = mx; a < mx + width; a++)
-					for(var b = my; b < my + height; b++){
-						array_set(construccion_reservada[a], b, true)
-						if zona_privada[a, b]{
-							zona_empresa[a, b].dinero += 10
-							array_set(zona_privada[a], b, false)
-							array_set(zona_empresa[a], b, null_empresa)
-						}
-						if bool_edificio[a, b] and id_edificio[a, b].tipo = 32
-							destroy_edificio(id_edificio[a, b])
-						if escombros[a, b]{
-							array_set(escombros[a], b, false)
-							array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
-							world_update = true
-						}
-						array_set(draw_construccion[a], b, next_build)
-					}
-				if array_length(cola_construccion) = 0 and ley_eneabled[6]
-					for(var a = 0; a < array_length(edificio_count[20]); a++)
-						set_paro(false, edificio_count[20, a])
-				for(var a = 0; a < array_length(edificio_recursos_id[build_index]); a++)
-					recurso_construccion[edificio_recursos_id[build_index, a]] += edificio_recursos_num[build_index, a]
-				array_push(cola_construccion, next_build)
-				array_set(bool_draw_construccion[mx], my, true)
+				add_construccion(, mx, my, build_index, build_type, temp_tiempo, temp_altura, rotado, width, height, temp_precio)
 				build_sel = keyboard_check(vk_lshift)
 				dinero -= temp_precio
 				mes_construccion[current_mes] += temp_precio
@@ -1544,7 +1516,9 @@ else{
 	//Seleccionar edificio
 	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-	if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build{
+	if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build and not getstring{
+		if debug
+			draw_text(0, 0, $"{mx}, {my}: {altura[# mx, my]}")
 		if bool_edificio[mx, my] or construccion_reservada[mx, my]
 			cursor = cr_handpoint
 		if mouse_check_button_pressed(mb_left){
@@ -1733,7 +1707,7 @@ else{
 							if draw_boton(room_width - 40, pos, $"Familia {familia.padre.apellido} {familias.madre.apellido}")
 								select(, familia)
 						}
-					if edificio_nombre[sel_edificio.tipo] != "Toma" and draw_boton(room_width - 20, pos, sel_edificio.vivienda_renta = 0 ? "Generar tarifas" : "Subvencionar vivienda"){
+					if not sel_edificio.privado and edificio_nombre[sel_edificio.tipo] != "Toma" and draw_boton(room_width - 20, pos, sel_edificio.vivienda_renta = 0 ? "Generar tarifas" : "Subvencionar vivienda"){
 						if sel_edificio.vivienda_renta = 0
 							for(var a = 0; a < array_length(sel_edificio.familias); a++){
 								var familia = sel_edificio.familias[a]
@@ -2132,28 +2106,46 @@ else{
 			var index = sel_construccion.id, width = sel_construccion.width, height = sel_construccion.height
 			draw_text_pos(room_width, pos, edificio_nombre[index])
 			draw_text_pos(room_width - 20, pos, $"Progreso: {floor(100 * (edificio_construccion_tiempo[index] - sel_construccion.tiempo) / edificio_construccion_tiempo[index])}%")
-			if draw_boton(room_width - 20, pos, $"Terminar edificio ${edificio_precio[index]}") and dinero >= edificio_precio[index]{
-				dinero -= edificio_precio[index]
-				mes_construccion[current_mes] += edificio_precio[index]
-				acelerar_edificio(sel_construccion)
+			if not sel_construccion.privado{
+				if cola_construccion[0] != sel_construccion and draw_boton(room_width - 20, pos, "Priorizar construcción"){
+					array_remove(cola_construccion, sel_construccion, "Priorizar una construcción")
+					array_insert(cola_construccion, 0, sel_construccion)
+				}
+				if draw_boton(room_width - 20, pos, $"Terminar edificio ${edificio_precio[index]}") and dinero >= edificio_precio[index]{
+					dinero -= edificio_precio[index]
+					mes_construccion[current_mes] += edificio_precio[index]
+					acelerar_edificio(sel_construccion)
+				}
+				if draw_boton(room_width - 20, pos, "Cancelar construcción"){
+					for(var a = x; a < x + width; a++)
+						for(var b = y; b < y + height; b++){
+							array_set(draw_construccion[a], b, null_construccion)
+							array_set(construccion_reservada[a], b, false)
+						}
+					array_set(bool_draw_construccion[x], y, false)
+					array_remove(cola_construccion, sel_construccion)
+					if array_length(cola_construccion) = 0 and ley_eneabled[6]
+						for(var a = 0; a < array_length(edificio_count[20]); a++){
+							var edificio = edificio_count[20, a]
+							set_paro(true, edificio)
+							while array_length(edificio.trabajadores) > 0
+								cambiar_trabajo(edificio.trabajadores[0], null_edificio)
+						}
+					dinero += sel_construccion.precio
+					mes_entrada_micelaneo[current_mes] += sel_construccion.precio
+					sel_construccion = null_construccion
+					sel_info = false
+				}
 			}
-			if draw_boton(room_width - 20, pos, "Cancelar construcción"){
-				for(var a = x; a < x + width; a++)
-					for(var b = y; b < y + height; b++){
-						array_set(draw_construccion[a], b, null_construccion)
-						array_set(construccion_reservada[a], b, false)
-					}
-				array_set(bool_draw_construccion[x], y, false)
-				array_remove(cola_construccion, sel_construccion)
-				if array_length(cola_construccion) = 0 and ley_eneabled[6]
-					for(var a = 0; a < array_length(edificio_count[20]); a++){
-						var edificio = edificio_count[20, a]
-						set_paro(true, edificio)
-						while array_length(edificio.trabajadores) > 0
-							cambiar_trabajo(edificio.trabajadores[0], null_edificio)
-					}
-				sel_construccion = null_construccion
-				sel_info = false
+			else{
+				draw_text_pos(room_width - 20, pos, "PRIVADO")
+				if draw_boton(room_width - 20, pos, sel_construccion.empresa.nombre){
+					sel_info = false
+					sel_build = true
+					ministerio = 7
+					close_show()
+					show[array_get_index(empresas, sel_construccion.empresa)] = true
+				}
 			}
 		}
 		draw_set_halign(fa_left)
@@ -2337,14 +2329,14 @@ else{
 			}
 			//Eventos mensuales
 			if dia_mes(dia) = 0{
-				mes_enfermos[current_mes] = 0
+				mes_muertos_enfermos[current_mes] = 0
 				mes_emigrantes[current_mes] = 0
 				mes_muertos_viejos[current_mes] = 0
 				mes_muertos_accidentes[current_mes] = 0
 				mes_muertos_asesinados[current_mes] = 0
 				mes_inmigrantes[current_mes] =0
 				mes_nacimientos[current_mes] = 0
-				mes_inanicion[current_mes] = 0
+				mes_muertos_inanicion[current_mes] = 0
 				mes_renta[current_mes] = 0
 				mes_mantenimiento[current_mes] = 0
 				mes_sueldos[current_mes] = 0
@@ -2359,6 +2351,8 @@ else{
 				mes_estatizacion[current_mes] = 0
 				mes_impuestos[current_mes] = 0
 				mes_accidentes[current_mes] = 0
+				mes_entrada_micelaneo[current_mes] = 0
+				mes_salida_micelaneo[current_mes] = 0
 				for(var a = 0; a < array_length(recurso_nombre); a++){
 					array_set(mes_exportaciones_recurso[current_mes], a, 0)
 					array_set(mes_exportaciones_recurso_num[current_mes], a, 0)
@@ -3016,6 +3010,26 @@ else{
 						}
 					}
 				}
+				//Construcción
+				if array_length(empresa.terreno) > 0{
+					var terreno = array_pick(empresa.terreno)
+					mx = terreno.a
+					my = terreno.b
+					while zona_empresa[mx - 1, my] = empresa
+						mx--
+					while zona_empresa[mx, my - 1] = empresa
+						my--
+					var index = irandom_range(3, array_length(edificio_nombre) - 1), temp_precio = edificio_precio[index]
+					if not edificio_estatal[index] and floor(dia / 365) >= edificio_anno[index] and empresa.dinero > temp_precio and edificio_valid_place(mx, my, index, false, true, empresa){
+						empresa.dinero -= temp_precio
+						dinero_privado -= temp_precio
+						var temp_altura = 0, width = edificio_width[index], height = edificio_height[index]
+						for(var b = mx; b < mx + width; b++)
+							for(var c = my; c < my + height; c++)
+								temp_altura += altura[# b, c]
+						array_push(empresa.construcciones, add_construccion(, mx, my, index, 0, edificio_construccion_tiempo[index], temp_altura / width / height, false, width, height, temp_precio, true, empresa))
+					}
+				}
 				//Impuestos
 				var b = impuesto_empresa * array_length(empresa.edificios) + impuesto_empresa_fijo
 				empresa.dinero -= b
@@ -3531,15 +3545,14 @@ else{
 									c = edificio.almacen[temp_inputs[d]] * temp_inputs_2[d]
 									e = d
 								}
-							if e != -1{
-								b = min(c, round(edificio.trabajo_mes * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]))
+							b = min(c, round(edificio.trabajo_mes * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index]))
+							if e != -1
 								edificio.almacen[temp_inputs[e]] -= ceil(b / temp_inputs_2[e])
-								for(var d = 0; d < array_length(temp_inputs); d++){
-									c = temp_inputs[d]
-									edificio.ganancia -= round(recurso_precio[c] * (edificio.almacen[c] + edificio.pedido[c] - 100))
-									add_encargo(c, edificio.almacen[c] + edificio.pedido[c] - 100, edificio)
-									edificio.pedido[c] = 100 - edificio.almacen[c]
-								}
+							for(var d = 0; d < array_length(temp_inputs); d++){
+								c = temp_inputs[d]
+								edificio.ganancia -= round(recurso_precio[c] * (edificio.almacen[c] + edificio.pedido[c] - 100))
+								add_encargo(c, edificio.almacen[c] + edificio.pedido[c] - 100, edificio)
+								edificio.pedido[c] = 100 - edificio.almacen[c]
 							}
 							edificio.count = b
 							energia_input += b
@@ -3729,13 +3742,13 @@ else{
 								flag = destroy_persona(familia.padre,, "Padre muerto de inanicion")
 								if exigencia_pedida[2]
 									fallar_exigencia(2)
-								mes_inanicion[current_mes] ++
+								mes_muertos_inanicion[current_mes] ++
 							}
 							if not flag and familia.madre != null_persona{
 								flag = destroy_persona(familia.madre,, "Madre muerta de inanicion")
 								if exigencia_pedida[2]
 									fallar_exigencia(2)
-								mes_inanicion[current_mes]++
+								mes_muertos_inanicion[current_mes]++
 							}
 							if not flag
 								for(var c = 0; not flag and c < array_length(familia.hijos); c++)
@@ -3743,7 +3756,7 @@ else{
 										flag = destroy_persona(familia.hijos[c],, "Hijo muerto de inanicion")
 										if exigencia_pedida[2]
 											fallar_exigencia(2)
-										mes_inanicion[current_mes]++
+										mes_muertos_inanicion[current_mes]++
 										c--
 									}
 							if flag{
@@ -3797,7 +3810,7 @@ else{
 								temp_text  += name(edificio.clientes[c]) + ", "
 							show_debug_message(temp_text + "]")
 							destroy_persona(persona,, $"Paciente muerto ({edificio.nombre})")
-							mes_enfermos[current_mes]++
+							mes_muertos_enfermos[current_mes]++
 							b--
 						}
 						else if brandom(){

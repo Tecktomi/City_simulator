@@ -55,7 +55,7 @@ function gen_apellido(idioma = 0){
 		return choose("Müler", "Schimdt", "Schneider", "Fischer", "Weber", "Meyer", "Wagner", "Becker", "Hoffmann", "Schäfer")
 	else if idioma = 5
 		return choose("Ivanov", "Petrov", "Sokolov", "Morozov", "Smirnov", "Volkov", "Kalashnikov")
-	else if idioma = 5
+	else if idioma = 6
 		return choose("Li", "Wang", "Zhang", "Chen", "Yang", "Zhao", "Wu", "Sun")
 }
 function gen_nombre_empresa(){

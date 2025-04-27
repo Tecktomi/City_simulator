@@ -9,10 +9,12 @@ function add_empresa(inversion, nacional = false, persona = control.null_persona
 			quiebra : false,
 			dia_factura : irandom(27),
 			terreno : [{a : 0, b : 0}],
-			ventas : [null_venta]
+			ventas : [null_venta],
+			construcciones : [null_construccion]
 		}
 		array_pop(empresa.terreno)
 		array_pop(empresa.ventas)
+		array_pop(empresa.construcciones)
 		if nacional{
 			persona.empresa = empresa
 			persona.familia.riqueza -= inversion

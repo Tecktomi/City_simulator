@@ -9,13 +9,30 @@ function year_history(anno){
 			}
 		//Paises que dejan de existir
 		for(var a = 0; a < array_length(pais_current); a++){
-			var d = pais_current[a]
+			var d = pais_current[a], text = ""
 			if pais_fin[d] > 0 and anno >= pais_fin[d]{
-				for(var b = 0; b < array_length(recurso_nombre); b++)
-					for(var c = 0; c > array_length(recurso_tratados_venta[b]); c++)
-						if recurso_tratados_venta[b, c].pais = d
+				for(var b = 0; b < array_length(recurso_nombre); b++){
+					for(var c = 0; c < array_length(recurso_tratados_venta[b]); c++){
+						var tratado = recurso_tratados_venta[b, c]
+						if tratado.pais = d{
+							text += $"\nVender {tratado.cantidad} de {recurso_nombre[tratado.recurso]}"
 							array_delete(recurso_tratados_venta[b], c--, 1)
-				add_noticia("País destruido", $"Se han perdido las relaciones diplomáticas con {pais_nombre[d]}")
+							tratados_num--
+						}
+					}
+					for(var c = 0; c < array_length(recurso_tratados_compra[b]); c++){
+						var tratado = recurso_tratados_compra[b, c]
+						if tratado.pais = d{
+							text += $"\nComprar {tratado.cantidad} de {recurso_nombre[tratado.recurso]}"
+							array_delete(recurso_tratados_compra[b], c--, 1)
+							tratados_num--
+						}
+					}
+				}
+				for(var b = 0; b < array_length(tratados_ofertas); b++)
+					if tratados_ofertas[b].pais = d
+						array_delete(tratados_ofertas, b--, 1)
+				add_noticia("País destruido", $"Se han perdido las relaciones diplomáticas con {pais_nombre[d]}{text = "" ? "" : "\nTratados perdidos:" + text}")
 				array_delete(pais_current, a--, 1)
 			}
 		}

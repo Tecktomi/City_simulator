@@ -124,15 +124,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			}
 			else if var_edificio_nombre = "Periódico"
 				array_push(edificio.array_complex, {a : -1, b : 0})
-			else if var_edificio_nombre = "Granja"
-				edificio.nombre = $"{edificio_nombre[tipo]} de {recurso_nombre[recurso_cultivo[edificio.modo]]} {edificio_number[tipo]}"
-			else if var_edificio_nombre = "Mina"
-				edificio.nombre = $"{edificio_nombre[tipo]} de {recurso_nombre[recurso_mineral[edificio.modo]]} {edificio_number[tipo]}"
-			else if var_edificio_nombre = "Rancho"
-				edificio.nombre = $"{edificio_nombre[tipo]} de {ganado_nombre[edificio.modo]} {edificio_number[tipo]}"
 			if var_edificio_nombre != "Muelle"
 				buscar_muelle_cercano(edificio)
 			else{
+				tratados_max++
 				for(var a = 0; a < array_length(edificios); a++){
 					var edificio_2 = edificios[a]
 					if edificio_2.distancia_muelle_cercano = 0
@@ -194,7 +189,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 						if bool_edificio[a, b]{
 							var edificio_2 = id_edificio[a, b]
 							if edificio_es_casa[edificio_2.tipo]
-								edificio_2.vivienda_calidad = edificio_familias_calidad[edificio_2.tipo] + round((min(100, max(0, belleza[a, b])) - 50) / 10)
+								set_calidad_vivienda(edificio_2)
 						}
 					}
 			}
