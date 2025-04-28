@@ -1328,11 +1328,11 @@ else{
 		}
 		draw_set_color(make_color_hsv(edificio_color[build_index], 255, 255))
 		draw_set_alpha(0.5)
-		if var_edificio_nombre != "Granja"
+		if not edificio_resize[build_index]
 			draw_rombo_coord(mx, my, width, height, false)
 		//Calcular la eficiencia de las granjas
 		var flag = true
-		if var_edificio_nombre = "Granja"{
+		if edificio_plano[build_index]{
 			if mouse_check_button_pressed(mb_left){
 				build_x = mx
 				build_y = my
@@ -1346,22 +1346,55 @@ else{
 			draw_rombo_coord(mx, my, width, height, false)
 			draw_set_alpha(1)
 			draw_set_color(c_white)
-			var c = 0
-			for(var a = mx; a < mx + width; a++)
-				for(var b = my; b < my + height; b++)
-					if a >= mx + 3 or b >= my + 3
-						c += cultivo[build_type][# a, b]
-			if c = 0{
-				flag = false
-				text += "Arrastra para agrandar la granja\n"
+			if var_edificio_nombre = "Granja"{
+				var c = 0
+				for(var a = mx; a < mx + width; a++)
+					for(var b = my; b < my + height; b++)
+						if a >= mx + 3 or b >= my + 3
+							c += cultivo[build_type][# a, b]
+				if c = 0{
+					flag = false
+					text += "Arrastra para agrandar la granja\n"
+				}
+				else{
+					text += $"{width * height - 9} terreno cultibable\nEficiencia: {floor(c * 100 / (width * height - 9))}%\n"
+					temp_tiempo += 5 * (width * height - 9)
+				}
+				if not keyboard_check(vk_lcontrol){
+					if mouse_wheel_up()
+						build_type = (build_type + 1) mod array_length(recurso_cultivo)
+					if mouse_wheel_down()
+						build_type = (build_type + array_length(recurso_cultivo) - 1) mod array_length(recurso_cultivo)
+				}
 			}
-			else
-				text += $"{width * height - 9} terreno cultibable\nEficiencia: {floor(c * 100 / (width * height - 9))}%\n"
-			if not keyboard_check(vk_lcontrol){
-				if mouse_wheel_up()
-					build_type = (build_type + 1) mod array_length(recurso_cultivo)
-				if mouse_wheel_down()
-					build_type = (build_type + array_length(recurso_cultivo) - 1) mod array_length(recurso_cultivo)
+			else if var_edificio_nombre = "Rancho"{
+				for(var a = 0; a < array_length(ganado_nombre); a++)
+					draw_text(0, a * 20, (build_type = a ? ">" : "") + ganado_nombre[a])
+				var c = 0
+				for(var a = mx; a < mx + width; a++)
+					for(var b = my; b < my + height; b++)
+						if a >= mx + 3 or b >= my + 3
+							c += altura[# a, b] > 0.6
+				if width = 4 and height = 4{
+					flag = false
+					text += "Arrastra para agrandar el rancho\n"
+				}
+				else{
+					if c = 0{
+						flag = false
+						text += "Requiere terreno con pasto\n"
+					}
+					else{
+						text += $"{c} terreno utilizable\n{5 + floor(c / 16)} trabajadores\nEficiencia: {100 + floor(c * 0.9)}%\n"
+						temp_tiempo += 5 * (width * height - 9)
+					}
+				}
+				if not keyboard_check(vk_lcontrol){
+					if mouse_wheel_up()
+						build_type = (build_type + 1) mod array_length(ganado_nombre)
+					if mouse_wheel_down()
+						build_type = (build_type + array_length(ganado_nombre) - 1) mod array_length(ganado_nombre)
+				}
 			}
 		}
 		draw_set_alpha(1)
@@ -1387,17 +1420,6 @@ else{
 				text += $"Depósito: {c}\n"
 			else
 				text += $"Se necesita un depósito de {recurso_nombre[recurso_mineral[build_type]]}\n"
-		}
-		//Ranchos
-		else if var_edificio_nombre = "Rancho"{
-			for(var a = 0; a < array_length(ganado_nombre); a++)
-				draw_text(0, a * 20, (build_type = a ? ">" : "") + ganado_nombre[a])
-			if not keyboard_check(vk_lcontrol){
-				if mouse_wheel_up()
-					build_type = (build_type + 1) mod array_length(ganado_nombre)
-				if mouse_wheel_down()
-					build_type = (build_type + array_length(ganado_nombre) - 1) mod array_length(ganado_nombre)
-			}
 		}
 		//Capilla
 		else if in(build_index, 16, 17, 18, 19){
@@ -1443,13 +1465,13 @@ else{
 		var c = min(xsize - 1, mx + width + 5), d = min(ysize - 1, my + height + 5)
 		for(var a = max(0, mx - 5); a < c; a++)
 			for(var b = max(0, my - 5); b < d; b++)
-				if zona_privada[a, b]
+				if zona_privada[a, b] or bool_edificio[a, b]
 					draw_rombo((a - b) * tile_width - xpos, (a + b) * tile_height - ypos, (a - b - 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, (a - b) * tile_width - xpos, (a + b + 2) * tile_height - ypos, (a - b + 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, false)
 		draw_set_color(c_white)
 		draw_set_alpha(1)
 		//Detectar terreno inválido
 		if flag{
-			flag = edificio_valid_place(mx, my, build_index, rotado)
+			flag = edificio_valid_place(mx, my, build_index, rotado,,, width, height)
 			//Detectar árboles cerca
 			if flag and var_edificio_nombre = "Aserradero"{
 				draw_rombo_coord(mx - 5, my - 5, width + 10, height + 10, true)
@@ -1476,7 +1498,7 @@ else{
 		else{
 			c = mx + width
 			d = my + height
-			if not edificio_es_costero[build_index] and var_edificio_nombre != "Rancho"{
+			if not edificio_plano[build_index]{
 				var coste_aplanar = 0
 				//Altura promedio
 				for(var a = mx; a < c; a++)
@@ -1516,7 +1538,7 @@ else{
 		if text != ""
 			draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, text)
 		//Construir
-		if (mouse_check_button_pressed(mb_left) and var_edificio_nombre != "Granja") or (build_pressed and mouse_check_button_released(mb_left) and var_edificio_nombre = "Granja"){
+		if (mouse_check_button_pressed(mb_left) and not edificio_resize[build_index]) or (build_pressed and mouse_check_button_released(mb_left) and edificio_resize[build_index]){
 			mouse_clear(mb_left)
 			if flag{
 				add_construccion(, mx, my, build_index, build_type, temp_tiempo, temp_altura, rotado, width, height, temp_precio)
@@ -2130,7 +2152,7 @@ else{
 			y = sel_construccion.y
 			var index = sel_construccion.id, width = sel_construccion.width, height = sel_construccion.height
 			draw_text_pos(room_width, pos, edificio_nombre[index])
-			draw_text_pos(room_width - 20, pos, $"Progreso: {floor(100 * (edificio_construccion_tiempo[index] - sel_construccion.tiempo) / edificio_construccion_tiempo[index])}%")
+			draw_text_pos(room_width - 20, pos, $"Progreso: {floor(100 * (sel_construccion.tiempo_max - sel_construccion.tiempo) / sel_construccion.tiempo_max)}%")
 			if not sel_construccion.privado{
 				if cola_construccion[0] != sel_construccion and draw_boton(room_width - 20, pos, "Priorizar construcción"){
 					array_remove(cola_construccion, sel_construccion, "Priorizar una construcción")
@@ -3381,7 +3403,7 @@ else{
 							}
 						}
 						else if var_edificio_nombre = "Rancho"{
-							b = round(edificio.trabajo_mes / 25 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200) * edificio.eficiencia * edificio_experiencia[index])
+							b = round(edificio.trabajo_mes / 56 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200) * edificio.eficiencia * edificio_experiencia[index])
 							for(var c = 0; c < array_length(ganado_produccion[edificio.modo]); c++)
 								edificio.almacen[ganado_produccion[edificio.modo, c]] += floor(10 * b / array_length(ganado_produccion[edificio.modo]))
 							if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12

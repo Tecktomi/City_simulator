@@ -12,7 +12,7 @@ function acelerar_edificio(construccion = control.null_construccion){
 		}
 		else
 			add_noticia("Edificio terminado", $"Se ha terminado de construir {edificio.nombre}")
-		if not edificio_es_costero[index] and var_edificio_nombre != "Rancho"{
+		if not edificio_plano[index]{
 			var c = construccion.altura
 			world_update = true
 			if c < 0.6{

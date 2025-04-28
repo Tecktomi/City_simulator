@@ -6,6 +6,7 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 			id : id,
 			tipo : tipo,
 			tiempo : tiempo,
+			tiempo_max : tiempo,
 			altura : altura,
 			rotado : rotado,
 			width : width,

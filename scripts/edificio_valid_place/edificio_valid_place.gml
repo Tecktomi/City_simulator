@@ -1,6 +1,13 @@
-function edificio_valid_place(x, y, index, rotado = false, privado = false, empresa = control.null_empresa){
+function edificio_valid_place(x, y, index, rotado = false, privado = false, empresa = control.null_empresa, pre_width = -1, pre_height = -1){
 	with control{
-		var width = edificio_width[index], height = edificio_height[index]
+		if pre_width = -1
+			var width = edificio_width[index]
+		else
+			width = pre_width
+		if pre_height = -1
+			var height = edificio_height[index]
+		else
+			height = pre_height
 		if rotado{
 			var a = width
 			width = height
