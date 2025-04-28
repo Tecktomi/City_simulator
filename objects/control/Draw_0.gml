@@ -410,6 +410,7 @@ else{
 					build_index = b
 					build_sel = true
 					sel_build = false
+					show_debug_message("_______________________")
 					if tutorial_bool{
 						if tutorial = 7 and edificio_nombre[b] = "Chabola"
 							tutorial_complete = true
@@ -1314,7 +1315,7 @@ else{
 	}
 	//Colocar edificio
 	if build_sel{
-		var width = edificio_width[build_index], height = edificio_height[build_index], temp_altura = 0, temp_precio = edificio_precio[build_index], temp_tiempo = edificio_construccion_tiempo[build_index]
+		var width = edificio_width[build_index], height = edificio_height[build_index], temp_altura = 0, temp_precio = edificio_precio[build_index], temp_tiempo = edificio_construccion_tiempo[build_index], var_edificio_nombre = edificio_nombre[build_index]
 		text = ""
 		var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - width)
 		var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - height)
@@ -1327,16 +1328,35 @@ else{
 		}
 		draw_set_color(make_color_hsv(edificio_color[build_index], 255, 255))
 		draw_set_alpha(0.5)
-		draw_rombo((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, (mx - my - height) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height) * tile_height - ypos, (mx - my + width) * tile_width - xpos, (mx + my + width) * tile_height - ypos, false)
-		draw_set_alpha(1)
-		draw_set_color(c_white)
+		if var_edificio_nombre != "Granja"
+			draw_rombo_coord(mx, my, width, height, false)
 		//Calcular la eficiencia de las granjas
-		if edificio_nombre[build_index] = "Granja"{
+		var flag = true
+		if var_edificio_nombre = "Granja"{
+			if mouse_check_button_pressed(mb_left){
+				build_x = mx
+				build_y = my
+			}
+			if build_pressed{
+				width = clamp(mx - build_x, width, 10)
+				height = clamp(my - build_y, height, 10)
+				mx = build_x
+				my = build_y
+			}
+			draw_rombo_coord(mx, my, width, height, false)
+			draw_set_alpha(1)
+			draw_set_color(c_white)
 			var c = 0
-			for(var a = 0; a < width; a++)
-				for(var b = 0; b < height; b++)
-					c += cultivo[build_type][# mx + a, my + b]
-			text += $"Eficiencia: {floor(c * 100 / width / height)}%\n"
+			for(var a = mx; a < mx + width; a++)
+				for(var b = my; b < my + height; b++)
+					if a >= mx + 3 or b >= my + 3
+						c += cultivo[build_type][# a, b]
+			if c = 0{
+				flag = false
+				text += "Arrastra para agrandar la granja\n"
+			}
+			else
+				text += $"{width * height - 9} terreno cultibable\nEficiencia: {floor(c * 100 / (width * height - 9))}%\n"
 			if not keyboard_check(vk_lcontrol){
 				if mouse_wheel_up()
 					build_type = (build_type + 1) mod array_length(recurso_cultivo)
@@ -1344,10 +1364,11 @@ else{
 					build_type = (build_type + array_length(recurso_cultivo) - 1) mod array_length(recurso_cultivo)
 			}
 		}
+		draw_set_alpha(1)
+		draw_set_color(c_white)
 		//Minas
-		var flag = true
-		if edificio_nombre[build_index] = "Mina"{
-			draw_rombo((mx - my) * tile_width - xpos, (mx + my - 2) * tile_height - ypos, (mx - my - height - 2) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height + 2) * tile_height - ypos, (mx - my + width + 2) * tile_width - xpos, (mx + my + width) * tile_height - ypos, true)
+		if var_edificio_nombre = "Mina"{
+			draw_rombo_coord(mx - 1, my - 1, width + 2, height + 2, true)
 			flag = false
 			var c = 0, d = min(xsize - 1, mx + width + 1), e = min(ysize - 1, my + height + 1)
 			for(var a = max(0, mx - 1); a < d; a++)
@@ -1368,7 +1389,7 @@ else{
 				text += $"Se necesita un depósito de {recurso_nombre[recurso_mineral[build_type]]}\n"
 		}
 		//Ranchos
-		else if edificio_nombre[build_index] = "Rancho"{
+		else if var_edificio_nombre = "Rancho"{
 			for(var a = 0; a < array_length(ganado_nombre); a++)
 				draw_text(0, a * 20, (build_type = a ? ">" : "") + ganado_nombre[a])
 			if not keyboard_check(vk_lcontrol){
@@ -1396,7 +1417,7 @@ else{
 			}
 		}
 		//Tejar
-		else if edificio_nombre[build_index] = "Tejar"{
+		else if var_edificio_nombre = "Tejar"{
 			var c = 0, d = mx + width, e = my + height
 			for(var a = mx; a < d; a++)
 				for(var b = my; b < e; b++)
@@ -1405,7 +1426,7 @@ else{
 			text += $"Eficiencia: {100 * c}%\n"
 		}
 		//Pozo Petrolífero
-		else if edificio_nombre[build_index] = "Pozo Petrolífero"{
+		else if var_edificio_nombre = "Pozo Petrolífero"{
 			var c = 0, d = mx + width, e = my + height
 			for(var a = mx; a < d; a++)
 				for(var b = my; b < e; b++)
@@ -1430,8 +1451,8 @@ else{
 		if flag{
 			flag = edificio_valid_place(mx, my, build_index, rotado)
 			//Detectar árboles cerca
-			if flag and edificio_nombre[build_index] = "Aserradero"{
-				draw_rombo((mx - my) * tile_width - xpos, (mx + my - 10) * tile_height - ypos, (mx - my - height - 10) * tile_width - xpos, (mx + my + height) * tile_height - ypos, (mx - my + width - height) * tile_width - xpos, (mx + my + width + height + 10) * tile_height - ypos, (mx - my + width + 10) * tile_width - xpos, (mx + my + width) * tile_height - ypos, true)
+			if flag and var_edificio_nombre = "Aserradero"{
+				draw_rombo_coord(mx - 5, my - 5, width + 10, height + 10, true)
 				var flag_2 = false
 				c = 0
 				d = min(mx + width + 5, xsize)
@@ -1455,7 +1476,7 @@ else{
 		else{
 			c = mx + width
 			d = my + height
-			if not edificio_es_costero[build_index] and edificio_nombre[build_index] != "Rancho"{
+			if not edificio_es_costero[build_index] and var_edificio_nombre != "Rancho"{
 				var coste_aplanar = 0
 				//Altura promedio
 				for(var a = mx; a < c; a++)
@@ -1495,7 +1516,7 @@ else{
 		if text != ""
 			draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, text)
 		//Construir
-		if mouse_check_button_pressed(mb_left){
+		if (mouse_check_button_pressed(mb_left) and var_edificio_nombre != "Granja") or (build_pressed and mouse_check_button_released(mb_left) and var_edificio_nombre = "Granja"){
 			mouse_clear(mb_left)
 			if flag{
 				add_construccion(, mx, my, build_index, build_type, temp_tiempo, temp_altura, rotado, width, height, temp_precio)
@@ -1504,15 +1525,19 @@ else{
 				mes_construccion[current_mes] += temp_precio
 				if tutorial_bool and tutorial = 8
 					tutorial_complete = true
-				if ley_eneabled[11] and edificio_nombre[build_index] = "Comisaría"
+				if ley_eneabled[11] and var_edificio_nombre = "Comisaría"
 					recurso_construccion[28] += 10
 			}
 		}
+		if mouse_check_button_pressed(mb_left)
+			build_pressed = true
 		if mouse_check_button_pressed(mb_right){
 			mouse_clear(mb_right)
 			build_sel = false
 		}
 	}
+	else
+		build_pressed = false
 	//Seleccionar edificio
 	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
@@ -1521,7 +1546,7 @@ else{
 			draw_text(0, 0, $"{mx}, {my}: {altura[# mx, my]}")
 		if bool_edificio[mx, my] or construccion_reservada[mx, my]
 			cursor = cr_handpoint
-		if mouse_check_button_pressed(mb_left){
+		if mouse_check_button_pressed(mb_left) and not build_sel{
 			mouse_clear(mb_left)
 			sel_info = bool_edificio[mx, my] or construccion_reservada[mx, my]
 			if sel_info{
@@ -3119,12 +3144,13 @@ else{
 						for(b = 0; b < array_length(edificio.trabajadores); b++)
 							edificio.trabajadores[b].familia.riqueza += edificio.trabajo_sueldo
 						if var_edificio_nombre = "Granja"{
+							b = round(edificio.trabajo_mes * edificio.eficiencia * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200) * edificio_experiencia[index])
 							if current_mes = 5 or current_mes = 10{
-								edificio.almacen[recurso_cultivo[edificio.modo]] += round(15 * min(edificio.count, edificio.trabajo_mes / 5) * edificio.eficiencia * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200) * edificio_experiencia[index])
+								edificio.almacen[recurso_cultivo[edificio.modo]] += min(edificio.count, b)
 								edificio.count = 0
 							}
 							else
-								edificio.count += array_length(edificio.trabajadores)
+								edificio.count += b / 5
 							b = 200 * array_contains(recurso_comida, recurso_cultivo[edificio.modo]) * edificio.es_almacen
 							if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[recurso_cultivo[edificio.modo]] > b{
 								edificio.ganancia += recurso_precio[recurso_cultivo[edificio.modo]] * (edificio.almacen[recurso_cultivo[edificio.modo]] - b)

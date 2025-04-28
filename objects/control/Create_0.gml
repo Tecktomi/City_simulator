@@ -478,7 +478,7 @@ debug = false
 		def_edificio_base("Jubilado"); def_edificio_servicio(); def_edificio_trabajo(, 0, 15, 2)
 		def_edificio_base("Sin atención médica"); def_edificio_servicio(true); def_edificio_trabajo()
 		def_edificio_base("Homeless",,,,,,,,,,,,,,,true); def_edificio_servicio(); def_edificio_trabajo()
-		def_edificio_base("Granja", 6, 3, 300, 180, [1, 15, 26], [10, 2, 10], 4, 40, -10, false,,true); def_edificio_servicio(); def_edificio_trabajo(true, 10, 25, 4)
+		def_edificio_base("Granja", 3, 3, 300, 180, [1, 15, 26], [10, 2, 10], 4, 40, -10, false,,true); def_edificio_servicio(); def_edificio_trabajo(true, 10, 25, 4)
 		def_edificio_base("Aserradero", 3, 2, 650, 240, [1, 15], [8, 2], 5, 30, 10, false); def_edificio_servicio(,,,,,,,,,, true, 20); def_edificio_trabajo(true, 10, 30, 5,, 0.03)
 		def_edificio_base("Escuela", 3, 3, 800, 640, [1, 15, 26], [30, 5, 25], 6, 40); def_edificio_servicio(,,,true, 2, 20, 60,, true, 10); def_edificio_trabajo(true, 4, 50, 8, 2)
 		def_edificio_base("Consultorio", 2, 3, 1200, 720, [1, 15, 24, 26], [25, 5, 5, 20], 15, 55); def_edificio_servicio(true,,,,,20, 60, 20, true, 10, true, 10); def_edificio_trabajo(true, 3, 65, 11, 3)
@@ -915,6 +915,9 @@ debug = false
 	build_index = 0
 	build_type = 0
 	build_categoria = 0
+	build_x = 0
+	build_y = 0
+	build_pressed = false
 	last_width = 0
 	last_height = 0
 	show_grid = false

@@ -1,4 +1,4 @@
-function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
+function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre_width = -1, pre_height = -1){
 	with control{
 		if debug
 			show_debug_message($"{fecha(dia)} add_edificio ({edificio_nombre[tipo]} {edificio_number[tipo]})")
@@ -69,7 +69,14 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			array_push(edificio.pedido, 0)
 		}
 		if fisico{
-			var width = edificio_width[tipo], height = edificio_height[tipo]
+			if pre_width = -1
+				var width = edificio_width[tipo]
+			else
+				width = pre_width
+			if pre_height = -1
+				var height= edificio_height[tipo]
+			else
+				height = pre_height
 			if rotado{
 				var a = width
 				width = height
@@ -110,6 +117,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false){
 			if edificio_es_almacen[tipo]
 				array_push(almacenes[tipo], edificio)
 			array_push(edificio_count[tipo], edificio)
+			if var_edificio_nombre = "Granja"
+				edificio.trabajadores_max = floor((width * height - 9) / 3)
 			if var_edificio_nombre = "Aserradero"{
 				var c = max(0, x - 5), d = min(x + width + 5, xsize), e = max(0, y - 5), f = min(y + height + 5, ysize)
 				for(var a = c; a < d; a++)

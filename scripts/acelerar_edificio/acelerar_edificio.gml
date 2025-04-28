@@ -4,7 +4,7 @@ function acelerar_edificio(construccion = control.null_construccion){
 		x = construccion.x
 		y = construccion.y
 		var index = construccion.id, width = construccion.width, height = construccion.height, var_edificio_nombre = edificio_nombre[index]
-		var edificio = add_edificio(x, y, index, , construccion.rotado)
+		var edificio = add_edificio(x, y, index, , construccion.rotado, width, height)
 		if construccion.privado{
 			edificio.privado = true
 			edificio.empresa = construccion.empresa
@@ -36,8 +36,9 @@ function acelerar_edificio(construccion = control.null_construccion){
 			var c = 0
 			for(var a = x; a < x + width; a++)
 				for(var b = y; b < y + height; b++)
-					c += cultivo[index][# b, c]
-			edificio.eficiencia = c / width / height
+					if a >= x + 3 or b >= y + 3
+						c += cultivo[index][# a, b]
+			edificio.eficiencia = c / (width * height - 9)
 			edificio.modo = construccion.tipo
 			edificio.nombre = $"{edificio_nombre[edificio.tipo]} de {recurso_nombre[recurso_cultivo[edificio.modo]]} {edificio_number[edificio.tipo]}"
 		}
