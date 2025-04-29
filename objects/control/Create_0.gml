@@ -534,6 +534,7 @@ debug = false
 		def_edificio_base("Bloque Habitacional", 4, 4, 1500, 1440, [15, 25, 26], [20, 10, 40], 12,, 15, false,,,,,true, 24, 30, 3, 130); def_edificio_servicio(,,,,,,,, true, 30, true, 40); def_edificio_trabajo()
 		//50
 	#endregion
+	
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
 	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35, 43, 46], [13, 20, 22, 41, 42, 44], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45]]
 	edificio_color = []
@@ -761,6 +762,12 @@ debug = false
 		array_pop(almacenes[a])
 		array_push(edificio_experiencia, 1)
 	}
+	for(a = 0; a < array_length(recurso_cultivo); a++)
+		edificio_number_granja[a] = 0
+	for(a = 0; a < array_length(recurso_mineral); a++)
+		edificio_number_mina[a] = 0
+	for(a = 0; a < array_length(ganado_nombre); a++)
+		edificio_number_rancho[a] = 0
 	jubilado = add_edificio(0, 0, 1, false)
 	desausiado = add_edificio(0, 0, 2, false)
 	medicos = [desausiado]

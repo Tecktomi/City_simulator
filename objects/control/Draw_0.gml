@@ -1813,8 +1813,11 @@ else{
 						if sel_modo
 							for(var a = 0; a < array_length(recurso_cultivo); a++)
 								if a != sel_edificio.modo{
-									if draw_boton(room_width - 40, pos, recurso_nombre[recurso_cultivo[a]])
+									if draw_boton(room_width - 40, pos, recurso_nombre[recurso_cultivo[a]]){
 										sel_edificio.modo = a
+										sel_edificio.nombre = $"{var_edificio_nombre} de {recurso_nombre[recurso_cultivo[a]]} {++edificio_number_granja[a]}"
+										show[3] = false
+									}
 									if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
 										draw_gradiente(a, 0)
 										draw_set_color(c_black)
@@ -1838,6 +1841,7 @@ else{
 								if a != sel_edificio.modo{
 									if draw_boton(room_width - 40, pos, recurso_nombre[recurso_mineral[a]]){
 										sel_edificio.modo = a
+										sel_edificio.nombre = $"{var_edificio_nombre} de {recurso_nombre[recurso_mineral[a]]} {++edificio_number_mina[a]}"
 										show[3] = false
 									}
 									if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
@@ -1856,6 +1860,7 @@ else{
 									for(var b = 0; b < array_length(ganado_produccion[sel_edificio.modo]); b++)
 										sel_edificio.almacen[ganado_produccion[sel_edificio.modo, b]] = 0
 									sel_edificio.modo = a
+									sel_edificio.nombre = $"{var_edificio_nombre} de {ganado_nombre[a]} {++edificio_number_rancho[a]}"
 									show[3] = false
 								}
 					}
