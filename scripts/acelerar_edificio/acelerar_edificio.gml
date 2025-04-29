@@ -33,22 +33,34 @@ function acelerar_edificio(construccion = control.null_construccion){
 			}
 		}
 		if var_edificio_nombre = "Granja"{
+			var edi_width = edificio_width[index], edi_height = edificio_height[index]
 			edificio.modo = construccion.tipo
 			var c = 0
 			for(var a = x; a < x + width; a++)
 				for(var b = y; b < y + height; b++)
-					if a >= x + 3 or b >= y + 3
+					if (x >= construccion.build_x ? (a >= x + edi_width) : (a <= x + width - edi_width)) or (y >= construccion.build_y ? (b >= y + edi_height) : (b <= y + height - edi_height))
 						c += cultivo[edificio.modo][# a, b]
 			edificio.eficiencia = c / (width * height - 9)
 			edificio.nombre = $"{edificio_nombre[edificio.tipo]} de {recurso_nombre[recurso_cultivo[edificio.modo]]} {edificio_number[edificio.tipo]}"
+			edificio.build_x = construccion.build_x
+			edificio.build_y = construccion.build_y
 		}
 		else if var_edificio_nombre = "Mina"{
 			edificio.modo = construccion.tipo
 			edificio.nombre = $"{edificio_nombre[edificio.tipo]} de {recurso_nombre[recurso_mineral[edificio.modo]]} {edificio_number[edificio.tipo]}"
 		}
 		else if var_edificio_nombre = "Rancho"{
+			var edi_width = edificio_width[index], edi_height = edificio_height[index]
+			var c = 0
+			for(var a = x; a < x + width; a++)
+				for(var b = y; b < y + height; b++)
+					if (x >= construccion.build_x ? (a >= x + edi_width) : (a <= x + width - edi_width)) or (y >= construccion.build_y ? (b >= y + edi_height) : (b <= y + height - edi_height))
+						c += altura[# a, b] > 0.6
+			edificio.eficiencia = 1 + c * 0.009
 			edificio.modo = construccion.tipo
 			edificio.nombre = $"{edificio_nombre[edificio.tipo]} de {ganado_nombre[edificio.modo]} {edificio_number[edificio.tipo]}"
+			edificio.build_x = construccion.build_x
+			edificio.build_y = construccion.build_y
 		}
 		else if var_edificio_nombre = "Tejar"{
 			var c = 0

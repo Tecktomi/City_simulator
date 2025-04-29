@@ -620,6 +620,8 @@ debug = false
 		rotado : false,
 		width : 0,
 		height : 0,
+		build_x : 0,
+		build_y : 0,
 		ladron : null_persona,
 		venta : false,
 		es_almacen : false,

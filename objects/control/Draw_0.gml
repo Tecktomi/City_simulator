@@ -145,9 +145,15 @@ else{
 					else{
 						var edificio = draw_edificio[a, b], c = edificio.x, d = edificio.y, e = edificio.tipo, width = edificio.width, height = edificio.height, temp_rotado = edificio.rotado
 						draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
-						draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
+						draw_rombo_coord(c, d, width, height, false)
+						if edificio_resize[e]{
+							draw_set_color(c_red)
+							draw_set_alpha(0.5)
+							draw_rombo_coord(max(edificio.build_x, c - edificio_width[e]), max(edificio.build_y, d - edificio_height[e]), edificio_width[e], edificio_height[e], false)
+							draw_set_alpha(1)
+						}
 						draw_set_color(c_white)
-						draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d - height + width) * tile_width - xpos, (c + d + height + width) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, true)
+						draw_rombo_coord(c, d, width, height, true)
 						if edificio.paro{
 							draw_set_color(c_red)
 							draw_circle((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, 3, false)
@@ -165,10 +171,14 @@ else{
 					var next_build = draw_construccion[a, b], e = next_build.id, width = next_build.width, height = next_build.height, c = next_build.x, d = next_build.y, temp_rotado = next_build.rotado, var_edificio_nombre = edificio_nombre[next_build.id]
 					draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
 					draw_set_alpha(0.5)
-					draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d + width - height) * tile_width - xpos, (c + d + width + height) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, false)
+					draw_rombo_coord(c, d, width, height, false)
+					if edificio_resize[e]{
+						draw_set_color(c_red)
+						draw_rombo_coord(max(next_build.build_x, c - edificio_width[e]), max(next_build.build_y, d - edificio_height[e]), edificio_width[e], edificio_height[e], false)
+					}
 					draw_set_alpha(1)
-					draw_rombo((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, (c - d - height) * tile_width - xpos, (c + d + height) * tile_height - ypos, (c - d + width - height) * tile_width - xpos, (c + d + width + height) * tile_height - ypos, (c - d + width) * tile_width - xpos, (c + d + width) * tile_height - ypos, true)
 					draw_set_color(c_white)
+					draw_rombo_coord(c, d, width, height, true)
 					draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, $"{var_edificio_nombre}{var_edificio_nombre = "Mina" ? "\n" + recurso_nombre[recurso_mineral[next_build.tipo]] : ""}{var_edificio_nombre = "Granja" ? "\n" + recurso_nombre[recurso_cultivo[next_build.tipo]] : ""}{var_edificio_nombre = "Rancho" ? "\n" + ganado_nombre[next_build.tipo] : ""}")
 				}	
 			}
@@ -1324,24 +1334,41 @@ else{
 		var flag = true
 		//Granjas y Ranchos
 		if edificio_plano[build_index]{
+			var edi_width = width, edi_height = height
 			if mouse_check_button_pressed(mb_left){
 				build_x = mx
 				build_y = my
 			}
 			if build_pressed{
-				width = clamp(mx - build_x, width, 10)
-				height = clamp(my - build_y, height, 10)
-				mx = build_x
-				my = build_y
+				if mx >= build_x{
+					width = clamp(mx - build_x, width, 10)
+					mx = build_x
+				}
+				else{
+					mx = max(mx, build_x - 10 + edi_width)
+					width = clamp(build_x - mx + edi_width, width, 10)
+				}
+				if my >= build_y{
+					height = clamp(my - build_y, height, 10)
+					my = build_y
+				}
+				else{
+					my = max(my, build_y - 10 + edi_height)
+					height = clamp(build_y - my + edi_height, height, 10)
+				}
 			}
 			draw_rombo_coord(mx, my, width, height, false)
-			draw_set_alpha(1)
+			if build_pressed{
+				draw_set_color(c_red)
+				draw_rombo_coord(max(build_x, mx - edi_width), max(build_y, my - edi_height), edi_width, edi_height, false)
+			}
 			draw_set_color(c_white)
+			draw_set_alpha(1)
 			if var_edificio_nombre = "Granja"{
 				var c = 0
 				for(var a = mx; a < mx + width; a++)
 					for(var b = my; b < my + height; b++)
-						if a >= mx + 3 or b >= my + 3
+						if (mx >= build_x ? (a >= mx + edi_width) : (a <= mx + width - edi_width)) or (my >= build_y ? (b >= my + edi_height) : (b <= my + height - edi_height))
 							c += cultivo[build_type][# a, b]
 				if c = 0{
 					flag = false
@@ -1364,7 +1391,7 @@ else{
 				var c = 0
 				for(var a = mx; a < mx + width; a++)
 					for(var b = my; b < my + height; b++)
-						if a >= mx + 3 or b >= my + 3
+						if (mx >= build_x ? (a >= mx + edi_width) : (a <= mx + width - edi_width)) or (my >= build_y ? (b >= my + edi_height) : (b <= my + height - edi_height))
 							c += altura[# a, b] > 0.6
 				if width = 4 and height = 4{
 					flag = false
@@ -1376,7 +1403,7 @@ else{
 						text += "Requiere terreno con pasto\n"
 					}
 					else{
-						text += $"{c} terreno utilizable\n{5 + floor(c / 16)} trabajadores\nEficiencia: {100 + floor(c * 0.9)}%\n"
+						text += $"{c} terreno utilizable\n{5 + floor((width * height - 16) / 16)} trabajadores\nEficiencia: {100 + floor(c * 0.9)}%\n"
 						temp_tiempo += 5 * (width * height - 9)
 					}
 				}
@@ -1538,7 +1565,7 @@ else{
 		if (mouse_check_button_pressed(mb_left) and not edificio_resize[build_index]) or (build_pressed and mouse_check_button_released(mb_left) and edificio_resize[build_index]){
 			mouse_clear(mb_left)
 			if flag{
-				add_construccion(, mx, my, build_index, build_type, temp_tiempo, temp_altura, rotado, width, height, temp_precio)
+				add_construccion(, mx, my, build_index, build_type, temp_tiempo, temp_altura, rotado, width, height, temp_precio,,, build_x, build_y)
 				build_sel = keyboard_check(vk_lshift)
 				dinero -= temp_precio
 				mes_construccion[current_mes] += temp_precio

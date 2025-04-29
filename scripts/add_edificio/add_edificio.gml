@@ -47,6 +47,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			rotado : rotado,
 			width : 0,
 			height : 0,
+			build_x : 0,
+			build_y : 0,
 			ladron : null_persona,
 			empresa : null_empresa,
 			venta : false,
@@ -128,15 +130,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			}
 			else if var_edificio_nombre = "Periódico"
 				array_push(edificio.array_complex, {a : -1, b : 0})
-			else if var_edificio_nombre = "Rancho"{
-				var c = 0
-				for(var a = x; a < x + width; a++)
-					for(var b = y; b < y + height; b++)
-						if a >= x + 3 or b >= y + 3
-							c += altura[# a, b] > 0.6
-				edificio.trabajadores_max = 5 + floor(c / 16)
-				edificio.eficiencia = 1 + c * 0.009
-			}
+			else if var_edificio_nombre = "Rancho"
+				edificio.trabajadores_max = 5 + floor((width * height - 16) / 16)
 			if var_edificio_nombre != "Muelle"
 				buscar_muelle_cercano(edificio)
 			else{
