@@ -19,7 +19,7 @@ function acelerar_edificio(construccion = control.null_construccion){
 				for(var a = x; a < x + width; a++)
 					for(var b = y; b < y + height; b++){
 						ds_grid_set(altura, a, b, c)
-						array_set(altura_color[a], b, make_color_rgb(255 / 0.6 * (1.1 - c), 255 / 0.6 * (1.1 - c), 127))
+						array_set(altura_color[a], b, make_color_rgb(255 / 0.65 * (1.1 - c), 255 / 0.65 * (1.1 - c), 127))
 						array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
 					}
 			}
@@ -33,13 +33,13 @@ function acelerar_edificio(construccion = control.null_construccion){
 			}
 		}
 		if var_edificio_nombre = "Granja"{
+			edificio.modo = construccion.tipo
 			var c = 0
 			for(var a = x; a < x + width; a++)
 				for(var b = y; b < y + height; b++)
 					if a >= x + 3 or b >= y + 3
-						c += cultivo[index][# a, b]
+						c += cultivo[edificio.modo][# a, b]
 			edificio.eficiencia = c / (width * height - 9)
-			edificio.modo = construccion.tipo
 			edificio.nombre = $"{edificio_nombre[edificio.tipo]} de {recurso_nombre[recurso_cultivo[edificio.modo]]} {edificio_number[edificio.tipo]}"
 		}
 		else if var_edificio_nombre = "Mina"{

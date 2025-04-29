@@ -8,11 +8,6 @@ function edificio_valid_place(x, y, index, rotado = false, privado = false, empr
 			var height = edificio_height[index]
 		else
 			height = pre_height
-		if rotado{
-			var a = width
-			width = height
-			height = a
-		}
 		if x + width >= xsize or y + height >= ysize
 			return false
 		if edificio_es_costero[index]{

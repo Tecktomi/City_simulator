@@ -492,7 +492,7 @@ debug = false
 		def_edificio_base("Parcela", 3, 2, 400, 360, [1, 15, 25, 26], [15, 3, 10, 30], 10, 75, 10, false,,,,,true, 2, 65, 12); def_edificio_servicio(,,,,,,,, true, 10, true, 10); def_edificio_trabajo(true, 1, 40, 4)
 		def_edificio_base("Taberna", 2, 1, 200, 240, [1, 15, 26], [10, 2, 20], 3, 30,, false); def_edificio_servicio(, true,,,, 5, 25, 1, true, 5); def_edificio_trabajo(true, 2, 35, 5)
 		def_edificio_base("Circo", 4, 4, 500, 240, [1, 16], [10, 20], 6, 30,, false); def_edificio_servicio(, true,,,, 16, 20, 1); def_edificio_trabajo(true, 8, 25, 4,, 0.02)
-		def_edificio_base("Muelle", 6, 6, 2200, 1080, [1, 15, 24, 26], [40, 40, 10, 40], 10, 30, 15,, true, true); def_edificio_servicio(,,,,,,,,,, true, 30, true); def_edificio_trabajo(true, 6, 30, 6, 1, 0.02)
+		def_edificio_base("Muelle", 6, 6, 2200, 1080, [1, 15, 17, 24, 26], [40, 40, 3, 10, 40], 10, 30, 15,, true, true); def_edificio_servicio(,,,,,,,,,, true, 30, true); def_edificio_trabajo(true, 6, 30, 6, 1, 0.02)
 		def_edificio_base("Pescadería", 5, 5, 200, 360, [1, 15, 17], [10, 5, 2], 6, 25, 10, false, true, true); def_edificio_servicio(,,,,,,,,,,,, true); def_edificio_trabajo(true, 6, 25, 5,, 0.04)
 		def_edificio_base("Mina", 4, 3, 800, 720, [1, 15, 26], [20, 10, 10], 10, 25, 15, false); def_edificio_servicio(,,,,,,,,,, true, 10); def_edificio_trabajo(true, 8, 20, 5,, 0.04)
 		def_edificio_base("Capilla", 4, 3, 1100, 600, [1, 15, 26], [20, 5, 30], 10, 65); def_edificio_servicio(,, true,,, 12, 40); def_edificio_trabajo(true, 2, 60, 6, 1)

@@ -1,5 +1,13 @@
-function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo = 0, altura = 0, rotado = false, width = 0, height = 0, precio = 0, privado = false, empresa = control.null_empresa){
+function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo = 0, altura = 0, rotado = false, pre_width = -1, pre_height = -1, precio = 0, privado = false, empresa = control.null_empresa){
 	with control{
+		if pre_width = -1
+			var width = edificio_width[id]
+		else
+			width = pre_width
+		if pre_height = -1
+			var height = edificio_height[id]
+		else
+			height = pre_height
 		var construccion = {
 			x : x,
 			y : y,

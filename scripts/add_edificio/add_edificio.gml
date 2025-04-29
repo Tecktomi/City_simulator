@@ -77,11 +77,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 				var height= edificio_height[tipo]
 			else
 				height = pre_height
-			if rotado{
-				var a = width
-				width = height
-				height = a
-			}
 			edificio.width = width
 			edificio.height = height
 			array_set(bool_draw_construccion[x], y, false)
@@ -120,9 +115,9 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			if var_edificio_nombre = "Granja"
 				edificio.trabajadores_max = floor((width * height - 9) / 3)
 			if var_edificio_nombre = "Aserradero"{
-				var c = max(0, x - 5), d = min(x + width + 5, xsize), e = max(0, y - 5), f = min(y + height + 5, ysize)
-				for(var a = c; a < d; a++)
-					for(var b = e; b < f; b++)
+				var c = min(x + width + 5, xsize), d = min(y + height + 5, ysize)
+				for(var a = max(0, x - 5); a < c; a++)
+					for(var b = max(0, y - 5); b < d; b++)
 						if bosque[a, b]
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
@@ -157,7 +152,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 					}
 				}
 			}
-			//Buscar edificios cercanos
+			//Casa busca trabajos cercanos
 			var c = min(x + width + 9, xsize), d = min(y + height + 9, ysize)
 			if edificio_es_casa[tipo]
 				for(var a = max(0, x - 8); a < c; a++)
@@ -171,6 +166,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 									array_push(edificio.iglesias_cerca, temp_edificio)
 							}
 						}
+			//Trabajo busca casas cercanas
 			if edificio_es_trabajo[tipo]{
 				var g = edificio_trabajo_educacion[tipo]
 				for(var a = max(0, x - 8); a < c; a++)

@@ -41,6 +41,13 @@ if menu_principal{
 		draw_set_halign(fa_left)
 		year_history(floor(dia / 365))
 	}
+	//Pantalla completa
+	if keyboard_check_pressed(vk_f4){
+		window_set_fullscreen(not window_get_fullscreen())
+		ini_open(roaming + "config.txt")
+		ini_write_real("MAIN", "fullscreen", window_get_fullscreen())
+		ini_close()
+	}
 }
 else{
 	#region Visual
@@ -394,13 +401,15 @@ else{
 		if ministerio = -1{
 			for(var a = 0; a < array_length(edificio_categoria[build_categoria]); a++){
 				b = edificio_categoria[build_categoria, a]
-				if floor(dia / 365) >= edificio_anno[b] and draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}", , ,
-					function(b){
+				if floor(dia / 365) >= edificio_anno[b] and draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}",,, function(b){
 						draw_set_valign(fa_bottom)
-						var text = ""
-						for(var a = 0; a < array_length(edificio_recursos_id[b]); a++)
+						var text = "", temp_precio = 0
+						for(var a = 0; a < array_length(edificio_recursos_id[b]); a++){
 							text += $"{recurso_nombre[edificio_recursos_id[b, a]]}: {edificio_recursos_num[b, a]}   "
-						draw_text(100, room_height - 100, text + "\n" + (edificio_es_casa[b] ? $"Espacio para {edificio_familias_max[b]} familias\n" : "") +
+							temp_precio += recurso_precio[edificio_recursos_id[b, a]] * edificio_recursos_num[b, a]
+						}
+						draw_text(100, room_height - 100, text + $"(+${floor(temp_precio)})\n" +
+							(edificio_es_casa[b] ? $"Espacio para {edificio_familias_max[b]} familias\n" : "") +
 							(edificio_es_trabajo[b] ? $"Necesita {edificio_trabajadores_max[b]} trabajadores {edificio_trabajo_educacion[b] = 0 ? "sin educación" : "con " + educacion_nombre[edificio_trabajo_educacion[b]]}\n" : "") +
 							(edificio_es_escuela[b] ? $"Enseña a {edificio_servicio_clientes[b]} alumnos\n" : "") +
 							(edificio_es_medico[b] ? $"Atiende a {edificio_servicio_clientes[b]} pacientes\n" : "") +
@@ -410,7 +419,6 @@ else{
 					build_index = b
 					build_sel = true
 					sel_build = false
-					show_debug_message("_______________________")
 					if tutorial_bool{
 						if tutorial = 7 and edificio_nombre[b] = "Chabola"
 							tutorial_complete = true
@@ -1043,12 +1051,24 @@ else{
 								for(var c = 0; c < array_length(recurso_tratados_venta[b]); c++){
 									var tratado = recurso_tratados_venta[b, c]
 									if tratado.pais = e
-										draw_text_pos(130, pos, $"Vender {tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+{floor(tratado.factor * 100) - 100}%)")
+										if draw_boton(130, pos, $"Vender {tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+{floor(tratado.factor * 100) - 100}%)",,,,,,, true) and mouse_lastbutton = mb_right{
+											add_noticia("Tratado cancelado", $"Has cancelado el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
+											pais_relacion[tratado.pais]--
+											array_remove(recurso_tratados_venta[tratado.recurso], tratado, 1)
+											credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
+											tratados_num--
+										}
 								}
 								for(var c = 0; c < array_length(recurso_tratados_compra[b]); c++){
 									var tratado = recurso_tratados_compra[b, c]
 									if tratado.pais = e
-										draw_text_pos(130, pos, $"Comprar {tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (-{floor(tratado.factor * 100) - 100}%)")
+										if draw_boton(130, pos, $"Comprar {tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (-{floor(tratado.factor * 100) - 100}%)",,,,,,, true) and mouse_lastbutton = mb_right{
+											add_noticia("Tratado cancelado", $"Has cancelado el tratado de importar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
+											pais_relacion[tratado.pais]--
+											array_remove(recurso_tratados_compra[tratado.recurso], tratado, 1)
+											credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
+											tratados_num--
+										}
 								}
 							}
 						}
@@ -1108,36 +1128,7 @@ else{
 				draw_text_pos(590, pos, $"{tratados_num} aceptados de {tratados_max}")
 				for(var a = 0; a < array_length(tratados_ofertas); a++){
 					var tratado = tratados_ofertas[a]
-					var width = 600
-					if draw_boton(width, pos, $"{tratado.cantidad > 0 ? "Vender" : "Comprar"} {abs(tratado.cantidad)} de ") and tratados_num < tratados_max{
-						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
-						array_delete(tratados_ofertas, a, 1)
-					}
-					pos -= last_height
-					width += last_width
-					draw_set_color(c_blue)
-					if draw_boton(width, pos, $"{recurso_nombre[tratado.recurso]}") and tratados_num < tratados_max{
-						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
-						array_delete(tratados_ofertas, a, 1)
-					}
-					pos -= last_height
-					width += string_width($"{recurso_nombre[tratado.recurso]}")
-					draw_set_color(c_black)
-					if draw_boton(width, pos, $" a  ") and tratados_num < tratados_max{
-						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
-						array_delete(tratados_ofertas, a, 1)
-					}
-					pos -= last_height
-					width += string_width($" a  ")
-					draw_set_color(c_red)
-					if draw_boton(width, pos, $"{pais_nombre[tratado.pais]}") and tratados_num < tratados_max{
-						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
-						array_delete(tratados_ofertas, a, 1)
-					}
-					pos -= last_height
-					width += string_width($"{pais_nombre[tratado.pais]}")
-					draw_set_color(c_black)
-					if draw_boton(width, pos, $" {tratado.tipo ? "+" : "-"}{floor(100 * (tratado.factor - 1))}%") and tratados_num < tratados_max{
+					if draw_boton_color(600, pos, $"{tratado.cantidad > 0 ? "#FF0000Vender" : "#0000FFComprar"}#000000 {abs(tratado.cantidad)} de #0000FF{recurso_nombre[tratado.recurso]}#000000 a #FF0000{pais_nombre[tratado.pais]}#000000 ({tratado.tipo ? "+" : "-"}{floor(100 * (tratado.factor - 1))}%)") and tratados_num < tratados_max{
 						aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
 						array_delete(tratados_ofertas, a, 1)
 					}
@@ -1330,8 +1321,8 @@ else{
 		draw_set_alpha(0.5)
 		if not edificio_resize[build_index]
 			draw_rombo_coord(mx, my, width, height, false)
-		//Calcular la eficiencia de las granjas
 		var flag = true
+		//Granjas y Ranchos
 		if edificio_plano[build_index]{
 			if mouse_check_button_pressed(mb_left){
 				build_x = mx
@@ -1460,13 +1451,19 @@ else{
 			else
 				text += $"Depósito: {c}\n"
 		}
-		draw_set_color(c_red)
 		draw_set_alpha(0.5)
 		var c = min(xsize - 1, mx + width + 5), d = min(ysize - 1, my + height + 5)
 		for(var a = max(0, mx - 5); a < c; a++)
 			for(var b = max(0, my - 5); b < d; b++)
-				if zona_privada[a, b] or bool_edificio[a, b]
-					draw_rombo((a - b) * tile_width - xpos, (a + b) * tile_height - ypos, (a - b - 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, (a - b) * tile_width - xpos, (a + b + 2) * tile_height - ypos, (a - b + 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, false)
+				if zona_privada[a, b] or bool_edificio[a, b] or construccion_reservada[a, b]{
+					if zona_privada[a, b]
+						draw_set_color(c_blue)
+					else if construccion_reservada[a, b]
+						draw_set_color(c_green)
+					else if bool_edificio[a, b]
+						draw_set_color(c_red)
+					draw_rombo_coord(a, b, 1, 1, false)
+				}
 		draw_set_color(c_white)
 		draw_set_alpha(1)
 		//Detectar terreno inválido
@@ -2426,6 +2423,7 @@ else{
 							pais_relacion[tratado.pais]--
 							array_delete(recurso_tratados_venta[a], b--, 1)
 							credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
+							tratados_num--
 						}
 					}
 					for(var b = 0; b < array_length(recurso_tratados_compra[a]); b++){
@@ -2436,6 +2434,7 @@ else{
 							pais_relacion[tratado.pais]--
 							array_delete(recurso_tratados_compra[a], b--, 1)
 							credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
+							tratados_num--
 						}
 					}
 				}
@@ -3074,7 +3073,7 @@ else{
 						for(var b = mx; b < mx + width; b++)
 							for(var c = my; c < my + height; c++)
 								temp_altura += altura[# b, c]
-						array_push(empresa.construcciones, add_construccion(, mx, my, index, 0, edificio_construccion_tiempo[index], temp_altura / width / height, false, width, height, temp_precio, true, empresa))
+						array_push(empresa.construcciones, add_construccion(, mx, my, index, 0, edificio_construccion_tiempo[index], temp_altura / width / height, false,,, temp_precio, true, empresa))
 					}
 				}
 				//Impuestos
