@@ -146,7 +146,7 @@ else{
 						var edificio = draw_edificio[a, b], c = edificio.x, d = edificio.y, e = edificio.tipo, width = edificio.width, height = edificio.height, temp_rotado = edificio.rotado
 						draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
 						draw_rombo_coord(c, d, width, height, false)
-						if edificio_resize[e]{
+						if edificio_resize_no_productiva[e]{
 							draw_set_color(c_red)
 							draw_set_alpha(0.5)
 							draw_rombo_coord(max(edificio.build_x, c - edificio_width[e]), max(edificio.build_y, d - edificio_height[e]), edificio_width[e], edificio_height[e], false)
@@ -172,7 +172,7 @@ else{
 					draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
 					draw_set_alpha(0.5)
 					draw_rombo_coord(c, d, width, height, false)
-					if edificio_resize[e]{
+					if edificio_resize_no_productiva[e]{
 						draw_set_color(c_red)
 						draw_rombo_coord(max(next_build.build_x, c - edificio_width[e]), max(next_build.build_y, d - edificio_height[e]), edificio_width[e], edificio_height[e], false)
 					}
@@ -363,7 +363,7 @@ else{
 			mouse_clear(mb_left)
 	}
 	//Abrir menú de construcción
-	if mouse_check_button_pressed(mb_right) and not build_sel and not sel_build{
+	if mouse_check_button_pressed(mb_right) and not build_sel and not sel_build and not build_terreno{
 		mouse_clear(mb_right)
 		close_show()
 		sel_build = true
@@ -391,6 +391,10 @@ else{
 				build_categoria = a
 			}
 			b += last_width + 10
+		}
+		if draw_boton(b, 80, "Privatizar terreno", true){
+			build_terreno = true
+			sel_build = false
 		}
 		b = 100
 		for(var a = 0; a < array_length(ministerio_nombre); a++){
@@ -1157,6 +1161,8 @@ else{
 					impuesto_minero = ((10 * impuesto_minero + 1) mod 6) / 10
 				if draw_boton(110, pos, $"Impuesto forestal {round(100 * impuesto_forestal)}%")
 					impuesto_forestal = ((10 * impuesto_forestal + 1) mod 6) / 10
+				if draw_boton(110, pos, $"Valor terreno ${valor_terreno}")
+					valor_terreno = max(10, (valor_terreno + 5) mod 30)
 				if (dia / 365) >= 60 and draw_boton(110, pos, $"Impuesto petrolífero {round(100 * impuesto_petrolifero)}%")
 					impuesto_petrolifero = ((10 * impuesto_petrolifero + 1) mod 6) / 10
 				if draw_menu(110, pos, $"{array_length(edificios_a_la_venta)} edificio{array_length(edificios_a_la_venta) = 1 ? "" : "s"} a la venta", 0)
@@ -1332,8 +1338,8 @@ else{
 		if not edificio_resize[build_index]
 			draw_rombo_coord(mx, my, width, height, false)
 		var flag = true
-		//Granjas y Ranchos
-		if edificio_plano[build_index]{
+		//Edificios de tamaño editable
+		if edificio_resize[build_index]{
 			var edi_width = width, edi_height = height
 			if mouse_check_button_pressed(mb_left){
 				build_x = mx
@@ -1358,7 +1364,7 @@ else{
 				}
 			}
 			draw_rombo_coord(mx, my, width, height, false)
-			if build_pressed{
+			if build_pressed and edificio_resize_no_productiva[build_index]{
 				draw_set_color(c_red)
 				draw_rombo_coord(max(build_x, mx - edi_width), max(build_y, my - edi_height), edi_width, edi_height, false)
 			}
@@ -1547,7 +1553,7 @@ else{
 					coste_escombros += 25 * escombros[a, b]
 				}
 			if coste_terreno > 0{
-				text += $"\Estatizar terreno: ${coste_terreno}"
+				text += $"\nEstatizar terreno: ${coste_terreno}"
 				temp_precio += coste_terreno
 			}
 			if coste_deforestar > 0{
@@ -1582,12 +1588,74 @@ else{
 			build_sel = false
 		}
 	}
-	else
+	//Privatizar terreno
+	if build_terreno{
+		var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
+		var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
+		draw_set_color(c_black)
+		draw_set_alpha(0.3)
+		draw_rectangle(0, 0, room_width, room_height, false)
+		draw_set_alpha(1)
+		draw_set_color(c_white)
+		draw_text(0, 0, "Arrastra para privatizar")
+		if mouse_check_button_pressed(mb_left){
+			build_x = mx
+			build_y = my
+		}
+		draw_set_alpha(0.5)
+		draw_set_color(c_red)
+		for(var a = mx - 3; a <= mx + 3; a++)
+			for(var b = my - 3; b <= my + 3; b++)
+				if zona_privada[a, b] or zona_privada_venta[a, b]
+					draw_rombo_coord(a, b, 1, 1, false)
+		draw_set_alpha(1)
+		if build_pressed{
+			var width = min(abs(build_x - mx), 10), height = min(abs(build_y - my), 10), minx = max(min(build_x, mx), build_x - width), miny = max(min(build_y, my), build_y - height), flag = true
+			draw_set_color(c_blue)
+			draw_set_alpha(0.5)
+			draw_rombo_coord(minx, miny, width, height, false)
+			for(var a = minx; a < minx + width; a++){
+				for(var b = miny; b < miny + height; b++)
+					if bool_edificio[a, b] or mar[a, b] or construccion_reservada[a, b] or zona_privada[a, b] or zona_privada_venta[a, b]{
+						flag = false
+						break
+					}
+				if not flag
+					break
+			}
+			draw_set_color(c_white)
+			draw_set_alpha(1)
+			draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, flag ? $"{width * height} terreno" : "No puedes privatizar este terreno")
+			if flag and mouse_check_button_released(mb_left){
+				build_terreno = false
+				array_push(terrenos_venta, {
+					x : minx,
+					y : miny,
+					width : width,
+					height : height,
+					privado : false,
+					empresa : null_empresa
+				})
+				for(var a = minx; a < minx + width; a++)
+					for(var b = miny; b < miny + height; b++){
+						array_set(zona_privada[a], b, true)
+						array_set(zona_privada_venta[a], b, true)
+					}
+			}
+		}
+		if mouse_check_button_pressed(mb_left)
+			build_pressed = true
+		if mouse_check_button_pressed(mb_right){
+			mouse_clear(mb_right)
+			build_terreno = false
+		}
+	}
+	if not build_sel and not build_terreno
 		build_pressed = false
 	//Seleccionar edificio
 	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-	if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build and not getstring{
+	if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build and not getstring and not build_terreno{
 		if debug
 			draw_text(0, 0, $"{mx}, {my}: {altura[# mx, my]}")
 		if bool_edificio[mx, my] or construccion_reservada[mx, my]
@@ -3040,27 +3108,47 @@ else{
 			//Ciclo de las empresas
 			for(var a = 0; a < array_length(dia_empresas[dia mod 28]); a++){
 				var empresa = dia_empresas[dia mod 28, a]
+				//Compra de terrenos
+				if array_length(terrenos_venta) > 0{
+					var terreno_venta = terrenos_venta[0], width = terreno_venta.width, height = terreno_venta.height, temp_precio = valor_terreno * width * height
+					if not empresa.quiebra and irandom(10) < credibilidad_financiera and empresa.dinero > 2 * temp_precio{
+						array_shift(terrenos_venta)
+						empresa.dinero -= temp_precio
+						if terreno_venta.privado
+							terreno_venta.empresa.dinero += temp_precio
+						else{
+							dinero += temp_precio
+							mes_privatizacion[current_mes] += temp_precio
+						}
+						for(var b = terreno_venta.x; b < terreno_venta.x + width; b++)
+							for(var c = terreno_venta.y; c < terreno_venta.y + height; c++){
+								array_push(empresa.terreno, {a : b, b : c})
+								array_set(zona_empresa[b], c, empresa)
+								array_set(zona_privada_venta[b], c, false)
+							}
+					}
+				}
 				//Compra de edificios
 				if array_length(edificios_a_la_venta) > 0{
-					var temp = edificios_a_la_venta[0], edificio = temp.edificio, temp_precio = temp.precio, width = temp.width, height = temp.height
+					var temp_compra = edificios_a_la_venta[0], edificio = temp_compra.edificio, temp_precio = temp_compra.precio, width = temp_compra.width, height = temp_compra.height
 					if not empresa.quiebra and irandom(10) < credibilidad_financiera and empresa.dinero > 2 * temp_precio{
 						empresa_comprado = null_empresa
 						array_shift(edificios_a_la_venta)
 						x = edificio.x
 						y = edificio.y
-						if temp.estatal{
+						if temp_compra.estatal{
 							mes_privatizacion[current_mes] += temp_precio
 							dinero += temp_precio
 							dinero_privado -= temp_precio
 							inversion_privada += temp_precio
 						}
-						else if temp.empresa != null_empresa{
-							array_remove(temp.empresa.ventas, temp, "edificio eliminado de los edificios a la venta de una empresa")
-							temp.empresa.dinero += temp_precio
-							for(var b = 0; b < array_length(temp.empresa.terreno); b++){
-								var complex = temp.empresa.terreno[b]
+						else if temp_compra.empresa != null_empresa{
+							array_remove(temp_compra.empresa.ventas, temp_compra, "edificio eliminado de los edificios a la venta de una empresa")
+							temp_compra.empresa.dinero += temp_precio
+							for(var b = 0; b < array_length(temp_compra.empresa.terreno); b++){
+								var complex = temp_compra.empresa.terreno[b]
 								if complex.a >= x and complex.a < x + width and complex.b >= y and complex.b < y + height
-									array_delete(temp.empresa.terreno, b--, 1)
+									array_delete(temp_compra.empresa.terreno, b--, 1)
 							}
 						}
 						empresa.dinero -= temp_precio
@@ -3084,7 +3172,7 @@ else{
 							empresa_comprado = empresa
 						else if empresa_comprado = empresa and array_length(edificios_a_la_venta) > 1{
 							array_shift(edificios_a_la_venta)
-							array_push(edificios_a_la_venta, temp)
+							array_push(edificios_a_la_venta, temp_compra)
 						}
 					}
 				}
@@ -3097,7 +3185,10 @@ else{
 						mx--
 					while zona_empresa[mx, my - 1] = empresa
 						my--
-					var index = irandom_range(3, array_length(edificio_nombre) - 1), temp_precio = edificio_precio[index]
+					do
+						var index = irandom_range(3, array_length(edificio_nombre) - 1)
+					until not edificio_resize[index]
+					var temp_precio = edificio_precio[index]
 					if not edificio_estatal[index] and floor(dia / 365) >= edificio_anno[index] and empresa.dinero > temp_precio and edificio_valid_place(mx, my, index, false, true, empresa){
 						empresa.dinero -= temp_precio
 						dinero_privado -= temp_precio
@@ -3113,6 +3204,7 @@ else{
 				empresa.dinero -= b
 				dinero += b
 				mes_impuestos[current_mes] += b
+				//Quiebra
 				if empresa.dinero < 0{
 					if empresa.quiebra{
 						credibilidad_financiera = max(credibilidad_financiera - 1, 1)
@@ -3942,6 +4034,7 @@ else{
 			menu = not menu
 			close_show()
 			build_sel = false
+			build_terreno = false
 			sel_build = false
 			sel_info = false
 			sel_comisaria = false

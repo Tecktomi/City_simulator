@@ -13,7 +13,7 @@ function edificio_valid_place(x, y, index, rotado = false, privado = false, empr
 		if edificio_es_costero[index]{
 			for(var a = x; a < x + width; a++)
 				for(var b = y; b < y + height; b++)
-					if construccion_reservada[a, b] or (bool_edificio[a, b] and (index = 32 or id_edificio[a, b].tipo != 32)) or (privado and zona_empresa[a, b] != empresa)
+					if construccion_reservada[a, b] or (bool_edificio[a, b] and (index = 32 or id_edificio[a, b].tipo != 32)) or (privado and zona_empresa[a, b] != empresa) or zona_privada_venta[a, b]
 						return false
 			var flag = true
 			for(var a = x; a < x + width; a++)
@@ -34,7 +34,7 @@ function edificio_valid_place(x, y, index, rotado = false, privado = false, empr
 		else{
 			for(var a = x; a < x + width; a++)
 				for(var b = y; b < y + height; b++)
-					if mar[a, b] or construccion_reservada[a, b] or (bool_edificio[a, b] and (index = 32 or id_edificio[a, b].tipo != 32)) or (privado and zona_empresa[a, b] != empresa)
+					if mar[a, b] or construccion_reservada[a, b] or (bool_edificio[a, b] and (index = 32 or id_edificio[a, b].tipo != 32)) or (privado and zona_empresa[a, b] != empresa) or zona_privada_venta[a, b]
 						return false
 		}
 		return true

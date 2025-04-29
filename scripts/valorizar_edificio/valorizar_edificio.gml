@@ -31,8 +31,8 @@ function valorizar_edificio(edificio = null_edificio){
 			temp_precio += c
 			temp_text += $"\nDerechos petrolíferos: ${c}"
 		}
-		temp_text += $"\nPrecio terreno: ${10 * width * height}"
-		temp_precio += 10 * width * height
+		temp_text += $"\nPrecio terreno: ${valor_terreno * width * height}"
+		temp_precio += valor_terreno * width * height
 		var b = 0
 		for(var a = 0; a < array_length(recurso_nombre); a++)
 			if edificio.almacen[a] > 0
