@@ -392,10 +392,8 @@ else{
 			}
 			b += last_width + 10
 		}
-		if draw_boton(b, 80, "Privatizar terreno", true){
-			build_terreno = true
-			sel_build = false
-		}
+		if draw_boton(b, 80, "Privatizar terreno", true)
+			ministerio = -2
 		b = 100
 		for(var a = 0; a < array_length(ministerio_nombre); a++){
 			if draw_boton(b, room_height - 100, ministerio_nombre[a], true){
@@ -442,6 +440,18 @@ else{
 							tutorial_complete = true
 					}
 				}
+			}
+		}
+		//Privatizar terreno
+		else if ministerio = -2{
+			draw_text_pos(100, pos, "Permisos de construcción")
+			for(var a = 0; a < array_length(edificio_categoria_nombre); a++)
+				if draw_boton(120, pos, $"{edificio_categoria_nombre[a]}: {build_terreno_permisos[a] ? "H" : "Desh"}abilitado")
+					build_terreno_permisos[a] = not build_terreno_permisos[a]
+			pos += 20
+			if draw_boton(100, pos, "Privatizar terreno"){
+				sel_build = false
+				build_terreno = true
 			}
 		}
 		//Ministerios
@@ -825,11 +835,11 @@ else{
 					if draw_menu(120, pos, $"{temp_text_array[3]}: ${count[3]}", 1)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_exportaciones[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_exportaciones[c]} ({temp_exportaciones_id[c]})")
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_exportaciones[c]} ({floor(temp_exportaciones_id[c])})")
 					if draw_menu(120, pos, $"{temp_text_array[9]}: ${count[9]}", 6)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_venta[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_venta[c]} ({temp_venta_id[c]})")
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_venta[c]} ({floor(temp_venta_id[c])})")
 					draw_text_pos(120, pos, $"{temp_text_array[10]}: ${count[10]}")
 					draw_text_pos(120, pos, $"{temp_text_array[12]}: ${count[12]}")
 					draw_text_pos(120, pos, $"{temp_text_array[13]}: ${count[13]}")
@@ -841,11 +851,11 @@ else{
 					if draw_menu(120, pos, $"{temp_text_array[7]}: ${count[7]}", 3)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_importaciones[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_importaciones[c]} ({temp_importaciones_id[c]})")
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_importaciones[c]} ({floor(temp_importaciones_id[c])})")
 					if draw_menu(120, pos, $"{temp_text_array[8]}: ${count[8]}", 7)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_compra[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_compra[c]} ({temp_compra_id[c]})")
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_compra[c]} ({floor(temp_compra_id[c])})")
 					draw_text_pos(120, pos, $"{temp_text_array[11]}: ${count[11]}")
 					draw_text_pos(120, pos, $"{temp_text_array[14]}: ${count[14]}")
 				}
@@ -1610,7 +1620,7 @@ else{
 					draw_rombo_coord(a, b, 1, 1, false)
 		draw_set_alpha(1)
 		if build_pressed{
-			var width = min(abs(build_x - mx), 10), height = min(abs(build_y - my), 10), minx = max(min(build_x, mx), build_x - width), miny = max(min(build_y, my), build_y - height), flag = true
+			var width = clamp(abs(build_x - mx), 1, 10), height = clamp(abs(build_y - my), 1, 10), minx = max(min(build_x, mx + 1), build_x - width), miny = max(min(build_y, my + 1), build_y - height), flag = true
 			draw_set_color(c_blue)
 			draw_set_alpha(0.5)
 			draw_rombo_coord(minx, miny, width, height, false)
@@ -1625,7 +1635,7 @@ else{
 			}
 			draw_set_color(c_white)
 			draw_set_alpha(1)
-			draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, flag ? $"{width * height} terreno" : "No puedes privatizar este terreno")
+			draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, flag ? $"{width * height} terreno{width * height = 1 ? "" : "s"}" : "No puedes privatizar este terreno")
 			if flag and mouse_check_button_released(mb_left){
 				build_terreno = false
 				array_push(terrenos_venta, {
@@ -1640,6 +1650,7 @@ else{
 					for(var b = miny; b < miny + height; b++){
 						array_set(zona_privada[a], b, true)
 						array_set(zona_privada_venta[a], b, true)
+						array_set(zona_privada_permisos[a], b, build_terreno_permisos)
 					}
 			}
 		}
@@ -2866,6 +2877,17 @@ else{
 							mes_accidentes[current_mes]++
 							if persona.medico != null_edificio{
 								add_noticia("Accidente", $"Ha muerto {name(persona)} en un accidente laboral en {persona.trabajo.nombre}")
+								if ley_eneabled[12] and persona.familia.integrantes > 0{
+									persona.familia.riqueza += 100
+									if persona.trabajo.privado{
+										persona.trabajo.empresa.dinero -= 100
+										dinero_privado -= 100
+									}
+									else{
+										dinero -= 100
+										mes_salida_micelaneo[current_mes] += 100
+									}
+								}
 								destroy_persona(persona,, "Accidente laboral")
 								mes_muertos_accidentes[current_mes]++
 							}
@@ -3178,25 +3200,36 @@ else{
 				}
 				//Construcción
 				if array_length(empresa.terreno) > 0{
-					var terreno = array_pick(empresa.terreno)
+					var terreno = array_pick(empresa.terreno), temp_array = []
 					mx = terreno.a
 					my = terreno.b
-					while zona_empresa[mx - 1, my] = empresa
+					while zona_empresa[mx - 1, my] = empresa and (not bool_edificio[mx - 1, my] or id_edificio[mx - 1, my].tipo = 32)
 						mx--
-					while zona_empresa[mx, my - 1] = empresa
+					while zona_empresa[mx, my - 1] = empresa and (not bool_edificio[mx, my - 1] or id_edificio[mx, my - 1].tipo = 32)
 						my--
-					do
-						var index = irandom_range(3, array_length(edificio_nombre) - 1)
-					until not edificio_resize[index]
-					var temp_precio = edificio_precio[index]
-					if not edificio_estatal[index] and floor(dia / 365) >= edificio_anno[index] and empresa.dinero > temp_precio and edificio_valid_place(mx, my, index, false, true, empresa){
-						empresa.dinero -= temp_precio
-						dinero_privado -= temp_precio
-						var temp_altura = 0, width = edificio_width[index], height = edificio_height[index]
-						for(var b = mx; b < mx + width; b++)
-							for(var c = my; c < my + height; c++)
-								temp_altura += altura[# b, c]
-						array_push(empresa.construcciones, add_construccion(, mx, my, index, 0, edificio_construccion_tiempo[index], temp_altura / width / height, false,,, temp_precio, true, empresa))
+					for(var b = 0; b < array_length(edificio_categoria_nombre); b++)
+						if zona_privada_permisos[mx, my][b]
+							for(var c = 0; c < array_length(edificio_categoria[b]); c++){
+								var d = edificio_categoria[b, c]
+								if floor(dia mod 365) >= edificio_anno[d] and not edificio_estatal[d] and not edificio_resize[d]
+									array_push(temp_array, d)
+							}
+					if array_length(temp_array) > 0{
+						temp_array = array_shuffle(temp_array)
+						var index = -1
+						do index = array_shift(temp_array)
+						until array_length(temp_array) = 0
+						if index >= 0{
+							var temp_precio = edificio_precio[index], temp_altura = 0, width = edificio_width[index], height = edificio_height[index]
+							if empresa.dinero > temp_precio and edificio_valid_place(mx, my, index, false, true, empresa){
+								empresa.dinero -= temp_precio
+								dinero_privado -= temp_precio
+								for(var b = mx; b < mx + width; b++)
+									for(var c = my; c < my + height; c++)
+										temp_altura += altura[# b, c]
+								array_push(empresa.construcciones, add_construccion(, mx, my, index, 0, edificio_construccion_tiempo[index], temp_altura / width / height, false,,, temp_precio, true, empresa))
+							}
+						}
 					}
 				}
 				//Impuestos
@@ -3416,6 +3449,7 @@ else{
 										}
 										if flag{
 											edificio.modo = (edificio.modo + b) mod array_length(recurso_mineral)
+											edificio.nombre = $"Mina de {recurso_nombre[recurso_mineral[edificio.modo]]} {++edificio_number_mina[edificio.modo]}"
 											break
 										}
 									}

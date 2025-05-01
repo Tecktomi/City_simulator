@@ -122,13 +122,10 @@ debug = false
 		def_guerra("Operación Uphold Democracy", 194, 196, [17], [8])
 		def_guerra("Guerra contra el narcotráfico", 206, 0, [2, 17], [])
 	#endregion
-	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil", "Sufragio universal", "Policía armada"]
-	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, false]
-	ley_tiempo = []
-	for(a = 0; a < array_length(ley_nombre); a++)
-		array_push(ley_tiempo, 0)
-	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0]
-	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500, 800, 1000]
+	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil", "Sufragio universal", "Policía armada", "Seguro laboral"]
+	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, false, false]
+	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0]
+	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500, 800, 1000, 800]
 	ley_descripcion = [	"Permite a los ciudadanos separarse legalmente, molestará a los ciudadanos religiosos",
 						"Permite la entrada de inmigrantes a la isla",
 						"Permite trabajar a los niños mayores de 12 años, molestará a todo ciudadano con hijos",
@@ -141,9 +138,13 @@ debug = false
 						"El estado mantiene económicamente a los hijos, alegrará a todos los ciudadanos con hijos",
 						//10
 						"Permite a mujeres y analfabetos votarle a su majestad",
-						"Le da a la policía las herramientas para hacer bien su trabajo"]
-	ley_economia = [2, 4, 5, 1, 1, 4, 4, 1, 1, 2, 3, 5]
-	ley_sociocultural = [1, 1, 5, 3, 2, 1, 4, 1, 2, 3, 1, 6]
+						"Le da a la policía las herramientas para hacer bien su trabajo",
+						"Indemnizará a las familias de los trabajadores que mueran por accidente laboral"]
+	ley_economia = [2, 4, 5, 1, 1, 4, 4, 1, 1, 2, 3, 5, 2]
+	ley_sociocultural = [1, 1, 5, 3, 2, 1, 4, 1, 2, 3, 1, 6, 3]
+	ley_tiempo = []
+	for(a = 0; a < array_length(ley_nombre); a++)
+		array_push(ley_tiempo, 0)
 	politica_economia_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
 	politica_sociocultural_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]
 	politica_economia = 3
@@ -160,7 +161,6 @@ debug = false
 	noticias = [null_noticia]
 	array_pop(noticias)
 #endregion
-//Personas
 #region Personas
 	null_relacion = {
 		padre : undefined,
@@ -236,8 +236,7 @@ debug = false
 	for(a = 0; a < array_length(educacion_nombre); a++)
 		trabajo_educacion[a] = []
 #endregion
-//Familias
-#region familias
+#region Familias
 	familia_count = 0
 	null_familia = {
 		padre : null_persona,
@@ -258,8 +257,7 @@ debug = false
 	null_persona.familia = null_familia
 	sueldo_minimo = 0
 #endregion
-//Recursos
-#region recursos
+#region Recursos
 	recurso_nombre = [	"Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón",
 						"Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche",
 						"Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo", "Armas", "Ropa"]
@@ -321,8 +319,7 @@ debug = false
 	}
 	
 #endregion
-//Edificios
-#region edificios
+#region Edificios
 	edificio_descripcion = ["", "", "", "",
 		"Produce diversos cultivos dependiendo de la fertilidad del terreno",
 		"Corta áboles cercanos para extraer madera",
@@ -728,8 +725,7 @@ debug = false
 	terrenos_venta = [null_terreno]
 	array_pop(terrenos_venta)
 #endregion
-//Exigencia
-#region exigenicas
+#region Exigenicas
 	exigencia_nombre = [
 		"Abre un nuevo edificio médico",
 		"Abre un nuevo edificio educativo",
@@ -755,7 +751,7 @@ debug = false
 	null_edificio.exigencia = null_exigencia
 	felicidad_minima = 20
 #endregion
-#region edificios ficticios
+#region Edificios ficticios
 	edificios_ocio_index = []
 	edificio_almacen_index = []
 	edificio_experiencia = []
@@ -801,9 +797,11 @@ debug = false
 		ds_grid_add_disk(altura, floor(xsize / 2), floor(ysize / 2), a, 0.05)
 	a = ds_grid_get_max(altura, 0, 0, xsize, ysize)
 	ds_grid_multiply_region(altura, 0, 0, xsize, ysize, 1 / a)
-	//Matriz del mundo
-	var mar_checked, land_checked, land_matrix, time = current_time, mares = [[{a : 0, b : 0}]], prev_mar = mares[0], prev_mar_bool = true, temp_mar
+	var mar_checked, land_checked, land_matrix, time = current_time, mares = [[{a : 0, b : 0}]], prev_mar = mares[0], prev_mar_bool = true, temp_mar, temp_array = [true]
+	for(a = 1; a < array_length(edificio_categoria_nombre); a++)
+		array_push(temp_array, false)
 	array_pop(mares[0])
+	//Matriz del mundo
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
 			var c = altura[# a, b]
@@ -878,6 +876,7 @@ debug = false
 			zona_privada[a, b] = false
 			zona_empresa[a, b]= null_empresa
 			zona_privada_venta[a, b] = false
+			zona_privada_permisos[a, b] = temp_array
 			mar_checked[a, b] = false
 			land_checked[a, b] = false
 			land_matrix[a, b] = false
@@ -944,6 +943,7 @@ debug = false
 	build_y = 0
 	build_pressed = false
 	build_terreno = false
+	build_terreno_permisos = temp_array
 	last_width = 0
 	last_height = 0
 	show_grid = false
