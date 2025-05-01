@@ -18,7 +18,7 @@ function valorizar_edificio(edificio = null_edificio){
 				for(var b = max(0, edificio.y - 5); b < e; b++)
 					if bosque[a, b]
 						c += bosque_madera[a, b]
-			c = floor(c * recurso_precio[1] * impuesto_forestal)
+			c = floor(c * recurso_precio[1] * impuesto_maderero)
 			temp_precio += c
 			temp_text += $"\nDerechos madereros: ${c}"
 		}

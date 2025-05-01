@@ -17,7 +17,6 @@ function edificio_valid_place(x, y, index, rotado = false, privado = false, empr
 					tipo = a
 					break
 				}
-			show_debug_message(tipo)
 			if tipo = -1
 				return false
 		}

@@ -1169,8 +1169,8 @@ else{
 					impuesto_trabajador = ((20 * impuesto_trabajador + 1) mod 6) / 20
 				if draw_boton(110, pos, $"Impuesto  minero {round(100 * impuesto_minero)}%")
 					impuesto_minero = ((10 * impuesto_minero + 1) mod 6) / 10
-				if draw_boton(110, pos, $"Impuesto forestal {round(100 * impuesto_forestal)}%")
-					impuesto_forestal = ((10 * impuesto_forestal + 1) mod 6) / 10
+				if draw_boton(110, pos, $"Impuesto forestal {round(100 * impuesto_maderero)}%")
+					impuesto_maderero = ((10 * impuesto_maderero + 1) mod 6) / 10
 				if draw_boton(110, pos, $"Valor terreno ${valor_terreno}")
 					valor_terreno = max(10, (valor_terreno + 5) mod 30)
 				if (dia / 365) >= 60 and draw_boton(110, pos, $"Impuesto petrolífero {round(100 * impuesto_petrolifero)}%")
@@ -1184,7 +1184,7 @@ else{
 				if draw_menu(110, pos, $"{array_length(empresas)} empresa{array_length(empresas) = 1 ? "" : "s"} en la isla", 1){
 					for(var a = 0; a < array_length(empresas); a++){
 						var empresa = empresas[a]
-						if draw_menu(120, pos, $"{empresa.nombre}{empresa.nacional ? " (nacional)" : ""}", a + 2){
+						if draw_menu(120, pos, $"{empresa.nombre}{empresa.nacional ? " (nacional)" : ""}{array_length(empresa.terreno) > 0 ? "(" + string(array_length(empresa.terreno)) + " terrenos)" : ""}{array_length(empresa.edificios) > 0 ? "(" + string(array_length(empresa.edificios)) + " edificios)" : ""}", a + 2){
 							draw_text_pos(140, pos, $"Dinero: ${floor(empresa.dinero)}")
 							if empresa.nacional and draw_boton(140, pos, $"Dueño: {name(empresa.jefe)}")
 								select(,, empresa.jefe)
@@ -3211,7 +3211,7 @@ else{
 						if zona_privada_permisos[mx, my][b]
 							for(var c = 0; c < array_length(edificio_categoria[b]); c++){
 								var d = edificio_categoria[b, c]
-								if floor(dia mod 365) >= edificio_anno[d] and not edificio_estatal[d] and not edificio_resize[d]
+								if floor(dia / 365) >= edificio_anno[d] and not edificio_estatal[d] and not edificio_resize[d]
 									array_push(temp_array, d)
 							}
 					if array_length(temp_array) > 0{
@@ -3220,14 +3220,60 @@ else{
 						do index = array_shift(temp_array)
 						until array_length(temp_array) = 0
 						if index >= 0{
-							var temp_precio = edificio_precio[index], temp_altura = 0, width = edificio_width[index], height = edificio_height[index]
-							if empresa.dinero > temp_precio and edificio_valid_place(mx, my, index, false, true, empresa){
-								empresa.dinero -= temp_precio
-								dinero_privado -= temp_precio
+							var temp_precio = edificio_precio[index], temp_precio_2 = 0, temp_altura = 0, width = edificio_width[index], height = edificio_height[index], tipo = 0, flag = true, var_edificio_nombre = edificio_nombre[index]
+							if var_edificio_nombre = "Mina"{
+								var max_c = mx + width + 1, max_d = my + height + 1
+								flag = false
+								for(var b = 0; b < array_length(recurso_mineral); b++){
+									var e = 0
+									for(var c = mx - 1; c < max_c; c++)
+										for(var d = my - 1; d < max_d; d ++)
+											if mineral[b][c, d]
+												e += mineral_cantidad[b][c, d]
+									temp_precio_2 = recurso_precio[recurso_mineral[b]] * e
+									if (temp_precio_2 * (1 - impuesto_minero) > 1000 + 2 * edificio_precio[index]){
+										temp_precio_2 *= impuesto_minero
+										tipo = b
+										flag = true
+										break
+									}
+								}
+							}
+							else if var_edificio_nombre = "Aserradero"{
+								var b = 0, max_c = mx + width + 5, max_d = my + height + 5
+								for(var c = mx - 5; c < max_c; c++)
+									for(var d = my - 5; d < max_d; d ++)
+										if bosque[c, d]
+											b += bosque_madera[c, d]
+								temp_precio_2 = recurso_precio[0] * b
+								flag = (temp_precio_2 * (1 - impuesto_maderero) > 1000 + 2 * edificio_precio[index])
+								temp_precio_2 *= impuesto_maderero
+							}
+							else if var_edificio_nombre = "Tejar"{
+								var b = 0, max_c = mx + width, max_d = my + height
+								for(var c = mx; c < max_c; c++)
+									for(var d = my; d < max_d; d ++)
+										b += altura[# c, d]
+								flag = (b / (width * height) > 0.8)
+							}
+							else if var_edificio_nombre = "Pozo petrolífero"{
+								var b = 0, max_c = mx + width, max_d = my + height
+								for(var c = mx; c < max_c; c++)
+									for(var d = my; d < max_d; d ++)
+										b += petroleo[c, d]
+								temp_precio_2 = recurso_precio[27] * b
+								flag = (temp_precio_2 * (1 - impuesto_petrolifero) > 1000 + 2 * edificio_precio[index])
+								temp_precio_2 *= impuesto_petrolifero
+							}
+							if flag and empresa.dinero > temp_precio + temp_precio_2 and edificio_valid_place(mx, my, index, false, true, empresa){
+								empresa.dinero -= temp_precio + temp_precio_2
+								dinero_privado -= temp_precio + temp_precio_2
+								dinero += temp_precio_2
+								mes_privatizacion[current_mes] += temp_precio_2
 								for(var b = mx; b < mx + width; b++)
 									for(var c = my; c < my + height; c++)
 										temp_altura += altura[# b, c]
-								array_push(empresa.construcciones, add_construccion(, mx, my, index, 0, edificio_construccion_tiempo[index], temp_altura / width / height, false,,, temp_precio, true, empresa))
+								array_push(empresa.construcciones, add_construccion(, mx, my, index, tipo, edificio_construccion_tiempo[index], temp_altura / width / height, false,,, temp_precio, true, empresa))
 							}
 						}
 					}
