@@ -10,7 +10,7 @@ function draw_gradiente(tipo, modo){
 			draw_set_color(c_white)
 			draw_text(0, 0, recurso_nombre[recurso_cultivo[tipo]])
 		}
-		if modo = 1{
+		else if modo = 1{
 			draw_set_color(recurso_mineral_color[tipo])
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
@@ -19,7 +19,7 @@ function draw_gradiente(tipo, modo){
 			draw_set_color(c_white)
 			draw_text(0, 0, recurso_nombre[recurso_mineral[tipo]])
 		}
-		if modo = 2{
+		else if modo = 2{
 			draw_set_alpha(0.5)
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
@@ -36,7 +36,7 @@ function draw_gradiente(tipo, modo){
 				if not mar[mx, my]
 					draw_text(0, 20, clamp(belleza[mx, my], 0, 100))
 		}
-		if modo = 3{
+		else if modo = 3{
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++){
 					draw_set_color(make_color_hsv(0, 0, 2.55 * (100 - clamp(contaminacion[a, b], 0, 100))))
@@ -51,7 +51,7 @@ function draw_gradiente(tipo, modo){
 			if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height
 				draw_text(0, 20, clamp(contaminacion[mx, my], 0, 100))
 		}
-		if modo = 4{
+		else if modo = 4{
 			draw_set_color(c_white)
 			draw_text(0, 0, "Ocupación Residencial")
 			for(var c = 0; c < array_length(casas); c++){
@@ -66,7 +66,7 @@ function draw_gradiente(tipo, modo){
 				}
 			}
 		}
-		if modo = 5{
+		else if modo = 5{
 			draw_set_color(c_white)
 			draw_text(0, 0, "Ocupación Laboral")
 			for(var c = 0; c < array_length(trabajos); c++){
@@ -81,7 +81,7 @@ function draw_gradiente(tipo, modo){
 				}
 			}
 		}
-		if modo = 6{
+		else if modo = 6{
 			draw_set_color(c_white)
 			draw_text(0, 0, "Depósitos de Petróleo")
 			draw_set_color(c_black)
@@ -94,7 +94,7 @@ function draw_gradiente(tipo, modo){
 			if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height
 				draw_text(0, 20, petroleo[mx, my])
 		}
-		if modo = 7{
+		else if modo = 7{
 			draw_set_color(c_white)
 			draw_text(0, 0, "Protección contra incendios")
 			for(var a = 0; a < array_length(edificios); a++){
@@ -116,6 +116,28 @@ function draw_gradiente(tipo, modo){
 				else
 					draw_text(0, 20, $"Seguro por {a} mes{a = 1 ? "" : "es"}")
 			}
+		}
+		else if modo = 8{
+			draw_set_color(c_white)
+			draw_text(0, 0, "Zonas de pesca")
+			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
+			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
+			var closer = -1, closer_dis = 999, flag = zona_pesca_bool[mx, my]
+			for(var c = 0; c < array_length(zonas_pesca); c++){
+				var zona_pesca = zonas_pesca[c], a = zona_pesca.a, b = zona_pesca.b
+				draw_set_alpha(0.2 + 0.4 * zona_pesca.cantidad / zona_pesca.cantidad_max)
+				draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height * (1 + zona_pesca.cantidad / 800), false)
+				if flag{
+					var closer_current = sqrt(sqr(mx - a) + sqr(my - b))
+					if closer_current < closer_dis{
+						closer_dis = closer_current
+						closer = c
+					}
+				}
+			}
+			draw_set_alpha(1)
+			if closer >= 0
+				draw_text(0, 20, $"Pescado: {zonas_pesca[closer].cantidad}")
 		}
 	}
 }

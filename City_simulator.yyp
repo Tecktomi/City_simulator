@@ -47,6 +47,7 @@
     {"id":{"name":"buscar_escuela","path":"scripts/buscar_escuela/buscar_escuela.yy",},},
     {"id":{"name":"buscar_muelle_cercano","path":"scripts/buscar_muelle_cercano/buscar_muelle_cercano.yy",},},
     {"id":{"name":"buscar_trabajo","path":"scripts/buscar_trabajo/buscar_trabajo.yy",},},
+    {"id":{"name":"buscar_zona_pesca","path":"scripts/buscar_zona_pesca/buscar_zona_pesca.yy",},},
     {"id":{"name":"calcular_felicidad_transporte","path":"scripts/calcular_felicidad_transporte/calcular_felicidad_transporte.yy",},},
     {"id":{"name":"calcular_felicidad","path":"scripts/calcular_felicidad/calcular_felicidad.yy",},},
     {"id":{"name":"cambiar_casa","path":"scripts/cambiar_casa/cambiar_casa.yy",},},

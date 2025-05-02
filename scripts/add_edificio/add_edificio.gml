@@ -53,7 +53,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			empresa : null_empresa,
 			venta : false,
 			es_almacen : edificio_es_almacen[tipo],
-			seguro_fuego : 0
+			seguro_fuego : 0,
+			zona_pesca : null_zona_pesca
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
@@ -132,6 +133,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 				array_push(edificio.array_complex, {a : -1, b : 0})
 			else if var_edificio_nombre = "Rancho"
 				edificio.trabajadores_max = 5 + floor((width * height - 16) / 16)
+			else if var_edificio_nombre = "Pescadería"
+				buscar_zona_pesca(edificio)
 			if var_edificio_nombre != "Muelle"
 				buscar_muelle_cercano(edificio)
 			else{

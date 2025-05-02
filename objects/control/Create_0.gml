@@ -122,10 +122,10 @@ debug = false
 		def_guerra("Operación Uphold Democracy", 194, 196, [17], [8])
 		def_guerra("Guerra contra el narcotráfico", 206, 0, [2, 17], [])
 	#endregion
-	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil", "Sufragio universal", "Policía armada", "Seguro laboral"]
-	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, false, false]
-	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0]
-	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500, 800, 1000, 800]
+	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil", "Sufragio universal", "Policía armada", "Seguro laboral", "Regularización de Pesca"]
+	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, false, false, false]
+	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, 0]
+	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500, 800, 1000, 800, 500]
 	ley_descripcion = [	"Permite a los ciudadanos separarse legalmente, molestará a los ciudadanos religiosos",
 						"Permite la entrada de inmigrantes a la isla",
 						"Permite trabajar a los niños mayores de 12 años, molestará a todo ciudadano con hijos",
@@ -139,9 +139,10 @@ debug = false
 						//10
 						"Permite a mujeres y analfabetos votarle a su majestad",
 						"Le da a la policía las herramientas para hacer bien su trabajo",
-						"Indemnizará a las familias de los trabajadores que mueran por accidente laboral"]
-	ley_economia = [2, 4, 5, 1, 1, 4, 4, 1, 1, 2, 3, 5, 2]
-	ley_sociocultural = [1, 1, 5, 3, 2, 1, 4, 1, 2, 3, 1, 6, 3]
+						"Indemnizará a las familias de los trabajadores que mueran por accidente laboral",
+						"Impide a las pescaderías extraer pescado cuando su zona de extración está muy dañada"]
+	ley_economia = [2, 4, 5, 1, 1, 4, 4, 1, 1, 2, 3, 5, 2, 2]
+	ley_sociocultural = [1, 1, 5, 3, 2, 1, 4, 1, 2, 3, 1, 6, 3, 4]
 	ley_tiempo = []
 	for(a = 0; a < array_length(ley_nombre); a++)
 		array_push(ley_tiempo, 0)
@@ -160,6 +161,12 @@ debug = false
 	}
 	noticias = [null_noticia]
 	array_pop(noticias)
+	null_zona_pesca = {
+		a : 0,
+		b : 0,
+		cantidad : 0,
+		cantidad_max : 0
+	}
 #endregion
 #region Personas
 	null_relacion = {
@@ -624,7 +631,8 @@ debug = false
 		ladron : null_persona,
 		venta : false,
 		es_almacen : false,
-		seguro_fuego : 0
+		seguro_fuego : 0,
+		zona_pesca : null_zona_pesca
 	}
 	array_pop(null_edificio.familias)
 	array_pop(null_edificio.trabajadores)
@@ -877,6 +885,7 @@ debug = false
 			zona_empresa[a, b]= null_empresa
 			zona_privada_venta[a, b] = false
 			zona_privada_permisos[a, b] = temp_array
+			zona_pesca_bool[a, b] = false
 			mar_checked[a, b] = false
 			land_checked[a, b] = false
 			land_matrix[a, b] = false
@@ -919,6 +928,25 @@ debug = false
 			array_set(land_checked[a], b2, true)
 			array_push(yes_land, {a : a, b : b2})
 		}
+	}
+	zonas_pesca = []
+	repeat(clamp(xsize * ysize / 1500, 10, 100)){
+		do{
+			a = irandom(xsize - 1)
+			b = irandom(ysize - 1)
+		}
+		until mar[a, b] and not zona_pesca_bool[a, b]
+		var c = floor(random_range(1500, 3000) / max(0.3, altura[# a, b]))
+		array_push(zonas_pesca, {
+			a : a,
+			b : b,
+			cantidad : c,
+			cantidad_max : c
+		})
+		var e = min(a + 5, xsize - 1), f = min(b + 5, ysize - 1)
+		for(var c = max(0, a - 5); c <= e; c++)
+			for(var d = max(0, b - 5); d <= f; d++)
+				array_set(zona_pesca_bool[c], d, true)
 	}
 	if debug
 		show_debug_message($"{current_time - time} milisegundos")

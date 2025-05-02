@@ -189,6 +189,8 @@ else{
 				draw_gradiente(0, 5)
 			if keyboard_check(ord("F"))
 				draw_gradiente(0, 7)
+			if keyboard_check(ord("K")) or (build_sel and edificio_nombre[build_index] = "Pescadería")
+				draw_gradiente(0, 8)
 		#endregion
 		//Información general
 		draw_set_alpha(0.5)
@@ -1904,8 +1906,20 @@ else{
 								}
 					}
 					else if var_edificio_nombre = "Pescadería"{
+						var zona_pesca = sel_edificio.zona_pesca, c = zona_pesca.a, d = zona_pesca.b
+						draw_set_color(c_white)
+						draw_set_alpha(0.2 + 0.4 * zona_pesca.cantidad / zona_pesca.cantidad_max)
+						draw_circle((c - d) * tile_width - xpos, (c + d + 1) * tile_height - ypos, tile_height * (1 + zona_pesca.cantidad / 800), false)
+						draw_set_alpha(1)
+						if sqrt(sqr(mx - c) + sqr(my - d)) < 5{
+							draw_set_halign(fa_left)
+							draw_text(0, 0, $"Pescado: {zona_pesca.cantidad}")
+							draw_set_halign(fa_right)
+						}
+						draw_set_color(c_black)
+						draw_text_pos(room_width - 40, pos, $"Eficiencia: {floor(100 * sel_edificio.eficiencia)}%")
 						if contaminacion[sel_edificio.x, sel_edificio.y] > 0
-							draw_text_pos(room_width - 40, pos, $"Eficiencia: {100 - floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
+							draw_text_pos(room_width - 50, pos, $"Contaminación: {100 - floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
 					}
 					else if var_edificio_nombre = "Mina"{
 						draw_text_pos(room_width - 20, pos, $"Extrayendo {recurso_nombre[recurso_mineral[sel_edificio.modo]]}")
@@ -2608,6 +2622,11 @@ else{
 							candidatos_votos_total++
 						}
 					}
+				}
+				//Zonas de pesca
+				for(var a = 0; a < array_length(zonas_pesca); a++){
+					var zona_pesca = zonas_pesca[a]
+					zona_pesca.cantidad = min(floor(zona_pesca.cantidad * random_range(0.95, 1.1)), zona_pesca.cantidad_max)
 				}
 			}
 			//Eventos anuales
@@ -3450,7 +3469,24 @@ else{
 							}
 						}
 						else if var_edificio_nombre = "Pescadería"{
-							edificio.almacen[8] += round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200) * edificio.eficiencia * edificio_experiencia[index])
+							var zona_pesca = edificio.zona_pesca
+							b = min(edificio.zona_pesca.cantidad, round(edificio.trabajo_mes / 3 * (0.8 + 0.1 * edificio.presupuesto) * (1 - clamp(contaminacion[edificio.x, edificio.y], 0, 100) / 200) * edificio.eficiencia * edificio_experiencia[index]))
+							edificio.almacen[8] += b
+							zona_pesca.cantidad -= b
+							if ley_eneabled[13] and zona_pesca.cantidad < 750
+								buscar_zona_pesca(edificio)
+							if zona_pesca.cantidad = 0{
+								array_remove(zonas_pesca, zona_pesca, "Zona de pesca agotada")
+								var e = min(zona_pesca.a + 5, xsize - 1), f = min(zona_pesca.b + 5, ysize - 1)
+								for(var c = zona_pesca.a - 5; c <= e; c++)
+									for(var d = zona_pesca.b - 5; d <= f; d++)
+										array_set(zona_pesca_bool[c], d, false)
+								for(var c = 0; c < array_length(edificio_count[14]); c++){
+									var temp_edificio = edificio_count[14, c]
+									if temp_edificio.zona_pesca = zona_pesca
+										buscar_zona_pesca(temp_edificio)
+								}
+							}
 							b = 200 * edificio.es_almacen
 							if (current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12) and edificio.almacen[8] > b{
 								edificio.ganancia += recurso_precio[8] * (edificio.almacen[8] - b)
