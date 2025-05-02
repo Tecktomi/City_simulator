@@ -54,9 +54,9 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 					empresa.dinero -= temp_precio
 					dinero_privado -= temp_precio
 					dinero += temp_precio
-					mes_compra_interna[current_mes] += temp_precio
-					array_add(mes_compra_recurso[current_mes], b, temp_precio)
-					array_add(mes_compra_recurso_num[current_mes], b, c)
+					mes_venta_interna[current_mes] += temp_precio
+					array_add(mes_venta_recurso[current_mes], b, temp_precio)
+					array_add(mes_venta_recurso_num[current_mes], b, c)
 				}
 			}
 			array_push(cola_construccion, construccion)

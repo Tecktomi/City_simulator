@@ -131,6 +131,15 @@ else{
 			if keyboard_check(ord("P")) or (build_sel and edificio_nombre[build_index] =  "Pozo Petrolífero")
 				draw_gradiente(0, 6)
 		}
+		//Dibujo terrenos a la venta
+		draw_set_alpha(0.5)
+		draw_set_color(c_white)
+		for(var a = 0; a < array_length(terrenos_venta); a++){
+			var terreno_venta = terrenos_venta[a]
+			draw_rombo_coord(terreno_venta.x, terreno_venta.y, terreno_venta.width, terreno_venta.height, false)
+			draw_rombo_coord(terreno_venta.x, terreno_venta.y, terreno_venta.width, terreno_venta.height, true)
+		}
+		draw_set_alpha(1)
 		//Dibujo de arboles y edificios
 		for(var a = min_camx; a < max_camx; a++)
 			for(var b = min_camy; b < max_camy; b++){
@@ -447,11 +456,14 @@ else{
 		//Privatizar terreno
 		else if ministerio = -2{
 			draw_text_pos(100, pos, "Permisos de construcción")
-			for(var a = 0; a < array_length(edificio_categoria_nombre); a++)
+			b = 0
+			for(var a = 0; a < array_length(edificio_categoria_nombre); a++){
 				if draw_boton(120, pos, $"{edificio_categoria_nombre[a]}: {build_terreno_permisos[a] ? "H" : "Desh"}abilitado")
 					build_terreno_permisos[a] = not build_terreno_permisos[a]
+				b += build_terreno_permisos[a]
+			}
 			pos += 20
-			if draw_boton(100, pos, "Privatizar terreno"){
+			if b > 0 and draw_boton(100, pos, "Privatizar terreno"){
 				sel_build = false
 				build_terreno = true
 			}
@@ -651,7 +663,7 @@ else{
 				if draw_menu(110, pos, $"{array_length(cola_construccion)} edificio{array_length(cola_construccion) = 1 ? "" : "s"} en construcción", 0)
 					for(var a = 0; a < array_length(cola_construccion); a++){
 						var next_build = cola_construccion[a]
-						if draw_boton(120, pos, $"{edificio_nombre[next_build.id]}")
+						if draw_boton(120, pos, $"{edificio_nombre[next_build.id]} {floor(100 * (1 - next_build.tiempo / next_build.tiempo_max))}%")
 							select(,,, next_build)
 					}
 				draw_text_pos(110, pos, $"{num_temp} trabajador{num_temp = 1 ? "" : "s"} temporal{num_temp = 1 ? "" : "s"} ({floor(100 * num_temp / num_tra)}%)")
@@ -830,38 +842,38 @@ else{
 					maxi[a] = round(maxi[a])
 				}
 				#region Ingresos
-				if draw_menu(110, pos, $"Ingresos: ${count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] + count[13]}", 0){
-					draw_text_pos(120, pos, $"{temp_text_array[0]}: ${count[0]}")
-					draw_text_pos(120, pos, $"{temp_text_array[1]}: ${count[1]}")
-					draw_text_pos(120, pos, $"{temp_text_array[2]}: ${count[2]}")
-					if draw_menu(120, pos, $"{temp_text_array[3]}: ${count[3]}", 1)
+				if draw_menu(110, pos, $"Ingresos: ${floor(count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] + count[13])}", 0){
+					draw_text_pos(120, pos, $"{temp_text_array[0]}: ${floor(count[0])}")
+					draw_text_pos(120, pos, $"{temp_text_array[1]}: ${floor(count[1])}")
+					draw_text_pos(120, pos, $"{temp_text_array[2]}: ${floor(count[2])}")
+					if draw_menu(120, pos, $"{temp_text_array[3]}: ${floor(count[3])}", 1)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_exportaciones[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_exportaciones[c]} ({floor(temp_exportaciones_id[c])})")
-					if draw_menu(120, pos, $"{temp_text_array[9]}: ${count[9]}", 6)
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_exportaciones[c])} ({floor(temp_exportaciones_id[c])})")
+					if draw_menu(120, pos, $"{temp_text_array[9]}: ${floor(count[9])}", 6)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_venta[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_venta[c]} ({floor(temp_venta_id[c])})")
-					draw_text_pos(120, pos, $"{temp_text_array[10]}: ${count[10]}")
-					draw_text_pos(120, pos, $"{temp_text_array[12]}: ${count[12]}")
-					draw_text_pos(120, pos, $"{temp_text_array[13]}: ${count[13]}")
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_venta[c])} ({floor(temp_venta_id[c])})")
+					draw_text_pos(120, pos, $"{temp_text_array[10]}: ${floor(count[10])}")
+					draw_text_pos(120, pos, $"{temp_text_array[12]}: ${floor(count[12])}")
+					draw_text_pos(120, pos, $"{temp_text_array[13]}: ${floor(count[13])}")
 				}
-				if draw_menu(110, pos, $"Pérdidas: ${count[4] + count[5] + count[6] + count[7] + count[8] + count[11] + count[14]}", 2){
-					draw_text_pos(120, pos, $"{temp_text_array[4]}: ${count[4]}")
-					draw_text_pos(120, pos, $"{temp_text_array[5]}: ${count[5]}")
-					draw_text_pos(120, pos, $"{temp_text_array[6]}: ${count[6]}")
-					if draw_menu(120, pos, $"{temp_text_array[7]}: ${count[7]}", 3)
+				if draw_menu(110, pos, $"Pérdidas: ${floor(count[4] + count[5] + count[6] + count[7] + count[8] + count[11] + count[14])}", 2){
+					draw_text_pos(120, pos, $"{temp_text_array[4]}: ${floor(count[4])}")
+					draw_text_pos(120, pos, $"{temp_text_array[5]}: ${floor(count[5])}")
+					draw_text_pos(120, pos, $"{temp_text_array[6]}: ${floor(count[6])}")
+					if draw_menu(120, pos, $"{temp_text_array[7]}: ${floor(count[7])}", 3)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_importaciones[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_importaciones[c]} ({floor(temp_importaciones_id[c])})")
-					if draw_menu(120, pos, $"{temp_text_array[8]}: ${count[8]}", 7)
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_importaciones[c])} ({floor(temp_importaciones_id[c])})")
+					if draw_menu(120, pos, $"{temp_text_array[8]}: ${floor(count[8])}", 7)
 						for(var c = 0; c < array_length(recurso_nombre); c++)
 							if temp_compra[c] > 0
-								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${temp_compra[c]} ({floor(temp_compra_id[c])})")
-					draw_text_pos(120, pos, $"{temp_text_array[11]}: ${count[11]}")
-					draw_text_pos(120, pos, $"{temp_text_array[14]}: ${count[14]}")
+								draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_compra[c])} ({floor(temp_compra_id[c])})")
+					draw_text_pos(120, pos, $"{temp_text_array[11]}: ${floor(count[11])}")
+					draw_text_pos(120, pos, $"{temp_text_array[14]}: ${floor(count[14])}")
 				}
-				draw_text_pos(110, pos, $"Balance: {count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] + count[13] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11] - count[14]}")
+				draw_text_pos(110, pos, $"Balance: {floor(count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] + count[13] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11] - count[14])}")
 				if draw_menu(110, pos, $"{array_length(encargos)} encargo{array_length(encargos) = 1 ? "" : "s"}", 4)
 					for(var a = 0; a < array_length(encargos); a++){
 						var encargo = encargos[a]
@@ -1177,11 +1189,18 @@ else{
 					valor_terreno = max(10, (valor_terreno + 5) mod 30)
 				if (dia / 365) >= 60 and draw_boton(110, pos, $"Impuesto petrolífero {round(100 * impuesto_petrolifero)}%")
 					impuesto_petrolifero = ((10 * impuesto_petrolifero + 1) mod 6) / 10
-				if draw_menu(110, pos, $"{array_length(edificios_a_la_venta)} edificio{array_length(edificios_a_la_venta) = 1 ? "" : "s"} a la venta", 0)
+				pos += 20
+				if array_length(edificios_a_la_venta) > 0 and draw_menu(110, pos, $"{array_length(edificios_a_la_venta)} edificio{array_length(edificios_a_la_venta) = 1 ? "" : "s"} a la venta", 0)
 					for(var a = 0; a < array_length(edificios_a_la_venta); a++){
 						var edificio = edificios_a_la_venta[a].edificio
 						if draw_boton(120, pos, edificio.nombre)
 							select(edificio)
+					}
+				if array_length(terrenos_venta) > 0 and draw_menu(110, pos, $"{array_length(terrenos_venta)} terreno{array_length(terrenos_venta) = 1 ? "" : "s"} a la venta", 2)
+					for(var a = 0; a < array_length(terrenos_venta); a++){
+						var terreno_venta = terrenos_venta[a]
+						if draw_boton(120, pos, $"{terreno_venta.width}x{terreno_venta.height} terrenos en {terreno_venta.x}, {terreno_venta.y}")
+							select(,,,, terreno_venta)
 					}
 				if draw_menu(110, pos, $"{array_length(empresas)} empresa{array_length(empresas) = 1 ? "" : "s"} en la isla", 1){
 					for(var a = 0; a < array_length(empresas); a++){
@@ -1628,7 +1647,7 @@ else{
 			draw_rombo_coord(minx, miny, width, height, false)
 			for(var a = minx; a < minx + width; a++){
 				for(var b = miny; b < miny + height; b++)
-					if bool_edificio[a, b] or mar[a, b] or construccion_reservada[a, b] or zona_privada[a, b] or zona_privada_venta[a, b]{
+					if (bool_edificio[a, b] and edificio_nombre[id_edificio[a, b].tipo] != "Toma") or mar[a, b] or construccion_reservada[a, b] or zona_privada[a, b] or zona_privada_venta[a, b]{
 						flag = false
 						break
 					}
@@ -1639,20 +1658,28 @@ else{
 			draw_set_alpha(1)
 			draw_text((mx - my) * tile_width - xpos, (mx + my) * tile_height - ypos, flag ? $"{width * height} terreno{width * height = 1 ? "" : "s"}" : "No puedes privatizar este terreno")
 			if flag and mouse_check_button_released(mb_left){
-				build_terreno = false
-				array_push(terrenos_venta, {
+				var terreno_venta = {
 					x : minx,
 					y : miny,
 					width : width,
 					height : height,
 					privado : false,
 					empresa : null_empresa
-				})
+				}
+				if keyboard_check(vk_lshift)
+					build_pressed = false
+				else{
+					build_terreno = false
+					select(,,,, terreno_venta)
+				}
+				array_push(terrenos_venta, terreno_venta)
 				for(var a = minx; a < minx + width; a++)
 					for(var b = miny; b < miny + height; b++){
 						array_set(zona_privada[a], b, true)
 						array_set(zona_privada_venta[a], b, true)
-						array_set(zona_privada_permisos[a], b, build_terreno_permisos)
+						array_set(zona_privada_venta_terreno[a], b, terreno_venta)
+						for(var c = 0; c < array_length(build_terreno_permisos); c++)
+								array_set(zona_privada_permisos[a, b], c, build_terreno_permisos[c])
 					}
 			}
 		}
@@ -1670,19 +1697,19 @@ else{
 	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
 	if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build and not getstring and not build_terreno{
 		if debug
-			draw_text(0, 0, $"{mx}, {my}: {altura[# mx, my]}")
-		if bool_edificio[mx, my] or construccion_reservada[mx, my]
+			draw_text(0, 0, $"{mx}, {my}: {altura[# mx, my]} {zona_privada_permisos[mx, my]}")
+		if bool_edificio[mx, my] or construccion_reservada[mx, my] or zona_privada_venta[mx, my]
 			cursor = cr_handpoint
 		if mouse_check_button_pressed(mb_left) and not build_sel{
 			mouse_clear(mb_left)
-			sel_info = bool_edificio[mx, my] or construccion_reservada[mx, my]
+			sel_info = bool_edificio[mx, my] or construccion_reservada[mx, my] or zona_privada_venta[mx, my]
 			if sel_info{
 				sel_familia = null_familia
 				sel_persona = null_persona
 				close_show()
 				if construccion_reservada[mx, my]
 					select(,,, draw_construccion[mx, my])
-				else{
+				else if bool_edificio[mx, my]{
 					var edificio = id_edificio[mx, my]
 					if sel_comisaria{
 						if edificio_nombre[edificio.tipo] != "Comisaría"{
@@ -1697,6 +1724,8 @@ else{
 					if tutorial_bool and tutorial = 10
 						tutorial_complete = true
 				}
+				else
+					select(,,,, zona_privada_venta_terreno[mx, my])
 			}
 			else if sel_comisaria{
 				if sel_edificio.comisaria != null_edificio
@@ -2316,6 +2345,79 @@ else{
 					show[array_get_index(empresas, sel_construccion.empresa)] = true
 				}
 			}
+		}
+		//Información terrenos a la venta
+		else if sel_tipo = 4 and sel_terreno != null_terreno{
+			draw_text_pos(room_width, pos, "Terreno a la venta")
+			pos += 20
+			draw_text_pos(room_width - 20, pos, $"{sel_terreno.width}x{sel_terreno.height} terrenos")
+			draw_text_pos(room_width - 20, pos, "Permisos de construcción:")
+			for(var a = 0; a < array_length(edificio_categoria); a++)
+				if zona_privada_permisos[sel_terreno.x, sel_terreno.y][a]
+					draw_text_pos(room_width - 40, pos, edificio_categoria_nombre[a])
+			pos += 20
+			if not sel_terreno.privado{
+				if draw_boton(room_width - 20, pos, "Cancelar venta"){
+					array_remove(terrenos_venta, sel_terreno)
+					for(var a = sel_terreno.x; a < sel_terreno.x + sel_terreno.width; a++)
+						for(var b = sel_terreno.y; b < sel_terreno.y + sel_terreno.height; b++){
+							array_set(zona_privada[a], b, false)
+							array_set(zona_privada_venta[a], b, false)
+							array_set(zona_privada_venta_terreno[a], b, null_terreno)
+							array_set(zona_privada_permisos[a], b, [true, false, false, false, false])
+						}
+					sel_terreno = null_terreno
+					sel_info = false
+				}
+				if sel_terreno.width * sel_terreno.height > 1{
+					var temp_division = (sel_terreno.width > sel_terreno.height)
+					if draw_boton(room_width - 20, pos, "Dividir terreno",,, function(inputs){
+						var terreno = inputs[0], temp_division = inputs[1]
+						draw_set_alpha(0.5)
+						draw_set_color(c_red)
+						if temp_division
+							draw_rombo_coord(terreno.x, terreno.y, floor(terreno.width / 2), terreno.height, false)
+						else
+							draw_rombo_coord(terreno.x, terreno.y, terreno.width, floor(terreno.height / 2), false)
+						draw_set_color(c_black)
+						draw_set_alpha(1)
+					}, [sel_terreno, temp_division]){
+						var new_terreno = null_terreno
+						if temp_division{
+							new_terreno = {
+								x : sel_terreno.x + ceil(sel_terreno.width / 2),
+								y : sel_terreno.y,
+								width : ceil(sel_terreno.width / 2),
+								height : sel_terreno.height,
+								privado : false,
+								empresa : null_empresa
+							}
+							sel_terreno.width = floor(sel_terreno.width / 2)
+						}
+						else{
+							new_terreno = {
+								x : sel_terreno.x,
+								y : sel_terreno.y + ceil(sel_terreno.height / 2),
+								width : sel_terreno.width,
+								height : ceil(sel_terreno.height / 2),
+								privado : false,
+								empresa : null_empresa
+							}
+							sel_terreno.height = floor(sel_terreno.height / 2)
+						}
+						for(var a = new_terreno.x; a < new_terreno.x + new_terreno.width; a++)
+							for(var b = new_terreno.y; b < new_terreno.y + new_terreno.height; b++)
+								array_set(zona_privada_venta_terreno[a], b, new_terreno)
+						array_push(terrenos_venta, new_terreno)
+					}
+				}
+			}
+			draw_set_alpha(0.5)
+			draw_set_color(c_white)
+			draw_rombo_coord(sel_terreno.x, sel_terreno.y, sel_terreno.width, sel_terreno.height, false)
+			draw_rombo_coord(sel_terreno.x, sel_terreno.y, sel_terreno.width, sel_terreno.height, true)
+			draw_set_color(c_black)
+			draw_set_alpha(1)
 		}
 		draw_set_halign(fa_left)
 	}
@@ -3152,8 +3254,13 @@ else{
 				//Compra de terrenos
 				if array_length(terrenos_venta) > 0{
 					var terreno_venta = terrenos_venta[0], width = terreno_venta.width, height = terreno_venta.height, temp_precio = valor_terreno * width * height
-					if not empresa.quiebra and irandom(10) < credibilidad_financiera and empresa.dinero > 2 * temp_precio{
+					if not empresa.quiebra and irandom(10) < credibilidad_financiera and empresa.dinero > 5 * temp_precio + array_length(empresa.terreno){
 						array_shift(terrenos_venta)
+						if sel_terreno = terreno_venta{
+							sel_terreno = null_terreno
+							if sel_tipo = 4
+								sel_info = false
+						}
 						empresa.dinero -= temp_precio
 						if terreno_venta.privado
 							terreno_venta.empresa.dinero += temp_precio
@@ -3166,6 +3273,7 @@ else{
 								array_push(empresa.terreno, {a : b, b : c})
 								array_set(zona_empresa[b], c, empresa)
 								array_set(zona_privada_venta[b], c, false)
+								array_set(zona_privada_venta_terreno[b], c, null_terreno)
 							}
 					}
 				}

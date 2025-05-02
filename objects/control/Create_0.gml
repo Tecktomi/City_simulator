@@ -808,6 +808,7 @@ debug = false
 	var mar_checked, land_checked, land_matrix, time = current_time, mares = [[{a : 0, b : 0}]], prev_mar = mares[0], prev_mar_bool = true, temp_mar, temp_array = [true]
 	for(a = 1; a < array_length(edificio_categoria_nombre); a++)
 		array_push(temp_array, false)
+	var temp_array_length = array_length(temp_array)
 	array_pop(mares[0])
 	//Matriz del mundo
 	for(a = 0; a < xsize; a++)
@@ -884,7 +885,9 @@ debug = false
 			zona_privada[a, b] = false
 			zona_empresa[a, b]= null_empresa
 			zona_privada_venta[a, b] = false
-			zona_privada_permisos[a, b] = temp_array
+			for(c = 0; c < temp_array_length; c++)
+				zona_privada_permisos[a, b][c] = temp_array[c]
+			zona_privada_venta_terreno[a, b] = null_terreno
 			zona_pesca_bool[a, b] = false
 			mar_checked[a, b] = false
 			land_checked[a, b] = false
@@ -930,7 +933,7 @@ debug = false
 		}
 	}
 	zonas_pesca = []
-	repeat(clamp(xsize * ysize / 1500, 10, 100)){
+	repeat(clamp(floor(xsize * ysize / 1500), 10, 100)){
 		do{
 			a = irandom(xsize - 1)
 			b = irandom(ysize - 1)
@@ -944,7 +947,7 @@ debug = false
 			cantidad_max : c
 		})
 		var e = min(a + 5, xsize - 1), f = min(b + 5, ysize - 1)
-		for(var c = max(0, a - 5); c <= e; c++)
+		for(c = max(0, a - 5); c <= e; c++)
 			for(var d = max(0, b - 5); d <= f; d++)
 				array_set(zona_pesca_bool[c], d, true)
 	}
@@ -958,6 +961,7 @@ debug = false
 	sel_familia = null_familia
 	sel_persona = null_persona
 	sel_construccion = null_construccion
+	sel_terreno = null_terreno
 	sel_tipo = 0
 	sel_build = false
 	sel_modo = false
