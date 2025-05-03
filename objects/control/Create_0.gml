@@ -1,6 +1,6 @@
 randomize()
 var a, b
-debug = false
+debug = true
 #region Save
 	roaming = game_save_id
 	directory_create(roaming + "Personas")
@@ -267,10 +267,11 @@ debug = false
 #region Recursos
 	recurso_nombre = [	"Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón",
 						"Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche",
-						"Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo", "Armas", "Ropa"]
-	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 4, 40, 10]
-	recurso_anno = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60, 0, 0]
-	recurso_prima = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true, true, false, false, false, false, true, true, false, false]
+						"Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo", "Armas", "Ropa",
+						"Químicos", "Vehículos"]
+	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 4, 40, 10, 8, 75]
+	recurso_anno = [0, 0, 0, 0, 0, 0, 110, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 70, 102]
+	recurso_prima = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true, true, false, false, false, false, true, true, false, false, false, false]
 	recurso_current = []
 	for(a = 0; a < array_length(recurso_nombre); a++)
 		if floor(dia / 365) >= recurso_anno[a]
@@ -278,8 +279,8 @@ debug = false
 	recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23]
-	recurso_lujo = [4, 22, 25, 29]
-	recurso_lujo_prbabilidad = [1, 1, 0.1, 0.5]
+	recurso_lujo = [4, 22, 25, 29, 30]
+	recurso_lujo_prbabilidad = [1, 1, 0.1, 0.5, 0.05]
 	recurso_mineral = [9, 10, 11, 12, 13, 14]
 	recurso_mineral_color = [c_black, c_gray, c_yellow, c_orange, c_ltgray, c_dkgray]
 	recurso_mineral_rareza = [0.85, 0.875, 0.95, 0.85, 0.9, 0.925]
@@ -319,6 +320,7 @@ debug = false
 		recurso_tratados_venta[a] = [null_tratado]
 		recurso_tratados_compra[a] = [null_tratado]
 		recurso_construccion[a] = 0
+		recurso_utilizado[a] = 0
 		array_pop(recurso_tratados_venta[a])
 		array_pop(recurso_tratados_compra[a])
 		for(b = 0; b < 24; b++)
@@ -509,7 +511,7 @@ debug = false
 		def_edificio_base("Oficina de Construcción", 3, 2, 1000, 600, [1, 15, 24, 26], [10, 5, 10, 20], 8, 35); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 6, 35, 5, 1, 0.03)
 		def_edificio_base("Plaza", 2, 2, 200, 180, [1, 26], [5, 15], 4, 70, -15); def_edificio_servicio(, true,,,, 3, 10); def_edificio_trabajo()
 		def_edificio_base("Oficina de Transporte", 3, 2, 800, 600, [1, 15, 26], [10, 5, 20], 6, 35); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 6, 30, 4,, 0.01)
-		def_edificio_base("Forja", 5, 4, 2500, 1080, [1, 15, 24, 26], [30, 20, 20, 40], 25, 25, 20, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 30, 6,, 0.02, true, [9, 10], [2, 3], [15], [2], 1)
+		def_edificio_base("Planta Siderúrgica", 5, 4, 2500, 1080, [1, 15, 24, 26], [30, 20, 20, 40], 25, 25, 20, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 30, 6,, 0.02, true, [9, 10], [2, 3], [15], [2], 1)
 		def_edificio_base("Cabaret", 4, 3, 700, 450, [1, 15, 26], [20, 5, 20], 6, 30,, false); def_edificio_servicio(, true,,,, 6, 40, 3); def_edificio_trabajo(true, 4, 35, 6,, 0.01)
 		def_edificio_base("Taller Textil", 5, 4, 3000, 900, [1, 15, 24, 26], [30, 10, 20, 40], 20, 30, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 25, 5,, 0.01, true, [3, 7, 20], [3, 2, 3], [16], [1], 2, true)
 		def_edificio_base("Astillero", 9, 6, 6200, 1800, [1, 15, 24, 26], [50, 40, 20, 40], 40, 40, 10, false, true); def_edificio_servicio(,,,,,,,,,, true, 40); def_edificio_trabajo(true, 30, 35, 4,, 0.02, true, [1, 7, 12, 16], [5, 1, 1, 1], [17], [0.1], 0.3)
@@ -826,9 +828,9 @@ debug = false
 			draw_construccion[a, b] = null_construccion
 			draw_edificio_flip[a, b] = brandom()
 			escombros[a, b] = false
-			bosque[a, b] = grid[# a, b] > 0.6 and c > 0.62
+			bosque[a, b] = grid[# a, b] > 0.7 and c > 0.62
 			if bosque[a, b]{
-				bosque_madera[a, b] = floor(200 * grid[# a, b])
+				bosque_madera[a, b] = floor(350 * grid[# a, b])
 				bosque_alpha[a, b] = 0.5 + bosque_madera[a, b] / 400
 				bosque_max[a, b] = bosque_madera[a, b]
 			}
@@ -891,7 +893,7 @@ debug = false
 			for(c = 0; c < temp_array_length; c++)
 				zona_privada_permisos[a, b][c] = temp_array[c]
 			zona_privada_venta_terreno[a, b] = null_terreno
-			zona_pesca_bool[a, b] = false
+			zona_pesca_bool[a, b] = 0
 			mar_checked[a, b] = false
 			land_checked[a, b] = false
 			land_matrix[a, b] = false
@@ -941,7 +943,7 @@ debug = false
 			a = irandom(xsize - 1)
 			b = irandom(ysize - 1)
 		}
-		until mar[a, b] and not zona_pesca_bool[a, b]
+		until mar[a, b] and zona_pesca_bool[a, b] = 0
 		var c = floor(random_range(1500, 3000) / max(0.3, altura[# a, b]))
 		array_push(zonas_pesca, {
 			a : a,
@@ -952,7 +954,7 @@ debug = false
 		var e = min(a + 5, xsize - 1), f = min(b + 5, ysize - 1)
 		for(c = max(0, a - 5); c <= e; c++)
 			for(var d = max(0, b - 5); d <= f; d++)
-				array_set(zona_pesca_bool[c], d, true)
+				array_add(zona_pesca_bool[c], d, 1)
 	}
 	if debug
 		show_debug_message($"{current_time - time} milisegundos")
