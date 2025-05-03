@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"set_mantenimiento",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"set_mantenimiento",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

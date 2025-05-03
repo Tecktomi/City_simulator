@@ -1965,12 +1965,92 @@ else{
 										sel_edificio.modo = a
 										sel_edificio.nombre = $"{var_edificio_nombre} de {recurso_nombre[recurso_mineral[a]]} {++edificio_number_mina[a]}"
 										show[3] = false
+										set_paro(false, sel_edificio)
 									}
 									if mouse_x > room_width - 40 - last_width and mouse_y > pos - last_height and mouse_x < room_width - 40 and mouse_y < pos{
 										draw_gradiente(a, 1)
 										draw_set_color(c_black)
 									}
 								}
+						draw_text_pos(room_width - 20, pos, "Mejoras")
+						#region Mejoras
+							var var_nombre_mineral = recurso_nombre[recurso_mineral[sel_edificio.modo]]
+							if edificio_mejora("Ferrocarriles de Mina", sel_edificio, 110, 800, "Mejora la eficiencia", [1, 15, 24], [20, 20, 30]){
+								sel_edificio.eficiencia += 0.3
+								add_mantenimiento(5, sel_edificio)
+							}
+							if edificio_mejora("Explosivos Mineros", sel_edificio, 140, 600, "Mejora la eficiencia pero aumenta el riesgo", [28], [20]){
+								sel_edificio.eficiencia += 0.2
+								sel_edificio.trabajo_riesgo *= 1.2
+								add_mantenimiento(1, sel_edificio)
+							}
+							if edificio_mejora("Vehículos Mineros", sel_edificio, 160, 1500, "Mejora la eficiencia", [24], [40]){
+								sel_edificio.eficiencia += 0.4
+								add_mantenimiento(5, sel_edificio)
+							}
+							if edificio_mejora("Software de Control", sel_edificio, 190, 500, "Mejora la eficiencia y disminuye el riesgo"){
+								sel_edificio.eficiencia += 0.2
+								sel_edificio.trabajo_riesgo *= 0.9
+								add_mantenimiento(1, sel_edificio)
+							}
+							if edificio_mejora("Minería verde", sel_edificio, 210, 800, "Reduce la eficiencia, contaminación y consumo", [24], [10]){
+								sel_edificio.eficiencia -= 0.2
+								sel_edificio.ahorro += 0.2
+								add_mantenimiento(2, sel_edificio)
+								remove_contaminacion(sel_edificio)
+								sel_edificio.contaminacion -= 15
+								add_contaminacion(sel_edificio)
+							}
+							if edificio_mejora("Topología con drones", sel_edificio, 220, 800, "Mejora la eficiencia y extracción", [24], [20]){
+								sel_edificio.eficiencia += 0.2
+								sel_edificio.ahorro += 0.5
+								add_mantenimiento(1, sel_edificio)
+							}
+							if var_nombre_mineral = "Carbón"{
+								if edificio_mejora("Bomba de Desagüe", sel_edificio, 20, 300, "Mejora la eficiencia", [15, 24], [20, 10]){
+									sel_edificio.eficiencia += 0.2
+									add_mantenimiento(2, sel_edificio)
+								}
+								if edificio_mejora("Minería a cielo Abierto", sel_edificio, 150, 500, "Mejora la eficiencia y la contaminación"){
+									sel_edificio.eficiencia += 0.3
+									add_mantenimiento(-1, sel_edificio)
+									remove_contaminacion(sel_edificio)
+									sel_edificio.contaminacion += 10
+									add_contaminacion(sel_edificio)
+								}
+							}
+							else if var_nombre_mineral = "Oro"{
+								if edificio_mejora("Canaletas y dragas", sel_edificio, 50, 300, "Mejora la eficiencia", [1, 15], [10, 10])
+									sel_edificio.eficiencia += 0.1
+								if edificio_mejora("Cianuración", sel_edificio, 100, 500, "Mejora la eficiencia y extracción", [15, 24], [40, 20]){
+									sel_edificio.eficiencia += 0.3
+									sel_edificio.ahorro += 0.5
+									add_mantenimiento(10, sel_edificio)
+								}
+							}
+							else if var_nombre_mineral = "Cobre"{
+								if edificio_mejora("Fundición primaria", sel_edificio, 60, 1000, "Permite extraer más cobre del depósito", [15, 24], [40, 20]){
+									sel_edificio.eficiencia += 0.1
+									sel_edificio.ahorro += 0.5
+									add_mantenimiento(10, sel_edificio)
+									remove_contaminacion(sel_edificio)
+									sel_edificio.contaminacion += 10
+									add_contaminacion(sel_edificio)
+								}
+								if edificio_mejora("Electrificación", sel_edificio, 130, 800, "Aumenta la eficiencia y calidad", [15, 24], [40, 20]){
+									sel_edificio.eficiencia += 0.1
+									sel_edificio.ahorro += 0.5
+									add_mantenimiento(10, sel_edificio)
+								}
+								if edificio_mejora("Extracción electrolítica", sel_edificio, 130, 800, "Aumenta la eficiencia y disminuye la contaminación", [15, 24], [40, 20]){
+									sel_edificio.eficiencia += 0.1
+									add_mantenimiento(5, sel_edificio)
+									remove_contaminacion(sel_edificio)
+									sel_edificio.contaminacion -= 10
+									add_contaminacion(sel_edificio)
+								}
+							}
+						#endregion
 					}
 					else if var_edificio_nombre = "Rancho"{
 						if contaminacion[sel_edificio.x, sel_edificio.y] > 0
@@ -3603,19 +3683,19 @@ else{
 							}
 						}
 						else if var_edificio_nombre = "Mina"{
-							b = round(edificio.trabajo_mes / 2 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * (edificio.electricidad ? 1 + min(1, energia_input / energia_output) : 1))
+							b = round(edificio.trabajo_mes / 5 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * (edificio.electricidad ? 1 + min(1, energia_input / energia_output) : 1))
 							var e = b, f = min(xsize - 1, edificio.x + width + 1), g = min(ysize - 1, edificio.y + height + 1)
 							for(var c = max(0, edificio.x - 1); c < f; c++){
 								for(var d = max(0, edificio.y - 1); d < g; d++)
 									if mineral[edificio.modo][c, d]{
-										if mineral_cantidad[edificio.modo][c, d] <= b{
-											b -= mineral_cantidad[edificio.modo][c, d]
+										if floor(mineral_cantidad[edificio.modo][c, d] * edificio.ahorro) <= b{
+											b -= floor(mineral_cantidad[edificio.modo][c, d] * edificio.ahorro)
 											array_set(mineral[edificio.modo, c], d, false)
 											if b = 0
 												break
 										}
 										else{
-											array_add(mineral_cantidad[edificio.modo, c], d, -b)
+											array_add(mineral_cantidad[edificio.modo, c], d, -floor(b / edificio.ahorro))
 											b = 0
 											break
 										}

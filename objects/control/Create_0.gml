@@ -282,7 +282,7 @@ debug = false
 	recurso_lujo_prbabilidad = [1, 1, 0.1, 0.5]
 	recurso_mineral = [9, 10, 11, 12, 13, 14]
 	recurso_mineral_color = [c_black, c_gray, c_yellow, c_orange, c_ltgray, c_dkgray]
-	recurso_mineral_rareza = [0.8, 0.85, 0.95, 0.75, 0.85, 0.9]
+	recurso_mineral_rareza = [0.85, 0.875, 0.95, 0.85, 0.9, 0.925]
 	ganado_nombre = ["Vacas", "Cabras", "Ovejas", "Cerdos"]
 	ganado_produccion = [[18, 21], [19], [20], [18]]
 	for(a = 0; a < array_length(pais_nombre); a++){
@@ -598,6 +598,7 @@ debug = false
 		almacen : [],
 		pedido : [],
 		eficiencia : 1,
+		ahorro : 1,
 		tuberias : false,
 		electricidad : false,
 		modo : 0,
@@ -617,6 +618,7 @@ debug = false
 		trabajo_sueldo : 0,
 		trabajo_riesgo : 0,
 		mantenimiento : 0,
+		contaminacion : 0,
 		presupuesto : 2,
 		mes_creacion : 0,
 		ganancia : 0,
@@ -632,7 +634,8 @@ debug = false
 		venta : false,
 		es_almacen : false,
 		seguro_fuego : 0,
-		zona_pesca : null_zona_pesca
+		zona_pesca : null_zona_pesca,
+		mejoras : []
 	}
 	array_pop(null_edificio.familias)
 	array_pop(null_edificio.trabajadores)
@@ -877,7 +880,7 @@ debug = false
 						ds_grid_multiply(cultivo[d], a, b, 20 * (c - cultivo_altura_minima[d]))
 			for(var d = 0; d < array_length(recurso_mineral); d++){
 				mineral[d][a, b] = (mineral_grid[d][# a, b] > recurso_mineral_rareza[d])
-				mineral_cantidad[d][a, b] = round(400 * power(mineral_grid[d][# a, b], 3))
+				mineral_cantidad[d][a, b] = round(750 * power(mineral_grid[d][# a, b], 3))
 			}
 			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 			contaminacion[a, b] = 0
@@ -1010,9 +1013,9 @@ debug = false
 						"Ahora espera a que se construya\nMientras tanto, estos son los controles del tiempo\nAdemás puedes adelantar días manteniendo [Espacio]",
 						//10
 						"Listo! Ahora selecciona la Chabola con [clic izquierdo]\npara ver su información detallada",
-						"Aquí se encuentra la información del edificio\n  Las familias que vivne aquí\n  Los trabajadores que trabajan aquí\n  Los recursos que tiene almacenado\n  Y mucho más",
+						"Aquí se encuentra la información del edificio\n  Las familias que viven aquí\n  Los trabajadores que trabajan aquí\n  Los recursos que tiene almacenado\n  Y mucho más",
 						"Ahora construye una granja\nLa granja la encontrarás en el panel de Materias primas",
-						"Las granjas necesitan un suelo adecuando para funcionar\nBusca un lugar donde su eficiciencia sea alta (verde) para construirla\nPuedes rotar el edificio con [R] si lo deseas",
+						"Las granjas necesitan un suelo adecuando para funcionar\nBusca un lugar donde su eficiciencia sea alta (verde) para construirla\nPresiona [clic izquierdo] y arrastra para elegir su tamaño",
 						"Bien hecho, los ciudadanos necesitarán comida y podrán producirla en la granja\nAhora construye un aserradero para empezar a exportar recursos",
 						"Los aserraderos necesitan árboles cerca para ser construidos\nMientras más árboles tenga, más madera podrá extraer",
 						"Bien hecho, el aserradero extraerá madera cuando tenga trabajadores\n2 veces al año esta madera se exportará en el muelle",
@@ -1020,8 +1023,8 @@ debug = false
 						"Bien.  Los ciudadanos tienes ciertas necesidades que hay que cumplir\nLo más importante es alimentación y salud, no quieres que mueran tus votantes\nRevísalas en el Ministerio de Población [clic derecho]",
 						"Aquí puedes revisar el flujo de población, edades y felicidades\nSi haces [clic izquierdo] en Felicidad podrás ver el detalle\nSi los ciudadanos son muy infelices, podrá emigrar y protestar",
 						//20
-						"Otro ministerio importante es el de economía",
-						"Aquí podrás ver cómo gana dinero la isla y en qué se va\nAdemás podrás controlar las importaciones y exportaciones",
+						"Otro ministerio importante es el de Economía",
+						"Aquí podrás ver como la isla gana y pierde dinero\nAdemás podrás controlar las importaciones y exportaciones",
 						"Felicidades, eso es todo por ahora\nHay montones más de cosas y detalles en tu isla, pero tendrás que descubrirlas tú\n¡Larga vida al presidente!"]
 	tutorial_keys = [[], [], [], [vk_lcontrol], [], [vk_escape], [vk_escape], [vk_escape], [vk_lcontrol], [vk_space], [], [], [], [vk_space, vk_lcontrol], [], [vk_space, vk_lcontrol], [], [vk_space, vk_lcontrol], [], [], [], [vk_lcontrol], []]
 	tutorial_mouse = [[], [], [], [], [mb_right], [], [], [mb_left], [mb_left], [mb_left], [mb_left], [], [mb_left, mb_right], [mb_left, mb_right], [mb_left, mb_right], [mb_left, mb_right], [], [mb_left, mb_right], [mb_left, mb_right], [mb_left, mb_right], [mb_left, mb_right], [mb_left, mb_right], []]
@@ -1104,6 +1107,7 @@ debug = false
 	getstring_default = ""
 	getstring_function = function(a, b){}
 	getstring_param = []
+	mejoras_desbloqueadas = []
 	felicidad_total = 50
 	dinero = 20000
 	inversion_privada = 0

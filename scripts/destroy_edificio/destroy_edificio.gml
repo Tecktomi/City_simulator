@@ -105,12 +105,8 @@ function destroy_edificio(edificio = control.null_edificio){
 				}
 		}
 		//Modificar contaminacion
-		if edificio_contaminacion[tipo] != 0{
-			var size = ceil(edificio_contaminacion[tipo] / 5)
-			for(var a = max(0, edificio.x - size); a < min(xsize, edificio.x + width + size); a++)
-				for(var b = max(0, edificio.y - size); b < min(ysize, edificio.y + height + size); b++)
-					array_set(contaminacion[a], b, round(contaminacion[a, b] - edificio_contaminacion[tipo] / (1 + distancia_punto(a, b, edificio))))
-		}
+		if edificio_contaminacion[tipo] != 0
+			remove_contaminacion(edificio)
 		if sel_edificio = edificio{
 			sel_edificio = null_edificio
 			sel_info = false

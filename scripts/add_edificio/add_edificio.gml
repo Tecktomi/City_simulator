@@ -19,6 +19,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			almacen : [],
 			pedido : [],
 			eficiencia : 1,
+			ahorro : 1,
 			tuberias : false,
 			electricidad : false,
 			modo : 0,
@@ -38,6 +39,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			trabajo_sueldo : max(control.sueldo_minimo, edificio_trabajo_sueldo[tipo]),
 			trabajo_riesgo : control.edificio_trabajo_riesgo[tipo],
 			mantenimiento : edificio_mantenimiento[tipo],
+			contaminacion : edificio_contaminacion[tipo],
 			presupuesto : 2,
 			mes_creacion : current_mes,
 			ganancia : 0,
@@ -54,7 +56,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			venta : false,
 			es_almacen : edificio_es_almacen[tipo],
 			seguro_fuego : 0,
-			zona_pesca : null_zona_pesca
+			zona_pesca : null_zona_pesca,
+			mejoras : []
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
@@ -206,14 +209,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 					}
 			}
 			//Modificar contaminacion
-			if edificio_contaminacion[tipo] != 0{
-				var size = ceil(edificio_contaminacion[tipo] / 5)
-				c = min(x + width + size, xsize)
-				d = min(y + height + size, ysize)
-				for(var a = max(0, x - size); a < c; a++)
-					for(var b = max(0, y - size); b < d; b++)
-						array_set(contaminacion[a], b, round(contaminacion[a, b] + edificio_contaminacion[tipo] / (1 + distancia_punto(a, b, edificio))))
-			}
+			if edificio_contaminacion[tipo] != 0
+				add_contaminacion(edificio)
 		}
 		return edificio
 	}
