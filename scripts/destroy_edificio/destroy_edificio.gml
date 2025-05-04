@@ -52,7 +52,7 @@ function destroy_edificio(edificio = control.null_edificio){
 				recurso_utilizado[edificio_industria_input_id[tipo, a]]--
 			if edificio_industria_vapor[tipo]{
 				recurso_utilizado[1]--
-				recurso_utilizado[10]--
+				recurso_utilizado[9]--
 				recurso_utilizado[27]--
 			}
 		}

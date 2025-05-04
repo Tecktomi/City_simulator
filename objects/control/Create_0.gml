@@ -1,6 +1,6 @@
 randomize()
 var a, b
-debug = true
+debug = false
 #region Save
 	roaming = game_save_id
 	directory_create(roaming + "Personas")
@@ -269,7 +269,7 @@ debug = true
 						"Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche",
 						"Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo", "Armas", "Ropa",
 						"Químicos", "Vehículos"]
-	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 4, 40, 10, 8, 75]
+	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 4, 40, 10, 8, 80]
 	recurso_anno = [0, 0, 0, 0, 0, 0, 110, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 70, 102]
 	recurso_prima = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true, true, false, false, false, false, true, true, false, false, false, false]
 	recurso_current = []
@@ -373,7 +373,9 @@ debug = true
 		"Toma el dinero de la gente y lo distribuye para mejorar la vida de todos",
 		"Vivienda de altísima calidad, el objetivo de toda la sociedad es permitirle a sus dueños virir aquí",
 		"Vivienda urbana moderna, permite a varias familias convivir en vivendas pareadas",
-		"Bloque de casas organizadas para maximizar las familias por metro cuadrado a bajo costo"]
+		"Bloque de casas organizadas para maximizar las familias por metro cuadrado a bajo costo",
+		"Produce productos químicos usando distintos componentes",
+		"Produce vehículos a partir de varios materiales"]
 	#region arreglos vacíos
 		edificio_nombre = []
 		edificio_width = []
@@ -541,9 +543,11 @@ debug = true
 		def_edificio_base("Departamentos", 5, 3, 1200, 1095, [15, 25, 26], [20, 10, 50], 6, 60, 20, false,,,,,true, 10, 50, 6, 100); def_edificio_servicio(,,,,,,,, true, 25, true, 25); def_edificio_trabajo()
 		def_edificio_base("Bloque Habitacional", 4, 4, 1500, 1440, [15, 25, 26], [20, 10, 40], 12,, 15, false,,,,,true, 24, 30, 3, 130); def_edificio_servicio(,,,,,,,, true, 30, true, 40); def_edificio_trabajo()
 		//50
+		def_edificio_base("Planta Química", 5, 6, 10000, 1440, [15, 24, 26], [40, 40, 80], 50, 15, 30, false,,,,,,,,, 70); def_edificio_servicio(); def_edificio_trabajo(true, 15, 30, 6, 1, 0.05, true, [10, 12], [1, 1], [30], [2], 1)
+		def_edificio_base("Fábrica de Vehículos", 8, 6, 10000, 1440, [15, 24, 26], [40, 40, 80], 80, 20, 25, false,,,,,,,,, 110); def_edificio_servicio(); def_edificio_trabajo(true, 10, 35, 6,, 0.02, true, [10, 15, 21, 24, 30], [2, 3, 2, 3, 1], [31], [1], 0.1)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
-	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35, 43, 46], [13, 20, 22, 41, 42, 44], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45]]
+	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35, 43, 46], [13, 20, 22, 41, 42, 44], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51]]
 	edificio_color = []
 	for(a = 0; a < array_length(edificio_nombre); a++){
 		var flag = false

@@ -1416,10 +1416,14 @@ if build_sel{
 				temp_tiempo += 5 * (width * height - 9)
 			}
 			if not keyboard_check(vk_lcontrol){
-				if mouse_wheel_up()
-					build_type = (build_type + 1) mod array_length(recurso_cultivo)
-				if mouse_wheel_down()
-					build_type = (build_type + array_length(recurso_cultivo) - 1) mod array_length(recurso_cultivo)
+				if mouse_wheel_up(){
+					do build_type = (build_type + 1) mod array_length(recurso_cultivo)
+					until recurso_anno[recurso_cultivo[build_type]] <= dia / 365
+				}
+				if mouse_wheel_down(){
+					do build_type = (build_type + array_length(recurso_cultivo) - 1) mod array_length(recurso_cultivo)
+					until recurso_anno[recurso_cultivo[build_type]] <= dia / 365
+				}
 			}
 		}
 		else if var_edificio_nombre = "Rancho"{
@@ -1466,10 +1470,14 @@ if build_sel{
 					c += mineral_cantidad[build_type][a, b]
 				}
 		if not keyboard_check(vk_lcontrol){
-			if mouse_wheel_up()
-				build_type = (build_type + 1) mod array_length(recurso_mineral)
-			if mouse_wheel_down()
-				build_type = (build_type + array_length(recurso_mineral) - 1) mod array_length(recurso_mineral)
+			if mouse_wheel_up(){
+				do build_type = (build_type + 1) mod array_length(recurso_mineral)
+				until recurso_anno[recurso_mineral[build_type]] <= dia / 365
+			}
+			if mouse_wheel_down(){
+				do build_type = (build_type + array_length(recurso_mineral) - 1) mod array_length(recurso_mineral)
+				until recurso_anno[recurso_mineral[build_type]] <= dia / 365
+			}
 		}
 		if flag
 			text += $"Depósito: {c}\n"
