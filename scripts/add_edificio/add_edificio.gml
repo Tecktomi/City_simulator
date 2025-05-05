@@ -20,8 +20,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			pedido : [],
 			eficiencia : 1,
 			ahorro : 1,
-			tuberias : false,
-			electricidad : false,
+			agua : false,
+			agua_consumo : 0,
+			energia : false,
+			energia_consumo : 0,
 			modo : 0,
 			array_complex : [{a : 0, b : 0}],
 			paro : false,
@@ -129,8 +131,9 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 				edificio.array_complex = array_shuffle(edificio.array_complex)
 			}
 			else if var_edificio_nombre = "Pozo Petrolífero"{
-				edificio.tuberias = true
-				agua_output += edificio_agua[tipo]
+				edificio.agua = true
+				edificio.agua_consumo += edificio_agua[tipo]
+				agua_output += edificio.agua_consumo
 			}
 			else if var_edificio_nombre = "Periódico"
 				array_push(edificio.array_complex, {a : -1, b : 0})

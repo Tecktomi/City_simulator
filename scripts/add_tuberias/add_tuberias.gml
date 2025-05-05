@@ -3,7 +3,8 @@ function add_tuberias(edificio = control.null_edificio){
 	with control
 		if edificio.privado or dinero >= 400{
 			recurso_construccion[12] += 20
-			edificio.tuberias = true
+			edificio.agua = true
+			edificio.agua_consumo += edificio_agua[index]
 			agua_output += edificio_agua[index]
 			if edificio_es_casa[index]
 				set_calidad_vivienda(edificio)

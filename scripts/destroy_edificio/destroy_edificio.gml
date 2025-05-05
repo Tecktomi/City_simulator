@@ -43,10 +43,10 @@ function destroy_edificio(edificio = control.null_edificio){
 					array_remove(casas_libres, edificio, "elminar casa libre")
 			}
 		}
-		if edificio_bool_agua[tipo] and edificio.tuberias
-			agua_output -= edificio_agua[tipo]
-		if edificio_bool_energia[tipo] and edificio.electricidad
-			energia_output -= edificio_energia[tipo]
+		if edificio.agua
+			agua_output -= edificio.agua_consumo
+		if edificio.energia
+			energia_output -= edificio.energia_consumo
 		if edificio_es_industria[tipo]{
 			for(var a = 0; a < array_length(edificio_industria_input_id[tipo]); a++)
 				recurso_utilizado[edificio_industria_input_id[tipo, a]]--

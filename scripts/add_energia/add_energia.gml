@@ -3,8 +3,9 @@ function add_energia(edificio = control.null_edificio){
 	with control
 		if edificio.privado or dinero >= 200{
 			recurso_construccion[12] += 30
-			edificio.electricidad = true
-			energia_output += edificio_agua[index]
+			edificio.energia = true
+			edificio.energia_consumo = edificio_energia[index]
+			energia_output += edificio.energia_consumo
 			if edificio_es_casa[index]
 				set_calidad_vivienda(edificio)
 			else
