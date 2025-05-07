@@ -222,7 +222,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			}
 			//Modificar contaminacion
 			if edificio_contaminacion[tipo] != 0
-				add_contaminacion(edificio)
+				set_contaminacion(edificio)
 		}
 		return edificio
 	}

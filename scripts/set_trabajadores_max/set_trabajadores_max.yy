@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"set_trabajadores_max",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"set_trabajadores_max",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

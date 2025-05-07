@@ -326,7 +326,6 @@ debug = false
 		for(b = 0; b < 24; b++)
 			recurso_historial[a, b] = recurso_precio[a]
 	}
-	
 #endregion
 #region Edificios
 	edificio_descripcion = ["", "", "", "",
@@ -449,7 +448,6 @@ debug = false
 			array_push(edificio_familias_calidad, fam_cal)
 			array_push(edificio_familias_renta, real(fam_ren))
 			array_push(edificio_anno, anno)
-			var index = array_length(edificio_nombre)
 		}
 		function def_edificio_servicio(es_medico = false, es_ocio = false, es_iglesia = false, es_escuela = false, escuela_max = 0, cli_max = 0, cli_cal = 0, cli_tar = 0, bool_agua = false, agua = 0, bool_energia = false, energia = 0, plano = false, resize = false, no_prod = false){
 			array_push(edificio_es_medico, es_medico)
@@ -467,25 +465,23 @@ debug = false
 			array_push(edificio_plano, plano)
 			array_push(edificio_resize, resize)
 			array_push(edificio_resize_no_productiva, no_prod)
-			var index = array_length(edificio_es_medico)
 		}
 		function def_edificio_trabajo(es_trabajo = false, trab_max = 0, trab_cal = 0, trab_sue = 0, trab_edu = 0, trab_ries = 0, es_industria = false, ind_in_id = [0], ind_in_num = [0], ind_out_id = [0], ind_out_num = [0], ind_vel = 0, ind_opt = false, ind_vap = false){
-		array_push(edificio_es_trabajo, es_trabajo)
-		array_push(edificio_trabajadores_max, trab_max)
-		array_push(edificio_trabajo_calidad, trab_cal)
-		array_push(edificio_trabajo_sueldo, trab_sue)
-		array_push(edificio_trabajo_educacion, trab_edu)
-		array_push(edificio_trabajo_riesgo, trab_ries)
-		array_push(edificio_es_industria, es_industria)
-		array_push(edificio_industria_input_id, ind_in_id)
-		array_push(edificio_industria_input_num, ind_in_num)
-		array_push(edificio_industria_output_id, ind_out_id)
-		array_push(edificio_industria_output_num, ind_out_num)
-		array_push(edificio_industria_velocidad, ind_vel)
-		array_push(edificio_industria_optativo, ind_opt)
-		array_push(edificio_industria_vapor, ind_vap)
-		var index = array_length(edificio_es_trabajo)
-	}
+			array_push(edificio_es_trabajo, es_trabajo)
+			array_push(edificio_trabajadores_max, trab_max)
+			array_push(edificio_trabajo_calidad, trab_cal)
+			array_push(edificio_trabajo_sueldo, trab_sue)
+			array_push(edificio_trabajo_educacion, trab_edu)
+			array_push(edificio_trabajo_riesgo, trab_ries)
+			array_push(edificio_es_industria, es_industria)
+			array_push(edificio_industria_input_id, ind_in_id)
+			array_push(edificio_industria_input_num, ind_in_num)
+			array_push(edificio_industria_output_id, ind_out_id)
+			array_push(edificio_industria_output_num, ind_out_num)
+			array_push(edificio_industria_velocidad, ind_vel)
+			array_push(edificio_industria_optativo, ind_opt)
+			array_push(edificio_industria_vapor, ind_vap)
+		}
 	#endregion
 	#region definición
 		def_edificio_base("Sin trabajo"); def_edificio_servicio(); def_edificio_trabajo()
@@ -518,8 +514,8 @@ debug = false
 		def_edificio_base("Taller Textil", 5, 4, 3000, 900, [1, 15, 24, 26], [30, 10, 20, 40], 20, 30, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 25, 5,, 0.01, true, [3, 7, 20], [3, 2, 3], [16], [1], 2, true)
 		def_edificio_base("Astillero", 9, 6, 6200, 1800, [1, 15, 24, 26], [50, 40, 20, 40], 40, 40, 10, false, true); def_edificio_servicio(,,,,,,,,,, true, 40); def_edificio_trabajo(true, 30, 35, 4,, 0.02, true, [1, 7, 12, 16], [5, 1, 1, 1], [17], [0.1], 0.3)
 		def_edificio_base("Rancho", 4, 4, 400, 180, [1], [30], 5, 45, -10, false,, true); def_edificio_servicio(,,,,,,,,,, true, 10, true, true, true); def_edificio_trabajo(true, 4, 40, 4,, 0.01)
-		def_edificio_base("Taller de Destilado", 5, 4, 3500, 900, [1, 15, 24, 26], [25, 10, 25, 40], 20, 40, 5, false); def_edificio_servicio(,,,,,,,, true, 30); def_edificio_trabajo(true, 12, 40, 5,, 0.01, true, [5], [3], [22], [1], 1)
-		def_edificio_base("Quesería Artesanal", 5, 4, 2500, 720, [1, 15, 24, 26], [25, 10, 25, 40], 15, 40, 5, false,, true); def_edificio_servicio(); def_edificio_trabajo(true, 8, 40, 5,,, true, [19], [3], [23], [3], 0.5)
+		def_edificio_base("Destilería", 5, 4, 3500, 900, [1, 15, 24, 26], [25, 10, 25, 40], 20, 40, 5, false); def_edificio_servicio(,,,,,,,, true, 30); def_edificio_trabajo(true, 12, 40, 5,, 0.01, true, [5], [3], [22], [1], 1)
+		def_edificio_base("Quesería", 5, 4, 2500, 720, [1, 15, 24, 26], [25, 10, 25, 40], 15, 40, 5, false,, true); def_edificio_servicio(); def_edificio_trabajo(true, 8, 40, 5,,, true, [19], [3], [23], [3], 0.5)
 		//30
 		def_edificio_base("Herrería", 5, 4, 3500, 1080, [1, 15, 24, 26], [25, 30, 20, 40], 20, 30, 15, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, 0.01, true, [1, 15, 21], [1, 1, 1], [24], [2], 0.5)
 		def_edificio_base("Conventillo", 3, 3, 1000, 720, [1, 15, 25, 26], [10, 10, 10, 30], 4,, 15, false,,,,,true, 10, 40, 5, 20); def_edificio_servicio(,,,,,,,, true, 25, true, 25); def_edificio_trabajo()
@@ -528,9 +524,9 @@ debug = false
 		def_edificio_base("Comisaría", 4, 2, 900, 720, [1, 15, 26], [20, 25, 25], 12, 40); def_edificio_servicio(,,,,, 8); def_edificio_trabajo(true, 4, 40, 7,, 0.04)
 		def_edificio_base("Mercado", 4, 4, 600, 360, [1, 15, 16, 26], [20, 5, 20, 20], 10, 40, 10); def_edificio_servicio(); def_edificio_trabajo(true, 4, 35, 4)
 		def_edificio_base("Mueblería", 5, 4, 2500, 720, [1, 15, 24, 26], [25, 10, 20, 40], 20, 40, 5, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, 0.01, true, [1], [4], [25], [1], 1)
-		def_edificio_base("Fábrica Textil", 8, 6, 9000, 2400, [1, 15, 24, 26], [50, 50, 50, 60], 60, 25, 30, false,,,,,,,,, 30); def_edificio_servicio(,,,,,,,,,, true, 60); def_edificio_trabajo(true, 30, 20, 4,, 0.04, true, [3, 20], [3, 3], [16], [1], 3, true, true)
+		def_edificio_base(""); def_edificio_servicio(); def_edificio_trabajo()
 		def_edificio_base("Tejar", 5, 4, 1500, 360, [1, 15, 26], [20, 10, 30], 7, 40, -5, false); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 5,, 0.01)
-		def_edificio_base("Fábrica de Ladrillos", 8, 6, 8000, 1800, [1, 15, 24, 26], [40, 20, 20, 80], 25, 30, -20, false,,,,,,,,, 50); def_edificio_servicio(,,,,,,,, true, 40); def_edificio_trabajo(true, 15, 25, 4,, 0.03, true,,, [26], [3], 4,, true)
+		def_edificio_base("NULL"); def_edificio_servicio(); def_edificio_trabajo()
 		//40
 		def_edificio_base("Pozo Petrolífero", 4, 4, 3000, 730, [15, 26], [60, 30], 20, 20, -20, false,,,,,,,,, 60); def_edificio_servicio(,,,,,,,, true, 40, true, 30); def_edificio_trabajo(true, 4, 30, 5, 1, 0.03)
 		def_edificio_base("Bomba de Agua", 3, 3, 2500, 640, [15, 26], [40, 10], 15, 30, -15,,,,,,,,,, 50); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 4, 20, 4,, 0.01)
@@ -676,6 +672,64 @@ debug = false
 	null_persona.escuela = null_edificio
 	null_persona.medico = null_edificio
 	null_persona.ladron = null_edificio
+#endregion
+#region Mejoras
+	mejoras_desbloqueadas = []
+	mejoras = []
+	null_mejora = def_mejora("null_mejora")
+	array_pop(null_mejora.recurso_id)
+	array_pop(null_mejora.recurso_num)
+	array_pop(mejoras)
+	mejora_anestesia = def_mejora("Anestesia", "Mejora el servicio", 70, 500, [30], [10],,,,, function(edificio = null_edificio){edificio.ahorro += 0.2; add_mantenimiento(2, edificio); set_calidad_servicio(edificio)})
+	mejora_barcos_a_vapor = def_mejora("Barcos a vapor", "Aumenta la eficiencia y contaminación", 70, 800, [15, 17, 24], [10, 1, 10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(5, edificio); add_contaminacion(10, edificio)})
+	mejora_barcos_factoria = def_mejora("Barcos factoría", "Aumenta la eficiencia y contaminación", 150, 1000, [17, 31], [2, 5],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.5; add_mantenimiento(3, edificio); add_contaminacion(10, edificio)})
+	mejora_bomba_a_vapor = def_mejora("Bomba de vapor", "Aumenta la eficiencia", 20, 400, [15, 24], [10, 10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.2; add_mantenimiento(2, edificio)})
+	mejora_bomba_rotativa = def_mejora("Bomba rotativa", "Aumenta la producción y consumo de agua y electricidad", 130, 800, [24], [20], true, 10, true, 10, function(edificio = null_edificio){edificio.eficiencia += 0.4; edificio.ahorro += 0.5; add_mantenimiento(5, edificio)})
+	mejora_caldera_de_cristalizacion = def_mejora("Calderas de cristalización", "Aumenta la producción y contaminación", 30, 600, [24], [20],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(3, edificio)})
+	mejora_camiones = def_mejora("Camiones", "AUmenta la eficiencia y contaminación", 160, 600, [31], [15],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.4; add_mantenimiento(5, edificio)})
+	mejora_canaletas_y_dragas = def_mejora("Canaletas y Dragas", "Aumenta la eficiencia", 50, 300, [24], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.1})
+	mejora_cianuracion = def_mejora("Cianuración", "Proceso que mejora la eficiencia", 100, 800, [24, 30], [20, 20],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; edificio.ahorro += 0.5; add_mantenimiento(10, edificio)})
+	mejora_computadores = def_mejora("Computadores", "Aumenta la eficiencia", 180, 800, [24], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.2; edificio.trabajo_riesgo *= 0.9; add_mantenimiento(1, edificio)})
+	mejora_contenedores = def_mejora("Contenedores", "Aumenta la eficiencia", 160, 600, [15], [30],,,,, function(edificio = null_edificio){edificio.eficiencia += 1})
+	mejora_criptografia = def_mejora("Criptografía", "Aumenta la eficiencia y consumo eléctrico", 210, 500,,,,, true, 15, function(edificio = null_edificio){edificio.eficiencia += 0.5; add_mantenimiento(5, edificio)})
+	mejora_destilacion_fraccionada = def_mejora("Destilacion fraccionada", "Mejora la eficiencia", 30, 600, [24], [15],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(2, edificio)})
+	mejora_esquiladora_electrica = def_mejora("Esquiladora eléctrica", "Aumental al producción y consumo eléctrico", 150, 500, [24], [10],,, true, 15, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(2, edificio)})
+	mejora_explosivos_mineros = def_mejora("Explosivos mineros", "Aumenta la eficiencia y riesgo", 140, 600, [28], [15],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.2; edificio.trabajo_riesgo *= 1.2; add_mantenimiento(1, edificio)})
+	mejora_ferrocarriles = def_mejora("Ferrocarriles", "Mejora le eficiencia general", 110, 800, [1, 15, 24], [20, 20, 10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(5, edificio)})
+	mejora_fertilizantes_sinteticos = def_mejora("Fertilizantes sintéticos", "Aumenta la eficiencia y la contaminación", 120, 400, [30], [20],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.2; add_mantenimiento(2, edificio)})
+	mejora_filtros_industriales = def_mejora("Filtros industriales", "Disminuye la contaminación pero afecta la producción", 210, 300,,,,,,, function(edificio = null_edificio){edificio.eficiencia -= 0.2; edificio.ahorro += 0.2; add_mantenimiento(2, edificio); add_contaminacion(-15, edificio)})
+	mejora_fracking = def_mejora("Fracking", "Aumenta la producción, consumo de agua y contaminación", 145, 1000, [24], [10], true, 30, true, 10, function(edificio = null_edificio){edificio.eficiencia += 0.4; edificio.ahorro += 0.5; add_mantenimiento(5, edificio); add_contaminacion(15, edificio)})
+	mejora_frigorificos = def_mejora("Frigoríficos", "Aumenta la eficiencia y consumo eléctrico", 90, 500, [24], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(5, edificio)})
+	mejora_gruas_a_vapor = def_mejora("Grúas a vapor", "Aumenta la eficiencia", 100, 1000, [24], [20],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.5; add_mantenimiento(8, edificio)})
+	mejora_gruas_electricas = def_mejora("Grúas eléctricas", "Aumenta la eficiencia y consumo eléctrico", 140, 1000, [24], [15],,, true, 20, function(edificio = null_edificio){edificio.trabajo_riesgo *= 0.5; edificio.eficiencia += 0.5; add_mantenimiento(5, edificio)})
+	mejora_horno_de_arco_electrico = def_mejora("Horno de arco eléctrico", "Aumenta la eficiencia y consumo eléctrico", 105, 1000, [24], [20],,, true, 30, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(-5, edificio)})
+	mejora_internet = def_mejora("Internet", "Aumenta la eficiencia", 195, 500,,,,, true, 5, function(edificio = null_edificio){edificio.ahorro += 0.2; edificio.eficiencia += 0.2; add_mantenimiento(-5, edificio); set_calidad_servicio(edificio)})
+	mejora_linea_de_montaje = def_mejora("Línea de montaje", "Aumenta la eficiencia y trabajadores", 140, 1000, [25], [20],,, true, 15, function(edificio = null_edificio){edificio.eficiencia += 0.3; set_trabajadores_max(floor(edificio.trabajadores_max * 1.5), edificio); add_mantenimiento(10, edificio)})
+	mejora_maquina_desmotadora = def_mejora("Máquina desmotadora", "Mejora la eficiencia", 0, 400, [24], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.4; add_mantenimiento(3, edificio)})
+	mejora_maquina_enroladora = def_mejora("Máquina enroladora", "Mejora la eficiencia", 80, 500, [24], [10],,, true, 15, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(3, edificio)})
+	mejora_maquinas_de_escribir = def_mejora("Máquinas de escribir", "Aumenta la eficiencia", 70, 500, [24], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.4; add_mantenimiento(1, edificio)})
+	mejora_maquinas_de_escribir_electricas = def_mejora("Máquinas de escribir eléctricas", "Aumenta la eficiecia y consumo eléctrico", 150, 800, [24], [10],,, true, 5, function(edificio = null_edificio){edificio.eficiencia += 0.2; add_mantenimiento(1, edificio)})
+	mejora_maquinas_de_coser = def_mejora("Máquinas de coser", "Aumenta la eficiencia", 60, 600, [24], [15],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.4; add_mantenimiento(2, edificio)})
+	mejora_mineria_a_cielo_abierto = def_mejora("Minería a cielo abierto", "Aumenta la eficiencia y contaminación", 150, 500,,,,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(-1, edificio); add_contaminacion(10, edificio)})
+	mejora_motosierra = def_mejora("Motosierras", "Aumenta la producción y consumo eléctrico", 140, 400, [24], [10],,, true, 15, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(2, edificio); add_contaminacion(-5, edificio)})
+	mejora_ordena_automatica = def_mejora("Ordeña automática", "Aumenta la producción y consumo eléctrico", 160, 500, [24], [10],,, true, 10, function(edificio = null_edificio){edificio.eficiencia += 0.4; set_trabajadores_max(floor(edificio.trabajadores_max * 0.6), edificio); add_mantenimiento(5, edificio)})
+	mejora_pasteurizacion = def_mejora("Pasteurización", "Mejora la producción", 130, 600, [24], [15],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.4; add_mantenimiento(5, edificio)})
+	mejora_penicilina = def_mejora("Penicilina", "Mejora el servicio", 110, 500, [30], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.5; edificio.ahorro += 0.1; add_mantenimiento(2, edificio); set_calidad_servicio(edificio)})
+	mejora_pesca_por_arrastre = def_mejora("Pesca por arrastre", "Aumenta la eficiencia y contaminación", 50, 500, [7], [40],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.5; add_contaminacion(5, edificio)})
+	mejora_pestisidas = def_mejora("Pestisidas", "Aumenta la eficiencia y contaminación", 165, 400, [30], [20],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.2; add_mantenimiento(1, edificio); add_contaminacion(10, edificio)})
+	mejora_prensadora_a_vapor = def_mejora("Prensadora a vapor", "Aumenta la producción", 50, 800, [24], [15], true, 10,,, function(edificio = null_edificio){edificio.eficiencia += 0.4; add_mantenimiento(3, edificio)})
+	mejora_proceso_bassemer = def_mejora("Proceso Bassemer", "Aumenta la eficiencia", 60, 1000, [24], [20],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.5; add_mantenimiento(-5, edificio)})
+	mejora_proceso_electrolitico = def_mejora("Proceso electrolítico", "Aumenta la eficiencia y consumo eléctrico", 130, 800, [24], [20], true, 10, true, 20, function(edificio = null_edificio){edificio.eficiencia += 0.1; add_mantenimiento(5, edificio); add_contaminacion(-10, edificio)})
+	mejora_purificacion_con_cal_viva = def_mejora("Purificación con cal viva", "Mejora la producción", 50, 200,,,,,,, function(edificio = null_edificio){edificio.eficiencia += 0.1; add_mantenimiento(1, edificio)})
+	mejora_reciclaje_de_materiales = def_mejora("Reciclaje de materiales", "Reduce el impacto medioambiental", 160, 400,,,,,,, function(edificio = null_edificio){edificio.ahorro += 0.5; add_mantenimiento(-5, edificio); add_contaminacion(-10, edificio)})
+	mejora_riego_por_goteo = def_mejora("Riego por goteo", "Mejora la eficiencia y cuidado mediambiental", 200, 200,,, true,,,, function(edificio = null_edificio){add_mantenimiento(-2, edificio); add_contaminacion(-10, edificio)})
+	mejora_segadora = def_mejora("Segadora", "Mejora la eficiencia", 70, 400, [24], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.2; add_mantenimiento(1, edificio)})
+	mejora_sierras_a_vapor = def_mejora("Sierras a vapor", "Aumenta la producción", 80, 800, [15, 24], [10, 10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.4; add_mantenimiento(5, edificio); add_contaminacion(-10, edificio)})
+	mejora_tractores = def_mejora("Tractores", "Aumenta mucho la eficiencia", 130, 700, [31], [5],,,,, function(edificio = null_edificio){edificio.eficiencia += 1; edificio.trabajo_sueldo += 2; set_trabajadores_max(floor(edificio.trabajadores_max * 0.5), edificio); add_mantenimiento(-5, edificio)})
+	mejora_trapiche_hidraulico = def_mejora("Trapiche hidráulico", "Mejora la eficiencia", 20, 400, [24], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(1, edificio)})
+	mejora_trilladora = def_mejora("Trilladora", "Mejora la eficiencia", 100, 400, [24], [15],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(2, edificio)})
+	mejora_uso_de_drones = def_mejora("Uso de drones", "Aumenta el rendimiento y disminuye los trabajdores", 220, 400, [24], [10],,, true, 5, function(edificio = null_edificio){edificio.eficiencia += 1; add_mantenimiento(1, edificio); set_trabajadores_max(floor(edificio.trabajadores_max * 0.5), edificio)})
+	mejora_vacunas = def_mejora("Vacunas", "Mejora la eficiencia", 140, 500, [30], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.2; add_mantenimiento(2, edificio)})
 #endregion
 #region Empresas
 	null_empresa = {
@@ -1113,7 +1167,6 @@ debug = false
 	getstring_default = ""
 	getstring_function = function(a, b){}
 	getstring_param = []
-	mejoras_desbloqueadas = []
 	felicidad_total = 50
 	dinero = 20000
 	inversion_privada = 0

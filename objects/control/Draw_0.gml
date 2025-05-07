@@ -1943,81 +1943,30 @@ if sel_info{
 							}
 					//Mejoras
 					var var_nombre_cultivo = recurso_nombre[recurso_cultivo[sel_edificio.modo]]
-					if edificio_mejora("Fertilizantes sintéticos", sel_edificio, 120, 400, "Mejora la eficiencia", [30], [20]){
-						sel_edificio.eficiencia += 0.2
-						add_mantenimiento(2, sel_edificio)
-					}
-					if edificio_mejora("Tractores", sel_edificio, 130, 500, "Mejora la eficiencia disminuyendo los trabajadores", [31], [5]){
-						sel_edificio.eficiencia += 1
-						sel_edificio.trabajo_sueldo += 2
-						sel_edificio.trabajadores_max = floor(sel_edificio.trabajadores_max * 0.5)
-						while array_length(sel_edificio.trabajadores) > sel_edificio.trabajadores_max
-							cambiar_trabajo(sel_edificio.trabajadores[0], null_edificio)
-						add_mantenimiento(-5, sel_edificio)
-					}
-					if edificio_mejora("Pestisidas", sel_edificio, 165, 400, "Mejora la eficiencia y el impacto medioambiental", [30], [20]){
-						sel_edificio.eficiencia += 0.2
-						add_mantenimiento(1, sel_edificio)
-						set_contaminacion(10, sel_edificio)
-					}
-					if edificio_mejora("Riego por goteo", sel_edificio, 200, 200, "Reduce el consumo de agua"){
-						add_mantenimiento(-2, sel_edificio)
-						set_contaminacion(-10, sel_edificio)
-					}
-					if edificio_mejora("Uso de drones", sel_edificio, 220, 400, "Aumenta la eficiencia", [24], [10]){
-						sel_edificio.eficiencia += 0.1
-						add_mantenimiento(1, sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_fertilizantes_sinteticos)
+					edificio_mejora(sel_edificio, mejora_tractores)
+					edificio_mejora(sel_edificio, mejora_pestisidas)
+					edificio_mejora(sel_edificio, mejora_riego_por_goteo)
+					edificio_mejora(sel_edificio, mejora_uso_de_drones)
 					if var_nombre_cultivo = "Cereales"{
-						if edificio_mejora("Segadora", sel_edificio, 70, 400, "Aumenta la eficiencia", [15], [10]){
-							sel_edificio.eficiencia += 0.2
-							add_mantenimiento(1, sel_edificio)
-						}
-						if edificio_mejora("Trilladora", sel_edificio, 100, 400, "Aumenta la eficiencia", [15], [10]){
-							sel_edificio.eficiencia += 0.3
-							add_mantenimiento(2, sel_edificio)
-						}
+						edificio_mejora(sel_edificio, mejora_segadora)
+						edificio_mejora(sel_edificio, mejora_trilladora)
 					}
 					else if var_nombre_cultivo = "Tabaco"{
-						if edificio_mejora("Trapiche hidráulico", sel_edificio, 20, 400, "Aumenta la eficiencia", [15, 24], [20, 10]){
-							sel_edificio.eficiencia += 0.3
-							add_mantenimiento(1, sel_edificio)
-						}
-						if edificio_mejora("Maquina enroladora", sel_edificio, 80, 400, "Mejora la eficiencia", [15, 24], [10, 10]){
-							sel_edificio.eficiencia += 0.3
-							add_mantenimiento(3, sel_edificio)
-						}
+						edificio_mejora(sel_edificio, mejora_trapiche_hidraulico)
+						edificio_mejora(sel_edificio, mejora_maquina_enroladora)
 					}
 					else if var_nombre_cultivo = "Algodón"{
-						if edificio_mejora("Máquina desmotadora", sel_edificio, 0, 400, "Aumenta la producción", [15, 24], [20, 10]){
-							sel_edificio.eficiencia += 0.4
-							add_mantenimiento(3, sel_edificio)
-						}
-						if edificio_mejora("Trapiche hidráulico", sel_edificio, 20, 400, "Aumenta la eficiencia", [15, 24], [20, 10]){
-							sel_edificio.eficiencia += 0.3
-							add_mantenimiento(1, sel_edificio)
-						}
+						edificio_mejora(sel_edificio, mejora_maquina_desmotadora)
+						edificio_mejora(sel_edificio, mejora_trapiche_hidraulico)
 					}
 					else if var_nombre_cultivo = "Azucar"{
-						if edificio_mejora("Trapiche hidráulico", sel_edificio, 20, 400, "Aumenta la eficiencia", [15, 24], [10, 10]){
-							sel_edificio.eficiencia += 0.3
-							add_mantenimiento(1, sel_edificio)
-						}
-						if edificio_mejora("Calderas de cristalización", sel_edificio, 30, 400, "Aumenta la eficiencia", [15, 24], [20, 10]){
-							sel_edificio.eficiencia += 0.3
-							add_mantenimiento(3, sel_edificio)
-						}
-						if edificio_mejora("Purificación con cal viva", sel_edificio, 50, 200, "Aumenta la eficiencia"){
-							sel_edificio.eficiencia += 0.1
-							add_mantenimiento(1, sel_edificio)
-						}
+						edificio_mejora(sel_edificio, mejora_trapiche_hidraulico)
+						edificio_mejora(sel_edificio, mejora_caldera_de_cristalizacion)
+						edificio_mejora(sel_edificio, mejora_purificacion_con_cal_viva)
 					}
-					else if var_nombre_cultivo = "Plátano"{
-						if edificio_mejora("Frigoríficos", sel_edificio, 90, 500, "Aumenta la producción", [24], [15]){
-							sel_edificio.eficiencia += 0.3
-							add_mantenimiento(5, sel_edificio)
-						}
-					}
+					else if var_nombre_cultivo = "Plátano"
+						edificio_mejora(sel_edificio, mejora_frigorificos)
 				}
 				else if var_edificio_nombre = "Pescadería"{
 					var zona_pesca = sel_edificio.zona_pesca, c = zona_pesca.a, d = zona_pesca.b
@@ -2035,26 +1984,11 @@ if sel_info{
 					if contaminacion[sel_edificio.x, sel_edificio.y] > 0
 						draw_text_pos(room_width - 50, pos, $"Contaminación: {100 - floor(clamp(contaminacion[sel_edificio.x, sel_edificio.y], 0, 100) / 2)}%")
 					//Mejoras
-					if edificio_mejora("Pesca de arrastre", sel_edificio, 50, 400, "Mejora la extracción", [7], [40])
-						sel_edificio.eficiencia += 0.5
-					if edificio_mejora("Barcos a vapor", sel_edificio, 70, 800, "Aumenta la eficiencia y el impacto", [15, 17, 24], [20, 1, 20]){
-						sel_edificio.eficiencia += 0.3
-						add_mantenimiento(5, sel_edificio)
-						set_contaminacion(10, sel_edificio)
-					}
-					if edificio_mejora("Barcos factoría", sel_edificio, 150, 1200, "Aumenta la eficiencia y el impacto", [31], [5]){
-						sel_edificio.eficiencia += 0.5
-						add_mantenimiento(3, sel_edificio)
-						set_contaminacion(10, sel_edificio)
-					}
-					if edificio_mejora("Uso de drones", sel_edificio, 220, 400, "Aumenta la eficiencia", [24], [10]){
-						sel_edificio.eficiencia += 0.1
-						add_mantenimiento(1, sel_edificio)
-					}
-					if edificio_mejora("Frigoríficos", sel_edificio, 90, 500, "Aumenta la producción", [24], [15]){
-						sel_edificio.eficiencia += 0.3
-						add_mantenimiento(5, sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_pesca_por_arrastre)
+					edificio_mejora(sel_edificio, mejora_barcos_a_vapor)
+					edificio_mejora(sel_edificio, mejora_barcos_factoria)
+					edificio_mejora(sel_edificio, mejora_uso_de_drones)
+					edificio_mejora(sel_edificio, mejora_frigorificos)
 				}
 				else if var_edificio_nombre = "Mina"{
 					draw_text_pos(room_width - 20, pos, $"Extrayendo {recurso_nombre[recurso_mineral[sel_edificio.modo]]}")
@@ -2081,80 +2015,26 @@ if sel_info{
 					//Mejoras
 					draw_text_pos(room_width - 20, pos, "Mejoras")
 					var var_nombre_mineral = recurso_nombre[recurso_mineral[sel_edificio.modo]]
-					if sel_edificio.energia and edificio_mejora("Ferrocarriles de Mina", sel_edificio, 110, 800, "Mejora la eficiencia", [1, 15, 24], [20, 20, 20]){
-						sel_edificio.eficiencia += 0.3
-						add_mantenimiento(5, sel_edificio)
-					}
-					if edificio_mejora("Explosivos Mineros", sel_edificio, 140, 600, "Mejora la eficiencia pero aumenta el riesgo", [28, 30], [10, 10]){
-						sel_edificio.eficiencia += 0.2
-						sel_edificio.trabajo_riesgo *= 1.2
-						add_mantenimiento(1, sel_edificio)
-					}
-					if edificio_mejora("Vehículos Mineros", sel_edificio, 160, 600, "Mejora la eficiencia", [31], [10]){
-						sel_edificio.eficiencia += 0.4
-						add_mantenimiento(5, sel_edificio)
-					}
-					if edificio_mejora("Computadores", sel_edificio, 190, 500, "Mejora la eficiencia y disminuye el riesgo",,,,, true, 10){
-						sel_edificio.eficiencia += 0.2
-						sel_edificio.trabajo_riesgo *= 0.9
-						add_mantenimiento(1, sel_edificio)
-					}
-					if edificio_mejora("Minería verde", sel_edificio, 210, 800, "Reduce la eficiencia, contaminación y consumo", [24], [10]){
-						sel_edificio.eficiencia -= 0.2
-						sel_edificio.ahorro += 0.2
-						add_mantenimiento(2, sel_edificio)
-						set_contaminacion(-15, sel_edificio)
-					}
-					if edificio_mejora("Uso de drones", sel_edificio, 220, 400, "Mejora la eficiencia y extracción", [24], [20],,, true, 10){
-						sel_edificio.eficiencia += 0.2
-						sel_edificio.ahorro += 0.5
-						add_mantenimiento(1, sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_ferrocarriles)
+					edificio_mejora(sel_edificio, mejora_explosivos_mineros)
+					edificio_mejora(sel_edificio, mejora_camiones)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_filtros_industriales)
+					edificio_mejora(sel_edificio, mejora_uso_de_drones)
 					if var_nombre_mineral = "Carbón"{
-						if edificio_mejora("Bomba de Desagüe", sel_edificio, 20, 300, "Mejora la eficiencia", [15, 24], [20, 10]){
-							sel_edificio.eficiencia += 0.2
-							add_mantenimiento(2, sel_edificio)
-						}
-						if edificio_mejora("Minería a cielo Abierto", sel_edificio, 150, 500, "Mejora la eficiencia y la contaminación"){
-							sel_edificio.eficiencia += 0.3
-							add_mantenimiento(-1, sel_edificio)
-							set_contaminacion(10, sel_edificio)
-						}
+						edificio_mejora(sel_edificio, mejora_bomba_a_vapor)
+						edificio_mejora(sel_edificio, mejora_mineria_a_cielo_abierto)
 					}
 					else if var_nombre_mineral = "Oro"{
-						if edificio_mejora("Canaletas y dragas", sel_edificio, 50, 300, "Mejora la eficiencia", [1, 15], [10, 10])
-							sel_edificio.eficiencia += 0.1
-						if edificio_mejora("Cianuración", sel_edificio, 100, 500, "Mejora la eficiencia y extracción", [15, 24, 30], [20, 10, 10],,, true, 10){
-							sel_edificio.eficiencia += 0.3
-							sel_edificio.ahorro += 0.5
-							add_mantenimiento(10, sel_edificio)
-						}
+						edificio_mejora(sel_edificio, mejora_canaletas_y_dragas)
+						edificio_mejora(sel_edificio, mejora_cianuracion)
 					}
 					else if var_nombre_mineral = "Cobre"{
-						if edificio_mejora("Fundición primaria", sel_edificio, 60, 1000, "Permite extraer más cobre del depósito", [15, 24], [20, 20]){
-							sel_edificio.eficiencia += 0.1
-							sel_edificio.ahorro += 0.5
-							add_mantenimiento(10, sel_edificio)
-							set_contaminacion(10, sel_edificio)
-						}
-						if edificio_mejora("Electrificación", sel_edificio, 130, 800, "Aumenta la eficiencia y calidad", [15, 24], [20, 20],,, true, 10){
-							sel_edificio.eficiencia += 0.1
-							sel_edificio.ahorro += 0.5
-							add_mantenimiento(10, sel_edificio)
-						}
-						if edificio_mejora("Extracción electrolítica", sel_edificio, 130, 800, "Aumenta la eficiencia y disminuye la contaminación", [15, 24], [20, 20],,, true, 20){
-							sel_edificio.eficiencia += 0.1
-							add_mantenimiento(5, sel_edificio)
-							set_contaminacion(-10, sel_edificio)
-						}
+						edificio_mejora(sel_edificio, mejora_proceso_electrolitico)
+						edificio_mejora(sel_edificio, mejora_reciclaje_de_materiales)
 					}
-					else if var_nombre_mineral = "Aluminio"{
-						if edificio_mejora("Reciclaje de metales", sel_edificio, 160, 500, "Disminuye el consumo del depósito y la contaminación",,,,, true, 10){
-							sel_edificio.ahorro += 0.5
-							add_mantenimiento(-5, sel_edificio)
-							set_contaminacion(-10, sel_edificio)
-						}
-					}
+					else if var_nombre_mineral = "Aluminio"
+						edificio_mejora(sel_edificio, mejora_reciclaje_de_materiales)
 				}
 				else if var_edificio_nombre = "Rancho"{
 					if contaminacion[sel_edificio.x, sel_edificio.y] > 0
@@ -2171,63 +2051,25 @@ if sel_info{
 							}
 					//Mejoras
 					var var_ganado_nombre = ganado_nombre[sel_edificio.modo]
-					if edificio_mejora("Vacunas", sel_edificio, 140, 500, "Aumenta la producción", [30], [10]){
-						sel_edificio.eficiencia += 0.2
-						add_mantenimiento(2, sel_edificio)
-					}
-					if var_ganado_nombre = "Vacas"{
-						if edificio_mejora("Frigoríficos", sel_edificio, 90, 500, "Aumenta la producción", [24], [15],,, true, 10){
-							sel_edificio.eficiencia += 0.3
-							add_mantenimiento(5, sel_edificio)
-						}
-					}
+					edificio_mejora(sel_edificio, mejora_vacunas)
+					if var_ganado_nombre = "Vacas"
+						edificio_mejora(sel_edificio, mejora_frigorificos)
 					else if var_ganado_nombre = "Cabras"{
-						if edificio_mejora("Pasteurización", sel_edificio, 130, 800, "Aumenta la producción", [24], [15],,, true, 10){
-							sel_edificio.eficiencia += 0.4
-							add_mantenimiento(5, sel_edificio)
-						}
-						if edificio_mejora("Ordeña automática", sel_edificio, 160, 500, "Aumenta la producción", [24], [15],,, true, 10){
-							sel_edificio.eficiencia += 0.4
-							sel_edificio.trabajadores_max = floor(sel_edificio.trabajadores_max * 0.6)
-							while array_length(sel_edificio.trabajadores) > sel_edificio.trabajadores_max
-								cambiar_trabajo(sel_edificio.trabajadores[0], null_edificio)
-							add_mantenimiento(5, sel_edificio)
-						}
+						edificio_mejora(sel_edificio, mejora_pasteurizacion)
+						edificio_mejora(sel_edificio, mejora_ordena_automatica)
 					}
-					else if var_ganado_nombre = "Ovejas"{
-						if edificio_mejora("Esquiladoras eléctricas", sel_edificio, 150, 500, "Aumenta la producción", [24], [10],,, true, 10){
-							sel_edificio.eficiencia += 0.3
-							add_mantenimiento(2, sel_edificio)
-						}
-					}
+					else if var_ganado_nombre = "Ovejas"
+						edificio_mejora(sel_edificio, mejora_esquiladora_electrica)
 					else if var_ganado_nombre = "Cerdos"
-							if edificio_mejora("Frigoríficos", sel_edificio, 90, 500, "Aumenta la producción", [24], [15],,, true, 10){
-								sel_edificio.eficiencia += 0.3
-								add_mantenimiento(5, sel_edificio)
-							}
+						edificio_mejora(sel_edificio, mejora_frigorificos)
 				}
 				else if var_edificio_nombre = "Aserradero"{
 					if draw_boton(room_width - 20, pos, $"{(sel_edificio.modo = 0) ? "Despejar bosque" : "Reforestación"}")
 						sel_edificio.modo = 1 - sel_edificio.modo
 					//Mejoras
-					if edificio_mejora("Aserraderos a vapor", sel_edificio, 80, 500, "Aumenta la producción e impacto", [15, 24], [20, 10], true, 10){
-						sel_edificio.eficiencia += 0.4
-						add_mantenimiento(5, sel_edificio)
-						set_contaminacion(-10, sel_edificio)
-					}
-					if edificio_mejora("Tractores", sel_edificio, 130, 500, "Mejora la eficiencia disminuyendo los trabajadores", [31], [5]){
-						sel_edificio.eficiencia += 0.5
-						sel_edificio.trabajadores_max = floor(sel_edificio.trabajadores_max / 2)
-						while array_length(sel_edificio.trabajadores) > 0
-							cambiar_trabajo(sel_edificio.trabajadores[0], null_edificio)
-						add_mantenimiento(10, sel_edificio)
-						set_contaminacion(-10, sel_edificio)
-					}
-					if edificio_mejora("Motosierras", sel_edificio, 140, 500, "Mejora la eficiencia", [24], [10],,, true, 15){
-						sel_edificio.eficiencia += 0.3
-						add_mantenimiento(2, sel_edificio)
-						set_contaminacion(-5, sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_sierras_a_vapor)
+					edificio_mejora(sel_edificio, mejora_tractores)
+					edificio_mejora(sel_edificio, mejora_motosierra)
 				}
 				else if var_edificio_nombre = "Pozo Petrolífero"{
 					var c = 0, d = x + width, e = y + height
@@ -2239,27 +2081,17 @@ if sel_info{
 					else
 						draw_text_pos(room_width - 20, pos, "Depósito vacío")
 					//Mejoras
-					if edificio_mejora("Bomba rotativa", sel_edificio, 130, 1000, "Aumenta la producción y disminuye el consumo", [15, 24], [10, 20],,, true, 20){
-						sel_edificio.eficiencia += 0.4
-						sel_edificio.ahorro += 0.5
-						add_mantenimiento(5, sel_edificio)
-					}
-					if edificio_mejora("Fracking", sel_edificio, 145, 1000, "Aumenta la producción y contaminación", [15, 24], [10, 20], true, 30){
-						sel_edificio.eficiencia += 0.4
-						sel_edificio.ahorro += 0.5
-						add_mantenimiento(5, sel_edificio)
-						set_contaminacion(15, sel_edificio)
-					}
-					if edificio_mejora("Uso de drones", sel_edificio, 220, 400, "Mejora la eficiencia y extracción", [24], [20],,, true, 10){
-						sel_edificio.eficiencia += 0.2
-						sel_edificio.ahorro += 0.5
-						add_mantenimiento(1, sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_bomba_rotativa)
+					edificio_mejora(sel_edificio, mejora_destilacion_fraccionada)
+					edificio_mejora(sel_edificio, mejora_fracking)
+					edificio_mejora(sel_edificio, mejora_uso_de_drones)
 				}
 				else if var_edificio_nombre = "Bomba de Agua"{
 					draw_text_pos(room_width - 20, pos, $"Empujando {sel_edificio.count} agua")
 					if sel_edificio.almacen[1] + sel_edificio.almacen[9] + sel_edificio.almacen[27] = 0
 						draw_text_pos(room_width - 30, pos, "Necesita combustible!")
+					edificio_mejora(sel_edificio, mejora_bomba_rotativa)
+					edificio_mejora(sel_edificio, mejora_computadores)
 				}
 				else if var_edificio_nombre = "Periódico"{
 					if elecciones{
@@ -2283,72 +2115,104 @@ if sel_info{
 								select(,, candidatos[a])
 					}
 					//Mejoras
-					if edificio_mejora("Máquinas de escribir", sel_edificio, 70, 500, "Mejora la eficiencia", [24], [10]){
-						sel_edificio.eficiencia += 0.4
-						add_mantenimiento(1, sel_edificio)
-					}
-					if edificio_mejora("Máquinas de escribir eléctricas", sel_edificio, 160, 800, "Mejora la eficiencia", [12, 24], [10, 10],,, true, 10){
-						sel_edificio.eficiencia += 0.2
-						add_mantenimiento(1, sel_edificio)
-					}
-					if edificio_mejora("Computadores", sel_edificio, 170, 1000, "Mejora la eficiencia", [24], [10],,, true, 10){
-						sel_edificio.eficiencia += 0.4
-						add_mantenimiento(5, sel_edificio)
-						set_calidad_servicio(sel_edificio)
-					}
-					if edificio_mejora("Internet", sel_edificio, 195, 1000, "Mejora la eficiencia y calidad de servicio",,,,, true){
-						sel_edificio.ahorro += 0.2
-						sel_edificio.eficiencia += 0.2
-						add_mantenimiento(-5, sel_edificio)
-						set_calidad_servicio(sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_maquinas_de_escribir)
+					edificio_mejora(sel_edificio, mejora_maquinas_de_escribir_electricas)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_internet)
 				}
 				else if var_edificio_nombre = "Planta Siderúrgica"{
 					//Mejoras
-					if edificio_mejora("Proceso Bassemer", sel_edificio, 56, 1000, "Mejora la eficiencia y disminuyer el costo", [15, 24, 30], [10, 10, 10]){
-						sel_edificio.eficiencia += 0.5
-						add_mantenimiento(-5, sel_edificio)
-					}
-					if edificio_mejora("Horno de arco eléctrico", sel_edificio, 102, 750, "Mejora la eficiencia", [24], [20],,, true, 50){
-						sel_edificio.eficiencia += 0.3
-						add_mantenimiento(-5, sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_proceso_bassemer)
+					edificio_mejora(sel_edificio, mejora_horno_de_arco_electrico)
 				}
 				else if var_edificio_nombre = "Banco"{
-					if edificio_mejora("Computadores", sel_edificio, 170, 1000, "Mejora la eficiencia", [24], [10],,, true, 10){
-						sel_edificio.eficiencia += 0.4
-						add_mantenimiento(5, sel_edificio)
-					}
-					if edificio_mejora("Internet", sel_edificio, 195, 1000, "Mejora la eficiencia",,,,, true){
-						sel_edificio.eficiencia += 0.5
-						add_mantenimiento(-5, sel_edificio)
-					}
-					if edificio_mejora("Criptografia", sel_edificio, 210, 1000, "Mejora la eficiencia",,,,, true){
-						sel_edificio.eficiencia += 0.5
-						add_mantenimiento(5, sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_internet)
+					edificio_mejora(sel_edificio, mejora_criptografia)
 				}
 				else if var_edificio_nombre = "Muelle"{
-					if edificio_mejora("Frigoríficos", sel_edificio, 90, 500, "Aumenta la producción", [24], [15],,, true, 10){
-						sel_edificio.eficiencia += 0.3
-						add_mantenimiento(5, sel_edificio)
-					}
-					if edificio_mejora("Grúas a vapor", sel_edificio, 100, 1000, "Mejora la eficiencia", [15, 24], [30, 20], true, 10){
-						sel_edificio.eficiencia += 0.5
-						add_mantenimiento(8, sel_edificio)
-					}
-					if edificio_mejora("Grúas eléctricas", sel_edificio, 140, 1000, "Mejora la eficiencia y disminuye el riesgo", [15, 24], [10, 20],,, true, 20){
-						sel_edificio.trabajo_riesgo *= 0.5
-						sel_edificio.eficiencia += 0.5
-						add_mantenimiento(5, sel_edificio)
-					}
-					if edificio_mejora("Conteiners", sel_edificio, 160, 500, "Mejora mucho la eficiencia", [13, 15], [20, 20])
-						sel_edificio.eficiencia += 1
-					if edificio_mejora("Computadores", sel_edificio, 190, 500, "Mejora la eficiencia y disminuye el riesgo",,,,, true, 10){
-						sel_edificio.eficiencia += 0.2
-						sel_edificio.trabajo_riesgo *= 0.9
-						add_mantenimiento(1, sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_ferrocarriles)
+					edificio_mejora(sel_edificio, mejora_frigorificos)
+					edificio_mejora(sel_edificio, mejora_camiones)
+					edificio_mejora(sel_edificio, mejora_gruas_a_vapor)
+					edificio_mejora(sel_edificio, mejora_gruas_electricas)
+					edificio_mejora(sel_edificio, mejora_contenedores)
+					edificio_mejora(sel_edificio, mejora_computadores)
+				}
+				else if var_edificio_nombre = "Oficina de Construcción"{
+					edificio_mejora(sel_edificio, mejora_camiones)
+					edificio_mejora(sel_edificio, mejora_gruas_electricas)
+					edificio_mejora(sel_edificio, mejora_computadores)
+				}
+				else if var_edificio_nombre = "Oficina de Transporte"{
+					edificio_mejora(sel_edificio, mejora_camiones)
+					edificio_mejora(sel_edificio, mejora_contenedores)
+					edificio_mejora(sel_edificio, mejora_gruas_electricas)
+					edificio_mejora(sel_edificio, mejora_internet)
+				}
+				else if var_edificio_nombre = "Taller Textil"{
+					edificio_mejora(sel_edificio, mejora_maquinas_de_coser)
+					edificio_mejora(sel_edificio, mejora_linea_de_montaje)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_uso_de_drones)
+				}
+				else if var_edificio_nombre = "Astillero"{
+					edificio_mejora(sel_edificio, mejora_ferrocarriles)
+					edificio_mejora(sel_edificio, mejora_barcos_a_vapor)
+					edificio_mejora(sel_edificio, mejora_gruas_a_vapor)
+					edificio_mejora(sel_edificio, mejora_gruas_electricas)
+					edificio_mejora(sel_edificio, mejora_computadores)
+				}
+				else if var_edificio_nombre = "Destilería"{
+					edificio_mejora(sel_edificio, mejora_destilacion_fraccionada)
+					edificio_mejora(sel_edificio, mejora_bomba_a_vapor)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_filtros_industriales)
+				}
+				else if var_edificio_nombre = "Quesería"{
+					edificio_mejora(sel_edificio, mejora_destilacion_fraccionada)
+					edificio_mejora(sel_edificio, mejora_pasteurizacion)
+					edificio_mejora(sel_edificio, mejora_filtros_industriales)
+				}
+				else if var_edificio_nombre = "Herrería"{
+					edificio_mejora(sel_edificio, mejora_prensadora_a_vapor)
+					edificio_mejora(sel_edificio, mejora_linea_de_montaje)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_uso_de_drones)
+				}
+				else if var_edificio_nombre = "Mueblería"{
+					edificio_mejora(sel_edificio, mejora_sierras_a_vapor)
+					edificio_mejora(sel_edificio, mejora_linea_de_montaje)
+					edificio_mejora(sel_edificio, mejora_computadores)
+				}
+				else if var_edificio_nombre = "Tejar"{
+					edificio_mejora(sel_edificio, mejora_prensadora_a_vapor)
+					edificio_mejora(sel_edificio, mejora_reciclaje_de_materiales)
+				}
+				else if var_edificio_nombre = "Planta termoeléctrica"
+					edificio_mejora(sel_edificio, mejora_filtros_industriales)
+				else if var_edificio_nombre = "Oficina de Bomberos"{
+					edificio_mejora(sel_edificio, mejora_bomba_a_vapor)
+					edificio_mejora(sel_edificio, mejora_camiones)
+				}
+				else if var_edificio_nombre = "Armería"{
+					edificio_mejora(sel_edificio, mejora_prensadora_a_vapor)
+					edificio_mejora(sel_edificio, mejora_linea_de_montaje)
+					edificio_mejora(sel_edificio, mejora_computadores)
+				}
+				else if var_edificio_nombre = "Planta Química"{
+					edificio_mejora(sel_edificio, mejora_frigorificos)
+					edificio_mejora(sel_edificio, mejora_proceso_electrolitico)
+					edificio_mejora(sel_edificio, mejora_linea_de_montaje)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_filtros_industriales)
+					edificio_mejora(sel_edificio, mejora_reciclaje_de_materiales)
+				}
+				else if var_edificio_nombre = "Fábrica de Vehículos"{
+					edificio_mejora(sel_edificio, mejora_gruas_electricas)
+					edificio_mejora(sel_edificio, mejora_linea_de_montaje)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_uso_de_drones)
 				}
 			}
 			//Información escuelas / consultas
@@ -2358,39 +2222,14 @@ if sel_info{
 						if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a]))
 							select(,, sel_edificio.clientes[a])
 				if in(var_edificio_nombre, "Escuela", "Escuela parroquial"){
-					if edificio_mejora("Computadores", sel_edificio, 200, 700, "Mejora el servicio", [24], [20],,, true, 10){
-						sel_edificio.ahorro += 0.1
-						add_mantenimiento(5, sel_edificio)
-						set_calidad_servicio(sel_edificio)
-					}
-					if edificio_mejora("Internet", sel_edificio, 210, 500, "Mejora el servicio y ahorra recursos",,,,, true, 10){
-						sel_edificio.ahorro += 0.2
-						add_mantenimiento(-3, sel_edificio)
-						set_calidad_servicio(sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_internet)
 				}
 				else if in(var_edificio_nombre, "Consultorio", "Hospicio"){
-					if edificio_mejora("Anestesia", sel_edificio, 70, 1000, "Mejora el servicio", [30], [10]){
-						sel_edificio.ahorro += 0.2
-						add_mantenimiento(2, sel_edificio)
-						set_calidad_servicio(sel_edificio)
-					}
-					if edificio_mejora("Penicilina", sel_edificio, 110, 700, "Mejora el servicio y la eficiencia", [30], [20]){
-						sel_edificio.eficiencia += 0.5
-						sel_edificio.ahorro += 0.1
-						add_mantenimiento(2, sel_edificio)
-						set_calidad_servicio(sel_edificio)
-					}
-					if edificio_mejora("Computadores", sel_edificio, 170, 1000, "Mejora la eficiencia", [24], [10],,, true, 10){
-						sel_edificio.eficiencia += 0.4
-						add_mantenimiento(5, sel_edificio)
-						set_calidad_servicio(sel_edificio)
-					}
-					if edificio_mejora("Internet", sel_edificio, 195, 1000, "Mejora la eficiencia y ahorra recursos",,,,, true, 10){
-						sel_edificio.eficiencia += 0.3
-						add_mantenimiento(-5, sel_edificio)
-						set_calidad_servicio(sel_edificio)
-					}
+					edificio_mejora(sel_edificio, mejora_anestesia)
+					edificio_mejora(sel_edificio, mejora_penicilina)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_internet)
 				}
 			}
 			//Información edificios de ocio
@@ -2950,7 +2789,7 @@ if (keyboard_check(vk_space) or step >= 60){
 					}, familia)
 					b += mes_muertos_accidentes[current_mes] - c
 				}
-				add_noticia("Incendio", $"Se ha quemado {edificio.nombre}{b = 0 ? "" : $", ha{b = 1 ? "" : "n"} muerto {b} persona{b = 1 ? "" : "s"}"}")
+				add_noticia("Incendio", $"Se ha quemado {edificio.nombre}{b = 0 ? "" : ", ha"}{b = 1 ? "" : "n"} muerto {b} persona{b = 1 ? "" : "s"}")
 				for(var a = edificio.x; a < edificio.x + edificio.width; a++)
 					for(b = edificio.y; b < edificio.y + edificio.height; b++){
 						array_set(escombros[a], b, true)

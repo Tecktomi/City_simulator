@@ -1,4 +1,5 @@
-function edificio_mejora(nombre, edificio = control.null_edificio, anno = 0, precio = 0, descripcion = "", recursos_id = [], recursos_num = [], agua = false, agua_num = 0, energia = false, energia_num = 0){
+function edificio_mejora(edificio = control.null_edificio, mejora = control.null_mejora){
+	var agua = mejora.bool_agua, agua_num = mejora.agua, energia = mejora.bool_energia, energia_num = mejora.energia, precio = mejora.precio, anno = mejora.anno, nombre = mejora.nombre, recursos_id = mejora.recurso_id, recursos_num = mejora.recurso_num, descripcion = mejora.descripcion
 	with control{
 		if not edificio.privado and (not agua or edificio.agua) and (not energia or edificio.energia){
 			var flag = array_contains(mejoras_desbloqueadas, string(nombre))
@@ -22,6 +23,7 @@ function edificio_mejora(nombre, edificio = control.null_edificio, anno = 0, pre
 				for(var a = 0; a < array_length(recursos_id); a++)
 					recurso_construccion[recursos_id[a]] += real(recursos_num[a])
 				array_push(edificio.mejoras, string(nombre))
+				mejora.efecto(edificio)
 				return true
 			}
 		}
