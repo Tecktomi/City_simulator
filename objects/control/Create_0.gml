@@ -268,9 +268,9 @@ debug = false
 	recurso_nombre = [	"Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón",
 						"Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche",
 						"Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo", "Armas", "Ropa",
-						"Químicos", "Vehículos"]
-	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 4, 40, 10, 8, 80]
-	recurso_anno = [0, 0, 0, 0, 0, 0, 110, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 70, 102]
+						"Químicos", "Vehículos", "Plásticos"]
+	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 0.6, 4, 40, 10, 3, 80, 3]
+	recurso_anno = [0, 0, 0, 0, 0, 0, 110, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 70, 102, ]
 	recurso_prima = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true, true, false, false, false, false, true, true, false, false, false, false]
 	recurso_current = []
 	for(a = 0; a < array_length(recurso_nombre); a++)
@@ -279,8 +279,8 @@ debug = false
 	recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23]
-	recurso_lujo = [4, 22, 25, 29, 30]
-	recurso_lujo_prbabilidad = [1, 1, 0.1, 0.5, 0.05]
+	recurso_lujo = [4, 22, 25, 29, 31, 32]
+	recurso_lujo_prbabilidad = [1, 1, 0.1, 0.5, 0.05, 1]
 	recurso_mineral = [9, 10, 11, 12, 13, 14]
 	recurso_mineral_color = [c_black, c_gray, c_yellow, c_orange, c_ltgray, c_dkgray]
 	recurso_mineral_rareza = [0.85, 0.875, 0.95, 0.85, 0.9, 0.925]
@@ -360,9 +360,9 @@ debug = false
 		"Reduce el crimen al encerrar a los delincuentes cercanos por un tiempo, además puede ayudar con los disturbios",
 		"Vende comida y bienes de lujo",
 		"Utiliza madera para producir muebles",
-		"Fábrica a vapor que requiere combustible y lana o algodón para producir tela a una gran velocidad.",
+		"Produce ropa a partir de telas y cuero",
 		"Aquí mismo se extrae la arcilla y se cosen ladrillos",
-		"Produce grandes cantidades de ladrillos utilizando hornos a vapor",
+		"Produce plástico a partir del petróleo y productos químicos, contamina mucho",
 		"Extrae petróleo de bajo tierra, consume agua potable",
 		"Utiliza combustible para dar presión de agua, necesario para mejorar las condiciones de alcantarillado",
 		"Genera energía elétrica a partir de la quema de combustibles fósiles",
@@ -524,9 +524,9 @@ debug = false
 		def_edificio_base("Comisaría", 4, 2, 900, 720, [1, 15, 26], [20, 25, 25], 12, 40); def_edificio_servicio(,,,,, 8); def_edificio_trabajo(true, 4, 40, 7,, 0.04)
 		def_edificio_base("Mercado", 4, 4, 600, 360, [1, 15, 16, 26], [20, 5, 20, 20], 10, 40, 10); def_edificio_servicio(); def_edificio_trabajo(true, 4, 35, 4)
 		def_edificio_base("Mueblería", 5, 4, 2500, 720, [1, 15, 24, 26], [25, 10, 20, 40], 20, 40, 5, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, 0.01, true, [1], [4], [25], [1], 1)
-		def_edificio_base(""); def_edificio_servicio(); def_edificio_trabajo()
+		def_edificio_base("Taller de Costura", 5, 4, 3000, 1080, [15, 24, 26], [30, 20, 40], 20, 35, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 6, 40, 5,, 0.02, true, [16, 21], [1, 1], [24], [1], 0.5)
 		def_edificio_base("Tejar", 5, 4, 1500, 360, [1, 15, 26], [20, 10, 30], 7, 40, -5, false); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 5,, 0.01)
-		def_edificio_base("NULL"); def_edificio_servicio(); def_edificio_trabajo()
+		def_edificio_base("Refinería de Plásticos", 7, 8, 10000, 1440, [15, 24, 26], [50, 40, 100], 75, 10, 40, false,,,,,,,,, 130); def_edificio_servicio(); def_edificio_trabajo(true, 12, 20, 5,, 0.04, true, [27, 30], [3, 1], [32], [8], 3)
 		//40
 		def_edificio_base("Pozo Petrolífero", 4, 4, 3000, 730, [15, 26], [60, 30], 20, 20, -20, false,,,,,,,,, 60); def_edificio_servicio(,,,,,,,, true, 40, true, 30); def_edificio_trabajo(true, 4, 30, 5, 1, 0.03)
 		def_edificio_base("Bomba de Agua", 3, 3, 2500, 640, [15, 26], [40, 10], 15, 30, -15,,,,,,,,,, 50); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 4, 20, 4,, 0.01)

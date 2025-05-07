@@ -2214,6 +2214,19 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_computadores)
 					edificio_mejora(sel_edificio, mejora_uso_de_drones)
 				}
+				else if var_edificio_nombre = "Taller de Costura"{
+					edificio_mejora(sel_edificio, mejora_maquinas_de_coser)
+					edificio_mejora(sel_edificio, mejora_linea_de_montaje)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_reciclaje_de_materiales)
+				}
+				else if var_edificio_nombre = "Refinería de Plásticos"{
+					edificio_mejora(sel_edificio, mejora_linea_de_montaje)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_reciclaje_de_materiales)
+					edificio_mejora(sel_edificio, mejora_uso_de_drones)
+					edificio_mejora(sel_edificio, mejora_filtros_industriales)
+				}
 			}
 			//Información escuelas / consultas
 			if edificio_es_escuela[index] or edificio_es_medico[index]{
