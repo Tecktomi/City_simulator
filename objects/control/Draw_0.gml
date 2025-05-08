@@ -1923,6 +1923,8 @@ if sel_info{
 				}
 			}
 			//Información trabajadores
+			mejora_requiere_agua = false
+			mejora_requiere_energia = false
 			if edificio_es_trabajo[index]{
 				if draw_menu(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{sel_edificio.trabajadores_max}", 4)
 					for(var a = 0; a < array_length(sel_edificio.trabajadores); a++)
@@ -2270,14 +2272,14 @@ if sel_info{
 				}
 			}
 			//Conexión al agua potable
-			if edificio_bool_agua[index] and (dia / 365) > 50{
+			if (edificio_bool_agua[index] or mejora_requiere_agua) and (dia / 365) > 50{
 				if not sel_edificio.agua and draw_boton(room_width - 20, pos, "Conectar agua potable $400")
 					add_tuberias(sel_edificio)
 				if sel_edificio.agua
 					draw_text_pos(room_width - 20, pos, $"Consumiendo {sel_edificio.agua_consumo} agua")
 			}
 			//Coneccion eléctrica
-			if edificio_bool_energia[index] and (dia / 365) > 90{
+			if (edificio_bool_energia[index] or mejora_requiere_energia) and (dia / 365) > 90{
 				if not sel_edificio.energia and draw_boton(room_width - 20, pos, "Conectar cablado público $200")
 					add_energia(sel_edificio)
 				if sel_edificio.energia
@@ -2388,10 +2390,7 @@ if sel_info{
 	//Información familias
 	else if sel_tipo = 1 and sel_familia != null_familia{
 		draw_text_pos(room_width, pos, name_familia(sel_familia))
-		if sel_familia.casa = homeless
-			draw_text_pos(room_width - 20, pos, "Sin hogar")
-		else if draw_boton(room_width - 20, pos, $"Vivienda: {sel_familia.casa.nombre}")
-			select(sel_familia.casa)
+		pos += 20
 		if sel_familia.padre != null_persona and draw_boton(room_width - 20, pos, $"Padre: {name(sel_familia.padre)}")
 			select(,, sel_familia.padre)
 		if sel_familia.madre != null_persona and draw_boton(room_width - 20, pos, $"Madre: {name(sel_familia.madre)}")
@@ -2400,6 +2399,12 @@ if sel_info{
 		for(var a = 0; a < array_length(sel_familia.hijos); a++)
 			if draw_boton(room_width - 40, pos, name(sel_familia.hijos[a]))
 				select(,, sel_familia.hijos[a])
+		pos += 20
+		draw_text_pos(room_width - 20, pos, $"Sueldo familiar ${sel_familia.sueldo}")
+		if sel_familia.casa = homeless
+			draw_text_pos(room_width - 20, pos, "Sin hogar")
+		else if draw_boton(room_width - 20, pos, $"Vivienda: {sel_familia.casa.nombre}")
+			select(sel_familia.casa)
 	}
 	//Información personas
 	else if sel_tipo = 2 and sel_persona != null_persona{
@@ -2685,7 +2690,7 @@ if (not tutorial_bool or tutorial_camara[tutorial]) and not menu{
 	max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
 	max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
 }
-//Pasar día        
+//Pasar día
 step += velocidad * (not menu and not getstring)
 if (keyboard_check(vk_space) or step >= 60){
 	step = 0
@@ -4510,7 +4515,7 @@ if (keyboard_check(vk_space) or step >= 60){
 		ini_write_real("MAIN", "fullscreen", window_get_fullscreen())
 		ini_close()
 	}
-	//Claves
+	//Dinero gratis
 	if keyboard_check(vk_lshift) and keyboard_check(ord("4")){
 		dinero += 1000
 		mes_herencia[current_mes] += 1000
@@ -4518,11 +4523,14 @@ if (keyboard_check(vk_space) or step >= 60){
 	//Acelerar elección
 	if keyboard_check_pressed(ord("E")) and keyboard_check(vk_lcontrol)
 		dia = 6 * 365 * ceil(dia / (6 * 365)) - 1
-	//Generar riqueza
+	//Inmigrantes gratis
 	if keyboard_check(ord("P")) and keyboard_check(vk_lcontrol){
 		var familia = array_pick(familias)
 		familia.riqueza += 100
 	}
+	//Activar grilla
+	if keyboard_check_pressed(ord("Q"))
+		show_grid = not show_grid
 	show_string = string_trim(show_string)
 	draw_set_alpha(0.5)
 	draw_set_color(c_black)

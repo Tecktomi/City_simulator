@@ -5,9 +5,9 @@ function set_paro(paro, edificio = control.null_edificio){
 		edificio.paro = paro
 		if array_length(edificio.trabajadores) < edificio.trabajadores_max{
 			if paro
-				array_remove(trabajo_educacion[edificio_trabajo_educacion[edificio.tipo]], edificio, "edificio se va a paro y ya no está disponible")
+				array_remove(trabajo_educacion[edificio.trabajo_educacion], edificio, "edificio se va a paro y ya no está disponible")
 			else
-				array_push(trabajo_educacion[edificio_trabajo_educacion[edificio.tipo]], edificio)
+				array_push(trabajo_educacion[edificio.trabajo_educacion], edificio)
 		}
 	}
 }

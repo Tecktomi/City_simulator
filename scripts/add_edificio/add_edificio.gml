@@ -38,8 +38,9 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			servicio_calidad : edificio_servicio_calidad[tipo],
 			trabajadores_max : edificio_trabajadores_max[tipo], 
 			trabajo_calidad : edificio_trabajo_calidad[tipo],
-			trabajo_sueldo : max(control.sueldo_minimo, edificio_trabajo_sueldo[tipo]),
-			trabajo_riesgo : control.edificio_trabajo_riesgo[tipo],
+			trabajo_sueldo : max(sueldo_minimo, edificio_trabajo_sueldo[tipo]),
+			trabajo_riesgo : edificio_trabajo_riesgo[tipo],
+			trabajo_educacion : edificio_trabajo_educacion[tipo],
 			mantenimiento : edificio_mantenimiento[tipo],
 			contaminacion : edificio_contaminacion[tipo],
 			presupuesto : 2,
@@ -94,7 +95,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			array_push(edificios_por_mantenimiento[min(20, edificio.mantenimiento)], edificio)
 			if edificio_es_trabajo[tipo]{
 				array_push(trabajos, edificio)
-				array_push(trabajo_educacion[edificio_trabajo_educacion[tipo]], edificio)
+				array_push(trabajo_educacion[edificio.trabajo_educacion], edificio)
 			}
 			if edificio_es_escuela[tipo]{
 				array_push(escuelas, edificio)
@@ -171,7 +172,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 				for(var a = max(0, x - 8); a < c; a++)
 					for(var b = max(0, y - 8); b < d; b++)
 						if bool_edificio[a, b]{
-							var temp_edificio = id_edificio[a, b], g = edificio_trabajo_educacion[temp_edificio.tipo]
+							var temp_edificio = id_edificio[a, b], g = temp_edificio.trabajo_educacion
 							if edificio_es_trabajo[temp_edificio.tipo] and not array_contains(edificio.trabajos_cerca[g], temp_edificio){
 								array_push(temp_edificio.casas_cerca, edificio)
 								array_push(edificio.trabajos_cerca[g], temp_edificio)
@@ -181,7 +182,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 						}
 			//Trabajo busca casas cercanas
 			if edificio_es_trabajo[tipo]{
-				var g = edificio_trabajo_educacion[tipo]
+				var g = edificio.trabajo_educacion
 				for(var a = max(0, x - 8); a < c; a++)
 					for(var b = max(0, y - 8); b < d; b++)
 						if bool_edificio[a, b]{

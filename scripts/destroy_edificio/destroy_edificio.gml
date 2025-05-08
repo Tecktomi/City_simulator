@@ -6,7 +6,7 @@ function destroy_edificio(edificio = control.null_edificio){
 		array_set(bool_draw_edificio[edificio.x], edificio.y, false)
 		array_set(draw_edificio[edificio.x], edificio.y, null_edificio)
 		if array_length(edificio.trabajadores) < edificio.trabajadores_max and not edificio.paro
-			array_remove(trabajo_educacion[edificio_trabajo_educacion[tipo]], edificio, "eliminar trabajo de los disponibles")
+			array_remove(trabajo_educacion[edificio.trabajo_educacion], edificio, "eliminar trabajo de los disponibles")
 		while array_length(edificio.trabajadores) > 0{
 			var persona = edificio.trabajadores[0]
 			persona.felicidad_temporal -= 25
@@ -27,7 +27,7 @@ function destroy_edificio(edificio = control.null_edificio){
 		if edificio_es_trabajo[tipo]{
 			array_remove(trabajos, edificio, "eliminar trabajo")
 			for(var a = 0; a < array_length(edificio.casas_cerca); a++)
-				array_remove(edificio.casas_cerca[a].trabajos_cerca[edificio_trabajo_educacion[edificio.tipo]], edificio, "eliminar trabajo de las casas cercanas")
+				array_remove(edificio.casas_cerca[a].trabajos_cerca[edificio.trabajo_educacion], edificio, "eliminar trabajo de las casas cercanas")
 			if var_edificio_nombre = "Bomba de Agua"
 				agua_input -= edificio.count
 			else if var_edificio_nombre = "Planta Termoeléctrica"

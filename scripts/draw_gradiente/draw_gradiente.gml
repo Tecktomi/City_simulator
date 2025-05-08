@@ -8,6 +8,16 @@ function draw_gradiente(tipo, modo){
 						draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height / 2, false)
 					}
 			show_string += $"Eficiencia de {recurso_nombre[recurso_cultivo[tipo]]}\n"
+			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
+			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
+			var b = 0, c = 0
+			for(var a = 0; a < array_length(recurso_cultivo); a++){
+				if cultivo[a][# mx, my] > b{
+					b = max(b, cultivo[a][# mx, my])
+					c = a
+				}
+			}
+			show_string += $"Mejor cultivo: {recurso_nombre[recurso_cultivo[c]]} ({floor(100 * b)}%)\n"
 		}
 		else if modo = 1{
 			draw_set_color(recurso_mineral_color[tipo])
