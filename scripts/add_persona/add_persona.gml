@@ -38,7 +38,6 @@ function add_persona(){
 				persona: undefined,
 				nombre : "",
 				sexo : a
-			
 			},
 			ladron : null_edificio,
 			preso : false,

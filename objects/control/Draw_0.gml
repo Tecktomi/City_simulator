@@ -5,6 +5,9 @@ if menu_principal{
 	pos = 100
 	draw_set_font(font_big)
 	if draw_boton(room_width / 2, pos, iniciado ? "Continuar partida" : "Empezar partida", true){
+		for(var a = 0; a < array_length(recurso_nombre); a++)
+			if (dia / 365) >= recurso_anno[a]
+				recurso_precio[a] = recurso_precio_original[a] + (recurso_precio[a] - recurso_precio_original[a]) / power(1.00125, floor(dia * 12 / 365) - 12 * recurso_anno[a])
 		menu_principal = false
 		iniciado = true
 	}
@@ -51,6 +54,7 @@ if menu_principal{
 	exit
 }
 #region Visual
+	show_string = ""
 	if tutorial_bool and not menu{
 		tutorial_complete = false
 		for(var a = 0; a < array_length(tutorial_keys[tutorial]); a++)
@@ -791,6 +795,7 @@ if sel_build{
 				temp_grid[12] = mes_impuestos
 				temp_grid[13] = mes_entrada_micelaneo
 				temp_grid[14] = mes_salida_micelaneo
+				temp_grid[15] = mes_investigacion
 				temp_text_array[0] = "Renta"
 				temp_text_array[1] = "Tarifas"
 				temp_text_array[2] = "Herencia"
@@ -806,8 +811,9 @@ if sel_build{
 				temp_text_array[12] = "Impuestos"
 				temp_text_array[13] = "Otros"
 				temp_text_array[14] = "Otros"
+				temp_text_array[15] = "Tecnología"
 			#endregion
-			for(var a = 0; a < 15; a++){
+			for(var a = 0; a < 16; a++){
 				count[a] = 0
 				maxi[a] = 0
 			}
@@ -837,7 +843,7 @@ if sel_build{
 					temp_venta_id[b] += mes_venta_recurso_num[a, b]
 				}
 			}
-			for(var a = 0; a < 15; a++){
+			for(var a = 0; a < 16; a++){
 				count[a] = round(count[a])
 				maxi[a] = round(maxi[a])
 			}
@@ -858,7 +864,7 @@ if sel_build{
 				draw_text_pos(120, pos, $"{temp_text_array[12]}: ${floor(count[12])}")
 				draw_text_pos(120, pos, $"{temp_text_array[13]}: ${floor(count[13])}")
 			}
-			if draw_menu(110, pos, $"Pérdidas: ${floor(count[4] + count[5] + count[6] + count[7] + count[8] + count[11] + count[14])}", 2){
+			if draw_menu(110, pos, $"Pérdidas: ${floor(count[4] + count[5] + count[6] + count[7] + count[8] + count[11] + count[14] + count[15])}", 2){
 				draw_text_pos(120, pos, $"{temp_text_array[4]}: ${floor(count[4])}")
 				draw_text_pos(120, pos, $"{temp_text_array[5]}: ${floor(count[5])}")
 				draw_text_pos(120, pos, $"{temp_text_array[6]}: ${floor(count[6])}")
@@ -871,9 +877,10 @@ if sel_build{
 						if temp_compra[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_compra[c])} ({floor(temp_compra_id[c])})")
 				draw_text_pos(120, pos, $"{temp_text_array[11]}: ${floor(count[11])}")
+				draw_text_pos(120, pos, $"{temp_text_array[15]}: ${floor(count[15])}")
 				draw_text_pos(120, pos, $"{temp_text_array[14]}: ${floor(count[14])}")
 			}
-			draw_text_pos(110, pos, $"Balance: {floor(count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] + count[13] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11] - count[14])}")
+			draw_text_pos(110, pos, $"Balance: {floor(count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] + count[13] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11] - count[14] - count[15])}")
 			if draw_menu(110, pos, $"{array_length(encargos)} encargo{array_length(encargos) = 1 ? "" : "s"}", 4)
 				for(var a = 0; a < array_length(encargos); a++){
 					var encargo = encargos[a]
@@ -1705,7 +1712,7 @@ var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_he
 var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
 if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build and not getstring and not build_terreno{
 	if debug
-		draw_text(0, 0, $"{mx}, {my}: {altura[# mx, my]} {zona_privada_permisos[mx, my]}")
+		show_string += $"  ({mx}, {my}) Altura: {altura[# mx, my]}\n"
 	if bool_edificio[mx, my] or construccion_reservada[mx, my] or zona_privada_venta[mx, my]
 		cursor = cr_handpoint
 	if mouse_check_button_pressed(mb_left) and not build_sel{
@@ -2055,6 +2062,7 @@ if sel_info{
 					if var_ganado_nombre = "Vacas"
 						edificio_mejora(sel_edificio, mejora_frigorificos)
 					else if var_ganado_nombre = "Cabras"{
+						edificio_mejora(sel_edificio, mejora_frigorificos)
 						edificio_mejora(sel_edificio, mejora_pasteurizacion)
 						edificio_mejora(sel_edificio, mejora_ordena_automatica)
 					}
@@ -2181,7 +2189,7 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_uso_de_drones)
 				}
 				else if var_edificio_nombre = "Mueblería"{
-					edificio_mejora(sel_edificio, mejora_sierras_a_vapor)
+					edificio_mejora(sel_edificio, mejora_motosierra)
 					edificio_mejora(sel_edificio, mejora_linea_de_montaje)
 					edificio_mejora(sel_edificio, mejora_computadores)
 				}
@@ -2227,6 +2235,25 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_uso_de_drones)
 					edificio_mejora(sel_edificio, mejora_filtros_industriales)
 				}
+				else if var_edificio_nombre = "Comisaría"{
+					edificio_mejora(sel_edificio, mejora_camiones)
+					edificio_mejora(sel_edificio, mejora_internet)
+				}
+				else if in(var_edificio_nombre, "Escuela", "Escuela parroquial"){
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_internet)
+				}
+				else if in(var_edificio_nombre, "Consultorio", "Hospicio"){
+					edificio_mejora(sel_edificio, mejora_anestesia)
+					edificio_mejora(sel_edificio, mejora_penicilina)
+					edificio_mejora(sel_edificio, mejora_vacunas)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_internet)
+				}
+				else if var_edificio_nombre = "Mercado"{
+					edificio_mejora(sel_edificio, mejora_frigorificos)
+					edificio_mejora(sel_edificio, mejora_contenedores)
+				}
 			}
 			//Información escuelas / consultas
 			if edificio_es_escuela[index] or edificio_es_medico[index]{
@@ -2234,16 +2261,6 @@ if sel_info{
 					for(var a = 0; a < array_length(sel_edificio.clientes); a++)
 						if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a]))
 							select(,, sel_edificio.clientes[a])
-				if in(var_edificio_nombre, "Escuela", "Escuela parroquial"){
-					edificio_mejora(sel_edificio, mejora_computadores)
-					edificio_mejora(sel_edificio, mejora_internet)
-				}
-				else if in(var_edificio_nombre, "Consultorio", "Hospicio"){
-					edificio_mejora(sel_edificio, mejora_anestesia)
-					edificio_mejora(sel_edificio, mejora_penicilina)
-					edificio_mejora(sel_edificio, mejora_computadores)
-					edificio_mejora(sel_edificio, mejora_internet)
-				}
 			}
 			//Información edificios de ocio
 			if edificio_es_ocio[index]{
@@ -2635,7 +2652,7 @@ if sel_info{
 	}
 	draw_set_halign(fa_left)
 }
-#region Movimiento de la cámara
+//Movimiento de la cámara
 if (not tutorial_bool or tutorial_camara[tutorial]) and not menu{
 	if keyboard_check(vk_lcontrol){
 		if mouse_wheel_up() and tile_width < 64{
@@ -2668,7 +2685,6 @@ if (not tutorial_bool or tutorial_camara[tutorial]) and not menu{
 	max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
 	max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
 }
-#endregion
 //Pasar día        
 step += velocidad * (not menu and not getstring)
 if (keyboard_check(vk_space) or step >= 60){
@@ -2836,8 +2852,10 @@ if (keyboard_check(vk_space) or step >= 60){
 			mes_estatizacion[current_mes] = 0
 			mes_impuestos[current_mes] = 0
 			mes_accidentes[current_mes] = 0
+			mes_investigacion[current_mes] = 0
 			mes_entrada_micelaneo[current_mes] = 0
 			mes_salida_micelaneo[current_mes] = 0
+			//Actualizar precios de recursos y tratados comerciales
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				array_set(mes_exportaciones_recurso[current_mes], a, 0)
 				array_set(mes_exportaciones_recurso_num[current_mes], a, 0)
@@ -2847,13 +2865,10 @@ if (keyboard_check(vk_space) or step >= 60){
 				array_set(mes_compra_recurso_num[current_mes], a, 0)
 				array_set(mes_venta_recurso[current_mes], a, 0)
 				array_set(mes_venta_recurso_num[current_mes], a, 0)
-			}
-			for(var a = 0; a < array_length(ley_nombre); a++)
-				if ley_tiempo[a] > 0
-					ley_tiempo[a]--
-			//Actualizar precios de recursos y tratados comerciales
-			for(var a = 0; a < array_length(recurso_nombre); a++){
-				recurso_precio[a] *= power(random_range(1, 1.05), 2 * irandom(1) - 1)
+				if recurso_anno[a] = 0 or recurso_anno[a] <= floor(dia / 365) + 5
+					recurso_precio[a] *= random_range(0.95, 1.05)
+				else if recurso_anno[a] <= floor(dia / 365)
+					recurso_precio[a] *= random_range(0.95, 1)
 				array_shift(recurso_historial[a])
 				array_push(recurso_historial[a], recurso_precio[a])
 				for(var b = 0; b < array_length(recurso_tratados_venta[a]); b++){
@@ -2879,6 +2894,9 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 				}
 			}
+			for(var a = 0; a < array_length(ley_nombre); a++)
+				if ley_tiempo[a] > 0
+					ley_tiempo[a]--
 			generar_tratado()
 			if array_length(tratados_ofertas) > 20
 				array_shift(tratados_ofertas)
@@ -2999,7 +3017,7 @@ if (keyboard_check(vk_space) or step >= 60){
 				for(var a = 0; a < array_length(edificio_count[43]); a++)
 					edificio_count[43, a].array_complex[0].a = -1
 			}
-			if (anno mod 6) = 0 and anno > 0{
+			if not debug and (anno mod 6) = 0 and anno > 0{
 				text = ""
 				candidatos_votos = [0]
 				repeat(5){
@@ -4468,7 +4486,7 @@ if (keyboard_check(vk_space) or step >= 60){
 		#endregion
 	}
 }
-#region abreviatura
+#region Abreviatura
 	//Añadir familia
 	if keyboard_check(vk_lcontrol) and (keyboard_check_pressed(ord("F")) or (keyboard_check(ord("F")) and keyboard_check(vk_lshift)))
 		add_familia()
@@ -4505,6 +4523,13 @@ if (keyboard_check(vk_space) or step >= 60){
 		var familia = array_pick(familias)
 		familia.riqueza += 100
 	}
+	show_string = string_trim(show_string)
+	draw_set_alpha(0.5)
+	draw_set_color(c_black)
+	draw_rectangle(0, 0, string_width(show_string), string_height(show_string), false)
+	draw_set_color(c_white)
+	draw_text(0, 0, show_string)
+	draw_set_alpha(1)
 #endregion
 //Tutorial
 if tutorial_bool and not menu{

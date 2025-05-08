@@ -1,5 +1,7 @@
 function set_paro(paro, edificio = control.null_edificio){
 	with control{
+		if debug
+			show_debug_message($"{fecha(dia)} {edificio.nombre} ha {paro ? "entrado en" : "salido de"} paro")
 		edificio.paro = paro
 		if array_length(edificio.trabajadores) < edificio.trabajadores_max{
 			if paro

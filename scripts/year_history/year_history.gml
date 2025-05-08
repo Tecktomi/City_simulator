@@ -64,5 +64,15 @@ function year_history(anno){
 				array_delete(guerras_current, a--, 1)
 			}
 		}
+		//Efectos de tecnologias en los precios
+		for(var a = 0; a < array_length(mejoras); a++){
+			var mejora = mejoras[a]
+			if mejora.anno > anno - 5 and mejora.anno < anno + 5{
+				for(var b = 0; b < array_length(mejora.recurso_id); b++)
+					recurso_precio[mejora.recurso_id[b]] *= random_range(0.99, 1)
+				for(var b = 0; b < array_length(mejora.recursos_efecto); b++)
+					recurso_precio[b] *= random_range(1, mejora.recursos_factor)
+			}
+		}
 	}
 }
