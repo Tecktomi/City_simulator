@@ -1153,6 +1153,7 @@ debug = false
 		mes_impuestos[a] = 0
 		mes_accidentes[a] = 0
 		mes_investigacion[a] = 0
+		mes_venta_comida[a] = 0
 		mes_entrada_micelaneo[a] = 0
 		mes_salida_micelaneo[a] = 0
 		for(b = 0; b < array_length(recurso_nombre); b++){
