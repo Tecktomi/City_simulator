@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"set_industria_io",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"set_industria_io",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

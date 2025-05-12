@@ -851,37 +851,50 @@ if sel_build{
 			}
 			#region Ingresos
 			if draw_menu(110, pos, $"Ingresos: ${floor(count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] + count[13] + count[16])}", 0){
-				draw_text_pos(120, pos, $"{temp_text_array[0]}: ${floor(count[0])}")
+				if floor(count[0]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[0]}: ${floor(count[0])}")
+				if floor(count[1]) > 0
 				draw_text_pos(120, pos, $"{temp_text_array[1]}: ${floor(count[1])}")
-				draw_text_pos(120, pos, $"{temp_text_array[2]}: ${floor(count[2])}")
-				if draw_menu(120, pos, $"{temp_text_array[3]}: ${floor(count[3])}", 1)
+				if floor(count[2]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[2]}: ${floor(count[2])}")
+				if floor(count[3]) > 0 and draw_menu(120, pos, $"{temp_text_array[3]}: ${floor(count[3])}", 1)
 					for(var c = 0; c < array_length(recurso_nombre); c++)
 						if temp_exportaciones[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_exportaciones[c])} ({floor(temp_exportaciones_id[c])})")
-				if draw_menu(120, pos, $"{temp_text_array[9]}: ${floor(count[9])}", 6)
+				if floor(count[9]) > 0 and draw_menu(120, pos, $"{temp_text_array[9]}: ${floor(count[9])}", 6)
 					for(var c = 0; c < array_length(recurso_nombre); c++)
 						if temp_venta[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_venta[c])} ({floor(temp_venta_id[c])})")
-				draw_text_pos(120, pos, $"{temp_text_array[10]}: ${floor(count[10])}")
-				draw_text_pos(120, pos, $"{temp_text_array[12]}: ${floor(count[12])}")
-				draw_text_pos(120, pos, $"{temp_text_array[13]}: ${floor(count[13])}")
-				draw_text_pos(120, pos, $"{temp_text_array[16]}: ${floor(count[16])}")
+				if floor(count[10]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[10]}: ${floor(count[10])}")
+				if floor(count[12]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[12]}: ${floor(count[12])}")
+				if floor(count[16]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[16]}: ${floor(count[16])}")
+				if floor(count[13]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[13]}: ${floor(count[13])}")
 			}
 			if draw_menu(110, pos, $"Pérdidas: ${floor(count[4] + count[5] + count[6] + count[7] + count[8] + count[11] + count[14] + count[15])}", 2){
-				draw_text_pos(120, pos, $"{temp_text_array[4]}: ${floor(count[4])}")
-				draw_text_pos(120, pos, $"{temp_text_array[5]}: ${floor(count[5])}")
-				draw_text_pos(120, pos, $"{temp_text_array[6]}: ${floor(count[6])}")
-				if draw_menu(120, pos, $"{temp_text_array[7]}: ${floor(count[7])}", 3)
+				if floor(count[4]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[4]}: ${floor(count[4])}")
+				if floor(count[5]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[5]}: ${floor(count[5])}")
+				if floor(count[6]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[6]}: ${floor(count[6])}")
+				if floor(count[7]) > 0 and draw_menu(120, pos, $"{temp_text_array[7]}: ${floor(count[7])}", 3)
 					for(var c = 0; c < array_length(recurso_nombre); c++)
 						if temp_importaciones[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_importaciones[c])} ({floor(temp_importaciones_id[c])})")
-				if draw_menu(120, pos, $"{temp_text_array[8]}: ${floor(count[8])}", 7)
+				if floor(count[8]) > 0 and draw_menu(120, pos, $"{temp_text_array[8]}: ${floor(count[8])}", 7)
 					for(var c = 0; c < array_length(recurso_nombre); c++)
 						if temp_compra[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_compra[c])} ({floor(temp_compra_id[c])})")
-				draw_text_pos(120, pos, $"{temp_text_array[11]}: ${floor(count[11])}")
-				draw_text_pos(120, pos, $"{temp_text_array[15]}: ${floor(count[15])}")
-				draw_text_pos(120, pos, $"{temp_text_array[14]}: ${floor(count[14])}")
+				if floor(count[11]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[11]}: ${floor(count[11])}")
+				if floor(count[15]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[15]}: ${floor(count[15])}")
+				if floor(count[14]) > 0
+					draw_text_pos(120, pos, $"{temp_text_array[14]}: ${floor(count[14])}")
 			}
 			draw_text_pos(110, pos, $"Balance: {floor(count[0] + count[1] + count[2] + count[3] + count[9] + count[10] + count[12] + count[13] + count[16] - count[4] - count[5] - count[6] - count[7] - count[8] - count[11] - count[14] - count[15])}")
 			if draw_menu(110, pos, $"{array_length(encargos)} encargo{array_length(encargos) = 1 ? "" : "s"}", 4)
@@ -1988,7 +2001,7 @@ if sel_info{
 					draw_set_alpha(1)
 					if sqrt(sqr(mx - c) + sqr(my - d)) < 5{
 						draw_set_halign(fa_left)
-						draw_text(0, 0, $"Pescado: {zona_pesca.cantidad}")
+						draw_text(0, 0, $"Pescado: {floor(zona_pesca.cantidad)}")
 						draw_set_halign(fa_right)
 					}
 					draw_set_color(c_black)
@@ -2025,7 +2038,6 @@ if sel_info{
 								}
 							}
 					//Mejoras
-					draw_text_pos(room_width - 20, pos, "Mejoras")
 					var var_nombre_mineral = recurso_nombre[recurso_mineral[sel_edificio.modo]]
 					edificio_mejora(sel_edificio, mejora_ferrocarriles)
 					edificio_mejora(sel_edificio, mejora_explosivos_mineros)
@@ -2259,6 +2271,52 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_frigorificos)
 					edificio_mejora(sel_edificio, mejora_contenedores)
 				}
+				else if var_edificio_nombre = "Conservadora"{
+					draw_text_pos(room_width - 20, pos, $"Enlatando {recurso_nombre[sel_edificio.array_complex[0].a]}")
+					if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Modos de trabajo", 3){
+						var b = -1
+						if draw_boton(room_width - 40, pos, "Enlatar carne")
+							b = 0
+						if draw_boton(room_width - 40, pos, "Enlatar pescado")
+							b = 1
+						if draw_boton(room_width - 40, pos, "Enlatar legumbres")
+							b = 2
+						if (dia / 365) > 100 and draw_boton(room_width - 40, pos, "Enlatar leche")
+							b = 3
+						if (dia / 365) > 110 and draw_boton(room_width - 40, pos, "Enlatar soya")
+							b = 4
+						if b >= 0{
+							for(var a = 0; a < array_length(sel_edificio.array_complex); a++){
+								var temp_complex = sel_edificio.array_complex[a]
+								add_industria_io(sel_edificio, [real(temp_complex.a)], [-real(temp_complex.b)])
+							}
+							sel_edificio.modo = b
+						}
+						if b = 0
+							sel_edificio.array_complex = [{a : 18, b : 1}]
+						else if b = 1
+							sel_edificio.array_complex = [{a : 8, b : 1}]
+						else if b = 2
+							sel_edificio.array_complex = [{a : 0, b : 1}]
+						else if b = 3
+							sel_edificio.array_complex = [{a : 19, b : 1}]
+						else if b = 4
+							sel_edificio.array_complex = [{a : 6, b : 1}]
+						if b >= 0{
+							for(var a = 0; a < array_length(sel_edificio.array_complex); a++){
+								var temp_complex = sel_edificio.array_complex[a]
+								add_industria_io(sel_edificio, [real(temp_complex.a)], [real(temp_complex.b)])
+							}
+							show[3] = false
+						}
+					}
+					edificio_mejora(sel_edificio, mejora_frigorificos)
+					edificio_mejora(sel_edificio, mejora_contenedores)
+					edificio_mejora(sel_edificio, mejora_linea_de_montaje)
+					edificio_mejora(sel_edificio, mejora_pasteurizacion)
+					edificio_mejora(sel_edificio, mejora_latas_de_aluminio)
+				}
+				pos += 20
 			}
 			//Información escuelas / consultas
 			if edificio_es_escuela[index] or edificio_es_medico[index]
@@ -4031,8 +4089,8 @@ if (keyboard_check(vk_space) or step >= 60){
 						//Industria de inputs optativos
 						if edificio_industria_optativo[index]{
 							var max_rss = 0, max_c = 0
-							for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++){
-								var d = floor(edificio.almacen[edificio_industria_input_id[index, c]] / edificio_industria_input_num[index, c])
+							for(var c = 0; c < array_length(edificio.input_id); c++){
+								var d = floor(edificio.almacen[edificio.input_id[c]] / edificio.input_num[c])
 								if d > max_rss{
 									max_rss = d
 									max_c = c
@@ -4043,9 +4101,9 @@ if (keyboard_check(vk_space) or step >= 60){
 								if edificio_industria_vapor[index] and edificio.almacen[9] = 0
 									b = 0
 								if b > 0{
-									edificio.almacen[edificio_industria_input_id[index, max_c]] -= b * edificio_industria_input_num[index, max_c]
-									for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++)
-										edificio.almacen[edificio_industria_output_id[index, c]] += b * edificio_industria_output_num[index, c]
+									edificio.almacen[edificio.input_id[max_c]] -= b * edificio.input_num[max_c]
+									for(var c = 0; c < array_length(edificio.output_id); c++)
+										edificio.almacen[edificio.output_id[c]] += b * edificio.output_num[c]
 									if edificio_industria_vapor[index]
 										edificio.almacen[9]--
 								}
@@ -4054,23 +4112,23 @@ if (keyboard_check(vk_space) or step >= 60){
 						//Industria de inputs rígidos
 						else{
 							var temp_array = []
-							for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
-								array_push(temp_array, edificio.almacen[edificio_industria_input_id[index, c]] / edificio_industria_input_num[index, c])
+							for(var c = 0; c < array_length(edificio.input_id); c++)
+								array_push(temp_array, edificio.almacen[edificio.input_id[c]] / edificio.input_num[c])
 							b = max(0, min(min_array(temp_array), b))
 							if edificio_industria_vapor[index] and edificio.almacen[9] = 0
 								b = 0
 							if b > 0{
-								for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++)
-									edificio.almacen[edificio_industria_input_id[index, c]] -= b * edificio_industria_input_num[index, c]
-								for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++)
-									edificio.almacen[edificio_industria_output_id[index, c]] += b * edificio_industria_output_num[index, c]
+								for(var c = 0; c < array_length(edificio.input_id); c++)
+									edificio.almacen[edificio.input_id[c]] -= b * edificio.input_num[c]
+								for(var c = 0; c < array_length(edificio.output_id); c++)
+									edificio.almacen[edificio.output_id[c]] += b * edificio.output_num[c]
 								if edificio_industria_vapor[index]
 									edificio.almacen[9]--
 							}
 						}
 						if current_mes = edificio.mes_creacion or current_mes = (edificio.mes_creacion + 6) mod 12{
-							for(var c = 0; c < array_length(edificio_industria_input_id[index]); c++){
-								var d = edificio_industria_input_id[index, c]
+							for(var c = 0; c < array_length(edificio.input_id); c++){
+								var d = edificio.input_id[c]
 								edificio.ganancia -= recurso_precio[d] * (edificio.almacen[d] + edificio.pedido[d] - 120)
 								add_encargo(d, edificio.almacen[d] + edificio.pedido[d] - 120, edificio)
 								edificio.pedido[d] = 120 - edificio.almacen[d]
@@ -4080,8 +4138,8 @@ if (keyboard_check(vk_space) or step >= 60){
 								add_encargo(9, edificio.almacen[9] + edificio.pedido[9] - 120, edificio)
 								edificio.pedido[9] = 120 - edificio.almacen[9]
 							}
-							for(var c = 0; c < array_length(edificio_industria_output_id[index]); c++){
-								var d = edificio_industria_output_id[index, c], e = 200 * array_contains(recurso_comida, d) * edificio.es_almacen
+							for(var c = 0; c < array_length(edificio.output_id); c++){
+								var d = edificio.output_id[c], e = 200 * array_contains(recurso_comida, d) * edificio.es_almacen
 								if edificio.almacen[d] > e{
 									edificio.ganancia += recurso_precio[d] * (floor(edificio.almacen[d]) - e)
 									add_encargo(d, edificio.almacen[d] - e, edificio)

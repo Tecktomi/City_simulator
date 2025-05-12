@@ -43,6 +43,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			trabajo_educacion : edificio_trabajo_educacion[tipo],
 			mantenimiento : edificio_mantenimiento[tipo],
 			contaminacion : edificio_contaminacion[tipo],
+			input_id : edificio_industria_input_id[tipo],
+			input_num : edificio_industria_input_num[tipo],
+			output_id : edificio_industria_output_id[tipo],
+			output_num : edificio_industria_output_num[tipo],
 			presupuesto : 2,
 			mes_creacion : current_mes,
 			ganancia : 0,
@@ -142,6 +146,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 				edificio.trabajadores_max = 5 + floor((width * height - 16) / 16)
 			else if var_edificio_nombre = "Pescadería"
 				buscar_zona_pesca(edificio)
+			else if var_edificio_nombre = "Conservadora"
+				edificio.array_complex = [{a : 18, b : 1}]
 			if var_edificio_nombre != "Muelle"
 				buscar_muelle_cercano(edificio)
 			else{

@@ -17,7 +17,10 @@ function draw_gradiente(tipo, modo){
 					c = a
 				}
 			}
-			show_string += $"Mejor cultivo: {recurso_nombre[recurso_cultivo[c]]} ({floor(100 * b)}%)\n"
+			if b > 0
+				show_string += $"Mejor cultivo: {recurso_nombre[recurso_cultivo[c]]} ({floor(100 * b)}%)\n"
+			else
+				show_string += "Terreno estéril\n"
 		}
 		else if modo = 1{
 			draw_set_color(recurso_mineral_color[tipo])
@@ -147,7 +150,7 @@ function draw_gradiente(tipo, modo){
 			}
 			draw_set_alpha(1)
 			if closer >= 0
-				show_string += $"Pescado: {zonas_pesca[closer].cantidad}\n"
+				show_string += $"Pescado: {floor(zonas_pesca[closer].cantidad)}\n"
 		}
 	}
 }
