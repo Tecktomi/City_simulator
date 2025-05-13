@@ -131,7 +131,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 				var c = min(x + width + 5, xsize), d = min(y + height + 5, ysize)
 				for(var a = max(0, x - 5); a < c; a++)
 					for(var b = max(0, y - 5); b < d; b++)
-						if bosque[a, b]
+						if bosque[a, b] and not bosque_venta[a, b]
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
 			}

@@ -14,10 +14,10 @@ function valorizar_edificio(edificio = null_edificio){
 		}
 		else if var_edificio_nombre = "Aserradero"{
 			var c = 0, d = min(edificio.x + width + 5, xsize), e = min(edificio.y + height + 5, ysize)
-			for(var a = max(0, edificio.x - 5); a < d; a++)
-				for(var b = max(0, edificio.y - 5); b < e; b++)
-					if bosque[a, b]
-						c += bosque_madera[a, b]
+			for(var a = 0; a < array_length(edificio.array_complex); a++){
+				var temp_complex = edificio.array_complex[a]
+				c += bosque_madera[temp_complex.a, temp_complex.b]
+			}
 			c = floor(c * recurso_precio[1] * impuesto_maderero)
 			temp_precio += c
 			temp_text += $"\nDerechos madereros: ${c}"
@@ -30,6 +30,11 @@ function valorizar_edificio(edificio = null_edificio){
 			c = floor(c * recurso_precio[27] * impuesto_petrolifero)
 			temp_precio += c
 			temp_text += $"\nDerechos petrolíferos: ${c}"
+		}
+		else if var_edificio_nombre = "Pescadería"{
+			var c = floor(1000 * (1 - 10 * sqr(impuesto_pesquero)) * edificio.eficiencia)
+			temp_precio += c
+			temp_text += $"\nDerechos de pesca ${c}"
 		}
 		temp_text += $"\nPrecio terreno: ${valor_terreno * width * height}"
 		temp_precio += valor_terreno * width * height

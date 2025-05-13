@@ -1,3 +1,4 @@
+
 function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 	with control{
 		if debug
@@ -22,23 +23,25 @@ function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 				destroy_empresa(persona.empresa)
 			destroy_familia(familia, muerte)
 			flag = true
-			var b = 0
-			for(var a = 0; a < array_length(persona.relacion.hijos); a++){
-				var hijo = persona.relacion.hijos[a]
-				if hijo.vivo
-					b++
-			}
-			if b > 0{
-				var text = name(persona) + " ha muero, y sus hijos "
+			if muerte{
+				var b = 0
 				for(var a = 0; a < array_length(persona.relacion.hijos); a++){
 					var hijo = persona.relacion.hijos[a]
-					if hijo.vivo{
-						hijo.persona.familia.dinero += persona.familia.dinero / b
-						text += name(hijo.persona) + ", "
-					}
+					if hijo.vivo
+						b++
 				}
-				persona.familia.dinero = 0
-				show_debug_message(text + " han recibido una herencia")
+				if b > 0{
+					var text = name(persona) + " ha muero, y sus hijos "
+					for(var a = 0; a < array_length(persona.relacion.hijos); a++){
+						var hijo = persona.relacion.hijos[a]
+						if hijo.vivo{
+							hijo.persona.familia.dinero += persona.familia.dinero / b
+							text += name(hijo.persona) + ", "
+						}
+					}
+					persona.familia.dinero = 0
+					show_debug_message(text + " han recibido una herencia")
+				}
 			}
 		}
 		else if persona.pareja != null_persona and persona.empresa != null_empresa

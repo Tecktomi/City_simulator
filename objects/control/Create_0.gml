@@ -980,6 +980,7 @@ debug = false
 			mar_checked[a, b] = false
 			land_checked[a, b] = false
 			land_matrix[a, b] = false
+			bosque_venta[a, b] = false
 		}
 	world_update = true
 	for(a = 0; a < xsize / 16; a++)
@@ -1146,6 +1147,7 @@ debug = false
 	impuesto_minero = 0.2
 	impuesto_petrolifero = 0.2
 	impuesto_trabajador = 0
+	impuesto_pesquero = 0.1
 	valor_terreno = 10
 	agua_input = 0
 	agua_output = 0
@@ -1212,6 +1214,7 @@ debug = false
 	wpos = 0
 	deuda = false
 	deuda_dia = 0
+	var_total_comida = 365
 	null_encargo = {
 		recurso : 0,
 		cantidad : 0,
