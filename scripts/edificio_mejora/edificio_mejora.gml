@@ -10,7 +10,7 @@ function edificio_mejora(edificio = control.null_edificio, mejora = control.null
 				var flag = array_contains(mejoras_desbloqueadas, string(nombre)), precio_tecnologia = 0
 				if not flag
 					precio_tecnologia = floor(precio * (1 + 15 / (5 + floor(dia / 365) - anno)))
-				if not array_contains(edificio.mejoras, string(nombre)) and draw_boton(room_width - 40, pos, $"{flag ? "" : "Desbloquear "}{nombre} ${precio}",,, function(text){draw_text(mouse_x, mouse_y, text)}, descripcion) and dinero >= precio + precio_tecnologia{
+				if not array_contains(edificio.mejoras, string(nombre)) and draw_boton(room_width - 40, pos, $"{flag ? "" : "Desbloquear "}{nombre} ${precio + precio_tecnologia}",,, function(text){draw_text(mouse_x, mouse_y, text)}, descripcion) and dinero >= precio + precio_tecnologia{
 					if not flag{
 						array_push(mejoras_desbloqueadas, string(nombre))
 						edificio_experiencia[edificio.tipo] = 1

@@ -163,15 +163,9 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 					}
 				}
 			}
-			if edificio_es_industria[tipo]{
-				for(var a = 0; a < array_length(edificio_industria_input_id[tipo]); a++)
-					recurso_utilizado[edificio_industria_input_id[tipo, a]]++
-				if edificio_industria_vapor[tipo]{
-					recurso_utilizado[1]++
-					recurso_utilizado[9]++
-					recurso_utilizado[27]++
-				}
-			}
+			if edificio_es_industria[tipo]
+				for(var a = 0; a < array_length(edificio.input_id); a++)
+					recurso_utilizado[edificio.input_id[a]]++
 			//Casa busca trabajos cercanos
 			var c = min(x + width + 9, xsize), d = min(y + height + 9, ysize)
 			if edificio_es_casa[tipo]

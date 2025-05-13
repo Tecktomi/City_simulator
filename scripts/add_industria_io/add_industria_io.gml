@@ -4,10 +4,16 @@ function add_industria_io(edificio = control.null_edificio, input_id = [], input
 			var c = input_id[a], flag = false
 			for(var b = 0; b < array_length(edificio.input_id); b++)
 				if c = edificio.input_id[b]{
+					if edificio.input_num[b] = 0 and input_num[a] > 0
+						recurso_utilizado[c]++
 					edificio.input_num[b] += real(input_num[a])
 					if edificio.input_num[b] <= 0{
+						edificio.ganancia += recurso_precio[c] * edificio.almacen[c]
+						add_encargo(c, edificio.almacen[c], edificio)
+						edificio.almacen[c] = 0
 						array_delete(edificio.input_id, b, 1)
 						array_delete(edificio.input_num, b, 1)
+						recurso_utilizado[c]--
 					}
 					flag = true
 					break
