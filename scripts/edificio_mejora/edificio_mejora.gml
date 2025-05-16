@@ -30,6 +30,7 @@ function edificio_mejora(edificio = control.null_edificio, mejora = control.null
 						recurso_construccion[recursos_id[a]] += real(recursos_num[a])
 					array_push(edificio.mejoras, string(nombre))
 					mejora.efecto(edificio)
+					edificio.precio += precio
 				}
 			}
 		}

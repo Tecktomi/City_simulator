@@ -1,8 +1,8 @@
 function add_energia(edificio = control.null_edificio){
 	var index = edificio.tipo
 	with control
-		if edificio.privado or dinero >= 200{
-			recurso_construccion[12] += 30
+		if edificio.privado or dinero >= 100{
+			recurso_construccion[12] += 15
 			edificio.energia = true
 			edificio.energia_consumo = edificio_energia[index]
 			energia_output += edificio.energia_consumo
@@ -11,12 +11,13 @@ function add_energia(edificio = control.null_edificio){
 			else
 				set_calidad_servicio(edificio)
 			if edificio.privado{
-				dinero_privado -= 200
-				edificio.empresa.dinero -= 200
+				dinero_privado -= 100
+				edificio.empresa.dinero -= 100
 			}
 			else{
-				dinero -= 200
-				mes_construccion[current_mes] += 200
+				dinero -= 100
+				mes_construccion[current_mes] += 100
 			}
+			edificio.precio += 100
 		}
 }

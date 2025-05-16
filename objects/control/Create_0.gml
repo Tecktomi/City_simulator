@@ -656,7 +656,8 @@ debug = false
 		es_almacen : false,
 		seguro_fuego : 0,
 		zona_pesca : null_zona_pesca,
-		mejoras : []
+		mejoras : [],
+		precio : 0
 	}
 	array_pop(null_edificio.familias)
 	array_pop(null_edificio.trabajadores)
@@ -893,7 +894,7 @@ debug = false
 		ds_grid_add_disk(altura, floor(xsize / 2), floor(ysize / 2), a, 0.05)
 	a = ds_grid_get_max(altura, 0, 0, xsize, ysize)
 	ds_grid_multiply_region(altura, 0, 0, xsize, ysize, 1 / a)
-	var mar_checked, land_checked, land_matrix, time = current_time, mares = [[{a : 0, b : 0}]], prev_mar = mares[0], prev_mar_bool = true, temp_mar, temp_array = [true]
+	var mar_checked, land_checked, land_matrix, mares = [[{a : 0, b : 0}]], prev_mar = mares[0], prev_mar_bool = true, temp_mar, temp_array = [true]
 	for(a = 1; a < array_length(edificio_categoria_nombre); a++)
 		array_push(temp_array, false)
 	var temp_array_length = array_length(temp_array)
@@ -901,7 +902,7 @@ debug = false
 	//Matriz del mundo
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
-			var c = altura[# a, b]
+			var c = altura[# a, b], temp_bosque = grid[# a, b]
 			bool_edificio[a, b] = false
 			id_edificio[a, b] = null_edificio
 			construccion_reservada[a, b] = false
@@ -909,13 +910,14 @@ debug = false
 			draw_edificio[a, b] = null_edificio
 			bool_draw_construccion[a, b] = false
 			draw_construccion[a, b] = null_construccion
-			draw_edificio_flip[a, b] = brandom()
+			draw_edificio_flip[a, b] = random(1) < 0.5
 			escombros[a, b] = false
-			bosque[a, b] = grid[# a, b] > 0.7 and c > 0.62
+			bosque[a, b] = temp_bosque > 0.7 and c > 0.62
 			if bosque[a, b]{
-				bosque_madera[a, b] = floor(350 * grid[# a, b])
-				bosque_alpha[a, b] = 0.5 + bosque_madera[a, b] / 400
-				bosque_max[a, b] = bosque_madera[a, b]
+				var d = floor(350 * temp_bosque)
+				bosque_madera[a, b] = d
+				bosque_alpha[a, b] = 0.5 + d / 400
+				bosque_max[a, b] = d
 			}
 			mar[a, b] = false
 			if c < 0.5{
@@ -950,6 +952,7 @@ debug = false
 			else
 				prev_mar_bool = false
 			#region altura color
+			altura_color[a, b] = c_gray
 			if mar[a, b]
 				altura_color[a, b] = make_color_rgb(63 * c, 63 * c, 255 * c)
 			else if c < 0.6
@@ -957,15 +960,26 @@ debug = false
 			else
 				altura_color[a, b] = make_color_rgb(31 + 96 * c, 127, 31 + 96 * c)
 			#endregion
-			if not mar[a, b]
-				for(var d = 0; d < array_length(recurso_cultivo); d++)
-					if c < cultivo_altura_minima[d]
-						ds_grid_set(cultivo[d], a, b, 0)
-					else if c < cultivo_altura_minima[d] + 0.05
-						ds_grid_multiply(cultivo[d], a, b, 20 * (c - cultivo_altura_minima[d]))
+			if not mar[a, b]{
+				var e = 0, f = 0
+				for(var d = 0; d < array_length(recurso_cultivo); d++){
+					var temp_altura_minima = cultivo_altura_minima[d], temp_cultivo = cultivo[d]
+					if c < temp_altura_minima
+						ds_grid_set(temp_cultivo, a, b, 0)
+					else if c < temp_altura_minima + 0.05
+						ds_grid_multiply(temp_cultivo, a, b, 20 * (c - temp_altura_minima))
+					if e < temp_cultivo[# a, b]{
+						e = max(e, temp_cultivo[# a, b])
+						f = d
+					}
+				}
+				cultivo_max[a, b] = f
+			}
 			for(var d = 0; d < array_length(recurso_mineral); d++){
-				mineral[d][a, b] = (mineral_grid[d][# a, b] > recurso_mineral_rareza[d])
-				mineral_cantidad[d][a, b] = round(750 * power(mineral_grid[d][# a, b], 3))
+				var temp_mineral = mineral_grid[d][# a, b], bool_a = (temp_mineral > recurso_mineral_rareza[d])
+				mineral[d][a, b] = bool_a
+				if bool_a
+					mineral_cantidad[d][a, b] = round(750 * temp_mineral * temp_mineral * temp_mineral)
 			}
 			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 			contaminacion[a, b] = 0
@@ -973,8 +987,8 @@ debug = false
 			zona_privada[a, b] = false
 			zona_empresa[a, b]= null_empresa
 			zona_privada_venta[a, b] = false
-			for(c = 0; c < temp_array_length; c++)
-				zona_privada_permisos[a, b][c] = temp_array[c]
+			zona_privada_permisos[a, b] = [false]
+			array_copy(zona_privada_permisos[a, b], 0, temp_array, 0, array_length(temp_array))
 			zona_privada_venta_terreno[a, b] = null_terreno
 			zona_pesca_bool[a, b] = 0
 			mar_checked[a, b] = false
@@ -985,7 +999,7 @@ debug = false
 	world_update = true
 	for(a = 0; a < xsize / 16; a++)
 		for(b = 0; b < ysize / 16; b++){
-			chunk[a, b] = spr_arbol
+			chunk[a, b] = spr_null_chunk
 			chunk_update[a, b] = true
 		}
 	for(a = 1; a < array_length(mares); a++)
@@ -995,6 +1009,7 @@ debug = false
 			ds_grid_set(altura, c, d, e)
 			array_set(altura_color[c], d, make_color_rgb(255 / 0.65 * (1.1 - e), 255 / 0.65 * (1.1 - e), 127))
 		}
+	mares[0] = array_shuffle(mares[0])
 	var yes_land = [{a : floor(xsize / 2), b : floor(ysize / 2)}]
 	array_set(land_checked[floor(xsize / 2)], floor(ysize / 2), true)
 	array_set(land_matrix[floor(xsize / 2)], floor(ysize / 2), true)
@@ -1023,28 +1038,27 @@ debug = false
 	}
 	zonas_pesca = []
 	repeat(min(floor(xsize * ysize / 1600), 100)){
-		var c = xsize - 1, d = ysize - 1
-		do{
-			a = irandom(c)
-			b = irandom(d)
+		while array_length(mares[0]) > 0{
+			temp_complex = array_shift(mares[0])
+			a = temp_complex.a
+			b = temp_complex.b
+			if zona_pesca_bool[a, b] = 0
+				break
 		}
-		until mar[a, b] and zona_pesca_bool[a, b] = 0
 		if array_length(mares[0]) = 0
 			break
-		c = floor(random_range(1500, 3000) / max(0.3, altura[# a, b]))
+		var c = floor(random_range(1500, 3000) / max(0.3, altura[# a, b]))
 		array_push(zonas_pesca, {
 			a : a,
 			b : b,
 			cantidad : c,
 			cantidad_max : c
 		})
-		var e = min(a + 5, xsize - 1), f = min(b + 5, ysize - 1)
+		var e = min(a + 5, xsize - 1), f = min(b + 5, ysize - 1), g = max(0, b - 5)
 		for(c = max(0, a - 5); c <= e; c++)
-			for(d = max(0, b - 5); d <= f; d++)
+			for(var d = g; d <= f; d++)
 				array_add(zona_pesca_bool[c], d, 1)
 	}
-	if debug
-		show_debug_message($"{current_time - time} milisegundos")
 #endregion
 #region Setings
 	draw_set_font(font_normal)
@@ -1247,11 +1261,11 @@ debug = false
 	min_camy = max(0, floor((ypos / tile_height - (xpos + room_width) / tile_width) / 2))
 	max_camx = min(xsize, ceil(((room_width + xpos) / tile_width + (room_height + ypos) / tile_height) / 2))
 	max_camy = min(ysize, ceil(((room_height + ypos) / tile_height - xpos / tile_width) / 2))
-	var coord, checked = []
+	var coord, checked = [], e = max(0, edificios[0].y - 15)
 	c = min(xsize - 1, edificios[0].x + 15)
 	d = min(ysize - 1, edificios[0].y + 15)
 	for(a = max(0, edificios[0].x - 15); a < c; a++)
-		for(b = max(0, edificios[0].y - 15); b < d; b++){
+		for(b = e; b < d; b++){
 			coord = {x : a, y : b}
 			array_push(checked, coord)
 		}
@@ -1259,7 +1273,7 @@ debug = false
 	spawn_build(checked, 14)
 	checked = []
 	for(a = max(0, edificios[0].x - 15); a < c; a++)
-		for(b = max(0, edificios[0].y - 15); b < d; b++)
+		for(b = e; b < d; b++)
 			if land_matrix[a, b]{
 				coord = {x : a, y : b}
 				array_push(checked, coord)

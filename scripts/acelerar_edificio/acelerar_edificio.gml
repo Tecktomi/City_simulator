@@ -16,18 +16,20 @@ function acelerar_edificio(construccion = control.null_construccion){
 			var c = construccion.altura
 			world_update = true
 			if c < 0.6{
+				var temp_color = make_color_rgb(255 / 0.65 * (1.1 - c), 255 / 0.65 * (1.1 - c), 127)
 				for(var a = x; a < x + width; a++)
 					for(var b = y; b < y + height; b++){
 						ds_grid_set(altura, a, b, c)
-						array_set(altura_color[a], b, make_color_rgb(255 / 0.65 * (1.1 - c), 255 / 0.65 * (1.1 - c), 127))
+						array_set(altura_color[a], b, temp_color)
 						array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
 					}
 			}
 			else{
+				var temp_color = make_color_rgb(31 + 96 * c, 127, 31 + 96 * c)
 				for(var a = x; a < x + width; a++)
 					for(var b = y; b < y + height; b++){
 						ds_grid_set(altura, a, b, c)
-						array_set(altura_color[a], b, make_color_rgb(31 + 96 * c, 127, 31 + 96 * c))
+						array_set(altura_color[a], b, temp_color)
 						array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
 					}
 			}

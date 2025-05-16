@@ -64,7 +64,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			es_almacen : edificio_es_almacen[tipo],
 			seguro_fuego : 0,
 			zona_pesca : null_zona_pesca,
-			mejoras : []
+			mejoras : [],
+			precio : edificio_precio[tipo]
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)

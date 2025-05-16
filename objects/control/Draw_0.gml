@@ -76,14 +76,16 @@ if menu_principal{
 		for(var a = 0; a < xsize / 16; a++)
 			for(var b = 0; b < ysize / 16; b++)
 				if chunk_update[a, b]{
+					if sprite_exists(chunk[a, b])
+						sprite_delete(chunk[a, b])
 					draw_clear_alpha(c_black, 0)
-					var e = min(16, xsize - a * 16), f = min(16, ysize - b * 16)
+					var e = min(16, xsize - a * 16), f = min(16, ysize - b * 16), g = a * 16, h = b * 16
 					for(var c = 0; c < e; c++)
 						for(var d = 0; d < f; d++)
-							if escombros[a * 16 + c, b * 16 + d]
+							if escombros[g + c, h + d]
 								draw_sprite_ext(spr_tile, 0, tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, 1, 1, 0, c_ltgray, 1)
 							else
-								draw_sprite_ext(spr_tile, 0, tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, 1, 1, 0, altura_color[a * 16 + c, b * 16 + d], 1)
+								draw_sprite_ext(spr_tile, 0, tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, 1, 1, 0, altura_color[g + c, h + d], 1)
 					var sprite = sprite_create_from_surface(surf, 0, 0, tile_width * 32, tile_height * 32, true, false, 0, 0)
 					array_set(chunk[a], b, sprite)
 					array_set(chunk_update[a], b, false)
@@ -95,8 +97,9 @@ if menu_principal{
 		tile_height = prev_tile_width / 2
 	}
 	#region Dibujo de mundo
-		for(var a = floor(min_camx / 16); a < ceil(max_camx / 16); a++)
-			for(var b = floor(min_camy / 16); b < ceil(max_camy / 16); b++)
+		var c = ceil(max_camx / 16), d = floor(min_camy / 16), e = ceil(max_camy / 16)
+		for(var a = floor(min_camx / 16); a < c; a++)
+			for(var b = d; b < e; b++)
 				draw_sprite_stretched(chunk[a, b], 0, (a - b - 1) * 16 * tile_width - xpos, (a + b) * 16 * tile_height - ypos, 32 * tile_width, 32 * tile_height)
 		if show_grid{
 			draw_set_color(c_ltgray)
@@ -147,11 +150,8 @@ if menu_principal{
 	//Dibujo de arboles y edificios
 	for(var a = min_camx; a < max_camx; a++)
 		for(var b = min_camy; b < max_camy; b++){
-			if bosque[a, b]{
-				draw_set_alpha(bosque_alpha[a, b])
+			if bosque[a, b]
 				draw_sprite_stretched(spr_arbol, 0, (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
-				draw_set_alpha(1)
-			}
 			if bool_draw_edificio[a, b]
 				if edificio_sprite[id_edificio[a, b].tipo]
 					draw_sprite_stretched(edificio_sprite_id[id_edificio[a, b].tipo], draw_edificio_flip[a, b], (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
@@ -1883,19 +1883,13 @@ if sel_info{
 				if not sel_edificio.privado and var_edificio_nombre != "Toma"
 					for(var a = 0; a < 5; a++)
 						if draw_sprite_boton(spr_icono, 3 - (a > sel_edificio.presupuesto), room_width - 200 + a * 40, pos, 40, 40)
-							for(var b = 0; b < array_length(edificio_count[index]); b++){
-								var edificio = undefined
-								if keyboard_check(vk_lshift){
-									edificio = edificio_count[index, b]
-									if edificio.privado
-										continue
-								}
-								else{
-									b = array_length(edificio_count[index])
-									edificio = sel_edificio
-								}
-								set_presupuesto(a, edificio)
+							if keyboard_check(vk_lshift){
+								for(var b = 0; b < array_length(edificio_count[index]); b++)
+									if not edificio_count[index, b].privado
+										set_presupuesto(a, edificio_count[index, b])
 							}
+							else
+								set_presupuesto(a, sel_edificio)
 				pos += 40
 				draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[index] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
 					edificio_es_casa[index] ? "Calidad vivienda: " + string(sel_edificio.vivienda_calidad) + "  Renta: $" + string(sel_edificio.vivienda_renta) + "\n" : ""}{
@@ -2354,16 +2348,35 @@ if sel_info{
 			if edificio_es_ocio[index] or edificio_es_iglesia[index]
 				draw_text_pos(room_width - 20, pos, $"{sel_edificio.count} visitantes este mes")
 			//Conexión al agua potable
-			if (edificio_bool_agua[index] or mejora_requiere_agua) and (dia / 365) > 50{
-				if not sel_edificio.agua and draw_boton(room_width - 20, pos, "Conectar agua potable $400")
-					add_tuberias(sel_edificio)
+			if (edificio_bool_agua[index] or mejora_requiere_agua) and (dia / 365) > 50 and not sel_edificio.privado{
+				var b = 0
+				for(var a = 0; a < array_length(edificio_count[index]); a++)
+					b += (not edificio_count[index, a].agua and not edificio_count[index, a].privado)
+				if not sel_edificio.agua and draw_boton(room_width - 20, pos, keyboard_check(vk_shift) ? $"Conectar agua potable ${200 * b} ({b})" : "Conectar agua potable $200"){
+					if keyboard_check(vk_lshift){
+						for(var a = 0; a < array_length(edificio_count[index]); a++)
+							if not edificio_count[index, a].privado
+								add_tuberias(edificio_count[index, a])
+					}
+					else
+						add_tuberias(sel_edificio)
+				}
 				if sel_edificio.agua
 					draw_text_pos(room_width - 20, pos, $"Consumiendo {sel_edificio.agua_consumo} agua")
 			}
 			//Coneccion eléctrica
-			if (edificio_bool_energia[index] or mejora_requiere_energia) and (dia / 365) > 90{
-				if not sel_edificio.energia and draw_boton(room_width - 20, pos, "Conectar cablado público $200")
-					add_energia(sel_edificio)
+			if (edificio_bool_energia[index] or mejora_requiere_energia) and (dia / 365) > 90 and not sel_edificio.privado{
+				var b = 0
+				for(var a = 0; a < array_length(edificio_count[index]); a++)
+					b += (not edificio_count[index, a].energia and not edificio_count[index, a].privado)
+				if not sel_edificio.energia and draw_boton(room_width - 20, pos, keyboard_check(vk_lshift) ? $"Conectar cableado público ${100 * b} ({b})" : "Conectar cablado público $100")
+					if keyboard_check(vk_lshift){
+						for(var a = 0; a < array_length(edificio_count[index]); a++)
+							if not edificio_count[index, a].privado
+								add_energia(edificio_count[index, a])
+					}
+					else
+						add_energia(sel_edificio)
 				if sel_edificio.energia
 					draw_text_pos(room_width - 20, pos, $"Consumiendo {sel_edificio.energia_consumo} energía")
 			}

@@ -117,6 +117,7 @@
     {"id":{"name":"spr_1x1","path":"sprites/spr_1x1/spr_1x1.yy",},},
     {"id":{"name":"spr_arbol","path":"sprites/spr_arbol/spr_arbol.yy",},},
     {"id":{"name":"spr_icono","path":"sprites/spr_icono/spr_icono.yy",},},
+    {"id":{"name":"spr_null_chunk","path":"sprites/spr_null_chunk/spr_null_chunk.yy",},},
     {"id":{"name":"spr_tile","path":"sprites/spr_tile/spr_tile.yy",},},
   ],
   "resourceType":"GMProject",
