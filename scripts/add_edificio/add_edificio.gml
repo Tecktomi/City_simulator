@@ -129,17 +129,12 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			if var_edificio_nombre = "Granja"
 				edificio.trabajadores_max = floor((width * height - 9) / 3)
 			if var_edificio_nombre = "Aserradero"{
-				var c = min(x + width + 5, xsize), d = min(y + height + 5, ysize)
+				var c = min(x + width + 5, xsize), d = min(y + height + 5, ysize), e = max(0, y - 5)
 				for(var a = max(0, x - 5); a < c; a++)
-					for(var b = max(0, y - 5); b < d; b++)
+					for(var b = e; b < d; b++)
 						if bosque[a, b] and not bosque_venta[a, b]
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
-			}
-			else if var_edificio_nombre = "Pozo Petrolífero"{
-				edificio.agua = true
-				edificio.agua_consumo += edificio_agua[tipo]
-				agua_output += edificio.agua_consumo
 			}
 			else if var_edificio_nombre = "Periódico"
 				array_push(edificio.array_complex, {a : -1, b : 0})
@@ -149,6 +144,16 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 				buscar_zona_pesca(edificio)
 			else if var_edificio_nombre = "Conservadora"
 				edificio.array_complex = [{a : 18, b : 1}]
+			if in(var_edificio_nombre, "Pozo Petrolífero", "Departamentos", "Bloque Habitacional", "Planta Química"){
+				edificio.agua = true
+				edificio.agua_consumo += edificio_agua[tipo]
+				agua_output += edificio.agua_consumo
+			}
+			if in(var_edificio_nombre, "Departamentos", "Bloque Habitacional", "Planta Química", "Fábrica de Vehículos", "Conservadora", "Cine", "Discoteca", "Radio"){
+				edificio.energia = true
+				edificio.energia_consumo += edificio_energia[tipo]
+				energia_output += edificio.energia_consumo
+			}
 			if var_edificio_nombre != "Muelle"
 				buscar_muelle_cercano(edificio)
 			else{
@@ -168,10 +173,10 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 				for(var a = 0; a < array_length(edificio.input_id); a++)
 					recurso_utilizado[edificio.input_id[a]]++
 			//Casa busca trabajos cercanos
-			var c = min(x + width + 9, xsize), d = min(y + height + 9, ysize)
+			var c = min(x + width + 9, xsize), d = min(y + height + 9, ysize), e = max(0, y - 8)
 			if edificio_es_casa[tipo]
 				for(var a = max(0, x - 8); a < c; a++)
-					for(var b = max(0, y - 8); b < d; b++)
+					for(var b = e; b < d; b++)
 						if bool_edificio[a, b]{
 							var temp_edificio = id_edificio[a, b], g = temp_edificio.trabajo_educacion
 							if edificio_es_trabajo[temp_edificio.tipo] and not array_contains(edificio.trabajos_cerca[g], temp_edificio){
@@ -185,7 +190,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			if edificio_es_trabajo[tipo]{
 				var g = edificio.trabajo_educacion
 				for(var a = max(0, x - 8); a < c; a++)
-					for(var b = max(0, y - 8); b < d; b++)
+					for(var b = e; b < d; b++)
 						if bool_edificio[a, b]{
 							var temp_edificio = id_edificio[a, b]
 							if edificio_es_casa[temp_edificio.tipo] and edificio_nombre[temp_edificio.tipo] != "Toma" and not array_contains(edificio.casas_cerca, temp_edificio){
@@ -212,8 +217,9 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 				var size = ceil(abs(edificio_belleza[tipo] - 50) / 5)
 				c = min(x + width + size, xsize)
 				d = min(y + height + size, ysize)
+				e = max(0, y - size)
 				for(var a = max(0, x - size); a < c; a++)
-					for(var b = max(0, y - size); b < d; b++){
+					for(var b = e; b < d; b++){
 						array_set(belleza[a], b, round(belleza[a, b] + (edificio_belleza[tipo] - 50) / (1 + distancia_punto(a, b, edificio))))
 						if bool_edificio[a, b]{
 							var edificio_2 = id_edificio[a, b]

@@ -156,7 +156,10 @@ if menu_principal{
 				if edificio_sprite[id_edificio[a, b].tipo]
 					draw_sprite_stretched(edificio_sprite_id[id_edificio[a, b].tipo], draw_edificio_flip[a, b], (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
 				else{
-					var edificio = draw_edificio[a, b], c = edificio.x, d = edificio.y, e = edificio.tipo, width = edificio.width, height = edificio.height, temp_rotado = edificio.rotado
+					var edificio = draw_edificio[a, b], width = edificio.width, height = edificio.height, temp_rotado = edificio.rotado
+					c = edificio.x
+					d = edificio.y
+					e = edificio.tipo
 					draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
 					draw_rombo_coord(c, d, width, height, false)
 					if edificio_resize_no_productiva[e]{
@@ -181,7 +184,10 @@ if menu_principal{
 					}
 			}
 			if bool_draw_construccion[a, b]{
-				var next_build = draw_construccion[a, b], e = next_build.id, width = next_build.width, height = next_build.height, c = next_build.x, d = next_build.y, temp_rotado = next_build.rotado, var_edificio_nombre = edificio_nombre[next_build.id]
+				var next_build = draw_construccion[a, b], width = next_build.width, height = next_build.height, temp_rotado = next_build.rotado, var_edificio_nombre = edificio_nombre[next_build.id]
+				c = next_build.x
+				d = next_build.y
+				e = next_build.id
 				draw_set_color(make_color_hsv(edificio_color[e], 255, 255))
 				draw_set_alpha(0.5)
 				draw_rombo_coord(c, d, width, height, false)
@@ -499,7 +505,7 @@ if sel_build{
 				var temp_text = "Crecimiento "
 			else
 				temp_text = "Disminución "
-			if draw_menu(120, pos, $"{temp_text} {abs(temp_total)}", 1, , true){
+			if draw_menu(120, pos, $"{temp_text} {abs(temp_total)}", 1){
 				draw_set_color(c_green)
 				draw_text_pos(130, pos, $"Nacimientos: {temp_nacimientos}")
 				draw_text_pos(130, pos, $"Inmigración: {temp_inmigrados}")
@@ -521,16 +527,23 @@ if sel_build{
 				draw_set_color(c_black)
 			}
 			//Gráfico de edades
-			if draw_menu(120, pos, "Edad", 0, , true){
-				var temp_edad, maxi = 0
+			if draw_menu(120, pos, "Edad", 0){
+				var temp_edad, maxi = 0, edad_promedio = 0
 				for(var a = 0; a <= 16; a++){
 					temp_edad[false, a] = 0
 					temp_edad[true, a] = 0
 				}
-				for(var a = 0; a < array_length(personas); a++)
-					temp_edad[personas[a].sexo, min(16, floor(personas[a].edad / 5))]++
+				for(var a = 0; a < array_length(personas); a++){
+					var persona = personas[a]
+					temp_edad[persona.sexo, min(16, floor(persona.edad / 5))]++
+					edad_promedio += persona.edad
+				}
 				for(var a = 0; a <= 16; a++)
 					maxi = max(temp_edad[false, a], max(temp_edad[true, a], maxi))
+				edad_promedio /= array_length(personas)
+				draw_text_pos(140, pos, $"Edad promedio {round(edad_promedio)}")
+				if esperanza_de_vida_num > 0
+					draw_text_pos(140, pos, $"Esperanza de vida {round(esperanza_de_vida_sum / esperanza_de_vida_num)}")
 				draw_set_halign(fa_center)
 				draw_set_font(font_small)
 				for(var a = 0; a <= 16; a++){
@@ -545,10 +558,11 @@ if sel_build{
 				draw_set_font(font_normal)
 			}
 			//Felicidad
-			if draw_menu(120, pos, $"Felicidad: {floor(felicidad_total)}", 3, , true){
+			if draw_menu(120, pos, $"Felicidad: {floor(felicidad_total)}", 3){
 				draw_text_pos(130, pos, $"Mínimo esperado: {felicidad_minima}")
-				var fel_tra = 0, fel_edu = 0, fel_viv = 0, fel_sal = 0, num_tra = 0, num_edu = 0, fel_oci = 0, fel_ali = 0, c = 0, fel_tran = 0, num_tran = 0, fel_rel = 0, num_rel = 0, fel_ley = 0, num_ley = 0, fel_cri = 0, fel_temp = 0, len = array_length(personas)
+				var fel_tra = 0, fel_edu = 0, fel_viv = 0, fel_sal = 0, num_tra = 0, num_edu = 0, fel_oci = 0, fel_ali = 0, fel_tran = 0, num_tran = 0, fel_rel = 0, num_rel = 0, fel_ley = 0, num_ley = 0, fel_cri = 0, fel_temp = 0, len = array_length(personas)
 				b = 0
+				c = 0
 				for(var a = 0; a < array_length(personas); a++){
 					var persona = personas[a]
 					fel_sal += persona.felicidad_salud
@@ -599,16 +613,43 @@ if sel_build{
 				show_scroll--
 			if mouse_wheel_down()
 				show_scroll++
-			show_scroll = max(0, min(show_scroll, array_length(personas) - 20))
-			var max_width = 0
-			for(var a = 0; a < min(20, array_length(personas)); a++){
-				if draw_boton(400, pos, name(personas[a + show_scroll]))
-					select(,, personas[a + show_scroll])
-				max_width = max(max_width, string_width(name(personas[a + show_scroll])))
+			if draw_menu(400, pos, show[4] ? "Favoritos" : "Todo el mundo", 4)
+				var temp_array_personas = personas_favoritas
+			else
+				temp_array_personas = personas
+			var last_pos = pos
+			show_scroll = max(0, min(show_scroll, array_length(temp_array_personas) - 20))
+			var max_width = 400, max_width_2 = 0
+			if draw_boton(max_width, pos, "Nombre")
+				array_sort(temp_array_personas, function(a = null_persona, b = null_persona){return (a.nombre > b.nombre) ? 1 : -1})
+			for(var a = 0; a < min(20, array_length(temp_array_personas)); a++){
+				if draw_boton(max_width, pos, name(temp_array_personas[a + show_scroll]))
+					select(,, temp_array_personas[a + show_scroll])
+				max_width_2 = max(max_width_2, last_width)
 			}
-			pos = 120
-			for(var a = 0; a < min(20, array_length(personas)); a++)
-				draw_text_pos(410 + max_width, pos, $"{personas[a + show_scroll].edad} años")
+			max_width += max_width_2 + 10
+			pos = last_pos
+			max_width_2 = 0
+			if draw_boton(max_width, pos, "Edad")
+				array_sort(temp_array_personas, function(a = null_persona, b = null_persona){return (a.edad > b.edad) ? 1 : -1})
+			for(var a = 0; a < min(20, array_length(temp_array_personas)); a++){
+				draw_text_pos(max_width, pos, $"{temp_array_personas[a + show_scroll].edad} años")
+				max_width_2 = max(max_width_2, last_width)
+			}
+			max_width += max_width_2 + 10
+			if array_length(temp_array_personas) > 20{
+				draw_rectangle(max_width - 1, last_pos, max_width + 1, pos, false)
+				draw_circle(max_width, last_pos + (show_scroll / (array_length(temp_array_personas) - 20)) * (pos - last_pos), 6, false)
+				if mouse_x >= max_width - 5 and mouse_y > last_pos and mouse_x <= max_width + 5 and mouse_y <= pos{
+					cursor = cr_handpoint
+					if mouse_check_button_pressed(mb_left)
+						build_pressed = true
+				}
+				if mouse_check_button_released(mb_left)
+					build_pressed = false
+				if build_pressed and mouse_y > last_pos and mouse_y <= pos
+					show_scroll = floor((mouse_y - last_pos) * (array_length(temp_array_personas) - 20) / (pos - last_pos))
+			}
 		}
 		//Ministerio de Vivienda
 		else if ministerio = 1{
@@ -623,7 +664,7 @@ if sel_build{
 			draw_text_pos(110, pos, $"Felicidad vivenda: {floor(fel_viv / array_length(personas))}")
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				if edificio_es_casa[a] and (edificio_nombre[a] = "Homeless" or array_length(edificio_count[a]) > 0)
-					if draw_menu(110, pos, $"{edificio_nombre[a]}: {temp_array[a]} habitantes ({floor(temp_array[a] * 100 / array_length(personas))}%)", a)
+					if draw_menu(110, pos, $"{edificio_nombre[a]}: {temp_array[a]} habitante{temp_array[a] = 1 ? "" : "s"} ({floor(temp_array[a] * 100 / array_length(personas))}%)", a)
 						for(b = 0; b < array_length(edificio_count[a]); b++)
 							if draw_boton(120, pos, edificio_count[a, b].nombre)
 								select(edificio_count[a, b])
@@ -631,6 +672,20 @@ if sel_build{
 				for(var a = 0; a < array_length(casas_libres); a++)
 					if draw_boton(120, pos, casas_libres[a].nombre)
 						select(casas_libres[a])
+			//Fujo de agua
+			if (dia / 365) > 50{
+				pos += 10
+				draw_text_pos(120, pos, $"Entrada máxima de agua: {agua_input}")
+				draw_text_pos(120, pos, $"Salida máxima de agua: {agua_output}")
+				draw_text_pos(120, pos, $"Eficiencia: {min(100, 100 * agua_input / agua_output)}%")
+			}
+			//Flujo de energía
+			if (dia / 365) > 90{
+				pos += 10
+				draw_text_pos(120, pos, $"Entrada máxima de energía: {energia_input}")
+				draw_text_pos(120, pos, $"Salida máxima de energía: {energia_output}")
+				draw_text_pos(120, pos, $"Eficiencia: {min(100, 100 * energia_input / energia_output)}%")
+			}
 		}
 		//Ministerio de Trabajo
 		else if ministerio = 2{
@@ -674,7 +729,7 @@ if sel_build{
 					if draw_boton(120, pos, $"{edificio_nombre[next_build.id]} {floor(100 * (1 - next_build.tiempo / next_build.tiempo_max))}%")
 						select(,,, next_build)
 				}
-			draw_text_pos(110, pos, $"{num_temp} trabajador{num_temp = 1 ? "" : "s"} temporal{num_temp = 1 ? "" : "s"} ({floor(100 * num_temp / num_tra)}%)")
+			draw_text_pos(110, pos, $"{num_temp} trabajador{num_temp = 1 ? "" : "es"} temporal{num_temp = 1 ? "" : "es"} ({floor(100 * num_temp / num_tra)}%)")
 			draw_text_pos(110, pos, $"{floor(100 * num_del / num_tra)}% de delincuencia")
 			if num_tra > 0
 				draw_text_pos(110, pos, $"{floor(100 * trab_esta / num_tra)} % de trabajadores estatales.")
@@ -698,8 +753,9 @@ if sel_build{
 			}
 			for(var a = 0; a < array_length(edificio_almacen_index); a++)
 				for(b = 0; b < array_length(almacenes[edificio_almacen_index[a]]); b++){
-					var edificio = almacenes[edificio_almacen_index[a], b], d = 0
-					for(var c = 0; c < array_length(recurso_comida); c++)
+					var edificio = almacenes[edificio_almacen_index[a], b]
+					d = 0
+					for(c = 0; c < array_length(recurso_comida); c++)
 						d += edificio.almacen[recurso_comida[c]]
 					if d > 0{
 						total_comida += d
@@ -715,7 +771,7 @@ if sel_build{
 			draw_text_pos(110, pos, $"{num_sal} persona{num_sal = 1 ? "" : "s"} enferma{num_sal = 1 ? "" : "s"}")
 			draw_text_pos(120, pos, $"{array_length(desausiado.clientes)} persona{array_length(desausiado.clientes) = 1 ? "" : "s"} sin atención médica")
 			draw_text_pos(120, pos, $"{temp_espera} persona{temp_espera = 1 ? "" : "s"} atendida{temp_espera = 1 ? "" : "s"}")
-			draw_text_pos(120, pos, $"{temp_accidentes} accidente{temp_accidentes = 1 ? "" : "s"} laborales el último año")
+			draw_text_pos(120, pos, $"{temp_accidentes} accidente{temp_accidentes = 1 ? "" : "s"} laboral{temp_accidentes = 1 ? "" : "es"} el último año")
 			if draw_menu(110, pos, $"{array_length(medicos) - 1} edificio{array_length(medicos) = 2 ? "" : "s"} médico{array_length(medicos) = 2 ? "" : "s"}", 0)
 				for(var a = 0; a < array_length(edificio_nombre); a++)
 					if edificio_es_medico[a]
@@ -728,8 +784,9 @@ if sel_build{
 			if draw_menu(110, pos, $"{num_almacenes} edificio{num_almacenes = 1 ? "" : "s"} distribuyendo comida", 1)
 				for(var a = 0; a < array_length(edificio_almacen_index); a++)
 					for(b = 0; b < array_length(almacenes[edificio_almacen_index[a]]); b++){
-						var edificio = almacenes[edificio_almacen_index[a], b], d = 0
-						for(var c = 0; c < array_length(recurso_comida); c++)
+						var edificio = almacenes[edificio_almacen_index[a], b]
+						d = 0
+						for(c = 0; c < array_length(recurso_comida); c++)
 							d += edificio.almacen[recurso_comida[c]]
 						if d >= 1{
 							if draw_boton(120, pos, edificio.nombre)
@@ -743,20 +800,6 @@ if sel_build{
 				num_impor += recurso_importado_fijo[recurso_comida[a]]
 			if num_impor > 0
 				draw_text_pos(120, pos, $"({num_impor} alimentos importados)")
-			//Fujo de agua
-			if (dia / 365) > 50{
-				pos += 10
-				draw_text_pos(120, pos, $"Entrada máxima de agua: {agua_input}")
-				draw_text_pos(120, pos, $"Salida máxima de agua: {agua_output}")
-				draw_text_pos(120, pos, $"Eficiencia: {min(100, 100 * agua_input / agua_output)}%")
-			}
-			//Flujo de energía
-			if (dia / 365) > 90{
-				pos += 10
-				draw_text_pos(120, pos, $"Entrada máxima de energía: {energia_input}")
-				draw_text_pos(120, pos, $"Salida máxima de energía: {energia_output}")
-				draw_text_pos(120, pos, $"Eficiencia: {min(100, 100 * energia_input / energia_output)}%")
-			}
 		}
 		//Ministerio de Educación
 		else if ministerio = 4{
@@ -773,12 +816,14 @@ if sel_build{
 			draw_text_pos(110, pos, $"Satisfacción educacional: {floor(fel_edu / num_edu)}")
 			for(var a = 0; a < array_length(educacion_nombre); a++)
 				draw_text_pos(120, pos, $"{educacion_nombre[a]}: {temp_educacion[a]} ({floor(temp_educacion[a] * 100 / array_length(personas))}%)")
-			if draw_menu(110, pos, $"{array_length(escuelas)} instituciones educativas", 0)
+			if draw_menu(110, pos, $"{array_length(escuelas)} instituci{array_length(escuelas) = 1 ? "ón" : "ones"} educativa{array_length(escuelas) = 1 ? "" : "s"}", 0)
 				for(var a = 0; a < array_length(edificio_nombre); a++)
 					if edificio_es_escuela[a]
 						for(b = 0; b < array_length(edificio_count[a]); b++)
 							if draw_boton(120, pos, $"{edificio_count[a, b].nombre} ({array_length(edificio_count[a, b].clientes)} estudiante{array_length(edificio_count[a, b].clientes) = 1 ? "" : "s"})")
 								select(edificio_count[a, b])
+			if radioemisoras > 0
+				draw_text_pos(110, pos, $"Calidad de la radio: {radioemisoras}")
 		}
 		//Ministerio de Economía
 		else if ministerio = 5{
@@ -862,11 +907,11 @@ if sel_build{
 				if floor(count[2]) > 0
 					draw_text_pos(120, pos, $"{temp_text_array[2]}: ${floor(count[2])}")
 				if floor(count[3]) > 0 and draw_menu(120, pos, $"{temp_text_array[3]}: ${floor(count[3])}", 1)
-					for(var c = 0; c < array_length(recurso_nombre); c++)
+					for(c = 0; c < array_length(recurso_nombre); c++)
 						if temp_exportaciones[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_exportaciones[c])} ({floor(temp_exportaciones_id[c])})")
 				if floor(count[9]) > 0 and draw_menu(120, pos, $"{temp_text_array[9]}: ${floor(count[9])}", 6)
-					for(var c = 0; c < array_length(recurso_nombre); c++)
+					for(c = 0; c < array_length(recurso_nombre); c++)
 						if temp_venta[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_venta[c])} ({floor(temp_venta_id[c])})")
 				if floor(count[10]) > 0
@@ -886,11 +931,11 @@ if sel_build{
 				if floor(count[6]) > 0
 					draw_text_pos(120, pos, $"{temp_text_array[6]}: ${floor(count[6])}")
 				if floor(count[7]) > 0 and draw_menu(120, pos, $"{temp_text_array[7]}: ${floor(count[7])}", 3)
-					for(var c = 0; c < array_length(recurso_nombre); c++)
+					for(c = 0; c < array_length(recurso_nombre); c++)
 						if temp_importaciones[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_importaciones[c])} ({floor(temp_importaciones_id[c])})")
 				if floor(count[8]) > 0 and draw_menu(120, pos, $"{temp_text_array[8]}: ${floor(count[8])}", 7)
-					for(var c = 0; c < array_length(recurso_nombre); c++)
+					for(c = 0; c < array_length(recurso_nombre); c++)
 						if temp_compra[c] > 0
 							draw_text_pos(130, pos, $"{recurso_nombre[c]}: ${floor(temp_compra[c])} ({floor(temp_compra_id[c])})")
 				if floor(count[11]) > 0
@@ -1101,19 +1146,20 @@ if sel_build{
 		else if ministerio = 6{
 			draw_text_pos(100, pos, "Relaciones Exteriores")
 			for(var a = 1; a < array_length(pais_current); a++){
-				var e = pais_current[a]
-				var d = 0, f = 0
+				e = pais_current[a]
+				d = 0
+				var f = 0
 				for(b = 0; b < array_length(recurso_nombre); b++){
-					for(var c = 0; c < array_length(recurso_tratados_venta[b]); c++)
+					for(c = 0; c < array_length(recurso_tratados_venta[b]); c++)
 						d += (recurso_tratados_venta[b, c].pais = e)
-					for(var c = 0; c < array_length(recurso_tratados_compra[b]); c++)
+					for(c = 0; c < array_length(recurso_tratados_compra[b]); c++)
 						f += (recurso_tratados_compra[b, c].pais = e)
 				}
 				if draw_menu(110, pos, $"{pais_nombre[e]}: {pais_relacion[e]} {d + f > 0 ? "(" + string(d + f) + ")" : ""}", a){
 					if d + f > 0{
-						draw_text_pos(120, pos, $"{d + f} tratados comerciales activos")
+						draw_text_pos(120, pos, $"{d + f} tratado{d + f = 1 ? "" : "s"} comercial{d + f = 1 ? "" : "es"} activo{d + f = 1 ? "" : "s"}")
 						for(b = 0; b < array_length(recurso_nombre); b++){
-							for(var c = 0; c < array_length(recurso_tratados_venta[b]); c++){
+							for(c = 0; c < array_length(recurso_tratados_venta[b]); c++){
 								var tratado = recurso_tratados_venta[b, c]
 								if tratado.pais = e
 									if draw_boton(130, pos, $"Vender {tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+{floor(tratado.factor * 100) - 100}%)",,,,,,, true) and mouse_lastbutton = mb_right{
@@ -1124,7 +1170,7 @@ if sel_build{
 										tratados_num--
 									}
 							}
-							for(var c = 0; c < array_length(recurso_tratados_compra[b]); c++){
+							for(c = 0; c < array_length(recurso_tratados_compra[b]); c++){
 								var tratado = recurso_tratados_compra[b, c]
 								if tratado.pais = e
 									if draw_boton(130, pos, $"Comprar {tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (-{floor(tratado.factor * 100) - 100}%)",,,,,,, true) and mouse_lastbutton = mb_right{
@@ -1146,22 +1192,22 @@ if sel_build{
 						for(b = 0; b < array_length(pais_guerras[e]); b++){
 							var guerra = pais_guerras[e, b]
 							if array_contains(guerra.bando_a, e){
-								for(var c = 0; c < array_length(guerra.bando_a); c++)
+								for(c = 0; c < array_length(guerra.bando_a); c++)
 									if guerra.bando_a[c] != e{
 										temp_array_2[guerra.bando_a[c]] = true
 										flag_2 = true
 									}
-								for(var c = 0; c < array_length(guerra.bando_b); c++){
+								for(c = 0; c < array_length(guerra.bando_b); c++){
 									temp_array[guerra.bando_b[c]] = true
 									flag = true
 								}
 							}
 							else{
-								for(var c = 0; c < array_length(guerra.bando_a); c++){
+								for(c = 0; c < array_length(guerra.bando_a); c++){
 									temp_array[guerra.bando_a[c]] = true
 									flag = true
 								}
-								for(var c = 0; c < array_length(guerra.bando_b); c++)
+								for(c = 0; c < array_length(guerra.bando_b); c++)
 									if guerra.bando_b[c] != e{
 										temp_array_2[guerra.bando_b[c]] = true
 										flag_2 = true
@@ -1190,7 +1236,7 @@ if sel_build{
 			//Ofertas disponibles
 			pos = 120
 			draw_text_pos(580, pos, "Ofertas disponibles")
-			draw_text_pos(590, pos, $"{tratados_num} aceptados de {tratados_max}")
+			draw_text_pos(590, pos, $"{tratados_num} aceptado{tratados_num = 1 ? "" : "s"} de {tratados_max}")
 			for(var a = 0; a < array_length(tratados_ofertas); a++){
 				var tratado = tratados_ofertas[a]
 				if draw_boton_color(600, pos, $"{tratado.cantidad > 0 ? "#FF0000Vender" : "#0000FFComprar"}#000000 {abs(tratado.cantidad)} de #0000FF{recurso_nombre[tratado.recurso]}#000000 a #FF0000{pais_nombre[tratado.pais]}#000000 ({tratado.tipo ? "+" : "-"}{floor(100 * (tratado.factor - 1))}%)") and tratados_num < tratados_max{
@@ -1239,7 +1285,7 @@ if sel_build{
 						if empresa.nacional and draw_boton(140, pos, $"Dueño: {name(empresa.jefe)}")
 							select(,, empresa.jefe)
 						if array_length(empresa.terreno) > 0
-							draw_text_pos(140, pos, $"Dueños de {array_length(empresa.terreno)} terrenos")
+							draw_text_pos(140, pos, $"Dueños de {array_length(empresa.terreno)} terreno{array_length(empresa.terreno) = 1 ? "" : "s"}")
 						if array_length(empresa.edificios) > 0{
 							draw_text_pos(140, pos, $"Dueña de {array_length(empresa.edificios)} edificio{array_length(empresa.edificios) = 1 ? "" : "s"}")
 							for(b = 0; b < array_length(empresa.edificios); b++)
@@ -1269,7 +1315,7 @@ if sel_build{
 					//Prohibir trabajo infantil
 					if a = 2 and not ley_eneabled[2]
 						for(b = 0; b < array_length(familias); b++)
-							for(var c = 0; c < array_length(familias[b].hijos); c++)
+							for(c = 0; c < array_length(familias[b].hijos); c++)
 								if familias[b].hijos[c].edad > 12
 									cambiar_trabajo(familias[b].hijos[c], null_edificio)
 					//Crear jubilaciones
@@ -1308,7 +1354,9 @@ if sel_build{
 			}
 			#region Mapa político
 				b = 0
-				var c = 0, d = 0, tempx = 600, tempy = 150
+				c = 0
+				d = 0
+				var tempx = 600, tempy = 150
 				draw_text(tempx, tempy - 20, "Mapa político")
 				for(var a = 0; a < array_length(ley_nombre); a++)
 					if ley_eneabled[a]{
@@ -1358,7 +1406,7 @@ if sel_build{
 							draw_circle(tempx + 50 * personas[a].politica_economia, tempy + 300 - 50 * personas[a].politica_sociocultural, 4, false)
 					draw_set_alpha(1)
 				}
-				if elecciones and draw_menu(tempx, pos, "Mostrar candidatos", 1){
+				if elecciones and draw_menu(tempx, pos, $"Mostrar candidato{array_length(candidatos) = 1 ? "" : "s"}", 1){
 					for(var a = 0; a < array_length(candidatos); a++){
 						var persona = candidatos[a]
 						draw_set_color(make_color_hsv(a * 255 / array_length(candidatos), 127, 255))
@@ -1431,7 +1479,7 @@ if build_sel{
 		draw_set_color(c_white)
 		draw_set_alpha(1)
 		if var_edificio_nombre = "Granja"{
-			var c = 0
+			c = 0
 			for(var a = mx; a < mx + width; a++)
 				for(var b = my; b < my + height; b++)
 					if (mx >= build_x ? (a >= mx + edi_width) : (a <= mx + width - edi_width)) or (my >= build_y ? (b >= my + edi_height) : (b <= my + height - edi_height))
@@ -1458,7 +1506,7 @@ if build_sel{
 		else if var_edificio_nombre = "Rancho"{
 			for(var a = 0; a < array_length(ganado_nombre); a++)
 				draw_text(0, a * 20, (build_type = a ? ">" : "") + ganado_nombre[a])
-			var c = 0
+			c = 0
 			for(var a = mx; a < mx + width; a++)
 				for(var b = my; b < my + height; b++)
 					if (mx >= build_x ? (a >= mx + edi_width) : (a <= mx + width - edi_width)) or (my >= build_y ? (b >= my + edi_height) : (b <= my + height - edi_height))
@@ -1491,9 +1539,12 @@ if build_sel{
 	if var_edificio_nombre = "Mina"{
 		draw_rombo_coord(mx - 1, my - 1, width + 2, height + 2, true)
 		flag = false
-		var c = 0, d = min(xsize - 1, mx + width + 1), e = min(ysize - 1, my + height + 1)
+		c = 0
+		d = min(xsize - 1, mx + width + 1)
+		e = min(ysize - 1, my + height + 1)
+		var f = max(0, my - 1)
 		for(var a = max(0, mx - 1); a < d; a++)
-			for(var b = max(0, my - 1); b < e; b++)
+			for(var b = f; b < e; b++)
 				if mineral[build_type][a, b]{
 					flag = true
 					c += mineral_cantidad[build_type][a, b]
@@ -1532,7 +1583,9 @@ if build_sel{
 	}
 	//Tejar
 	else if var_edificio_nombre = "Tejar"{
-		var c = 0, d = mx + width, e = my + height
+		c = 0
+		d = mx + width
+		e = my + height
 		for(var a = mx; a < d; a++)
 			for(var b = my; b < e; b++)
 				c += (altura[# a, b] > 0.6)
@@ -1541,7 +1594,9 @@ if build_sel{
 	}
 	//Pozo Petrolífero
 	else if var_edificio_nombre = "Pozo Petrolífero"{
-		var c = 0, d = mx + width, e = my + height
+		c = 0
+		d = mx + width
+		e = my + height
 		for(var a = mx; a < d; a++)
 			for(var b = my; b < e; b++)
 				c += petroleo[a, b]
@@ -1553,9 +1608,11 @@ if build_sel{
 			text += $"Depósito: {c}\n"
 	}
 	draw_set_alpha(0.5)
-	var c = min(xsize - 1, mx + width + 5), d = min(ysize - 1, my + height + 5)
+	c = min(xsize - 1, mx + width + 5)
+	d = min(ysize - 1, my + height + 5)
+	e = max(0, my - 5)
 	for(var a = max(0, mx - 5); a < c; a++)
-		for(var b = max(0, my - 5); b < d; b++)
+		for(var b = e; b < d; b++)
 			if zona_privada[a, b] or bool_edificio[a, b] or construccion_reservada[a, b]{
 				if zona_privada[a, b]
 					draw_set_color(c_blue)
@@ -1576,9 +1633,10 @@ if build_sel{
 			var flag_2 = false
 			c = 0
 			d = min(mx + width + 5, xsize)
-			var e = min(my + height + 5, ysize)
+			e = min(my + height + 5, ysize)
+			var f = max(0, my - 5)
 			for(var a = max(0, mx - 5); a < d; a++)
-				for(var b = max(0, my - 5); b < e; b++)
+				for(var b = f; b < e; b++)
 					if bosque[a, b] and not bosque_venta[a, b] and not (a >= mx and a < mx + width and b >= my and b < my + height){
 						flag_2 = true
 						c += bosque_madera[a, b]
@@ -1672,8 +1730,11 @@ if build_terreno{
 	}
 	draw_set_alpha(0.5)
 	draw_set_color(c_red)
-	for(var a = mx - 3; a <= mx + 3; a++)
-		for(var b = my - 3; b <= my + 3; b++)
+	c = mx + 3
+	d = my - 3
+	e = my + 3
+	for(var a = mx - 3; a <= c; a++)
+		for(var b = d; b <= e; b++)
 			if zona_privada[a, b] or zona_privada_venta[a, b]
 				draw_rombo_coord(a, b, 1, 1, false)
 	draw_set_alpha(1)
@@ -1682,8 +1743,10 @@ if build_terreno{
 		draw_set_color(c_blue)
 		draw_set_alpha(0.5)
 		draw_rombo_coord(minx, miny, width, height, false)
-		for(var a = minx; a < minx + width; a++){
-			for(var b = miny; b < miny + height; b++)
+		c = minx + width
+		d = miny + height
+		for(var a = minx; a < c; a++){
+			for(var b = miny; b < d; b++)
 				if (bool_edificio[a, b] and edificio_nombre[id_edificio[a, b].tipo] != "Toma") or mar[a, b] or construccion_reservada[a, b] or zona_privada[a, b] or zona_privada_venta[a, b]{
 					flag = false
 					break
@@ -1710,13 +1773,14 @@ if build_terreno{
 				select(,,,, terreno_venta)
 			}
 			array_push(terrenos_venta, terreno_venta)
-			for(var a = minx; a < minx + width; a++)
-				for(var b = miny; b < miny + height; b++){
+			c = minx + width
+			d = miny + height
+			for(var a = minx; a < c; a++)
+				for(var b = miny; b < d; b++){
 					array_set(zona_privada[a], b, true)
 					array_set(zona_privada_venta[a], b, true)
 					array_set(zona_privada_venta_terreno[a], b, terreno_venta)
-					for(var c = 0; c < array_length(build_terreno_permisos); c++)
-							array_set(zona_privada_permisos[a, b], c, build_terreno_permisos[c])
+					array_copy(zona_privada_permisos[a, b], 0, build_terreno_permisos, 0, array_length(build_terreno_permisos))
 				}
 		}
 	}
@@ -1727,7 +1791,7 @@ if build_terreno{
 		build_terreno = false
 	}
 }
-if not build_sel and not build_terreno
+if not build_sel and not build_terreno and not sel_build
 	build_pressed = false
 //Seleccionar edificio
 var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
@@ -1995,7 +2059,9 @@ if sel_info{
 						edificio_mejora(sel_edificio, mejora_frigorificos)
 				}
 				else if var_edificio_nombre = "Pescadería"{
-					var zona_pesca = sel_edificio.zona_pesca, c = zona_pesca.a, d = zona_pesca.b
+					var zona_pesca = sel_edificio.zona_pesca
+					c = zona_pesca.a
+					d = zona_pesca.b
 					draw_set_color(c_white)
 					draw_set_alpha(0.2 + 0.4 * zona_pesca.cantidad / zona_pesca.cantidad_max)
 					draw_circle((c - d) * tile_width - xpos, (c + d + 1) * tile_height - ypos, tile_height * (1 + zona_pesca.cantidad / 800), false)
@@ -2020,9 +2086,12 @@ if sel_info{
 				}
 				else if var_edificio_nombre = "Mina"{
 					draw_text_pos(room_width - 20, pos, $"Extrayendo {recurso_nombre[recurso_mineral[sel_edificio.modo]]}")
-					var c = 0, d = min(xsize - 1, sel_edificio.x + width + 1), e = min(xsize - 1, sel_edificio.y + height + 1)
+					c = 0
+					d = min(xsize - 1, sel_edificio.x + width + 1)
+					e = min(xsize - 1, sel_edificio.y + height + 1)
+					var f = max(0, sel_edificio.y - 1)
 					for(var a = max(0, sel_edificio.x - 1); a < d; a++)
-						for(var b = max(0, sel_edificio.y - 1); b < e; b++)
+						for(var b = f; b < e; b++)
 							if mineral[sel_edificio.modo][a, b]
 								c += mineral_cantidad[sel_edificio.modo][a, b]
 					draw_text_pos(room_width - 40, pos, $"Depósito: {c}")
@@ -2104,7 +2173,9 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_motosierra)
 				}
 				else if var_edificio_nombre = "Pozo Petrolífero"{
-					var c = 0, d = x + width, e = y + height
+					c = 0
+					d = x + width
+					e = y + height
 					for(var a = x; a < d; a++)
 						for(var b = y; b < e; b++)
 							c += petroleo[a, b]
@@ -2231,8 +2302,10 @@ if sel_info{
 						edificio_mejora(sel_edificio, mejora_motor_de_diesel)
 					edificio_mejora(sel_edificio, mejora_reciclaje_de_materiales)
 				}
-				else if var_edificio_nombre = "Planta termoeléctrica"
+				else if var_edificio_nombre = "Planta termoeléctrica"{
+					draw_text_pos(room_width - 40, pos, $"Produciendo {sel_edificio.count} energía")
 					edificio_mejora(sel_edificio, mejora_filtros_industriales)
+				}
 				else if var_edificio_nombre = "Oficina de Bomberos"{
 					edificio_mejora(sel_edificio, mejora_bomba_a_vapor)
 					if array_contains(sel_edificio.input_id, 9)
@@ -2336,6 +2409,8 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_pasteurizacion)
 					edificio_mejora(sel_edificio, mejora_latas_de_aluminio)
 				}
+				else if var_edificio_nombre = "Paneles Solares"
+					draw_text_pos(room_width - 40, pos, $"Produciendo {sel_edificio.count} energía")
 				pos += 20
 			}
 			//Información escuelas / consultas
@@ -2505,6 +2580,13 @@ if sel_info{
 	//Información personas
 	else if sel_tipo = 2 and sel_persona != null_persona{
 		draw_text_pos(room_width, pos, name(sel_persona))
+		if draw_sprite_boton(spr_icono, 10 + sel_persona.favorito, room_width - 300, pos - last_height){
+			if sel_persona.favorito
+				array_remove(personas_favoritas, sel_persona)
+			else
+				array_push(personas_favoritas, sel_persona)
+			sel_persona.favorito = not sel_persona.favorito
+		}
 		if sel_persona.preso
 			draw_text_pos(room_width - 20, pos, $"Pres{sel_persona.sexo ? "a" : "o"}")
 		draw_text_pos(room_width - 20, pos, $"Edad: {sel_persona.edad} ({fecha(sel_persona.cumple, false)})")
@@ -2684,9 +2766,17 @@ if sel_info{
 		pos += 20
 		draw_text_pos(room_width - 20, pos, $"{sel_terreno.width}x{sel_terreno.height} terrenos")
 		draw_text_pos(room_width - 20, pos, "Permisos de construcción:")
-		for(var a = 0; a < array_length(edificio_categoria); a++)
-			if zona_privada_permisos[sel_terreno.x, sel_terreno.y][a]
-				draw_text_pos(room_width - 40, pos, edificio_categoria_nombre[a])
+		if not show[0]{
+			for(var a = 0; a < array_length(edificio_categoria); a++)
+				if zona_privada_permisos[sel_terreno.x, sel_terreno.y][a]
+					draw_text_pos(room_width - 40, pos, edificio_categoria_nombre[a])
+		}
+		else
+			for(var a = 0; a < array_length(edificio_categoria); a++)
+				if draw_boton(room_width - 40, pos, (zona_privada_permisos[sel_edificio.x, sel_edificio.y][a] ? "-" : "+") + edificio_categoria_nombre[a])
+					array_set(zona_privada_permisos[sel_edificio.x, sel_edificio.y], a, not zona_privada_permisos[sel_edificio.x, sel_edificio.y][a])
+		if not sel_terreno.privado
+			draw_menu(room_width - 20, pos, "Cambiar permisos", 0)
 		pos += 20
 		if not sel_terreno.privado{
 			if draw_boton(room_width - 20, pos, "Cancelar venta"){
@@ -2717,7 +2807,7 @@ if sel_info{
 					var new_terreno = null_terreno
 					if temp_division{
 						new_terreno = {
-							x : sel_terreno.x + ceil(sel_terreno.width / 2),
+							x : sel_terreno.x + floor(sel_terreno.width / 2),
 							y : sel_terreno.y,
 							width : ceil(sel_terreno.width / 2),
 							height : sel_terreno.height,
@@ -2729,7 +2819,7 @@ if sel_info{
 					else{
 						new_terreno = {
 							x : sel_terreno.x,
-							y : sel_terreno.y + ceil(sel_terreno.height / 2),
+							y : sel_terreno.y + floor(sel_terreno.height / 2),
 							width : sel_terreno.width,
 							height : ceil(sel_terreno.height / 2),
 							privado : false,
@@ -2737,8 +2827,10 @@ if sel_info{
 						}
 						sel_terreno.height = floor(sel_terreno.height / 2)
 					}
-					for(var a = new_terreno.x; a < new_terreno.x + new_terreno.width; a++)
-						for(var b = new_terreno.y; b < new_terreno.y + new_terreno.height; b++)
+					c = new_terreno.x + new_terreno.width
+					d = new_terreno.y + new_terreno.height
+					for(var a = new_terreno.x; a < c; a++)
+						for(var b = new_terreno.y; b < d; b++)
 							array_set(zona_privada_venta_terreno[a], b, new_terreno)
 					array_push(terrenos_venta, new_terreno)
 				}
@@ -2796,7 +2888,8 @@ if (keyboard_check(vk_space) or step >= 60){
 		var dia_de_anno = (dia mod 365), dia_de_mes = (dia mod 28)
 		//Día nacional
 		if pais_dia[dia_de_anno] > 0 and array_contains(pais_current, pais_dia[dia_de_anno]){
-			var pais = pais_dia[dia_de_anno], industria = pais_industria[pais], b = 0, c = 0
+			var pais = pais_dia[dia_de_anno], industria = pais_industria[pais], b = 0
+			c = 0
 			text = $"{fecha(dia)} {pais_nombre[pais]}: ["
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				if array_contains(recurso_prima, a)
@@ -2837,7 +2930,8 @@ if (keyboard_check(vk_space) or step >= 60){
 		}
 		//Mover recursos
 		if array_length(encargos) > 0{
-			var c = 0, rss_in = [], rss_out = []
+			c = 0
+			var rss_in = [], rss_out = []
 			for(var a = 0; a < array_length(edificio_count[22]); a++){
 				var edificio = edificio_count[22, a]
 				c += 3 * array_length(edificio.trabajadores) * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[22] * (edificio.energia ? 1 + min(1, energia_input / energia_output) : 1)
@@ -2911,7 +3005,8 @@ if (keyboard_check(vk_space) or step >= 60){
 						mes_muertos_accidentes[current_mes]++
 					}
 				for(var a = 0; a < array_length(edificio.familias); a++){
-					var familia = edificio.familias[a], c = mes_muertos_accidentes[current_mes]
+					var familia = edificio.familias[a]
+					c = mes_muertos_accidentes[current_mes]
 					for_familia(function(persona = null_persona){
 						if random(1) < 0.2{
 							destroy_persona(persona,, "Muerto en un incendio")
@@ -3081,7 +3176,7 @@ if (keyboard_check(vk_space) or step >= 60){
 				var votos = [0]
 				for(var a = 0; a < array_length(candidatos); a++)
 					array_push(votos, 0)
-				var e = 0
+				e = 0
 				for(var a = 0; a < array_length(personas); a++){
 					var persona = personas[a], b = voto_persona(persona)
 					if b != -1{
@@ -3089,7 +3184,8 @@ if (keyboard_check(vk_space) or step >= 60){
 						e++
 					}
 				}
-				var b = 0, c = 0, temp_text = $"Resultados:\nVotantes: {e}\n\n"
+				var b = 0, temp_text = $"Resultados:\nVotantes: {e}\n\n"
+				c = 0
 				for(var a = 0; a < array_length(votos); a++){
 					if a = 0
 						temp_text += $"Su Alteza: {votos[a]}"
@@ -3192,7 +3288,8 @@ if (keyboard_check(vk_space) or step >= 60){
 				//Independizarse
 				if persona.edad > 18 and (irandom_range(persona.edad, 24) = 24 or persona.edad > 24) and persona.es_hijo and not persona.preso{
 					if buscar_trabajo(persona) or persona.edad > 24{
-						var prev_familia = persona.familia, herencia = 0, b = prev_familia.felicidad_vivienda, c = prev_familia.felicidad_alimento
+						var prev_familia = persona.familia, herencia = 0, b = prev_familia.felicidad_vivienda
+						c = prev_familia.felicidad_alimento
 						array_remove(prev_familia.hijos, persona, "hijo se independiza")
 						if prev_familia.padre = null_persona and prev_familia.madre = null_persona and array_length(prev_familia.hijos) = 0{
 							if prev_familia.riqueza > 0
@@ -3299,9 +3396,12 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					//Mudarse
 					if not buscar_casa(persona) and persona.familia.casa = homeless and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente){
-						var temp_array_coord = [], edificio = persona.trabajo, index = edificio.tipo, width = edificio.width, height = edificio.height, d = edificio.x + width + 2, e = edificio.y + height + 2
+						var temp_array_coord = [], edificio = persona.trabajo, index = edificio.tipo, width = edificio.width, height = edificio.height
+						d = edificio.x + width + 2
+						e = edificio.y + height + 2
+						var f = edificio.y - 2
 						for(var b = edificio.x - 2; b < d; b++)
-							for(var c = edificio.y - 2; c < e; c++)
+							for(c = f; c < e; c++)
 								if not bool_edificio[b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c]
 									array_push(temp_array_coord, {x : b, y : c})
 						temp_array_coord = array_shuffle(temp_array_coord)
@@ -3352,7 +3452,8 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					//Comprar productos de lujo
 					for(var b = 0; b < array_length(recurso_lujo); b++){
-						var c = recurso_lujo[b], temp_precio = recurso_precio[c]
+						c = recurso_lujo[b]
+						var temp_precio = recurso_precio[c]
 						if recurso_banda[c]
 							temp_precio = clamp(temp_precio, recurso_banda_min[c], recurso_banda_max[c])
 						if persona.familia.sueldo > 0 and persona.familia.riqueza > temp_precio and random(1) < recurso_lujo_prbabilidad[b] and array_length(edificio_count[35]) > 0{
@@ -3377,9 +3478,13 @@ if (keyboard_check(vk_space) or step >= 60){
 				//Acudir a edificios de ocio
 				if not persona.preso{
 					var temp_array = array_shuffle(edificios_ocio_index)
-					persona.felicidad_ocio = 0
+					if persona.familia.casa.energia or persona.trabajo.energia
+						persona.felicidad_ocio = min(30, irandom(min(1, energia_input / energia_output) * radioemisoras))
+					else
+						persona.felicidad_ocio = 0
 					for(var b = 0; b < array_length(temp_array); b++){
-						var c = temp_array[b], var_edificio_nombre = edificio_nombre[c]
+						c = temp_array[b]
+						var var_edificio_nombre = edificio_nombre[c]
 						if array_length(edificio_count[c]) > 0 and (persona.edad > 12 or (var_edificio_nombre != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (var_edificio_nombre != "Circo")) and ((not persona.sexo and persona.edad > 15) or (var_edificio_nombre != "Cabaret")) and (persona.educacion > 0 or (var_edificio_nombre != "Periódico")){
 							var ocio = array_pick(edificio_count[c]), temp_precio = edificio_servicio_tarifa[c]
 							set_calidad_servicio(ocio)
@@ -3412,6 +3517,8 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					persona.felicidad_ocio = clamp(floor(persona.felicidad_ocio), 0, 100)
 				}
+				else
+					persona.felicidad_ocio = 0
 				//Ir a la iglesia
 				if array_length(iglesias) > 0 and (persona.religion or (persona.edad < 12 and random(1) < 0.1)) and not persona.preso{
 					persona.religion = true
@@ -3451,7 +3558,9 @@ if (keyboard_check(vk_space) or step >= 60){
 						array_push(temp_array, persona.felicidad_educacion)
 					}
 					else{
-						var c = 0, d = 0, familia = persona.familia
+						c = 0
+						d = 0
+						var familia = persona.familia
 						for(var b = 0; b < array_length(ley_nombre); b++)
 							if ley_eneabled[b]{
 								c += sqrt(sqr(persona.politica_economia - ley_economia[b]) + sqr(persona.politica_sociocultural - ley_sociocultural[b]))
@@ -3517,7 +3626,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							fel_ali += trabajador.familia.felicidad_alimento
 							fel_sal += trabajador.felicidad_salud
 							num_edu += array_length(trabajador.familia.hijos)
-							for(var c = 0; c < array_length(trabajador.familia.hijos); c++)
+							for(c = 0; c < array_length(trabajador.familia.hijos); c++)
 								fel_edu += trabajador.familia.hijos[c].felicidad_educacion
 							fel_div += trabajador.felicidad_ocio
 							if trabajador.religion
@@ -3604,7 +3713,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						mes_privatizacion[current_mes] += temp_precio
 					}
 					for(var b = terreno_venta.x; b < terreno_venta.x + width; b++)
-						for(var c = terreno_venta.y; c < terreno_venta.y + height; c++){
+						for(c = terreno_venta.y; c < terreno_venta.y + height; c++){
 							array_push(empresa.terreno, {a : b, b : c})
 							array_set(zona_empresa[b], c, empresa)
 							array_set(zona_privada_venta[b], c, false)
@@ -3645,11 +3754,17 @@ if (keyboard_check(vk_space) or step >= 60){
 					edificio.empresa = empresa
 					array_push(empresa.edificios, edificio)
 					set_presupuesto(0, edificio)
-					for(var b = x; b < x + width; b++)
-						for(var c = y; c < y + height; c++){
+					var temp_bool_array = []
+					for(var b = 0; b < array_length(edificio_categoria_nombre); b++)
+						array_push(temp_bool_array, array_contains(edificio_categoria[b], edificio.tipo))
+					d = x + width
+					e = y + height
+					for(var b = x; b < d; b++)
+						for(c = y; c < e; c++){
 							array_set(zona_privada[b], c, true)
 							array_set(zona_empresa[b], c, empresa)
 							array_push(empresa.terreno, {a : b, b : c})
+							array_copy(zona_privada_permisos[b, c], 0, temp_bool_array, 0, array_length(temp_bool_array))
 						}
 					edificio.venta = false
 					set_paro(false, edificio)
@@ -3674,8 +3789,8 @@ if (keyboard_check(vk_space) or step >= 60){
 					my--
 				for(var b = 0; b < array_length(edificio_categoria_nombre); b++)
 					if zona_privada_permisos[mx, my][b]
-						for(var c = 0; c < array_length(edificio_categoria[b]); c++){
-							var d = edificio_categoria[b, c]
+						for(c = 0; c < array_length(edificio_categoria[b]); c++){
+							d = edificio_categoria[b, c]
 							if floor(dia / 365) >= edificio_anno[d] and not edificio_estatal[d]
 								array_push(temp_array, d)
 						}
@@ -3692,9 +3807,10 @@ if (keyboard_check(vk_space) or step >= 60){
 							var max_c = mx + width + 1, max_d = my + height + 1
 							flag = false
 							for(var b = 0; b < array_length(recurso_mineral); b++){
-								var e = 0
-								for(var c = mx - 1; c < max_c; c++)
-									for(var d = my - 1; d < max_d; d ++)
+								e = 0
+								var f = my - 1
+								for(c = mx - 1; c < max_c; c++)
+									for(d = f; d < max_d; d ++)
 										if mineral[b][c, d]
 											e += mineral_cantidad[b][c, d]
 								temp_precio_2 = recurso_precio[recurso_mineral[b]] * e
@@ -3708,8 +3824,9 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 						else if var_edificio_nombre = "Aserradero"{
 							var b = 0, max_c = mx + width + 5, max_d = my + height + 5
-							for(var c = mx - 5; c < max_c; c++)
-								for(var d = my - 5; d < max_d; d++)
+							e = my - 5
+							for(c = mx - 5; c < max_c; c++)
+								for(d = e; d < max_d; d++)
 									if bosque[c, d] and not bosque_venta[c, d]
 										b += bosque_madera[c, d]
 							temp_precio_2 = recurso_precio[0] * b
@@ -3718,15 +3835,15 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 						else if var_edificio_nombre = "Tejar"{
 							var b = 0, max_c = mx + width, max_d = my + height
-							for(var c = mx; c < max_c; c++)
-								for(var d = my; d < max_d; d ++)
+							for(c = mx; c < max_c; c++)
+								for(d = my; d < max_d; d ++)
 									b += (altura[# c, d] > 0.6)
 							flag = (b / (width * height) > 0.8)
 						}
 						else if var_edificio_nombre = "Pozo petrolífero"{
 							var b = 0, max_c = mx + width, max_d = my + height
-							for(var c = mx; c < max_c; c++)
-								for(var d = my; d < max_d; d ++)
+							for(c = mx; c < max_c; c++)
+								for(d = my; d < max_d; d ++)
 									b += petroleo[c, d]
 							temp_precio_2 = recurso_precio[27] * b
 							flag = (temp_precio_2 * (1 - impuesto_petrolifero) > 1000 + 2 * edificio_precio[index])
@@ -3742,7 +3859,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							for(var b = mx; b < mx + 10; b++){
 								var prev_height = height
 								height = 0
-								for(var c = my; c < my + 10; c++)
+								for(c = my; c < my + 10; c++)
 									if b >= mx + edificio_width[index] or c >= my + edificio_height[index]{
 										if zona_empresa[b, c] != empresa or construccion_reservada[b, c] or (bool_edificio[b, c] and id_edificio[b, c].tipo != 32){
 											if c = my{
@@ -3752,7 +3869,7 @@ if (keyboard_check(vk_space) or step >= 60){
 											break
 										}
 										if temp_bool
-											for(var d = 0; d < array_length(recurso_cultivo); d++)
+											for(d = 0; d < array_length(recurso_cultivo); d++)
 												temp_cultivos[d] += cultivo[d][# b, c]
 										height++
 									}
@@ -3763,7 +3880,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							if width > edificio_width[index] or height > edificio_height[index]{
 								flag = true
 								if temp_bool{
-									var c = 0
+									c = 0
 									for(var b = 0; b < array_length(recurso_cultivo); b++)
 										if floor(dia / 365) >= recurso_anno[recurso_cultivo[tipo]] and temp_cultivos[b] > c{
 											c = temp_cultivos[b]
@@ -3776,8 +3893,8 @@ if (keyboard_check(vk_space) or step >= 60){
 								}
 								else{
 									var b = 0, max_c = mx + width, max_d = my + height
-									for(var c = mx; c < max_c; c++)
-										for(var d = my; d < max_d; d ++)
+									for(c = mx; c < max_c; c++)
+										for(d = my; d < max_d; d ++)
 											if c >= mx + edificio_width[index] or d >= my + edificio_height[index]
 												b += (altura[# c, d] > 0.6)
 									flag = (b / (width * height - edificio_width[index] * edificio_height[index]) > 0.8)
@@ -3791,12 +3908,12 @@ if (keyboard_check(vk_space) or step >= 60){
 							dinero += temp_precio_2
 							mes_privatizacion[current_mes] += temp_precio_2
 							for(var b = mx; b < mx + width; b++)
-								for(var c = my; c < my + height; c++)
+								for(c = my; c < my + height; c++)
 									temp_altura += altura[# b, c]
 							if var_edificio_nombre = "Aserradero"{
 								var max_c = mx + width + 5, max_d = my + height + 5
-								for(var c = mx - 5; c < max_c; c++)
-									for(var d = my - 5; d < max_d; d++)
+								for(c = mx - 5; c < max_c; c++)
+									for(d = my - 5; d < max_d; d++)
 										array_set(bosque_venta[c], d, true)
 							}
 							array_push(empresa.construcciones, add_construccion(, mx, my, index, tipo, edificio_construccion_tiempo[index] + temp_tiempo, temp_altura / width / height, false, width, height, temp_precio, true, empresa, mx, my))
@@ -3890,16 +4007,16 @@ if (keyboard_check(vk_space) or step >= 60){
 					edificio.ganancia -= b
 					for(b = 0; b < array_length(edificio.trabajadores); b++)
 						edificio.trabajadores[b].familia.riqueza += edificio.trabajo_sueldo
-					b = max(0, round(edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * edificio_industria_velocidad[index] * (edificio.energia ? 0.75 + min(0.5, energia_input / energia_output) : 1) * (edificio.agua ? 0.75 + min(0.5, agua_input / agua_output) : 1)))
+					b = max(0, edificio.trabajo_mes / 28 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * edificio_industria_velocidad[index] * (edificio.energia ? 0.75 + min(0.5, energia_input / energia_output) : 1) * (edificio.agua ? 0.75 + min(0.5, agua_input / agua_output) : 1))
 					if array_length(edificio.input_num) > 0{
 						var min_rss = infinity
-						for(var c = 0; c < array_length(edificio.input_id); c++)
+						for(c = 0; c < array_length(edificio.input_id); c++)
 							if edificio.input_num[c] > 0
 								min_rss = min(min_rss, edificio.almacen[edificio.input_id[c]] / edificio.input_num[c])
 						b = min(b, min_rss)
 					}
 					if var_edificio_nombre = "Granja"{
-						var c = recurso_cultivo[edificio.modo]
+						c = recurso_cultivo[edificio.modo]
 						b = floor(b * (1 - clamp(contaminacion[edificio.x + irandom(edificio.width - 1), edificio.y + irandom(edificio.height - 1)], 0, 100) / 200))
 						if current_mes = 5 or current_mes = 10{
 							edificio.almacen[recurso_cultivo[edificio.modo]] += min(edificio.count, b)
@@ -3908,7 +4025,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						else
 							edificio.count += b / 5
 						if edificio.privado or recurso_exportado[c] or recurso_utilizado[c] > 0 or not edificio.es_almacen{
-							var d = 200 * array_contains(recurso_comida, c) * edificio.es_almacen
+							d = 200 * array_contains(recurso_comida, c) * edificio.es_almacen
 							if current_mes = (edificio.mes_creacion mod 6) and edificio.almacen[c] > d{
 								edificio.ganancia += recurso_precio[c] * (edificio.almacen[c] - d)
 								add_encargo(c, edificio.almacen[c] - d, edificio)
@@ -3919,7 +4036,8 @@ if (keyboard_check(vk_space) or step >= 60){
 					else if var_edificio_nombre = "Aserradero"{
 						//Cortar árboles
 						if array_length(edificio.array_complex) > 0{
-							var e = b, f = b, flag = false
+							e = b
+							var f = b, flag = false
 							while f > 0 and array_length(edificio.array_complex) > 0{
 								var complex = edificio.array_complex[0]
 								if f < bosque_madera[complex.a, complex.b]{
@@ -3991,20 +4109,21 @@ if (keyboard_check(vk_space) or step >= 60){
 							buscar_zona_pesca(edificio)
 						if zona_pesca.cantidad = 0{
 							array_remove(zonas_pesca, zona_pesca, "Zona de pesca agotada")
-							var e = min(zona_pesca.a + 5, xsize - 1), f = min(zona_pesca.b + 5, ysize - 1)
-							for(var c = zona_pesca.a - 5; c <= e; c++)
-								for(var d = zona_pesca.b - 5; d <= f; d++)
+							e = min(zona_pesca.a + 5, xsize - 1)
+							var f = min(zona_pesca.b + 5, ysize - 1), g = zona_pesca.b - 5
+							for(c = zona_pesca.a - 5; c <= e; c++)
+								for(d = g; d <= f; d++)
 									array_add(zona_pesca_bool[c], d, -1)
-							for(var c = 0; c < array_length(edificio_count[14]); c++){
+							for(c = 0; c < array_length(edificio_count[14]); c++){
 								var temp_edificio = edificio_count[14, c]
 								if temp_edificio.zona_pesca = zona_pesca
 									buscar_zona_pesca(temp_edificio)
 							}
 						}
 						if edificio.privado or recurso_exportado[8] or recurso_utilizado[8] > 0 or not edificio.es_almacen{
-							var c = 200 * edificio.es_almacen
+							c = 200 * edificio.es_almacen
 							if current_mes = (edificio.mes_creacion mod 6) and edificio.almacen[8] > c{
-								var d = recurso_precio[8] * (edificio.almacen[8] - c)
+								d = recurso_precio[8] * (edificio.almacen[8] - c)
 								if edificio.privado{
 									dinero += d * impuesto_pesquero
 									mes_impuestos[current_mes] += d * impuesto_pesquero
@@ -4018,9 +4137,10 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 					}
 					else if var_edificio_nombre = "Mina"{
-						var e = b, h = b, f = min(xsize - 1, edificio.x + width + 1), g = min(ysize - 1, edificio.y + height + 1)
-						for(var c = max(0, edificio.x - 1); c < f; c++){
-							for(var d = max(0, edificio.y - 1); d < g; d++)
+						e = b
+						var h = b, f = min(xsize - 1, edificio.x + width + 1), g = min(ysize - 1, edificio.y + height + 1), i = max(0, edificio.y - 1)
+						for(c = max(0, edificio.x - 1); c < f; c++){
+							for(d = i; d < g; d++)
 								if mineral[edificio.modo][c, d]{
 									if floor(mineral_cantidad[edificio.modo][c, d] * edificio.ahorro) <= h{
 										h -= floor(mineral_cantidad[edificio.modo][c, d] * edificio.ahorro)
@@ -4042,8 +4162,8 @@ if (keyboard_check(vk_space) or step >= 60){
 							var flag = false
 							if edificio.privado{
 								for(e = 0; e < array_length(recurso_mineral); e++){
-									for(var c = max(0, edificio.x - 1); c < f; c++){
-										for(var d = max(0, edificio.y - 1); d < g; d++)
+									for(c = max(0, edificio.x - 1); c < f; c++){
+										for(d = i; d < g; d++)
 											if mineral[(edificio.modo + e) mod array_length(recurso_mineral)][c, d]{
 												flag = true
 												break
@@ -4082,11 +4202,12 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					else if var_edificio_nombre = "Muelle"{
 						current_mes = (edificio.mes_creacion mod 6){
-							var e = b
-							for(var c = 0; c < array_length(recurso_nombre) and e > 0; c++){
+							e = b
+							for(c = 0; c < array_length(recurso_nombre) and e > 0; c++){
 								//Importacion por construccion
 								if recurso_construccion[c] > 0{
-									var total = min(e, recurso_construccion[c]), d = floor(total * recurso_precio[c] * 1.2)
+									var total = min(e, recurso_construccion[c])
+									d = floor(total * recurso_precio[c] * 1.2)
 									dinero -= d
 									mes_importaciones[current_mes] += d
 									array_add(mes_importaciones_recurso[current_mes], c, d)
@@ -4098,7 +4219,8 @@ if (keyboard_check(vk_space) or step >= 60){
 									var total = min(e, edificio.almacen[c])
 									edificio.almacen[c] -= total
 									while total > 0{
-										var d = total, temp_factor = 1
+										d = total
+										var temp_factor = 1
 										if array_length(recurso_tratados_venta[c]) > 0{
 											var tratado = recurso_tratados_venta[c, 0]
 											temp_factor = tratado.factor
@@ -4117,7 +4239,8 @@ if (keyboard_check(vk_space) or step >= 60){
 									e -= total
 								}
 								#region Importaciones
-									var total = min(e, recurso_importado[c]), temp_factor = 1, d = 0
+									var total = min(e, recurso_importado[c]), temp_factor = 1
+									d = 0
 									edificio.almacen[c] += total
 									while total > 0{
 										d = total
@@ -4165,13 +4288,13 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					else if var_edificio_nombre = "Rancho"{
 						b = floor(b * (1 - clamp(contaminacion[edificio.x + irandom(edificio.width - 1), edificio.y + irandom(edificio.height - 1)], 0, 100) / 200))
-						for(var c = 0; c < array_length(ganado_produccion[edificio.modo]); c++)
+						for(c = 0; c < array_length(ganado_produccion[edificio.modo]); c++)
 							edificio.almacen[ganado_produccion[edificio.modo, c]] += floor(10 * b / array_length(ganado_produccion[edificio.modo]))
 						if current_mes = (edificio.mes_creacion mod 6)
-							for(var e = 0; e < array_length(ganado_produccion[edificio.modo]); e++){
-								var c = ganado_produccion[edificio.modo, e]
+							for(e = 0; e < array_length(ganado_produccion[edificio.modo]); e++){
+								c = ganado_produccion[edificio.modo, e]
 								if edificio.privado or recurso_exportado[c] or recurso_utilizado[c] > 0 or not edificio.es_almacen{
-									var d = 200 * array_contains(recurso_comida, c) * edificio.es_almacen
+									d = 200 * array_contains(recurso_comida, c) * edificio.es_almacen
 									if edificio.almacen[c] > d{
 										edificio.ganancia += recurso_precio[c] * (edificio.almacen[c] - d)
 										add_encargo(c, edificio.almacen[c] - d, edificio)
@@ -4181,7 +4304,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							}
 					}
 					else if var_edificio_nombre = "Comisaría"{
-						for(var c = 0; c < array_length(edificio.clientes); c++){
+						for(c = 0; c < array_length(edificio.clientes); c++){
 							edificio.array_complex[c].a--
 							if edificio.array_complex[c].a = 0{
 								array_delete(edificio.array_complex, c, 1)
@@ -4191,11 +4314,11 @@ if (keyboard_check(vk_space) or step >= 60){
 								cambiar_trabajo(persona, null_edificio)
 							}
 						}
-						for(var d = irandom(b * (1 + ley_eneabled[11])); d > 0 and array_length(edificio.clientes) < edificio_servicio_clientes[index]; d--){
+						for(d = irandom(b * (1 + ley_eneabled[11])); d > 0 and array_length(edificio.clientes) < edificio_servicio_clientes[index]; d--){
 							var temp_edificio = array_pick(edificio.casas_cerca)
 							if temp_edificio.ladron != null_persona
 								arrestar_persona(edificio, temp_edificio.ladron)
-							for(var c = 0; c < array_length(temp_edificio.familias); c++){
+							for(c = 0; c < array_length(temp_edificio.familias); c++){
 								var familia = temp_edificio.familias[c]
 								for_familia(function(persona = null_persona){
 									persona.felicidad_crimen = min(100, persona.felicidad_crimen + 4)
@@ -4207,8 +4330,8 @@ if (keyboard_check(vk_space) or step >= 60){
 						//Industria de inputs optativos
 						if edificio_industria_optativo[index]{
 							var max_rss = 0, max_c = 0
-							for(var c = 0; c < array_length(edificio.input_id); c++){
-								var d = floor(edificio.almacen[edificio.input_id[c]] / edificio.input_num[c])
+							for(c = 0; c < array_length(edificio.input_id); c++){
+								d = floor(edificio.almacen[edificio.input_id[c]] / edificio.input_num[c])
 								if d > max_rss{
 									max_rss = d
 									max_c = c
@@ -4218,7 +4341,7 @@ if (keyboard_check(vk_space) or step >= 60){
 								b = floor(clamp(b, 0, max_rss))
 								if b > 0{
 									edificio.almacen[edificio.input_id[max_c]] -= b * edificio.input_num[max_c]
-									for(var c = 0; c < array_length(edificio.output_id); c++)
+									for(c = 0; c < array_length(edificio.output_id); c++)
 										edificio.almacen[edificio.output_id[c]] += b * edificio.output_num[c]
 								}
 							}
@@ -4227,15 +4350,16 @@ if (keyboard_check(vk_space) or step >= 60){
 						else{
 							b = floor(b)
 							if b > 0{
-								for(var c = 0; c < array_length(edificio.input_id); c++)
+								for(c = 0; c < array_length(edificio.input_id); c++)
 									edificio.almacen[edificio.input_id[c]] -= b * edificio.input_num[c]
-								for(var c = 0; c < array_length(edificio.output_id); c++)
+								for(c = 0; c < array_length(edificio.output_id); c++)
 									edificio.almacen[edificio.output_id[c]] += b * edificio.output_num[c]
 							}
 						}
 						if current_mes = (edificio.mes_creacion mod 6){
-							for(var c = 0; c < array_length(edificio.output_id); c++){
-								var d = edificio.output_id[c], e = 200 * array_contains(recurso_comida, d) * edificio.es_almacen
+							for(c = 0; c < array_length(edificio.output_id); c++){
+								d = edificio.output_id[c]
+								e = 200 * array_contains(recurso_comida, d) * edificio.es_almacen
 								if edificio.almacen[d] > e{
 									edificio.ganancia += recurso_precio[d] * (floor(edificio.almacen[d]) - e)
 									add_encargo(d, edificio.almacen[d] - e, edificio)
@@ -4245,8 +4369,8 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 					}
 					else if var_edificio_nombre = "Mercado"{
-						for(var d = 0; d < array_length(recurso_nombre); d++){
-							var c = edificio.almacen[d] + edificio.pedido[d] - 60
+						for(d = 0; d < array_length(recurso_nombre); d++){
+							c = edificio.almacen[d] + edificio.pedido[d] - 60
 							if array_contains(recurso_comida, d) or array_contains(recurso_lujo, d) and c < 0{
 								edificio.ganancia -= recurso_precio[d] * c
 								add_encargo(d, c, edificio)
@@ -4263,9 +4387,10 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 					}
 					else if var_edificio_nombre = "Pozo Petrolífero"{
-						var e = b, h = b, f = edificio.x + width, g = edificio.y + height
-						for(var c = edificio.x; c < f; c++){
-							for(var d = edificio.x; d < g; d++)
+						e = b
+						var h = b, f = edificio.x + width, g = edificio.y + height
+						for(c = edificio.x; c < f; c++){
+							for(d = edificio.x; d < g; d++)
 								if petroleo[c, d] > 0{
 									if petroleo[c, d] * edificio.ahorro > h{
 										array_add(petroleo[c], d, -floor(h / edificio.ahorro))
@@ -4306,8 +4431,10 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					else if var_edificio_nombre = "Bomba de Agua"{
 						agua_input -= edificio.count
-						var c = 10, temp_inputs = [1, 9, 27], temp_inputs_2 = [12, 25, 40], e = -1
-						for(var d = 0; d < array_length(temp_inputs); d++)
+						c = 10
+						var temp_inputs = [1, 9, 27], temp_inputs_2 = [12, 25, 40]
+						e = -1
+						for(d = 0; d < array_length(temp_inputs); d++)
 							if edificio.almacen[temp_inputs[d]] * temp_inputs_2[d] > c{
 								c = edificio.almacen[temp_inputs[d]] * temp_inputs_2[d]
 								e = d
@@ -4315,7 +4442,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						b = min(c, b)
 						if e != -1
 							edificio.almacen[temp_inputs[e]] -= ceil(b / temp_inputs_2[e])
-						for(var d = 0; d < array_length(temp_inputs); d++){
+						for(d = 0; d < array_length(temp_inputs); d++){
 							c = temp_inputs[d]
 							edificio.ganancia -= round(recurso_precio[c] * (edificio.almacen[c] + edificio.pedido[c] - 100))
 							add_encargo(c, edificio.almacen[c] + edificio.pedido[c] - 100, edificio)
@@ -4326,8 +4453,10 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					else if var_edificio_nombre = "Planta Termoeléctrica"{
 						energia_input -= edificio.count
-						var c = 0, temp_inputs = [1, 9, 27], temp_inputs_2 = [12, 25, 40], e = -1
-						for(var d = 0; d < array_length(temp_inputs); d++)
+						c = 0
+						var temp_inputs = [1, 9, 27], temp_inputs_2 = [12, 25, 40]
+						e = -1
+						for(d = 0; d < array_length(temp_inputs); d++)
 							if edificio.almacen[temp_inputs[d]] * temp_inputs_2[d] > c{
 								c = edificio.almacen[temp_inputs[d]] * temp_inputs_2[d]
 								e = d
@@ -4335,7 +4464,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						b = min(c, b)
 						if e != -1
 							edificio.almacen[temp_inputs[e]] -= ceil(b / temp_inputs_2[e])
-						for(var d = 0; d < array_length(temp_inputs); d++){
+						for(d = 0; d < array_length(temp_inputs); d++){
 							c = temp_inputs[d]
 							edificio.ganancia -= round(recurso_precio[c] * (edificio.almacen[c] + edificio.pedido[c] - 100))
 							add_encargo(c, edificio.almacen[c] + edificio.pedido[c] - 100, edificio)
@@ -4354,9 +4483,10 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					else if var_edificio_nombre = "Oficina de Bomberos"{
 						if b > 0{
-							var flag = false, e = b
-							for(var c = 20; c >= 0; c--){
-								for(var d = 0; d < array_length(edificios_por_mantenimiento[c]); d++){
+							var flag = false
+							e = b
+							for(c = 20; c >= 0; c--){
+								for(d = 0; d < array_length(edificios_por_mantenimiento[c]); d++){
 									var temp_edificio = edificios_por_mantenimiento[c, d]
 									if temp_edificio.seguro_fuego < 2{
 										temp_edificio.seguro_fuego = 6
@@ -4375,7 +4505,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						if b > 0{
 							var temp_precio = 0, familia_array = [null_familia]
 							array_pop(familia_array)
-							for(var c = 0; c < array_length(familias); c++)
+							for(c = 0; c < array_length(familias); c++)
 								if not familias[c].banco and familias[c].riqueza > 0
 									array_push(familia_array, familias[c])
 							array_sort(familia_array, function(a = null_familia, b = null_familia){return b.riqueza - a.riqueza})
@@ -4398,13 +4528,23 @@ if (keyboard_check(vk_space) or step >= 60){
 							}
 						}
 					}
-					for(var c = 0; c < array_length(edificio.input_id); c++)
+					else if var_edificio_nombre = "Radio"{
+						radioemisoras -= edificio.count
+						edificio.count = b
+						radioemisoras += edificio.count
+					}
+					else if var_edificio_nombre = "Paneles Solares"{
+						energia_input -= edificio.count
+						edificio.count = round(100 * b)
+						energia_input += edificio.count
+					}
+					for(c = 0; c < array_length(edificio.input_id); c++)
 						if edificio.input_num[c] > 0
 							edificio.almacen[edificio.input_id[c]] -= b * edificio.input_num[c]
 					if current_mes = (edificio.mes_creacion mod 6) and var_edificio_nombre != "Muelle" and array_length(edificio.input_id) > 0
-						for(var c = 0; c < array_length(edificio.input_id); c++)
+						for(c = 0; c < array_length(edificio.input_id); c++)
 							if edificio.input_num[c] > 0{
-								var d = edificio.input_id[c]
+								d = edificio.input_id[c]
 								edificio.ganancia -= recurso_precio[d] * (edificio.almacen[d] + edificio.pedido[d] - 120)
 								add_encargo(d, edificio.almacen[d] + edificio.pedido[d] - 120, edificio)
 								edificio.pedido[d] = 120 - edificio.almacen[d]
@@ -4437,7 +4577,7 @@ if (keyboard_check(vk_space) or step >= 60){
 					poblacion += familia.integrantes
 					familia.banco = false
 					if ley_eneabled[9]{
-						var c = array_length(familia.hijos)
+						c = array_length(familia.hijos)
 						familia.riqueza += c
 						dinero -= c
 						mes_mantenimiento[current_mes] += c
@@ -4449,10 +4589,10 @@ if (keyboard_check(vk_space) or step >= 60){
 					for(b = 0; b < array_length(edificio_almacen_index); b++)
 						if array_length(almacenes[edificio_almacen_index[b]]) > 0{
 							var tienda = array_pick(almacenes[edificio_almacen_index[b]])
-							for(var c = 0; c < array_length(recurso_comida); c++){
-								var d = recurso_comida[c]
+							for(c = 0; c < array_length(recurso_comida); c++){
+								d = recurso_comida[c]
 								if edificio.almacen[d] < consumo and tienda.almacen[d] > 0{
-									var e = consumo - edificio.almacen[d]
+									e = consumo - edificio.almacen[d]
 									if tienda.almacen[d] >= e{
 										tienda.almacen[d] -= e
 										edificio.almacen[d] += e
@@ -4490,7 +4630,8 @@ if (keyboard_check(vk_space) or step >= 60){
 					//Repartir comida
 					var fel_comida = 0, comida_total = 0, comida_variedad = 0, flag = true, comida_proporcion = []
 					for(b = 0; b < array_length(recurso_comida); b++){
-						var c = edificio.almacen[recurso_comida[b]], d = clamp(c / poblacion, 0, 1)
+						c = edificio.almacen[recurso_comida[b]]
+						d = clamp(c / poblacion, 0, 1)
 						comida_total += c
 						array_push(comida_proporcion, d)
 						comida_variedad += d
@@ -4498,15 +4639,16 @@ if (keyboard_check(vk_space) or step >= 60){
 					//Demanda satisfecha
 					if comida_total >= poblacion{
 						fel_comida = min(100, 20 + 15 * comida_variedad)
-						var d = 0
+						d = 0
 						for(b = 0; b < array_length(recurso_comida); b++){
-							var c = recurso_comida[b]
+							c = recurso_comida[b]
 							edificio.almacen[c] -= floor(poblacion * comida_proporcion[b] / comida_variedad)
 							d += recurso_precio[c] * comida_proporcion[b] / comida_variedad
 						}
 						if not ley_eneabled[4]
 							for(b = 0; b < array_length(edificio.familias); b++){
-								var familia = edificio.familias[b], c = min(familia.riqueza, floor(familia.integrantes * d))
+								var familia = edificio.familias[b]
+								c = min(familia.riqueza, floor(familia.integrantes * d))
 								familia.riqueza -= c
 								if edificio.privado{
 									dinero_privado += c
@@ -4521,15 +4663,16 @@ if (keyboard_check(vk_space) or step >= 60){
 					//Demanda insatisfecha
 					else{
 						fel_comida = min(100, 20 + 15 * comida_variedad) * comida_total / poblacion
-						var d = 0
+						d = 0
 						for(b = 0; b < array_length(recurso_comida); b++){
-							var c = recurso_comida[b]
+							c = recurso_comida[b]
 							d += recurso_precio[c] * edificio.almacen[c] / poblacion
 							edificio.almacen[c] = 0
 						}
 						if not ley_eneabled[4]
 							for(b = 0; b < array_length(edificio.familias); b++){
-								var familia = edificio.familias[b], c = min(familia.riqueza, floor(familia.integrantes * d))
+								var familia = edificio.familias[b]
+								c = min(familia.riqueza, floor(familia.integrantes * d))
 								familia.riqueza -= c
 								if edificio.privado{
 									dinero_privado += c
@@ -4560,7 +4703,7 @@ if (keyboard_check(vk_space) or step >= 60){
 								mes_muertos_inanicion[current_mes]++
 							}
 							if not flag
-								for(var c = 0; not flag and c < array_length(familia.hijos); c++)
+								for(c = 0; not flag and c < array_length(familia.hijos); c++)
 									if brandom(){
 										flag = destroy_persona(familia.hijos[c],, "Hijo muerto de inanicion")
 										if exigencia_pedida[2]
@@ -4569,7 +4712,7 @@ if (keyboard_check(vk_space) or step >= 60){
 										c--
 									}
 							if flag{
-								for(var c = 0; c < array_length(personas); c++)
+								for(c = 0; c < array_length(personas); c++)
 									personas[c].felicidad_temporal -= 2
 								b--
 								continue
@@ -4607,12 +4750,12 @@ if (keyboard_check(vk_space) or step >= 60){
 							persona.felicidad_temporal -= 50
 						}, familia)
 						if not in(persona.trabajo, null_edificio, jubilado, delincuente)
-							for(var c = 0; c < array_length(persona.trabajo.trabajadores); c++)
+							for(c = 0; c < array_length(persona.trabajo.trabajadores); c++)
 								persona.trabajo.trabajadores[c].felicidad_salud = floor(persona.trabajo.trabajadores[c].felicidad_salud * 0.75)
 						if persona.escuela != null_edificio{
-							for(var c = 0; c < array_length(persona.escuela.trabajadores); c++)
+							for(c = 0; c < array_length(persona.escuela.trabajadores); c++)
 								persona.escuela.trabajadores[c].felicidad_salud = floor(persona.escuela.trabajadores[c].felicidad_salud * 0.9)
-							for(var c = 0; c < array_length(persona.escuela.clientes); c++)
+							for(c = 0; c < array_length(persona.escuela.clientes); c++)
 								persona.escuela.clientes[c].felicidad_salud = floor(persona.escuela.clientes[c].felicidad_salud * 0.9)
 						}
 						destroy_persona(persona,, $"Paciente muerto ({edificio.nombre})")
@@ -4660,7 +4803,7 @@ if (keyboard_check(vk_space) or step >= 60){
 		for(var a = 0; a < array_length(edificio_almacen_index); a++)
 			for(var b = 0; b < array_length(almacenes[edificio_almacen_index[a]]); b++){
 				var temp_array = almacenes[edificio_almacen_index[a], b].almacen
-				for(var c = 0; c < array_length(recurso_comida); c++)
+				for(c = 0; c < array_length(recurso_comida); c++)
 					var_total_comida += temp_array[recurso_comida[c]]
 			}
 		var_total_comida = floor(30 * var_total_comida / array_length(personas))

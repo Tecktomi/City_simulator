@@ -46,7 +46,8 @@ function add_persona(){
 			politica_sociocultural : 3 + 3 * (2 * brandom() - 1) * sqr(random(1)),
 			candidato : false,
 			candidato_popularidad : 1,
-			informado : false
+			informado : false,
+			favorito : false
 		}
 		if debug
 			show_debug_message($"{fecha(dia)} add_persona ({name(persona)})")
@@ -56,7 +57,7 @@ function add_persona(){
 		felicidad_total = (felicidad_total * (array_length(personas) - 1) + 50) / array_length(personas)
 		for(var b = 0; b < array_length(edificio_nombre); b++)
 			if edificio_es_ocio[b]
-				array_push(persona.ocios, b)
+				array_push(persona.ocios, 0)
 		persona.relacion.persona = persona
 		persona.relacion.nombre = name(persona)
 		return persona

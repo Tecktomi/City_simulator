@@ -220,12 +220,15 @@ debug = false
 		politica_sociocultural : 3,
 		candidato : false,
 		candidato_popularidad : 1,
-		informado : false
+		informado : false,
+		favorito : false
 	}
 	null_persona.pareja = null_persona
 	null_relacion.persona = null_persona
 	personas = [null_persona]
 	array_pop(personas)
+	personas_favoritas = [null_persona]
+	array_pop(personas_favoritas)
 	candidatos = [null_persona]
 	array_pop(candidatos)
 	candidatos_votos = []
@@ -268,10 +271,10 @@ debug = false
 	recurso_nombre = [	"Cereales", "Madera", "Plátanos", "Algodón", "Tabaco", "Azucar", "Soya", "Cañamo", "Pescado", "Carbón",
 						"Hierro", "Oro", "Cobre", "Aluminio", "Níquel", "Acero", "Tela", "Barcos", "Carne", "Leche",
 						"Lana", "Cuero", "Ron", "Queso", "Herramientas", "Muebles", "Ladrillos", "Petróleo", "Armas", "Ropa",
-						"Químicos", "Vehículos", "Plásticos", "Computadores", "Comida enlatada"]
-	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 1, 4, 40, 10, 5, 100, 5, 60, 2]
-	recurso_anno = [0, 0, 0, 0, 0, 0, 110, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 70, 105, 130, 170, 50]
-	recurso_prima = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false]
+						"Químicos", "Vehículos", "Plásticos", "Computadores", "Comida enlatada", "Electrodomésticos"]
+	recurso_precio = [1.5, 1.2, 1.6, 1.8, 2.2, 1.4, 1.2, 2.8, 1.6, 2.5, 3.5, 5, 3, 2.2, 4, 12, 8, 400, 2.2, 1.2, 1.4, 2.2, 12, 8, 15, 15, 1, 4, 40, 10, 5, 100, 5, 60, 2, 30]
+	recurso_anno = [0, 0, 0, 0, 0, 0, 110, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 70, 105, 130, 170, 50, 120]
+	recurso_prima = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false]
 	recurso_current = []
 	for(a = 0; a < array_length(recurso_nombre); a++){
 		recurso_precio_original[a] = max(0.5, recurso_precio[a] / 2)
@@ -281,8 +284,8 @@ debug = false
 	recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23, 34]
-	recurso_lujo = [4, 22, 25, 29, 31, 32, 33]
-	recurso_lujo_prbabilidad = [1, 1, 0.1, 0.5, 0.05, 1, 0.2]
+	recurso_lujo = [4, 22, 25, 29, 31, 32, 33, 35]
+	recurso_lujo_prbabilidad = [1, 1, 0.1, 0.5, 0.05, 1, 0.2, 0.1]
 	recurso_mineral = [9, 10, 11, 12, 13, 14]
 	recurso_mineral_color = [c_black, c_gray, c_yellow, c_orange, c_ltgray, c_dkgray]
 	recurso_mineral_rareza = [0.85, 0.875, 0.95, 0.85, 0.9, 0.925]
@@ -378,7 +381,13 @@ debug = false
 		"Bloque de casas organizadas para maximizar las familias por metro cuadrado a bajo costo",
 		"Produce productos químicos usando distintos componentes",
 		"Produce vehículos a partir de varios materiales",
-		"Permite enlatar comida a gran escala"]
+		"Permite enlatar comida a gran escala",
+		"Aquí se presentan obras para el deleite de la élite",
+		"Aquí se proyectan películas para el deleite de las masas",
+		"Aquí se juega a la pelota, corazón y orgullo de cualquier ciudad latinoaméricana",
+		"Infaltable para el ocio nocturno de tus habitantes, ojalá que nadie viva al lado",
+		"Transmite para todas las casas y trabajos con electricidad en el área",
+		"Usa el poder de Inti para generar energía infinita y limpia, ¡que milagro!"]
 	#endregion
 	#region arreglos vacíos
 		edificio_nombre = []
@@ -555,9 +564,15 @@ debug = false
 		def_edificio_base("Planta Química", 5, 6, 10000, 1440, [15, 24, 26], [40, 40, 80], 50, 15, 30, false,,,,,,,,, 70); def_edificio_servicio(,,,,,,,, true, 25, true, 40); def_edificio_trabajo(true, 15, 30, 6, 2, 0.05, true, [10, 12], [1, 1], [30], [3], 1.3)
 		def_edificio_base("Fábrica de Vehículos", 8, 6, 10000, 1440, [15, 24, 26], [40, 40, 80], 60, 20, 25, false,,,,,,,,, 110); def_edificio_servicio(,,,,,,,,,, true, 50); def_edificio_trabajo(true, 20, 35, 7, 2, 0.02, true, [15, 21, 24, 30], [3, 1, 1, 1], [31], [1], 0.3)
 		def_edificio_base("Conservadora", 5, 4, 5000, 1095, [15, 24, 26], [20, 20, 40], 30, 30, 15, false,,,,,,,,, 50); def_edificio_servicio(,,,,,,,,,, true, 40); def_edificio_trabajo(true, 14, 30, 5,, 0.01, true, [10, 18], [0.1, 1], [34], [1], 0.5)
+		def_edificio_base("Teatro", 5, 5, 2200, 1095, [1, 15, 26], [40, 15, 40], 12, 70,, false); def_edificio_servicio(, true,,,, 15, 60, 4); def_edificio_trabajo(true, 10, 50, 8, 1, 0.01)
+		def_edificio_base("Cine", 4, 4, 3000, 1095, [1, 15, 24, 26], [40, 15, 10, 40], 15, 50,, false,,,,,,,,, 110); def_edificio_servicio(, true,,,, 25, 40, 1,,, true, 20); def_edificio_trabajo(true, 4, 35, 6)
+		def_edificio_base("Cancha de fútbol", 5, 8, 500, 450, [1, 15], [20, 5], 5, 50,, false,,,,,,,,, 90); def_edificio_servicio(, true,,,, 30, 30, 1); def_edificio_trabajo(true, 11, 40, 5,, 0.01)
+		def_edificio_base("Discoteca", 3, 3, 1400, 600, [15, 24, 26], [10, 5, 30], 12, 20, 10, false,,,,,,,,, 150); def_edificio_servicio(, true,,,, 10, 60, 1,,, true, 30); def_edificio_trabajo(true, 4, 30, 5,, 0.03)
+		def_edificio_base("Radio", 3, 2, 1200, 730, [15, 24, 26], [15, 10, 15], 10,,,,,,,,,,,, 120); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 2, 60, 10, 2,,,,,,, 10)
+		def_edificio_base("Paneles Solares", 5, 5, 4000, 1800, [15, 26, 33], [20, 10, 20], 25,,,,,,,,,,,, 200); def_edificio_servicio(); def_edificio_trabajo(true, 1, 80, 15, 3)
 	#endregion
-	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Infrastructura", "Industria"]
-	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 11, 12, 16, 21, 24, 34, 35, 43, 46], [13, 20, 22, 41, 42, 44], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
+	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
+	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 16, 21, 34, 35, 43, 46, 57], [11, 12, 24, 53, 54, 55, 56], [13, 20, 22, 41, 42, 44, 58], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
 	edificio_color = []
 	for(a = 0; a < array_length(edificio_nombre); a++){
 		var flag = false
@@ -899,6 +914,9 @@ debug = false
 		array_push(temp_array, false)
 	var temp_array_length = array_length(temp_array)
 	array_pop(mares[0])
+	var temp_color_array = []
+	repeat(array_length(recurso_cultivo))
+		array_push(temp_color_array, c_red)
 	//Matriz del mundo
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
@@ -960,6 +978,7 @@ debug = false
 			else
 				altura_color[a, b] = make_color_rgb(31 + 96 * c, 127, 31 + 96 * c)
 			#endregion
+			
 			if not mar[a, b]{
 				var e = 0, f = 0
 				for(var d = 0; d < array_length(recurso_cultivo); d++){
@@ -968,6 +987,8 @@ debug = false
 						ds_grid_set(temp_cultivo, a, b, 0)
 					else if c < temp_altura_minima + 0.05
 						ds_grid_multiply(temp_cultivo, a, b, 20 * (c - temp_altura_minima))
+					var g = temp_cultivo[# a, b]
+					cultivo_color[a, b][d] = make_color_rgb(255 * (1 - g), 255 * g, 0)
 					if e < temp_cultivo[# a, b]{
 						e = max(e, temp_cultivo[# a, b])
 						f = d
@@ -1008,6 +1029,7 @@ debug = false
 			array_set(mar[c], d, false)
 			ds_grid_set(altura, c, d, e)
 			array_set(altura_color[c], d, make_color_rgb(255 / 0.65 * (1.1 - e), 255 / 0.65 * (1.1 - e), 127))
+			array_set(cultivo_color[c], d, temp_color_array)
 		}
 	mares[0] = array_shuffle(mares[0])
 	var yes_land = [{a : floor(xsize / 2), b : floor(ysize / 2)}]
@@ -1229,6 +1251,9 @@ debug = false
 	deuda = false
 	deuda_dia = 0
 	var_total_comida = 365
+	esperanza_de_vida_sum = 0
+	esperanza_de_vida_num = 0
+	radioemisoras = 0
 	null_encargo = {
 		recurso : 0,
 		cantidad : 0,

@@ -32,6 +32,8 @@ function destroy_edificio(edificio = control.null_edificio){
 				agua_input -= edificio.count
 			else if var_edificio_nombre = "Planta Termoeléctrica"
 				energia_input -= edificio.count
+			else if var_edificio_nombre = "Radio"
+				radioemisoras -= edificio.count
 		}
 		if edificio_es_casa[tipo]{
 			array_remove(casas, edificio, "eliminar casa")
@@ -72,8 +74,9 @@ function destroy_edificio(edificio = control.null_edificio){
 				if edificios[a].muelle_cercano = edificio
 					buscar_muelle_cercano(edificios[a])
 		}
-		for(var a = edificio.x; a < edificio.x + width; a++)
-			for(var b = edificio.y; b < edificio.y + height; b++)
+		var c = edificio.x + width, d = edificio.y + height
+		for(var a = edificio.x; a < c; a++)
+			for(var b = edificio.y; b < d; b++)
 				array_set(bool_edificio[a], b, false)
 		if edificio.privado
 			array_remove(edificio.empresa.edificios, edificio, "eliminar edificio de la empresa")
@@ -96,9 +99,11 @@ function destroy_edificio(edificio = control.null_edificio){
 				}
 		//Modificar belleza
 		if edificio_belleza[tipo] != 50{
-			var size = ceil(abs(edificio_belleza[tipo] - 50) / 5)
-			for(var a = max(0, edificio.x - size); a < min(xsize, edificio.x + width + size); a++)
-				for(var b = max(0, edificio.y - size); b < min(ysize, edificio.y + height + size); b++){
+			var size = ceil(abs(edificio_belleza[tipo] - 50) / 5), e = min(ysize - 1, edificio.y + height + size)
+			d = max(0, edificio.y - size)
+			c = min(xsize - 1, edificio.x + width + size)
+			for(var a = max(0, edificio.x - size); a < c; a++)
+				for(var b = d; b < e; b++){
 					array_set(belleza[a], b, round(belleza[a, b] - (edificio_belleza[tipo] - 50) / (1 + distancia_punto(a, b, edificio))))
 					if bool_edificio[a, b]{
 						var edificio_2 = id_edificio[a, b]

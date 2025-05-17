@@ -1,4 +1,3 @@
-
 function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 	with control{
 		if debug
@@ -64,6 +63,12 @@ function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 		}
 		if persona.ladron != null_edificio
 			persona.ladron.ladron = null_persona
+		if persona.favorito
+			array_remove(personas_favoritas, persona)
+		if muerte{
+			esperanza_de_vida_sum += persona.edad
+			esperanza_de_vida_num++
+		}
 		if array_length(personas) > 0
 			felicidad_total = (felicidad_total * (array_length(personas) + 1) - persona.felicidad) / array_length(personas)
 		else{

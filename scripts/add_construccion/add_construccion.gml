@@ -26,8 +26,9 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 			build_y : build_y
 		}
 		if not null{
-			for(var a = x; a < x + width; a++)
-				for(var b = y; b < y + height; b++){
+			var d = x + width, e = y + height
+			for(var a = x; a < d; a++)
+				for(var b = y; b < e; b++){
 					array_set(construccion_reservada[a], b, true)
 					if not privado and zona_privada[a, b]{
 						zona_empresa[a, b].dinero += valor_terreno

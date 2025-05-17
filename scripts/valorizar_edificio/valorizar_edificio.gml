@@ -3,9 +3,9 @@ function valorizar_edificio(edificio = null_edificio){
 		var index = edificio.tipo, width = edificio.width, height = edificio.height, var_edificio_nombre = edificio_nombre[index]
 		var temp_precio = edificio.precio, temp_text = $"Edificio base: ${temp_precio}"
 		if var_edificio_nombre = "Mina"{
-			var c = 0, d = min(xsize - 1, edificio.x + width + 1), e = min(xsize - 1, edificio.y + height + 1)
+			var c = 0, d = min(xsize - 1, edificio.x + width + 1), e = min(xsize - 1, edificio.y + height + 1), f = max(0, edificio.y - 1)
 			for(var a = max(0, edificio.x - 1); a < d; a++)
-				for(var b = max(0, edificio.y - 1); b < e; b++)
+				for(var b = f; b < e; b++)
 					if mineral[edificio.modo][a, b]
 						c += mineral_cantidad[edificio.modo][a, b]
 			c = floor(c * recurso_precio[recurso_mineral[edificio.modo]] * impuesto_minero)

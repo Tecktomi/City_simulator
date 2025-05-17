@@ -3,24 +3,20 @@ function draw_gradiente(tipo, modo){
 		if modo = 0{
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
-					if not bosque[a, b] and not mar[a, b] and not bool_edificio[a, b]{
-						draw_set_color(make_color_rgb(255 * (1 - cultivo[tipo][# a, b]), 255 * cultivo[tipo][# a, b], 0))
+					if not mar[a, b] and not bosque[a, b] and not bool_edificio[a, b]{
+						draw_set_color(cultivo_color[a, b][tipo])
 						draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height / 2, false)
 					}
 			show_string += $"Eficiencia de {recurso_nombre[recurso_cultivo[tipo]]}\n"
 			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-			var b = 0, c = 0
-			for(var a = 0; a < array_length(recurso_cultivo); a++){
-				if cultivo[a][# mx, my] > b{
-					b = max(b, cultivo[a][# mx, my])
-					c = a
-				}
+			if not mar[mx, my]{
+				var a = cultivo_max[mx, my], b = cultivo[a][# mx, my]
+				if b > 0
+					show_string += $"Mejor cultivo: {recurso_nombre[recurso_cultivo[a]]} ({floor(100 * b)}%)\n"
+				else
+					show_string += "Terreno estéril\n"
 			}
-			if b > 0
-				show_string += $"Mejor cultivo: {recurso_nombre[recurso_cultivo[c]]} ({floor(100 * b)}%)\n"
-			else
-				show_string += "Terreno estéril\n"
 		}
 		else if modo = 1{
 			draw_set_color(recurso_mineral_color[tipo])
@@ -34,9 +30,10 @@ function draw_gradiente(tipo, modo){
 			draw_set_alpha(0.5)
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
-					if not mar[a, b] and floor(belleza[a, b]) != 0.5{
-						draw_set_color(make_color_rgb(2.55 * (100 - clamp(belleza[a, b], 0, 100)), 2.55 * clamp(belleza[a, b], 0, 100), 0))
-						draw_rombo((a - b) * tile_width - xpos, (a + b) * tile_height - ypos, (a - b - 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, (a - b) * tile_width - xpos, (a + b + 2) * tile_height - ypos, (a - b + 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, false)
+					if not mar[a, b]{
+						var c = 2.55 * clamp(belleza[a, b], 0, 100)
+						draw_set_color(make_color_rgb(255 - c, c, 0))
+						draw_rombo_coord(a, b, 1, 1, false)
 					}
 			draw_set_alpha(1)
 			show_string += $"Belleza\n"
@@ -49,9 +46,12 @@ function draw_gradiente(tipo, modo){
 		else if modo = 3{
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++){
-					draw_set_color(make_color_hsv(0, 0, 2.55 * (100 - clamp(contaminacion[a, b], 0, 100))))
-					draw_set_alpha(clamp(contaminacion[a, b], 0, 100) / 200)
-					draw_rombo((a - b) * tile_width - xpos, (a + b) * tile_height - ypos, (a - b - 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, (a - b) * tile_width - xpos, (a + b + 2) * tile_height - ypos, (a - b + 1) * tile_width - xpos, (a + b + 1) * tile_height - ypos, false)
+					var c = clamp(contaminacion[a, b], 0, 100)
+					if c > 0{
+						draw_set_color(make_color_hsv(0, 0, 2.55 * (100 - c)))
+						draw_set_alpha(c / 200)
+						draw_rombo_coord(a, b, 1, 1, false)
+					}
 				}
 			draw_set_alpha(1)
 			show_string += $"Contaminación\n"
@@ -63,12 +63,13 @@ function draw_gradiente(tipo, modo){
 		else if modo = 4{
 			show_string += $"Ocupación Residencial\n"
 			for(var c = 0; c < array_length(casas); c++){
-				var casa = casas[c], a = casa.x, b = casa.y, width = casa.width, height = casa.height, d = array_length(casa.familias) / edificio_familias_max[casa.tipo]
+				var casa = casas[c], a = casa.x, b = casa.y, width = casa.width, height = casa.height
 				if a + width > min_camx and b + height > min_camy and a < max_camx and b < max_camy{
+					var d = 255 * array_length(casa.familias) / edificio_familias_max[casa.tipo]
 					draw_set_color(c_gray)
 					draw_rombo_coord(a, b, width, height, false)
 					draw_set_alpha(0.5)
-					draw_set_color(make_color_rgb(255 * (1 - d), 255 * d, 0))
+					draw_set_color(make_color_rgb(255 - d, d, 0))
 					draw_rombo_coord(a, b, width, height, false)
 					draw_set_alpha(1)
 				}
@@ -84,12 +85,13 @@ function draw_gradiente(tipo, modo){
 		else if modo = 5{
 			show_string += $"Ocupación Laboral\n"
 			for(var c = 0; c < array_length(trabajos); c++){
-				var edificio = trabajos[c], a = edificio.x, b = edificio.y, width = edificio.width, height = edificio.height, d = array_length(edificio.trabajadores) / edificio.trabajadores_max
+				var edificio = trabajos[c], a = edificio.x, b = edificio.y, width = edificio.width, height = edificio.height
 				if a + width > min_camx and b + height > min_camy and a < max_camx and b < max_camy{
+					var d = 255 * array_length(edificio.trabajadores) / edificio.trabajadores_max
 					draw_set_color(c_gray)
 					draw_rombo_coord(a, b, width, height, false)
 					draw_set_alpha(0.5)
-					draw_set_color(make_color_rgb(255 * (1 - d), 255 * d, 0))
+					draw_set_color(make_color_rgb(255 - d, d, 0))
 					draw_rombo_coord(a, b, width, height, false)
 					draw_set_alpha(1)
 				}
@@ -135,7 +137,7 @@ function draw_gradiente(tipo, modo){
 			show_string += $"Zonas de pesca\n"
 			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-			var closer = -1, closer_dis = 999, flag = zona_pesca_bool[mx, my]
+			var closer = -1, closer_dis = infinity, flag = zona_pesca_bool[mx, my]
 			for(var c = 0; c < array_length(zonas_pesca); c++){
 				var zona_pesca = zonas_pesca[c], a = zona_pesca.a, b = zona_pesca.b
 				draw_set_alpha(0.2 + 0.4 * zona_pesca.cantidad / zona_pesca.cantidad_max)

@@ -4,7 +4,7 @@ function acelerar_edificio(construccion = control.null_construccion){
 		x = construccion.x
 		y = construccion.y
 		var index = construccion.id, width = construccion.width, height = construccion.height, var_edificio_nombre = edificio_nombre[index]
-		var edificio = add_edificio(x, y, index, , construccion.rotado, width, height)
+		var edificio = add_edificio(x, y, index, , construccion.rotado, width, height), d = x + width, e = y + height
 		if construccion.privado{
 			edificio.privado = true
 			edificio.empresa = construccion.empresa
@@ -17,8 +17,8 @@ function acelerar_edificio(construccion = control.null_construccion){
 			world_update = true
 			if c < 0.6{
 				var temp_color = make_color_rgb(255 / 0.65 * (1.1 - c), 255 / 0.65 * (1.1 - c), 127)
-				for(var a = x; a < x + width; a++)
-					for(var b = y; b < y + height; b++){
+				for(var a = x; a < d; a++)
+					for(var b = y; b < e; b++){
 						ds_grid_set(altura, a, b, c)
 						array_set(altura_color[a], b, temp_color)
 						array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
@@ -26,8 +26,8 @@ function acelerar_edificio(construccion = control.null_construccion){
 			}
 			else{
 				var temp_color = make_color_rgb(31 + 96 * c, 127, 31 + 96 * c)
-				for(var a = x; a < x + width; a++)
-					for(var b = y; b < y + height; b++){
+				for(var a = x; a < d; a++)
+					for(var b = y; b < e; b++){
 						ds_grid_set(altura, a, b, c)
 						array_set(altura_color[a], b, temp_color)
 						array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
@@ -38,9 +38,9 @@ function acelerar_edificio(construccion = control.null_construccion){
 			var edi_width = edificio_width[index], edi_height = edificio_height[index]
 			edificio.modo = construccion.tipo
 			var c = 0
-			for(var a = x; a < x + width; a++)
-				for(var b = y; b < y + height; b++)
-					if (x >= construccion.build_x ? (a >= x + edi_width) : (a <= x + width - edi_width)) or (y >= construccion.build_y ? (b >= y + edi_height) : (b <= y + height - edi_height))
+			for(var a = x; a < d; a++)
+				for(var b = y; b < e; b++)
+					if (x >= construccion.build_x ? (a >= x + edi_width) : (a <= d - edi_width)) or (y >= construccion.build_y ? (b >= y + edi_height) : (b <= e - edi_height))
 						c += cultivo[edificio.modo][# a, b]
 			edificio.eficiencia = c / (width * height - 9)
 			edificio.nombre = $"{edificio_nombre[edificio.tipo]} de {recurso_nombre[recurso_cultivo[edificio.modo]]} {++edificio_number_granja[edificio.modo]}"
@@ -54,9 +54,9 @@ function acelerar_edificio(construccion = control.null_construccion){
 		else if var_edificio_nombre = "Rancho"{
 			var edi_width = edificio_width[index], edi_height = edificio_height[index]
 			var c = 0
-			for(var a = x; a < x + width; a++)
-				for(var b = y; b < y + height; b++)
-					if (x >= construccion.build_x ? (a >= x + edi_width) : (a <= x + width - edi_width)) or (y >= construccion.build_y ? (b >= y + edi_height) : (b <= y + height - edi_height))
+			for(var a = x; a < d; a++)
+				for(var b = y; b < e; b++)
+					if (x >= construccion.build_x ? (a >= x + edi_width) : (a <= d - edi_width)) or (y >= construccion.build_y ? (b >= y + edi_height) : (b <= e - edi_height))
 						c += altura[# a, b] > 0.6
 			edificio.eficiencia = 1 + c * 0.009
 			edificio.modo = construccion.tipo
@@ -66,8 +66,8 @@ function acelerar_edificio(construccion = control.null_construccion){
 		}
 		else if var_edificio_nombre = "Tejar"{
 			var c = 0
-			for(var a = x; a < x + width; a++)
-				for(var b = y; b < y + height; b++)
+			for(var a = x; a < d; a++)
+				for(var b = y; b < e; b++)
 					c += (altura[# a, b] > 0.6)
 			edificio.eficiencia = c / width / height
 		}

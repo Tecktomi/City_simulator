@@ -1,6 +1,6 @@
 function buscar_zona_pesca(edificio = control.null_edificio){
 	with control{
-		var closer = -1, closer_dis = 999
+		var closer = -1, closer_dis = infinity
 		for(var c = 0; c < array_length(zonas_pesca); c++){
 			var zona_pesca = zonas_pesca[c], a = zona_pesca.a, b = zona_pesca.b, closer_current = sqrt(sqr(a - edificio.x) + sqr(b - edificio.y))
 			if closer_current < closer_dis and (not ley_eneabled[13] or zona_pesca.cantidad > 1250){
