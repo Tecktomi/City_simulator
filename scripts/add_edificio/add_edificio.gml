@@ -14,7 +14,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			x : x,
 			y : y,
 			tipo : tipo,
-			dia_factura : irandom(27),
+			dia_factura : irandom(29),
 			count : 0,
 			almacen : [],
 			pedido : [],

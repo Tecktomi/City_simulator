@@ -51,7 +51,7 @@ function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 		}
 		if persona.embarazo != -1
 			array_remove(embarazo[persona.embarazo], persona, "eliminar persona embarazada")
-		if persona.muerte != -1 and persona.muerte != (dia mod 365)
+		if persona.muerte != -1 and persona.muerte != (dia mod 360)
 			array_remove(control.muerte[persona.muerte], persona, "eliminar persona que iba a morir")
 		if persona.escuela != null_edificio
 			array_remove(persona.escuela.clientes, persona, "eliminar persona de la escuela")

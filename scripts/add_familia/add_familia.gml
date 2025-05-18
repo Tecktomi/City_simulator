@@ -33,7 +33,7 @@ function add_familia(origen = -1, generada = true){
 			else
 				familia.padre = persona
 			if brandom(){
-				mes_inmigrantes[mes(dia)]++
+				mes_inmigrantes[current_mes]++
 				var persona_2 = add_persona()
 				persona_2.familia = familia
 				persona_2.educacion = sqr(random(2.1))
@@ -66,7 +66,7 @@ function add_familia(origen = -1, generada = true){
 				persona_2.politica_sociocultural = clamp(persona.politica_sociocultural + random_range(-1, 1), 0, 6)
 				familia.integrantes++
 				repeat(irandom(3)){
-					mes_inmigrantes[mes(dia)]++
+					mes_inmigrantes[current_mes]++
 					var hijo = add_persona()
 					hijo.familia = familia
 					hijo.apellido = familia.padre.apellido
@@ -89,7 +89,7 @@ function add_familia(origen = -1, generada = true){
 					familia.integrantes++
 				}
 			}
-			mes_inmigrantes[mes(dia)]++
+			mes_inmigrantes[current_mes]++
 		}
 		array_push(homeless.familias, familia)
 		array_push(familias, familia)

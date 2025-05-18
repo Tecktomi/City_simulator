@@ -43,7 +43,7 @@ debug = false
 	pais_relacion = []
 	pais_current = []
 	pais_guerras = []
-	pais_dia = array_create(365, 0)
+	pais_dia = array_create(360, 0)
 	for(a = 0; a < array_length(pais_nombre); a++){
 		if pais_inicio[a] = 0
 			array_push(pais_current, a)
@@ -51,7 +51,7 @@ debug = false
 		array_push(pais_guerras, [null_guerra])
 		array_pop(pais_guerras[a])
 		do
-			b = irandom(364)
+			b = irandom(359)
 		until pais_dia[b] = 0
 		pais_dia[b] = a
 	}
@@ -122,10 +122,10 @@ debug = false
 		def_guerra("Operación Uphold Democracy", 194, 196, [17], [8])
 		def_guerra("Guerra contra el narcotráfico", 206, 0, [2, 17], [])
 	#endregion
-	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil", "Sufragio universal", "Policía armada", "Seguro laboral", "Regularización de Pesca"]
-	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, false, false, false]
-	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, 0]
-	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500, 800, 1000, 800, 500]
+	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil", "Sufragio universal", "Policía armada", "Seguro laboral", "Regularización de Pesca", "Libre comercio"]
+	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, false, false, false, true]
+	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, 0, 0]
+	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500, 800, 1000, 800, 500, 800]
 	ley_descripcion = [	"Permite a los ciudadanos separarse legalmente, molestará a los ciudadanos religiosos",
 						"Permite la entrada de inmigrantes a la isla",
 						"Permite trabajar a los niños mayores de 12 años, molestará a todo ciudadano con hijos",
@@ -140,9 +140,10 @@ debug = false
 						"Permite a mujeres y analfabetos votarle a su majestad",
 						"Le da a la policía las herramientas para hacer bien su trabajo",
 						"Indemnizará a las familias de los trabajadores que mueran por accidente laboral",
-						"Impide a las pescaderías extraer pescado cuando su zona de extración está muy dañada"]
-	ley_economia = [2, 4, 5, 1, 1, 4, 4, 1, 1, 2, 3, 5, 2, 2]
-	ley_sociocultural = [1, 1, 5, 3, 2, 1, 4, 1, 2, 3, 1, 6, 3, 4]
+						"Impide a las pescaderías extraer pescado cuando su zona de extración está muy dañada",
+						"Permite a empresas privadas importar los recursos que necesiten"]
+	ley_economia = [2, 4, 5, 1, 1, 4, 4, 1, 1, 2, 3, 5, 2, 2, 5]
+	ley_sociocultural = [2, 1, 5, 3, 2, 1, 4, 1, 2, 3, 1, 6, 3, 4, 1]
 	ley_tiempo = []
 	for(a = 0; a < array_length(ley_nombre); a++)
 		array_push(ley_tiempo, 0)
@@ -234,7 +235,7 @@ debug = false
 	candidatos_votos = []
 	candidatos_votos_total = 0
 	elecciones = false
-	for(a = 0; a < 365; a++){
+	for(a = 0; a < 360; a++){
 		cumples[a] = [null_persona]
 		array_pop(cumples[a])
 		embarazo[a] = [null_persona]
@@ -276,11 +277,6 @@ debug = false
 	recurso_anno = [0, 0, 0, 0, 0, 0, 110, 0, 0, 0,  0, 0, 0, 90, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 60, 0, 0, 70, 105, 130, 170, 50, 120]
 	recurso_prima = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false, true, true, true, true, false, false, false, false, true, true, false, false, false, false, false, false, false, false]
 	recurso_current = []
-	for(a = 0; a < array_length(recurso_nombre); a++){
-		recurso_precio_original[a] = max(0.5, recurso_precio[a] / 2)
-		if floor(dia / 365) >= recurso_anno[a]
-			array_push(recurso_current, a)
-	}
 	recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23, 34]
@@ -322,6 +318,7 @@ debug = false
 		recurso_importado[a] = 0
 		recurso_exportado[a] = true
 		recurso_importado_fijo[a] = 0
+		recurso_importado_privado[a] = 0
 		recurso_tratados_venta[a] = [null_tratado]
 		recurso_tratados_compra[a] = [null_tratado]
 		recurso_construccion[a] = 0
@@ -330,6 +327,10 @@ debug = false
 		array_pop(recurso_tratados_compra[a])
 		for(b = 0; b < 24; b++)
 			recurso_historial[a, b] = recurso_precio[a]
+		recurso_precio_original[a] = max(0.5, recurso_precio[a] / 2)
+		recurso_importacion_privada[a] = 0
+		if floor(dia / 360) >= recurso_anno[a]
+			array_push(recurso_current, a)
 	}
 #endregion
 #region Edificios
@@ -354,7 +355,7 @@ debug = false
 		"Mueve bienes entre los edificios, es vital para mantener la economía funcionando",
 		"Consume hierro y carbón para producir acero, contamina bastante",
 		"Genera entretenimiento a cierta área de la población, espero que esté prohibido el trabajo infantil",
-		"Consume algodón, cañamo o lana y produce tela",
+		"Consume algodón y lana para producir tela",
 		"Fabrica barcos a partir de bastante madera, cañamo, cobre y tela",
 		"Reproduce animales para obtener recursos de estos",
 		"Consume azúcar para producir ron",
@@ -533,7 +534,7 @@ debug = false
 		def_edificio_base("Oficina de Transporte", 3, 2, 800, 600, [1, 15, 26], [10, 5, 20], 6, 35); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 6, 30, 4,, 0.01)
 		def_edificio_base("Planta Siderúrgica", 5, 4, 2500, 1080, [1, 15, 24, 26], [30, 20, 20, 40], 25, 25, 20, false); def_edificio_servicio(,,,,,,,,,,true, 10); def_edificio_trabajo(true, 15, 30, 6,, 0.02, true, [9, 10], [2, 3], [15], [2], 1)
 		def_edificio_base("Cabaret", 4, 3, 700, 450, [1, 15, 26], [20, 5, 20], 6, 30,, false); def_edificio_servicio(, true,,,, 6, 40, 3); def_edificio_trabajo(true, 4, 35, 6,, 0.01)
-		def_edificio_base("Taller Textil", 5, 4, 3000, 900, [1, 15, 24, 26], [30, 10, 20, 40], 20, 30, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 25, 5,, 0.01, true, [3, 7, 20], [3, 2, 3], [16], [1], 2, true)
+		def_edificio_base("Taller Textil", 5, 4, 3000, 900, [1, 15, 24, 26], [30, 10, 20, 40], 20, 30, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 15, 25, 5,, 0.01, true, [3, 20], [1, 1], [16], [1], 2)
 		def_edificio_base("Astillero", 9, 6, 6200, 1800, [1, 15, 24, 26], [50, 40, 20, 40], 40, 40, 10, false, true); def_edificio_servicio(,,,,,,,,,, true, 40); def_edificio_trabajo(true, 30, 35, 4,, 0.02, true, [1, 7, 12, 16], [5, 1, 1, 1], [17], [0.1], 0.3)
 		def_edificio_base("Rancho", 4, 4, 400, 180, [1], [30], 5, 45, -10, false,, true); def_edificio_servicio(,,,,,,,,,, true, 10, true, true, true); def_edificio_trabajo(true, 4, 40, 4,, 0.01,,,,,, 0.5)
 		def_edificio_base("Destilería", 5, 4, 3500, 900, [1, 15, 24, 26], [25, 10, 25, 40], 20, 40, 5, false); def_edificio_servicio(,,,,,,,, true, 30); def_edificio_trabajo(true, 12, 40, 5,, 0.01, true, [5], [3], [22], [1], 1)
@@ -780,7 +781,7 @@ debug = false
 		nacional : false,
 		nombre : "",
 		quiebra : false,
-		dia_factura : irandom(27),
+		dia_factura : irandom(29),
 		terreno : [{a : 0, b : 0}],
 		ventas : [],
 		construcciones : undefined
@@ -790,7 +791,7 @@ debug = false
 	null_persona.empresa = null_empresa
 	empresas = [null_empresa]
 	array_pop(empresas)
-	for(a = 0; a < 28; a++){
+	for(a = 0; a < 30; a++){
 		dia_empresas[a] = [null_empresa]
 		array_pop(dia_empresas[a])
 	}
@@ -814,7 +815,7 @@ debug = false
 	array_pop(edificios_a_la_venta)
 	for(a = 0; a < array_length(educacion_nombre); a++)
 		array_set(null_edificio.trabajos_cerca, a, [])
-	for(a = 0; a < 28; a++){
+	for(a = 0; a < 30; a++){
 		dia_trabajo[a] = [null_edificio]
 		array_pop(dia_trabajo[a])
 	}
@@ -1216,6 +1217,7 @@ debug = false
 		mes_venta_comida[a] = 0
 		mes_entrada_micelaneo[a] = 0
 		mes_salida_micelaneo[a] = 0
+		mes_comida_privada[a] = 0
 		for(b = 0; b < array_length(recurso_nombre); b++){
 			mes_exportaciones_recurso[a, b] = 0
 			mes_exportaciones_recurso_num[a, b] = 0
@@ -1250,7 +1252,7 @@ debug = false
 	wpos = 0
 	deuda = false
 	deuda_dia = 0
-	var_total_comida = 365
+	var_total_comida = 360
 	esperanza_de_vida_sum = 0
 	esperanza_de_vida_num = 0
 	radioemisoras = 0

@@ -4,10 +4,10 @@ function cambiar_trabajo(persona = control.null_persona, trabajo = control.null_
 			array_push(trabajo_educacion[persona.trabajo.trabajo_educacion], persona.trabajo)
 		array_remove(persona.trabajo.trabajadores, persona, "persona yendose de su trabajo")
 		persona.familia.sueldo -= persona.trabajo.trabajo_sueldo
-		persona.trabajo.trabajo_mes -= abs(persona.trabajo.dia_factura - (dia mod 28))
+		persona.trabajo.trabajo_mes -= abs(persona.trabajo.dia_factura - (dia mod 30))
 		persona.trabajo = trabajo
 		persona.familia.sueldo += persona.trabajo.trabajo_sueldo
-		persona.trabajo.trabajo_mes += abs(trabajo.dia_factura - (dia mod 28))
+		persona.trabajo.trabajo_mes += abs(trabajo.dia_factura - (dia mod 30))
 		array_push(trabajo.trabajadores, persona)
 		if not in (trabajo, null_edificio, jubilado, delincuente){
 			if array_length(trabajo.trabajadores) = trabajo.trabajadores_max

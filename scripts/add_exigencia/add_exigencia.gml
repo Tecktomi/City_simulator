@@ -1,7 +1,7 @@
 function add_exigencia(tipo, target = [control.null_edificio]){
 	var exigencia = {
 		index : real(tipo),
-		expiracion : dia + 365,
+		expiracion : dia + 360,
 		value : 0,
 		edificios : target
 	}
