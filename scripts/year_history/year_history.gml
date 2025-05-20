@@ -74,5 +74,37 @@ function year_history(anno){
 					recurso_precio[b] *= random_range(1, mejora.recursos_factor)
 			}
 		}
+		probabilidad_hijos = anno / 100
+		//Leyes
+		izquierda_extrema = 3
+		derecha_extrema = 3
+		autoritario_extremo = 3
+		libertario_extremo = 3
+		var b = 0
+		for(var a = 0; a < array_length(ley_nombre); a++)
+			if (dia / 365) > ley_anno[a]{
+				b++
+				var c = ley_economia[a], d = ley_sociocultural[a]
+				if c <= 3{
+					izquierda_extrema += c
+					derecha_extrema += 6 - c
+				}
+				else{
+					izquierda_extrema += 6 - c
+					derecha_extrema += c
+				}
+				if d <= 3{
+					libertario_extremo += d
+					autoritario_extremo += 6 - d
+				}
+				else{
+					libertario_extremo += 6 - d
+					autoritario_extremo += d
+				}
+		}
+		izquierda_extrema /= b
+		derecha_extrema /= b
+		autoritario_extremo /= b
+		libertario_extremo /= b
 	}
 }

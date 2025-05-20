@@ -122,10 +122,11 @@ debug = false
 		def_guerra("Operación Uphold Democracy", 194, 196, [17], [8])
 		def_guerra("Guerra contra el narcotráfico", 206, 0, [2, 17], [])
 	#endregion
-	ley_nombre = ["Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil", "Sufragio universal", "Policía armada", "Seguro laboral", "Regularización de Pesca", "Libre comercio"]
-	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, false, false, false, true]
-	ley_anno = [0, 0, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, 0, 0]
-	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500, 800, 1000, 800, 500, 800]
+	ley_nombre = [	"Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil",
+					"Sufragio femenino", "Policía armada", "Seguro laboral", "Regularización de Pesca", "Libre comercio", "Prostitución", "Estado laico"]
+	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, false, false, false, true, true, false]
+	ley_anno = [100, 0, 0, 90, 0, 0, 0, 0, 70, 90, 120, 0, 90, 110, 120, 180, 0]
+	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500, 800, 1000, 800, 500, 800, 500, 1000]
 	ley_descripcion = [	"Permite a los ciudadanos separarse legalmente, molestará a los ciudadanos religiosos",
 						"Permite la entrada de inmigrantes a la isla",
 						"Permite trabajar a los niños mayores de 12 años, molestará a todo ciudadano con hijos",
@@ -137,13 +138,15 @@ debug = false
 						"Asegura que todas las casas tengan acceso a agua potable",
 						"El estado mantiene económicamente a los hijos, alegrará a todos los ciudadanos con hijos",
 						//10
-						"Permite a mujeres y analfabetos votarle a su majestad",
+						"Permite a mujeres votarle a su majestad",
 						"Le da a la policía las herramientas para hacer bien su trabajo",
 						"Indemnizará a las familias de los trabajadores que mueran por accidente laboral",
 						"Impide a las pescaderías extraer pescado cuando su zona de extración está muy dañada",
-						"Permite a empresas privadas importar los recursos que necesiten"]
-	ley_economia = [2, 4, 5, 1, 1, 4, 4, 1, 1, 2, 3, 5, 2, 2, 5]
-	ley_sociocultural = [2, 1, 5, 3, 2, 1, 4, 1, 2, 3, 1, 6, 3, 4, 1]
+						"Permite a empresas privadas importar los recursos que necesiten",
+						"Permite oficialmente la prostitución, cabarets y enfurece a los religiosos",
+						"Separación entre la iglesia y el estado, permite a ciudadanos no religiosos acceder a derechos civiles"]
+	ley_economia = [2, 4, 5, 1, 1, 4, 4, 1, 1, 2, 3, 3, 2, 2, 5, 3, 3]
+	ley_sociocultural = [2, 1, 5, 3, 2, 1, 4, 1, 2, 3, 1, 6, 3, 4, 1, 1, 1]
 	ley_tiempo = []
 	for(a = 0; a < array_length(ley_nombre); a++)
 		array_push(ley_tiempo, 0)
@@ -395,7 +398,8 @@ debug = false
 		"Aquí se juega a la pelota, corazón y orgullo de cualquier ciudad latinoaméricana",
 		"Infaltable para el ocio nocturno de tus habitantes, ojalá que nadie viva al lado",
 		"Transmite para todas las casas y trabajos con electricidad en el área",
-		"Usa el poder del sol para generar energía infinita y limpia, ¡que milagro!"]
+		"Usa el poder del sol para generar energía infinita y limpia, ¡que milagro!",
+		""]
 	#endregion
 	#region arreglos vacíos
 		edificio_nombre = []
@@ -574,10 +578,12 @@ debug = false
 		def_edificio_base("Conservadora", 5, 4, 5000, 1095, [15, 24, 26], [20, 20, 40], 30, 30, 15, false,,,,,,,,, 50); def_edificio_servicio(,,,,,,,,,, true, 40); def_edificio_trabajo(true, 14, 30, 5,, 0.01, true, [10, 18], [0.1, 1], [34], [1], 0.5)
 		def_edificio_base("Teatro", 5, 5, 2200, 1095, [1, 15, 26], [40, 15, 40], 12, 70,, false); def_edificio_servicio(, true,,,, 15, 60, 4); def_edificio_trabajo(true, 10, 50, 8, 1, 0.01)
 		def_edificio_base("Cine", 4, 4, 3000, 1095, [1, 15, 24, 26], [40, 15, 10, 40], 15, 50,, false,,,,,,,,, 110); def_edificio_servicio(, true,,,, 25, 40, 1,,, true, 20); def_edificio_trabajo(true, 4, 35, 6)
-		def_edificio_base("Cancha de fútbol", 5, 8, 500, 450, [1, 15], [20, 5], 5, 50,, false,,,,,,,,, 90); def_edificio_servicio(, true,,,, 30, 30, 1); def_edificio_trabajo(true, 11, 40, 5,, 0.01)
+		def_edificio_base("Cancha de fútbol", 4, 6, 500, 450, [1, 15], [20, 5], 5, 50,, false,,,,,,,,, 90); def_edificio_servicio(, true,,,, 30, 30, 1); def_edificio_trabajo(true, 11, 40, 5,, 0.01)
 		def_edificio_base("Discoteca", 3, 3, 1400, 600, [15, 24, 26], [10, 5, 30], 12, 20, 10, false,,,,,,,,, 150); def_edificio_servicio(, true,,,, 10, 60, 1,,, true, 30); def_edificio_trabajo(true, 4, 30, 5,, 0.03)
 		def_edificio_base("Radio", 3, 2, 1200, 730, [15, 24, 26], [15, 10, 15], 10,,,,,,,,,,,, 120); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 2, 60, 10, 2,,,,,,, 10)
 		def_edificio_base("Paneles Solares", 5, 5, 4000, 1800, [15, 26, 33], [20, 10, 20], 25,,,,,,,,,,,, 200); def_edificio_servicio(); def_edificio_trabajo(true, 1, 80, 15, 3)
+		def_edificio_base("Prostitución"); def_edificio_servicio(); def_edificio_trabajo(,,10, 2,, 0.05)
+		//60
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
 	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 16, 21, 34, 35, 43, 46, 57], [11, 12, 24, 53, 54, 55, 56], [13, 20, 22, 41, 42, 44, 58], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
@@ -902,6 +908,7 @@ debug = false
 	homeless = add_edificio(0, 0, 3, false)
 	null_familia.casa = homeless
 	delincuente = add_edificio(0, 0, 33, false)
+	prostituta = add_edificio(0, 0, 59, false)
 #endregion
 //Settings
 #region Diseño del mundo
@@ -1264,6 +1271,7 @@ debug = false
 	esperanza_de_vida_sum = 0
 	esperanza_de_vida_num = 0
 	radioemisoras = 0
+	probabilidad_hijos = 0
 	null_encargo = {
 		recurso : 0,
 		cantidad : 0,

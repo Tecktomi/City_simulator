@@ -571,7 +571,7 @@ if sel_build{
 					fel_oci += persona.felicidad_ocio
 					fel_cri += persona.felicidad_crimen
 					fel_temp += persona.felicidad_temporal
-					if persona.familia.casa != homeless and (personas[a].escuela != null_edificio or not in(persona.trabajo, null_edificio, jubilado, delincuente)){
+					if persona.familia.casa != homeless and (personas[a].escuela != null_edificio or not in(persona.trabajo, null_edificio, jubilado, delincuente, prostituta)){
 						fel_tran += persona.felicidad_transporte
 						num_tran++
 					}
@@ -689,7 +689,7 @@ if sel_build{
 		}
 		//Ministerio de Trabajo
 		else if ministerio = 2{
-			var fel_tra= 0, num_tra = 0, temp_array, num_des = 0, num_temp = 0, trab_esta = 0, num_nin = 0, num_del = 0
+			var fel_tra= 0, num_tra = 0, temp_array, num_des = 0, num_temp = 0, trab_esta = 0, num_nin = 0, num_del = 0, num_pro = 0
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				temp_array[a] = 0
 			for(var a = 0; a < array_length(personas); a++){
@@ -700,7 +700,8 @@ if sel_build{
 					temp_array[persona.trabajo.tipo]++
 					num_des += (persona.trabajo = null_edificio)
 					trab_esta += not persona.trabajo.privado
-					num_del += persona.trabajo = delincuente
+					num_del += (persona.trabajo = delincuente)
+					num_pro += (persona.trabajo = prostituta)
 				}
 				num_nin += (persona.es_hijo and persona.trabajo != null_edificio)
 			}
@@ -731,6 +732,7 @@ if sel_build{
 				}
 			draw_text_pos(110, pos, $"{num_temp} trabajador{num_temp = 1 ? "" : "es"} temporal{num_temp = 1 ? "" : "es"} ({floor(100 * num_temp / num_tra)}%)")
 			draw_text_pos(110, pos, $"{floor(100 * num_del / num_tra)}% de delincuencia")
+			draw_text_pos(110, pos, $"{floor(100 * num_pro / num_tra)}% de prostitución")
 			if num_tra > 0
 				draw_text_pos(110, pos, $"{floor(100 * trab_esta / num_tra)} % de trabajadores estatales.")
 			if ley_eneabled[2] and num_tra > 0
@@ -1344,8 +1346,8 @@ if sel_build{
 					if not debug
 						ley_tiempo[a] = 12
 					ley_eneabled[a] = not ley_eneabled[a]
-					if a = 0
-						politica_religion = (1 + ley_eneabled[0]) / 3
+					if in(a, 0, 15, 16)
+						politica_religion = 5 * ley_eneabled[0] + 5 * ley_eneabled[15] + 10 * ley_eneabled[16]
 					//Prohibir trabajo infantil
 					if a = 2 and not ley_eneabled[2]
 						for(b = 0; b < array_length(familias); b++)
@@ -1377,6 +1379,17 @@ if sel_build{
 					//Armas para la policía
 					if a = 11 and ley_eneabled[11]
 						recurso_construccion[28] += 10 * array_length(edificio_count[34])
+					//Prostitución
+					if a = 15{
+						if ley_eneabled[15]
+							prostituta.trabajo_riesgo = 0.01
+						else
+							prostituta.trabajo_riesgo = 0.05
+					}
+					//Estado laico
+					if a = 16 and not ley_eneabled[16]{
+						
+					}
 								
 				}
 			if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
@@ -1389,24 +1402,29 @@ if sel_build{
 			#region Mapa político
 				b = 0
 				c = 0
-				d = 0
+				d = array_length(ley_nombre)
 				var tempx = 600, tempy = 150
 				draw_text(tempx, tempy - 20, "Mapa político")
-				for(var a = 0; a < array_length(ley_nombre); a++)
+				for(var a = 0; a < d; a++)
 					if ley_eneabled[a]{
-						d++
 						b += ley_economia[a]
 						c += ley_sociocultural[a]
 					}
-				b += 6 - sueldo_minimo
-				if d = 0{
-					politica_economia = 3
-					politica_sociocultural = 3
-				}
-				else{
-					politica_economia = b / (d + 1)
-					politica_sociocultural = c / d
-				}
+					else{
+						b += 6 - ley_economia[a]
+						c += 6 - ley_sociocultural[a]
+					}
+				b += 3 - sueldo_minimo
+				politica_economia = b / d
+				politica_sociocultural = c / d
+				if politica_economia < 3
+					politica_economia = clamp(3 - 3 * (3 - politica_economia) / (3 - izquierda_extrema), 0, 6)
+				else
+					politica_economia = clamp(3 + 3 * ((politica_economia - 3) / (derecha_extrema - 3)), 0, 6)
+				if politica_sociocultural < 3
+					politica_sociocultural = clamp(3 - 3 * (3 - politica_sociocultural) / (3 - libertario_extremo), 0, 6)
+				else
+					politica_sociocultural = clamp(3 + 3 * ((politica_sociocultural - 3) / (autoritario_extremo - 3)), 0, 6)
 				draw_set_alpha(0.5)
 				draw_set_color(c_red)
 				draw_rectangle(tempx, tempy, tempx + 150, tempy + 150, false)
@@ -1624,7 +1642,7 @@ if build_sel{
 			for(var b = my; b < e; b++)
 				c += (altura[# a, b] > 0.6)
 		c /= width * height
-		text += $"Eficiencia: {100 * c}%\n"
+		text += $"Eficiencia: {floor(100 * c)}%\n"
 	}
 	//Pozo Petrolífero
 	else if var_edificio_nombre = "Pozo Petrolífero"{
@@ -2728,7 +2746,7 @@ if sel_info{
 					sel_persona.familia.madre.felicidad_temporal -= 50
 				for(var a = 0; a < array_length(sel_persona.familia.hijos); a++)
 					sel_persona.familia.hijos[a].felicidad_temporal -= 50
-				if not in(edificio_nombre[sel_persona.trabajo.tipo], "Sin trabajo", "Jubilado", "Delincuente")
+				if not in(sel_persona.trabajo.tipo, null_edificio, jubilado, delincuente, prostituta)
 					for(var a = 0; a < array_length(sel_persona.trabajo.trabajadores); a++)
 						sel_persona.trabajo.trabajadores[a].felicidad_temporal -= 50
 				if elecciones and sel_persona.candidato{
@@ -3312,7 +3330,7 @@ if (keyboard_check(vk_space) or step >= 60){
 				var persona = cumples[dia_de_anno, a]
 				persona.edad++
 				//Enfermar
-				if random(1) < 0.2 and persona.medico = null_edificio
+				if random(1) < 0.2 - 0.1 * persona.familia.casa.agua + 0.1 * persona.edad < 12 and persona.medico = null_edificio
 					buscar_atencion_medica(persona)
 				//Estudiar
 				if persona.edad > 4 and persona.edad < 18 and not persona.preso{
@@ -3375,10 +3393,12 @@ if (keyboard_check(vk_space) or step >= 60){
 				}
 				//Adultez
 				else if persona.edad > 24 and persona.edad < 60 and not persona.preso{
+					if not ley_eneabled[16] and not persona.religion and random(1) < 0.02
+						persona.religion = true
 					//Casarse
-					if persona.pareja = null_persona{
+					if persona.pareja = null_persona and (persona.religion or ley_eneabled[16]){
 						var persona_2 = array_pick(personas)
-						if persona.sexo != persona_2.sexo and persona_2.edad > 18 and abs(persona.edad - persona_2.edad) < 8 and persona_2.pareja = null_persona and (persona_2.familia.padre = persona_2 or persona_2.familia.madre = persona_2) and persona.familia != persona_2.familia{
+						if persona.sexo != persona_2.sexo and persona_2.edad > 18 and abs(persona.edad - persona_2.edad) < 8 and persona_2.pareja = null_persona and (persona_2.familia.padre = persona_2 or persona_2.familia.madre = persona_2) and persona.familia != persona_2.familia and (persona_2.religion or ley_eneabled[16]){
 							persona.pareja = persona_2
 							persona_2.pareja = persona
 							//Transferir hijos
@@ -3429,13 +3449,16 @@ if (keyboard_check(vk_space) or step >= 60){
 						buscar_casa(persona)
 					}
 					//Tener hijos
-					else if irandom(3 + 2 * array_length(persona.familia.hijos)) = 0 and persona.familia.madre != null_persona and persona.familia.madre.edad < 40 and persona.familia.madre.embarazo = -1{
+					else if irandom(3 + probabilidad_hijos * array_length(persona.familia.hijos)) = 0 and persona.familia.madre != null_persona and persona.familia.madre.edad < 45 and persona.familia.madre.embarazo = -1{
 						persona.familia.madre.embarazo = (dia + irandom_range(240, 280)) mod 360
 						array_push(embarazo[persona.familia.madre.embarazo], persona.familia.madre)
 					}
 					//Buscar trabajo
 					if not buscar_trabajo(persona) and persona.trabajo = null_edificio and irandom(persona.educacion) = 0 and irandom(persona.edad) < 10
-						cambiar_trabajo(persona, delincuente)
+						if brandom()
+							cambiar_trabajo(persona, delincuente)
+						else if persona.sexo
+							cambiar_trabajo(persona, prostituta)
 					//Delinquir
 					if persona.trabajo = delincuente{
 						var familia = array_pick(familias)
@@ -3462,7 +3485,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						add_noticia("Empresa nacional", $"Se ha creado la empresa {empresa.nombre}")
 					}
 					//Mudarse
-					if not buscar_casa(persona) and persona.familia.casa = homeless and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente){
+					if not buscar_casa(persona) and persona.familia.casa = homeless and ley_eneabled[7] and not in(persona.trabajo, null_edificio, jubilado, delincuente, prostituta){
 						var temp_array_coord = [], edificio = persona.trabajo, index = edificio.tipo, width = edificio.width, height = edificio.height
 						d = edificio.x + width + 2
 						e = edificio.y + height + 2
@@ -3481,7 +3504,7 @@ if (keyboard_check(vk_space) or step >= 60){
 				else if persona.edad > 60{
 					//Jubilarse
 					if not persona.preso
-						if ley_eneabled[3] and persona.edad >= 65 - 5 * persona.sexo
+						if ley_eneabled[3] and persona.edad >= 65 - 5 * persona.sexo and (persona.religion or ley_eneabled[16])
 							cambiar_trabajo(persona, jubilado)
 						else{
 							buscar_trabajo(persona)
@@ -3500,7 +3523,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						mes_accidentes[current_mes]++
 						if persona.medico != null_edificio{
 							add_noticia("Accidente", $"Ha muerto {name(persona)} en un accidente laboral en {persona.trabajo.nombre}")
-							if ley_eneabled[12] and persona.familia.integrantes > 0{
+							if ley_eneabled[12] and (persona.religion or ley_eneabled[16]) and persona.familia.integrantes > 0{
 								persona.familia.riqueza += 100
 								if persona.trabajo.privado{
 									persona.trabajo.empresa.dinero -= 100
@@ -3625,7 +3648,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						var temp_contaminacion = 0.25;
 						if persona.familia.casa != homeless
 							temp_contaminacion = (1 - clamp(contaminacion[persona.familia.casa.x, persona.familia.casa.y], 0, 100) / 100)
-						if not in(persona.trabajo, null_edificio, jubilado, delincuente)
+						if not in(persona.trabajo, null_edificio, jubilado, delincuente, prostituta)
 							temp_contaminacion *= (1 - clamp(contaminacion[persona.trabajo.x, persona.trabajo.y], 0, 100) / 100)
 						if persona.escuela != null_edificio
 							temp_contaminacion *= (1 - clamp(contaminacion[persona.escuela.x, persona.escuela.y], 0, 100) / 100)
@@ -3651,14 +3674,16 @@ if (keyboard_check(vk_space) or step >= 60){
 							}
 						c = round(100 * (1 - c / (d * 6 * sqrt(2))))
 						d = 0
-						if ley_eneabled[0] and persona.religion
-							d -= 10
+						if persona.religion
+							d -= politica_religion
 						if (persona = familia.padre or persona = familia.madre) and array_length(familia.hijos) > 0
-							d += -20 * ley_eneabled[2] + 10 * ley_eneabled[9]
-						if persona.edad > 65 and ley_eneabled[3]
+							d += -20 * ley_eneabled[2] + 10 * (ley_eneabled[9] and (persona.religion or ley_eneabled[16]))
+						if persona.edad > 65 and ley_eneabled[3] and (persona.religion or ley_eneabled[16])
 							d += 15
 						if (persona.sexo or persona.educacion = 0) and not ley_eneabled[10]
 							d -= 10
+						if not persona.religion and ley_eneabled[16]
+							d += 15
 						if persona.trabajo.comisaria != null_edificio
 							d -= 10
 						if persona.familia.casa.comisaria != null_edificio
@@ -3680,7 +3705,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						persona.felicidad_religion = floor(persona.felicidad_religion * 0.9)
 						array_push(temp_array, persona.felicidad_religion)
 					}
-					if persona.familia.casa != homeless and (persona.escuela != null_edificio or not in(persona.trabajo, null_edificio, jubilado, delincuente))
+					if persona.familia.casa != homeless and (persona.escuela != null_edificio or not in(persona.trabajo, null_edificio, jubilado, delincuente, prostituta))
 						array_push(temp_array, persona.felicidad_transporte)
 					persona.felicidad = calcular_felicidad(temp_array) + persona.felicidad_temporal / array_length(temp_array)
 					felicidad_total = (felicidad_total + persona.felicidad) / array_length(personas)
@@ -3702,7 +3727,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 					}
 					//Protestas
-					else if not in(persona.trabajo, null_edificio, jubilado, delincuente) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado and not persona.preso and persona.trabajo.comisaria = null_edificio and edificio_nombre[persona.trabajo.tipo] != "Comisaría" and persona.familia.casa.comisaria = null_edificio{
+					else if not in(persona.trabajo, null_edificio, jubilado, delincuente, prostituta) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado and not persona.preso and persona.trabajo.comisaria = null_edificio and edificio_nombre[persona.trabajo.tipo] != "Comisaría" and persona.familia.casa.comisaria = null_edificio{
 						var edificio = persona.trabajo, fel_ali = 0, fel_sal = 0, fel_edu = 0, num_edu = 0, fel_div = 0, fel_rel = 0
 						for(var b = 0; b < array_length(edificio.trabajadores); b++){
 							var trabajador = edificio.trabajadores[b]
@@ -4049,7 +4074,7 @@ if (keyboard_check(vk_space) or step >= 60){
 			var edificio = dia_trabajo[dia_de_mes, a], index = edificio.tipo, width = edificio.width, height = edificio.height, var_edificio_nombre = edificio_nombre[index]
 			if edificio.presupuesto > 3
 				edificio_experiencia[index] = 2 - 0.99 * (2 - edificio_experiencia[index])
-			if edificio = delincuente
+			if edificio = delincuente or edificio = prostituta
 				continue
 			edificio.ganancia -= edificio.mantenimiento
 			if edificio.privado{
@@ -4712,7 +4737,7 @@ if (keyboard_check(vk_space) or step >= 60){
 					var familia = edificio.familias[b]
 					poblacion += familia.integrantes
 					familia.banco = false
-					if ley_eneabled[9]{
+					if ley_eneabled[9] and (familia.padre.religion or familia.madre.religion or ley_eneabled[16]){
 						c = array_length(familia.hijos)
 						familia.riqueza += c
 						dinero -= c
@@ -4771,7 +4796,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							edificio.almacen[c] -= floor(poblacion * comida_proporcion[b] / comida_variedad)
 							d += recurso_precio[c] * comida_proporcion[b] / comida_variedad
 						}
-						if not ley_eneabled[4]
+						if not ley_eneabled[4] or not (familia.padre.religion or familia.madre.religion or ley_eneabled[16])
 							for(b = 0; b < array_length(edificio.familias); b++){
 								var familia = edificio.familias[b]
 								c = min(familia.riqueza, floor(familia.integrantes * d))
@@ -4796,7 +4821,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							d += recurso_precio[c] * edificio.almacen[c] / poblacion
 							edificio.almacen[c] = 0
 						}
-						if not ley_eneabled[4]
+						if not ley_eneabled[4] or not (familia.padre.religion or familia.madre.religion or ley_eneabled[16])
 							for(b = 0; b < array_length(edificio.familias); b++){
 								var familia = edificio.familias[b]
 								c = min(familia.riqueza, floor(familia.integrantes * d))
@@ -4861,7 +4886,7 @@ if (keyboard_check(vk_space) or step >= 60){
 			//Edificios médicos
 			if edificio_es_medico[index]{
 				//Curar pacientes
-				repeat(min(array_length(edificio.clientes), ceil(random(b / 5)))){
+				repeat(min(array_length(edificio.clientes), ceil(random(b)))){
 					var persona = array_shift(edificio.clientes)
 					persona.felicidad_salud = edificio_servicio_calidad[index]
 					persona.medico = null_edificio
@@ -4870,21 +4895,21 @@ if (keyboard_check(vk_space) or step >= 60){
 				//Pacientes no curados
 				for(b = 0; b < array_length(edificio.clientes); b++){
 					var persona = edificio.clientes[b]
-					persona.felicidad_salud = floor(persona.felicidad_salud) / 2
-					if irandom(10) > persona.felicidad_salud{
+					persona.felicidad_salud = floor(persona.felicidad_salud * 0.6 - 0.2 * (persona.edad < 12))
+					if irandom(5) > persona.felicidad_salud{
 						var familia = persona.familia
 						for_familia(function(persona = null_persona){
-							persona.felicidad_salud = floor(persona.felicidad_salud / 2)
+							persona.felicidad_salud = floor(persona.felicidad_salud * 0.75)
 							persona.felicidad_temporal -= 50
 						}, familia)
-						if not in(persona.trabajo, null_edificio, jubilado, delincuente)
+						if not in(persona.trabajo, null_edificio, jubilado, delincuente, prostituta)
 							for(c = 0; c < array_length(persona.trabajo.trabajadores); c++)
-								persona.trabajo.trabajadores[c].felicidad_salud = floor(persona.trabajo.trabajadores[c].felicidad_salud * 0.75)
+								persona.trabajo.trabajadores[c].felicidad_salud = floor(persona.trabajo.trabajadores[c].felicidad_salud * 0.9)
 						if persona.escuela != null_edificio{
 							for(c = 0; c < array_length(persona.escuela.trabajadores); c++)
-								persona.escuela.trabajadores[c].felicidad_salud = floor(persona.escuela.trabajadores[c].felicidad_salud * 0.9)
+								persona.escuela.trabajadores[c].felicidad_salud = floor(persona.escuela.trabajadores[c].felicidad_salud * 0.95)
 							for(c = 0; c < array_length(persona.escuela.clientes); c++)
-								persona.escuela.clientes[c].felicidad_salud = floor(persona.escuela.clientes[c].felicidad_salud * 0.9)
+								persona.escuela.clientes[c].felicidad_salud = floor(persona.escuela.clientes[c].felicidad_salud * 0.95)
 						}
 						destroy_persona(persona,, $"Paciente muerto ({edificio.nombre})")
 						mes_muertos_enfermos[current_mes]++
