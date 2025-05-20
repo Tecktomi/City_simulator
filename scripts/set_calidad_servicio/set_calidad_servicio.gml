@@ -1,7 +1,10 @@
 function set_calidad_servicio(edificio = control.null_edificio){
 	var index = edificio.tipo
 	with control{
-		var a = edificio_servicio_calidad[index] + 4 * (edificio.presupuesto - 2)
+		var a = edificio_servicio_calidad[index]
+		if edificio_nombre[index] = "Periódico" and edificio.modo != -1
+			a = 10
+		a += 4 * (edificio.presupuesto - 2)
 		if edificio.agua
 			a += round(10 + clamp(agua_input / agua_output, 0, 1))
 		if edificio.energia

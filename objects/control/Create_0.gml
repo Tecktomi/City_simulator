@@ -152,6 +152,8 @@ debug = false
 	politica_economia = 3
 	politica_sociocultural = 3
 	politica_religion = 0.5
+	radio_modos = ["Libertad de expresión", "Campaña política", "Publicidad invasiva"]
+	campanna = 0
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
 	subministerio = -1
@@ -210,6 +212,7 @@ debug = false
 		escuela : undefined,
 		medico : undefined,
 		ocios : [undefined],
+		lujos : [false],
 		es_hijo : false,
 		nacionalidad : 0,
 		religion : true,
@@ -227,6 +230,7 @@ debug = false
 	null_persona.pareja = null_persona
 	null_relacion.persona = null_persona
 	personas = [null_persona]
+	array_pop(null_persona.lujos)
 	array_pop(personas)
 	personas_favoritas = [null_persona]
 	array_pop(personas_favoritas)
@@ -280,8 +284,11 @@ debug = false
 	recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23, 34]
-	recurso_lujo = [4, 22, 25, 29, 31, 32, 33, 35]
-	recurso_lujo_prbabilidad = [1, 1, 0.1, 0.5, 0.05, 1, 0.2, 0.1]
+	recurso_lujo = [4, 7, 22, 25, 29, 31, 32, 33, 35]
+	recurso_lujo_prbabilidad = [1, 1, 1, 0.2, 1, 0.1, 1, 0.2, 0.2]
+	recurso_lujo_ocio = [10, 10, 10, 5, 1, 5, 15, 10]
+	for(a = 0; a < array_length(recurso_lujo); a++)
+		array_push(null_persona.lujos, false)
 	recurso_mineral = [9, 10, 11, 12, 13, 14]
 	recurso_mineral_color = [c_black, c_gray, c_yellow, c_orange, c_ltgray, c_dkgray]
 	recurso_mineral_rareza = [0.85, 0.875, 0.95, 0.85, 0.9, 0.925]
@@ -343,7 +350,7 @@ debug = false
 		"Vivienda precaria pero barata, es mejor que vivir en la calle",
 		"Mejor que una chabola",
 		"Excelente vivienda con gran jardín, solo los habitantes más adinerados pueden costearselo",
-		"Sirve alcohol a cualquiera que tenga edad suficiente para trabajar, mejora el humor de los habitantes",
+		"Sirve ron a cualquiera que pueda pagar, a la gente le gusta",
 		"Entrega entretenimiento a toda familia que tenga hijos",
 		"Transporta bienes y personas por alta mar, tu isla necesita tener al menos uno de estos",
 		"Extrae pescado del mar",
@@ -365,7 +372,7 @@ debug = false
 		"Vivienda anarquista por excelencia, se construirán automáticamente si no hay casas disponibles",
 		"",
 		"Reduce el crimen al encerrar a los delincuentes cercanos por un tiempo, además puede ayudar con los disturbios",
-		"Vende comida y bienes de lujo",
+		"Genera ganancias vendiendo los bienes de lujo que la gente quiere",
 		"Utiliza madera para producir muebles",
 		"Produce ropa a partir de telas y cuero",
 		"Aquí mismo se extrae la arcilla y se cosen ladrillos",
@@ -388,7 +395,7 @@ debug = false
 		"Aquí se juega a la pelota, corazón y orgullo de cualquier ciudad latinoaméricana",
 		"Infaltable para el ocio nocturno de tus habitantes, ojalá que nadie viva al lado",
 		"Transmite para todas las casas y trabajos con electricidad en el área",
-		"Usa el poder de Inti para generar energía infinita y limpia, ¡que milagro!"]
+		"Usa el poder del sol para generar energía infinita y limpia, ¡que milagro!"]
 	#endregion
 	#region arreglos vacíos
 		edificio_nombre = []
@@ -519,7 +526,7 @@ debug = false
 		def_edificio_base("Cabaña", 2, 1, 250, 200, [1, 15, 25], [6, 1, 6], 2, 55, 10, false,,,,,true, 2, 45, 6); def_edificio_servicio(,,,,,,,, true, 8, true, 8); def_edificio_trabajo()
 		//10
 		def_edificio_base("Parcela", 3, 2, 400, 360, [1, 15, 25, 26], [15, 3, 10, 30], 10, 75, 10, false,,,,,true, 2, 65, 12); def_edificio_servicio(,,,,,,,, true, 10, true, 10); def_edificio_trabajo(true, 1, 40, 4)
-		def_edificio_base("Taberna", 2, 1, 200, 240, [1, 15, 26], [10, 2, 20], 3, 30,, false); def_edificio_servicio(, true,,,, 5, 25, 1, true, 5); def_edificio_trabajo(true, 2, 35, 5)
+		def_edificio_base("Taberna", 2, 1, 200, 240, [1, 15, 26], [10, 2, 20], 3, 30,, false); def_edificio_servicio(, true,,,, 8, 25, 1, true, 5); def_edificio_trabajo(true, 2, 35, 5)
 		def_edificio_base("Circo", 4, 4, 500, 240, [1, 16], [10, 20], 6, 30,, false); def_edificio_servicio(, true,,,, 16, 20, 1); def_edificio_trabajo(true, 8, 25, 4,, 0.02)
 		def_edificio_base("Muelle", 6, 6, 2200, 1080, [1, 15, 17, 24, 26], [40, 40, 3, 10, 40], 10, 30, 15,, true, true); def_edificio_servicio(,,,,,,,,,, true, 30, true); def_edificio_trabajo(true, 6, 30, 6, 1, 0.02,,,,,, 140)
 		def_edificio_base("Pescadería", 5, 5, 200, 360, [1, 15, 17], [10, 5, 2], 6, 25, 10, false, true, true); def_edificio_servicio(,,,,,,,,,,,, true); def_edificio_trabajo(true, 6, 25, 5,, 0.04,,,,,, 9)
@@ -545,7 +552,7 @@ debug = false
 		def_edificio_base("Toma", 1, 1,,,,,, 20, 5,,,,true ,, true, 1, 15); def_edificio_servicio(); def_edificio_trabajo()
 		def_edificio_base("Delincuente"); def_edificio_servicio(); def_edificio_trabajo(,,10,,, 0.05)
 		def_edificio_base("Comisaría", 4, 2, 900, 720, [1, 15, 26], [20, 25, 25], 12, 40); def_edificio_servicio(,,,,, 8); def_edificio_trabajo(true, 4, 40, 7,, 0.04,,,,,, 2)
-		def_edificio_base("Mercado", 4, 4, 600, 360, [1, 15, 16, 26], [20, 5, 20, 20], 10, 40, 10); def_edificio_servicio(); def_edificio_trabajo(true, 4, 35, 4)
+		def_edificio_base("Mercado", 4, 4, 600, 360, [1, 15, 16, 26], [20, 5, 20, 20], 4, 40, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 4, 35, 4,,,,,,,, 20)
 		def_edificio_base("Mueblería", 5, 4, 2500, 720, [1, 15, 24, 26], [25, 10, 20, 40], 20, 40, 5, false); def_edificio_servicio(); def_edificio_trabajo(true, 10, 30, 5,, 0.01, true, [1], [4], [25], [1], 0.75)
 		def_edificio_base("Taller de Costura", 5, 4, 3000, 1080, [15, 24, 26], [30, 20, 40], 20, 35, 10, false); def_edificio_servicio(); def_edificio_trabajo(true, 6, 40, 5,, 0.02, true, [16, 21], [2, 1], [24], [2], 1.2)
 		def_edificio_base("Tejar", 5, 4, 1500, 360, [1, 15, 26], [20, 10, 30], 7, 40, -5, false); def_edificio_servicio(); def_edificio_trabajo(true, 6, 30, 5,, 0.01,,,,,, 4)
@@ -755,6 +762,7 @@ debug = false
 	mejora_motor_de_diesel = def_mejora("Motor de diesel", "Reemplaza los motores de carbón por petróleo y mejora la eficiencia", 100, 600, [24], [15],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.2; add_industria_io(edificio, [9, 27], [-1, 0.1])}, [27], 1.1)
 	mejora_motosierra = def_mejora("Motosierras", "Aumenta la producción y consumo eléctrico", 140, 400, [24], [10],,, true, 15, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(2, edificio); add_contaminacion(-5, edificio)}, [1, 25], 0.9)
 	mejora_ordena_automatica = def_mejora("Ordeña automática", "Aumenta la producción y consumo eléctrico", 160, 500, [24], [10],,, true, 10, function(edificio = null_edificio){edificio.eficiencia += 0.4; set_trabajadores_max(floor(edificio.trabajadores_max * 0.6), edificio); add_mantenimiento(5, edificio)}, [19], 0.8)
+	mejora_parlantes = def_mejora("Parlantes", "Aumenta la calidad de servicio", 120, 400, [24], [5],,, true, 10, function(edificio = null_edificio){edificio.eficiencia += 0.2; add_mantenimiento(1, edificio)})
 	mejora_pasteurizacion = def_mejora("Pasteurización", "Mejora la producción", 130, 600, [24], [15],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.4; add_mantenimiento(5, edificio)}, [19, 23, 34], 0.8)
 	mejora_penicilina = def_mejora("Penicilina", "Mejora el servicio", 110, 500, [30], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.5; edificio.ahorro += 0.1; add_mantenimiento(2, edificio); set_calidad_servicio(edificio)}, [])
 	mejora_pesca_por_arrastre = def_mejora("Pesca por arrastre", "Aumenta la eficiencia y contaminación", 50, 500, [7], [40],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.5; add_contaminacion(5, edificio)}, [8], 0.8)

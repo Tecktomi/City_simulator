@@ -26,6 +26,7 @@ function add_persona(){
 			escuela : null_edificio,
 			medico : null_edificio,
 			ocios : [],
+			lujos : [],
 			es_hijo : false,
 			nacionalidad : 0,
 			religion : false,
@@ -58,6 +59,8 @@ function add_persona(){
 		for(var b = 0; b < array_length(edificio_nombre); b++)
 			if edificio_es_ocio[b]
 				array_push(persona.ocios, 0)
+		for(var b = 0; b < array_length(recurso_lujo); b++)
+			array_push(persona.lujos, false)
 		persona.relacion.persona = persona
 		persona.relacion.nombre = name(persona)
 		return persona

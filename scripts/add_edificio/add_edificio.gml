@@ -137,7 +137,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 				edificio.array_complex = array_shuffle(edificio.array_complex)
 			}
 			else if var_edificio_nombre = "Periódico"
-				array_push(edificio.array_complex, {a : -1, b : 0})
+				edificio.modo = -1
 			else if var_edificio_nombre = "Rancho"
 				edificio.trabajadores_max = 5 + floor((width * height - 16) / 16)
 			else if var_edificio_nombre = "Pescadería"
