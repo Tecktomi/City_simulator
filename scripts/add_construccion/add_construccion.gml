@@ -1,4 +1,4 @@
-function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo = 0, altura = 0, rotado = false, pre_width = -1, pre_height = -1, precio = 0, privado = false, empresa = control.null_empresa, build_x = -1, build_y = -1){
+function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo = 0, altura = 0, pre_width = -1, pre_height = -1, precio = 0, privado = false, empresa = control.null_empresa, build_x = -1, build_y = -1){
 	with control{
 		if pre_width = -1
 			var width = edificio_width[id]
@@ -16,7 +16,6 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 			tiempo : tiempo,
 			tiempo_max : tiempo,
 			altura : altura,
-			rotado : rotado,
 			width : width,
 			height : height,
 			precio : precio,

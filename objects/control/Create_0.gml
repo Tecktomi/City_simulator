@@ -675,7 +675,6 @@ debug = false
 		trabajo_mes : 0,
 		muelle_cercano : undefined,
 		distancia_muelle_cercano : 0,
-		rotado : false,
 		width : 0,
 		height : 0,
 		build_x : 0,
@@ -946,6 +945,7 @@ debug = false
 			draw_construccion[a, b] = null_construccion
 			draw_edificio_flip[a, b] = random(1) < 0.5
 			escombros[a, b] = false
+			cultivo_color[a, b] = temp_color_array
 			bosque[a, b] = temp_bosque > 0.7 and c > 0.62
 			if bosque[a, b]{
 				var d = floor(350 * temp_bosque)
@@ -1004,7 +1004,7 @@ debug = false
 					else if c < temp_altura_minima + 0.05
 						ds_grid_multiply(temp_cultivo, a, b, 20 * (c - temp_altura_minima))
 					var g = temp_cultivo[# a, b]
-					cultivo_color[a, b][d] = make_color_rgb(255 * (1 - g), 255 * g, 0)
+					array_set(cultivo_color[a, b], d, make_color_rgb(255 * (1 - g), 255 * g, 0))
 					if e < temp_cultivo[# a, b]{
 						e = max(e, temp_cultivo[# a, b])
 						f = d
@@ -1045,7 +1045,8 @@ debug = false
 			array_set(mar[c], d, false)
 			ds_grid_set(altura, c, d, e)
 			array_set(altura_color[c], d, make_color_rgb(255 / 0.65 * (1.1 - e), 255 / 0.65 * (1.1 - e), 127))
-			array_set(cultivo_color[c], d, temp_color_array)
+			array_set(cultivo_color[c], d,
+			temp_color_array)
 		}
 	mares[0] = array_shuffle(mares[0])
 	var yes_land = [{a : floor(xsize / 2), b : floor(ysize / 2)}]

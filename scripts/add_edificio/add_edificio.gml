@@ -1,4 +1,4 @@
-function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre_width = -1, pre_height = -1){
+function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre_height = -1){
 	with control{
 		if debug
 			show_debug_message($"{fecha(dia)} add_edificio ({edificio_nombre[tipo]} {edificio_number[tipo]})")
@@ -53,7 +53,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, rotado = false, pre
 			trabajo_mes : 0,
 			muelle_cercano : null_edificio,
 			distancia_muelle_cercano : 0,
-			rotado : rotado,
 			width : 0,
 			height : 0,
 			build_x : 0,

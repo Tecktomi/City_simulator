@@ -2,16 +2,6 @@ function distancia(origen = control.null_edificio, destino = control.null_edific
 	var disx, disy
 	with control{
 		var width_ori = edificio_width[origen.tipo], height_ori = edificio_height[origen.tipo], width_dest = edificio_width[destino.tipo], height_dest = edificio_height[destino.tipo]
-		if origen.rotado{
-			var a = width_ori
-			width_ori = height_ori
-			height_ori = a
-		}
-		if destino.rotado{
-			var a = width_dest
-			width_dest = height_dest
-			height_dest = a
-		}
 		if origen.x > destino.x + width_dest
 			disx = origen.x - destino.x - width_dest
 		else if origen.x + width_ori < destino.x
@@ -31,11 +21,6 @@ function distancia_punto(x, y, origen = control.null_edificio){
 	var disx, disy
 	with control{
 		var width_ori = edificio_width[origen.tipo], height_ori = edificio_height[origen.tipo]
-		if origen.rotado{
-			var a = width_ori
-			width_ori = height_ori
-			height_ori = a
-		}
 		if x < origen.x - 1
 			disx = origen.x - x
 		else if x >= origen.x + width_ori

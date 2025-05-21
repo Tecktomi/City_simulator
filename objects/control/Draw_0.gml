@@ -156,7 +156,7 @@ if menu_principal{
 				if edificio_sprite[id_edificio[a, b].tipo]
 					draw_sprite_stretched(edificio_sprite_id[id_edificio[a, b].tipo], draw_edificio_flip[a, b], (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
 				else{
-					var edificio = draw_edificio[a, b], width = edificio.width, height = edificio.height, temp_rotado = edificio.rotado
+					var edificio = draw_edificio[a, b], width = edificio.width, height = edificio.height
 					c = edificio.x
 					d = edificio.y
 					e = edificio.tipo
@@ -184,7 +184,7 @@ if menu_principal{
 					}
 			}
 			if bool_draw_construccion[a, b]{
-				var next_build = draw_construccion[a, b], width = next_build.width, height = next_build.height, temp_rotado = next_build.rotado, var_edificio_nombre = edificio_nombre[next_build.id]
+				var next_build = draw_construccion[a, b], width = next_build.width, height = next_build.height, var_edificio_nombre = edificio_nombre[next_build.id]
 				c = next_build.x
 				d = next_build.y
 				e = next_build.id
@@ -1342,7 +1342,7 @@ if sel_build{
 					draw_set_valign(fa_top)
 				}, a) and ley_tiempo[a] = 0 and dinero >= ley_precio[a]{
 					dinero -= ley_precio[a]
-					mes_mantenimiento[current_mes] += ley_precio[a]
+					mes_salida_micelaneo[current_mes] += ley_precio[a]
 					if not debug
 						ley_tiempo[a] = 12
 					ley_eneabled[a] = not ley_eneabled[a]
@@ -1387,10 +1387,45 @@ if sel_build{
 							prostituta.trabajo_riesgo = 0.05
 					}
 					//Estado laico
-					if a = 16 and not ley_eneabled[16]{
-						
-					}
-								
+					if a = 16
+						if ley_eneabled[a]{
+							var temp_text = ""
+							c = 0
+							b = array_length(edificio_count[17])
+							c += b
+							if b > 0{
+								d = array_length(edificio_count[7])
+								temp_text += $"{b = 1 ? "" : $"{b} "}hospicio{b = 1 ? "" : "s"} ({d = 0 ? "No tienes consultorios" : $"tienes {d} consultorio{d = 1 ? "" : "s"}"}) "
+							}
+							b = array_length(edificio_count[18])
+							c += b
+							if b > 0{
+								d = array_length(edificio_count[6])
+								temp_text += $"{temp_text != "" ? "," : ""}{b = 1 ? "" : $"{b} "}escuela{b = 1 ? "" : "s"} parroquial{b = 1 ? "" : "es"} ({d = 0 ? "No tienes escuelas" : $"tienes {d} escuela{d = 1 ? "" : "s"}"}) "
+							}
+							b = array_length(edificio_count[19])
+							c += b
+							if b > 0
+								temp_text += $"{temp_text != "" ? "y " : ""}{b = 1 ? "" : $"{b} "}albergue{b = 1 ? "" : "s"} "
+							if temp_text != "" and not show_question($"Aprobar esta ley hará que tu{c = 1 ? "" : "s"} {temp_text}pase{c = 1 ? "" : "n"} a ser capilla{c = 1 ? "" : "s"}, deteniendo sus otras funciones.\n\n¿Continuar?"){
+								ley_eneabled[a] = false
+								dinero += ley_precio[a]
+								mes_salida_micelaneo[current_mes] -= ley_precio[a]
+								ley_tiempo[a] = 0
+								politica_religion = 5 * ley_eneabled[0] + 5 * ley_eneabled[15] + 10 * ley_eneabled[16]
+							}
+							else{
+								array_remove(edificio_categoria[0], 18, "Sacar los albergues de las residencias disponibles")
+								while array_length(edificio_count[17]) > 0
+									edificio_replace(16, edificio_count[17, 0])
+								while array_length(edificio_count[18]) > 0
+									edificio_replace(16, edificio_count[18, 0])
+								while array_length(edificio_count[19]) > 0
+									edificio_replace(16, edificio_count[19, 0])
+							}
+						}
+					else
+						array_push(edificio_categoria[0], 18)
 				}
 			if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
 				credibilidad_financiera += floor(sueldo_minimo / 2)
@@ -1557,7 +1592,7 @@ if build_sel{
 		}
 		else if var_edificio_nombre = "Rancho"{
 			for(var a = 0; a < array_length(ganado_nombre); a++)
-				draw_text(0, a * 20, (build_type = a ? ">" : "") + ganado_nombre[a])
+				show_string += $"{(build_type = a ? ">" : "")} {ganado_nombre[a]}\n"
 			c = 0
 			for(var a = mx; a < mx + width; a++)
 				for(var b = my; b < my + height; b++)
@@ -1618,19 +1653,22 @@ if build_sel{
 	}
 	//Capilla
 	else if in(build_index, 16, 17, 18, 19){
-		for(var a = 0; a < 4; a++)
-			draw_text_pos(0, a * 20, (build_index = 16 + a ? ">" : "") + edificio_nombre[16 + a])
+		if not ley_eneabled[16]
+			for(var a = 0; a < 4; a++)
+				show_string += $"{(build_index = 16 + a ? ">" : "")} {edificio_nombre[16 + a]}\n"
 		if not keyboard_check(vk_lcontrol){
-			if mouse_wheel_up(){
+			if mouse_wheel_up()
 				build_index++
-				if build_index = 20
-					build_index = 16
-			}
-			if mouse_wheel_down(){
+			if mouse_wheel_down()
 				build_index--
-				if build_index = 15
-					build_index = 19
-			}
+		}
+		if ley_eneabled[16]
+			build_index = 16
+		else{
+			if build_index > 19
+				build_index = 16
+			else if build_index < 16
+				build_index = 19
 		}
 	}
 	//Tejar
@@ -1678,7 +1716,7 @@ if build_sel{
 	draw_set_alpha(1)
 	//Detectar terreno inválido
 	if flag{
-		flag = edificio_valid_place(mx, my, build_index, rotado,,, width, height)
+		flag = edificio_valid_place(mx, my, build_index,,, width, height)
 		//Detectar árboles cerca
 		if flag and var_edificio_nombre = "Aserradero"{
 			draw_rombo_coord(mx - 5, my - 5, width + 10, height + 10, true)
@@ -1749,7 +1787,7 @@ if build_sel{
 	if (mouse_check_button_pressed(mb_left) and not edificio_resize[build_index]) or (build_pressed and mouse_check_button_released(mb_left) and edificio_resize[build_index]){
 		mouse_clear(mb_left)
 		if flag{
-			add_construccion(, mx, my, build_index, build_type, temp_tiempo, temp_altura, rotado, width, height, temp_precio,,, build_x, build_y)
+			add_construccion(, mx, my, build_index, build_type, temp_tiempo, temp_altura, width, height, temp_precio,,, build_x, build_y)
 			build_sel = keyboard_check(vk_lshift)
 			dinero -= temp_precio
 			mes_construccion[current_mes] += temp_precio
@@ -4010,7 +4048,7 @@ if (keyboard_check(vk_space) or step >= 60){
 								}
 							}
 						}
-						if flag and empresa.dinero > temp_precio + temp_precio_2 and edificio_valid_place(mx, my, index, false, true, empresa){
+						if flag and empresa.dinero > temp_precio + temp_precio_2 and edificio_valid_place(mx, my, index, true, empresa){
 							empresa.dinero -= temp_precio + temp_precio_2
 							dinero_privado -= temp_precio + temp_precio_2
 							dinero += temp_precio_2
@@ -4024,7 +4062,7 @@ if (keyboard_check(vk_space) or step >= 60){
 									for(d = my - 5; d < max_d; d++)
 										array_set(bosque_venta[c], d, true)
 							}
-							array_push(empresa.construcciones, add_construccion(, mx, my, index, tipo, edificio_construccion_tiempo[index] + temp_tiempo, temp_altura / width / height, false, width, height, temp_precio, true, empresa, mx, my))
+							array_push(empresa.construcciones, add_construccion(, mx, my, index, tipo, edificio_construccion_tiempo[index] + temp_tiempo, temp_altura / width / height, width, height, temp_precio, true, empresa, mx, my))
 						}
 					}
 				}
@@ -4796,9 +4834,10 @@ if (keyboard_check(vk_space) or step >= 60){
 							edificio.almacen[c] -= floor(poblacion * comida_proporcion[b] / comida_variedad)
 							d += recurso_precio[c] * comida_proporcion[b] / comida_variedad
 						}
-						if not ley_eneabled[4] or not (familia.padre.religion or familia.madre.religion or ley_eneabled[16])
-							for(b = 0; b < array_length(edificio.familias); b++){
-								var familia = edificio.familias[b]
+						
+						for(b = 0; b < array_length(edificio.familias); b++){
+							var familia = edificio.familias[b]
+							if not ley_eneabled[4] or not (familia.padre.religion or familia.madre.religion or ley_eneabled[16]){
 								c = min(familia.riqueza, floor(familia.integrantes * d))
 								familia.riqueza -= c
 								if edificio.privado{
@@ -4811,6 +4850,7 @@ if (keyboard_check(vk_space) or step >= 60){
 									mes_venta_comida[current_mes] += c
 								}
 							}
+						}
 					}
 					//Demanda insatisfecha
 					else{
@@ -4821,9 +4861,9 @@ if (keyboard_check(vk_space) or step >= 60){
 							d += recurso_precio[c] * edificio.almacen[c] / poblacion
 							edificio.almacen[c] = 0
 						}
-						if not ley_eneabled[4] or not (familia.padre.religion or familia.madre.religion or ley_eneabled[16])
-							for(b = 0; b < array_length(edificio.familias); b++){
-								var familia = edificio.familias[b]
+						for(b = 0; b < array_length(edificio.familias); b++){
+							var familia = edificio.familias[b]
+							if not ley_eneabled[4] or not (familia.padre.religion or familia.madre.religion or ley_eneabled[16]){
 								c = min(familia.riqueza, floor(familia.integrantes * d))
 								familia.riqueza -= c
 								if edificio.privado{
@@ -4836,6 +4876,7 @@ if (keyboard_check(vk_space) or step >= 60){
 									mes_venta_comida[current_mes] += c
 								}
 							}
+						}
 					}
 					//Actualizar felicidad por alimentación y pagar renta
 					for(b = 0; b < array_length(edificio.familias); b++){

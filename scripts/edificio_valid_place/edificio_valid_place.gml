@@ -1,4 +1,4 @@
-function edificio_valid_place(x, y, index, rotado = false, privado = false, empresa = control.null_empresa, pre_width = -1, pre_height = -1){
+function edificio_valid_place(x, y, index, privado = false, empresa = control.null_empresa, pre_width = -1, pre_height = -1){
 	with control{
 		if pre_width = -1
 			var width = edificio_width[index]

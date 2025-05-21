@@ -4,7 +4,7 @@ function acelerar_edificio(construccion = control.null_construccion){
 		x = construccion.x
 		y = construccion.y
 		var index = construccion.id, width = construccion.width, height = construccion.height, var_edificio_nombre = edificio_nombre[index]
-		var edificio = add_edificio(x, y, index, , construccion.rotado, width, height), d = x + width, e = y + height
+		var edificio = add_edificio(x, y, index,, width, height), d = x + width, e = y + height
 		if construccion.privado{
 			edificio.privado = true
 			edificio.empresa = construccion.empresa

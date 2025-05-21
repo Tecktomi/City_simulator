@@ -79,6 +79,7 @@
     {"id":{"name":"draw_text_pos","path":"scripts/draw_text_pos/draw_text_pos.yy",},},
     {"id":{"name":"duplicate_struct","path":"scripts/duplicate_struct/duplicate_struct.yy",},},
     {"id":{"name":"edificio_mejora","path":"scripts/edificio_mejora/edificio_mejora.yy",},},
+    {"id":{"name":"edificio_replace","path":"scripts/edificio_replace/edificio_replace.yy",},},
     {"id":{"name":"edificio_valid_place","path":"scripts/edificio_valid_place/edificio_valid_place.yy",},},
     {"id":{"name":"fallar_exigencia","path":"scripts/fallar_exigencia/fallar_exigencia.yy",},},
     {"id":{"name":"fecha","path":"scripts/fecha/fecha.yy",},},
