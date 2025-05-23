@@ -122,34 +122,49 @@ debug = false
 		def_guerra("Operación Uphold Democracy", 194, 196, [17], [8])
 		def_guerra("Guerra contra el narcotráfico", 206, 0, [2, 17], [])
 	#endregion
-	ley_nombre = [	"Divorcios", "Inmigración", "Trabajo infantil", "Jubilación", "Comida gratis", "Emigración", "Trabajo temporal", "Tomas", "Agua potable universal", "Subsidio infantil",
-					"Sufragio femenino", "Policía armada", "Seguro laboral", "Regularización de Pesca", "Libre comercio", "Prostitución", "Estado laico"]
-	ley_eneabled = [false, true, false, false, false, true, false, true, false, false, false, false, false, false, true, true, false]
-	ley_anno = [100, 0, 0, 90, 0, 0, 0, 0, 70, 90, 120, 0, 90, 110, 120, 180, 0]
-	ley_precio = [250, 500, 800, 500, 500, 800, 500, 500, 1000, 500, 800, 1000, 800, 500, 800, 500, 1000]
-	ley_descripcion = [	"Permite a los ciudadanos separarse legalmente, molestará a los ciudadanos religiosos",
-						"Permite la entrada de inmigrantes a la isla",
-						"Permite trabajar a los niños mayores de 12 años, molestará a todo ciudadano con hijos",
-						"Permite jubilarse a los ciudadanos mayores de 65 años, le agradará a los beneficiados",
-						"La comida es gratis, le permite a todos los habitantes acceder a ella",
-						"Le permite a los ciudadanos molestos irse del país si lo desean",
-						"Despide automáticamente a los trabajadores de las constructoras cuando no hay proyectos pendientes",
-						"Permite que los ciudadanos construyan tomas cuando no logran encontrar un hogar",
-						"Asegura que todas las casas tengan acceso a agua potable",
-						"El estado mantiene económicamente a los hijos, alegrará a todos los ciudadanos con hijos",
-						//10
-						"Permite a mujeres votarle a su majestad",
-						"Le da a la policía las herramientas para hacer bien su trabajo",
-						"Indemnizará a las familias de los trabajadores que mueran por accidente laboral",
-						"Impide a las pescaderías extraer pescado cuando su zona de extración está muy dañada",
-						"Permite a empresas privadas importar los recursos que necesiten",
-						"Permite oficialmente la prostitución, cabarets y enfurece a los religiosos",
-						"Separación entre la iglesia y el estado, permite a ciudadanos no religiosos acceder a derechos civiles"]
-	ley_economia = [2, 4, 5, 1, 1, 4, 4, 1, 1, 2, 3, 3, 2, 2, 5, 3, 3]
-	ley_sociocultural = [2, 1, 5, 3, 2, 1, 4, 1, 2, 3, 1, 6, 3, 4, 1, 1, 1]
-	ley_tiempo = []
-	for(a = 0; a < array_length(ley_nombre); a++)
-		array_push(ley_tiempo, 0)
+	#region Leyes
+		ley_nombre = []
+		ley_eneabled = []
+		ley_anno = []
+		ley_precio = []
+		ley_descripcion = []
+		ley_economia = []
+		ley_sociocultural = []
+		ley_tiempo = []
+		function def_ley(nombre, eneabled, anno, precio, economia, sociocultural, descripcion){
+			array_push(ley_nombre, string(nombre))
+			array_push(ley_eneabled, bool(eneabled))
+			array_push(ley_anno, real(anno))
+			array_push(ley_precio, real(precio))
+			array_push(ley_economia, real(economia))
+			array_push(ley_sociocultural, real(sociocultural))
+			array_push(ley_descripcion, string(descripcion))
+			array_push(ley_tiempo, 0)
+		}
+		def_ley("Divorcios", false, 100, 250, 2, 2, "Permite a los ciudadanos separarse legalmente, molestará a los ciudadanos religiosos")
+		def_ley("Inmigracion", true, 0, 500, 4, 1, "Permite la entrada de inmigrantes a la isla")
+		def_ley("Trabajo infantil", false, 0, 800, 5, 5, "Permite trabajar a los niños mayores de 12 años, molestará a todo ciudadano con hijos")
+		def_ley("Jubilación", false, 90, 500, 1, 3, "Permite jubilarse a los ciudadanos mayores de 65 años, le agradará a los beneficiados")
+		def_ley("Comida gratis", false, 0, 500, 1, 2, "La comida es gratis, le permite a todos los habitantes acceder a ella")
+		def_ley("Emigración", true, 0, 800, 4, 1, "Le permite a los ciudadanos molestos irse del país si lo desean")
+		def_ley("Trabajo temporal", false, 0, 500, 4, 4, "Despide automáticamente a los trabajadores de las constructoras cuando no hay proyectos pendientes")
+		def_ley("Tomas", true, 0, 500, 1, 0, "Permite que los ciudadanos construyan tomas cuando no logran encontrar un hogar")
+		def_ley("Agua potable universal", false, 70, 1000, 1, 2, "Asegura que todas las casas tengan acceso a agua potable")
+		def_ley("Subsidio infantil", false, 90, 500, 1, 3, "El estado mantiene económicamente a los hijos, alegrará a todos los ciudadanos con hijos")
+		//10
+		def_ley("Sufragio femenino", false, 120, 800, 3, 1, "Permite a mujeres votarle a su majestad")
+		def_ley("Policía armada", true, 0, 1000, 3, 6, "Le da a la policía las herramientas para hacer bien su trabajo")
+		def_ley("Seguro laboral", false, 90, 800, 2, 3, "Indemnizará a las familias de los trabajadores que mueran por accidente laboral")
+		def_ley("Regularización de Pesca", false, 110, 800, 2, 4, "Impide a las pescaderías extraer pescado cuando su zona de extración está muy dañada")
+		def_ley("Libre comercio", true, 120, 800, 5, 1, "Permite a empresas privadas importar los recursos que necesiten")
+		def_ley("Prostitución", false, 180, 500, 3, 0, "Permite oficialmente la prostitución, cabarets y enfurece a los religiosos")
+		def_ley("Estado laico", false, 0, 1000, 3, 1, "Separación entre la iglesia y el estado, permite a ciudadanos no religiosos acceder a derechos civiles")
+		def_ley("Ley seca", false, 120, 500, 3, 5, "Impide la venta de alcohol en la isla, con todo lo que eso implica")
+		def_ley("Prohibición de drogas", false, 139, 500, 4, 5, "Impide la venta recreativa de Cañamo a la población")
+		def_ley("Prohibición de colillas", false, 210, 800, 3, 4, "Impide la venta recreativa de Tabaco a la población")
+		//20
+		def_ley("Prohibición de armas", false, 100, 800, 1, 5, "Impide la venta recreativa de Armas a la población")
+	#endregion
 	politica_economia_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
 	politica_sociocultural_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]
 	politica_economia = 3
@@ -287,8 +302,8 @@ debug = false
 	recurso_cultivo = [0, 2, 3, 4, 5, 6, 7]
 	cultivo_altura_minima = [0.6, 0.55, 0.65, 0.6, 0.55, 0.65, 0.55]
 	recurso_comida = [0, 2, 6, 8, 18, 19, 23, 34]
-	recurso_lujo = [4, 7, 22, 25, 29, 31, 32, 33, 35]
-	recurso_lujo_prbabilidad = [1, 1, 1, 0.2, 1, 0.1, 1, 0.2, 0.2]
+	recurso_lujo = [4, 7, 22, 25, 28, 29, 31, 32, 33, 35]
+	recurso_lujo_probabilidad = [1, 1, 1, 0.2, 0.1, 1, 0.1, 1, 0.2, 0.2]
 	recurso_lujo_ocio = [10, 10, 10, 5, 1, 5, 15, 10]
 	for(a = 0; a < array_length(recurso_lujo); a++)
 		array_push(null_persona.lujos, false)

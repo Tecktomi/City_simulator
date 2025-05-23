@@ -1426,6 +1426,72 @@ if sel_build{
 						}
 					else
 						array_push(edificio_categoria[0], 18)
+					//Ley seca
+					if a = 17
+						if ley_eneabled[a]{
+							for(var b = 0; b < array_length(recurso_lujo); b++)
+								if recurso_lujo[b] = 22{
+									array_delete(recurso_lujo, b, 1)
+									array_delete(recurso_lujo_probabilidad, b, 1)
+									break
+								}
+							array_remove(edificio_categoria[3], 11)
+							for(var b = 0; b < array_length(edificio_count[11]); b++){
+								var edificio = edificio_count[11, b]
+								set_paro(true, edificio)
+								while array_length(edificio.trabajadores) > 0
+									cambiar_trabajo(edificio.trabajadores[0], null_edificio)
+							}
+						}
+						else{
+							array_push(recurso_lujo, 22)
+							array_push(recurso_lujo_probabilidad, 1)
+							array_push(edificio_categoria[3], 11)
+							for(var b = 0; b < array_length(edificio_count[11]); b++)
+								set_paro(false, edificio_count[11, b])
+						}
+					//Ley anti-drogas
+					if a = 18
+						if ley_eneabled[a]{
+							for(var b = 0; b < array_length(recurso_lujo); b++)
+								if recurso_lujo[b] = 7{
+									array_delete(recurso_lujo, b, 1)
+									array_delete(recurso_lujo_probabilidad, b, 1)
+									break
+								}
+						}
+						else{
+							array_push(recurso_lujo, 7)
+							array_push(recurso_lujo_probabilidad, 1)
+						}
+					//Ley anti-cigarros
+					if a = 19
+						if ley_eneabled[a]{
+							for(var b = 0; b < array_length(recurso_lujo); b++)
+								if recurso_lujo[b] = 4{
+									array_delete(recurso_lujo, b, 1)
+									array_delete(recurso_lujo_probabilidad, b, 1)
+									break
+								}
+						}
+						else{
+							array_push(recurso_lujo, 4)
+							array_push(recurso_lujo_probabilidad, 1)
+						}
+					//Ley control de armas
+					if a = 20
+						if ley_eneabled[a]{
+							for(var b = 0; b < array_length(recurso_lujo); b++)
+								if recurso_lujo[b] = 29{
+									array_delete(recurso_lujo, b, 1)
+									array_delete(recurso_lujo_probabilidad, b, 1)
+									break
+								}
+						}
+						else{
+							array_push(recurso_lujo, 29)
+							array_push(recurso_lujo_probabilidad, 0.1)
+						}
 				}
 			if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
 				credibilidad_financiera += floor(sueldo_minimo / 2)
@@ -1453,13 +1519,15 @@ if sel_build{
 				politica_economia = b / d
 				politica_sociocultural = c / d
 				if politica_economia < 3
-					politica_economia = clamp(3 - 3 * (3 - politica_economia) / (3 - izquierda_extrema), 0, 6)
+					politica_economia = 3 - 4 * (3 - politica_economia) / (3 - izquierda_extrema)
 				else
-					politica_economia = clamp(3 + 3 * ((politica_economia - 3) / (derecha_extrema - 3)), 0, 6)
+					politica_economia = 3 + 4 * ((politica_economia - 3) / (derecha_extrema - 3))
 				if politica_sociocultural < 3
-					politica_sociocultural = clamp(3 - 3 * (3 - politica_sociocultural) / (3 - libertario_extremo), 0, 6)
+					politica_sociocultural = 3 - 4 * (3 - politica_sociocultural) / (3 - libertario_extremo)
 				else
-					politica_sociocultural = clamp(3 + 3 * ((politica_sociocultural - 3) / (autoritario_extremo - 3)), 0, 6)
+					politica_sociocultural = 3 + 4 * ((politica_sociocultural - 3) / (autoritario_extremo - 3))
+				politica_economia = clamp(politica_economia, 0, 6)
+				politica_sociocultural = clamp(politica_sociocultural, 0, 6)
 				draw_set_alpha(0.5)
 				draw_set_color(c_red)
 				draw_rectangle(tempx, tempy, tempx + 150, tempy + 150, false)
@@ -3639,7 +3707,7 @@ if (keyboard_check(vk_space) or step >= 60){
 					for(var b = 0; b < array_length(recurso_lujo); b++)
 						if persona.lujos[b] = false{
 							c = recurso_lujo[b]
-							if not persona.preso and random(1) < recurso_lujo_prbabilidad[b] and (c != 35 or persona.familia.casa.energia){
+							if not persona.preso and random(1) < recurso_lujo_probabilidad[b] and (c != 35 or persona.familia.casa.energia){
 								var temp_precio = ceil(recurso_precio[c] * 1.1)
 								if recurso_banda[c]
 									temp_precio = clamp(temp_precio, recurso_banda_min[c], recurso_banda_max[c])
