@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"prohibir_recurso",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"prohibir_recurso",
+  "parent":{
+    "name":"City_simulator",
+    "path":"City_simulator.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

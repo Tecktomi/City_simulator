@@ -1349,23 +1349,23 @@ if sel_build{
 					if in(a, 0, 15, 16)
 						politica_religion = 5 * ley_eneabled[0] + 5 * ley_eneabled[15] + 10 * ley_eneabled[16]
 					//Prohibir trabajo infantil
-					if a = 2 and not ley_eneabled[2]
+					if a = 2 and not ley_eneabled[a]
 						for(b = 0; b < array_length(familias); b++)
 							for(c = 0; c < array_length(familias[b].hijos); c++)
 								if familias[b].hijos[c].edad > 12
 									cambiar_trabajo(familias[b].hijos[c], null_edificio)
 					//Crear jubilaciones
-					if a = 3 and ley_eneabled[3]
+					if a = 3 and ley_eneabled[a]
 						for(b = 0; b < array_length(personas); b++)
 							if personas[a].edad > 65
 								cambiar_trabajo(personas[a], jubilado)
 					//Prohibir jubilaciones
-					if a = 3 and not ley_eneabled[3]
+					if a = 3 and not ley_eneabled[a]
 						for(b = 0; b < array_length(personas); b++)
 							if personas[a].edad > 65
 								cambiar_trabajo(personas[a], null_edificio)
 					//Aprobar trabajo temporal
-					if a = 6 and ley_eneabled[6] and array_length(cola_construccion) = 0
+					if a = 6 and ley_eneabled[a] and array_length(cola_construccion) = 0
 						for(b = 0; b < array_length(edificio_count[20]); b++){
 							var edificio = edificio_count[20, b]
 							set_paro(true, edificio)
@@ -1373,15 +1373,15 @@ if sel_build{
 								cambiar_trabajo(edificio.trabajadores[0], null_edificio)
 						}
 					//Prohibir trabajo temporal
-					if a = 6 and not ley_eneabled[6] and array_length(cola_construccion) = 0
+					if a = 6 and not ley_eneabled[a] and array_length(cola_construccion) = 0
 						for(b = 0; b < array_length(edificio_count[20]); b++)
 							set_paro(false, edificio_count[20, b])
 					//Armas para la policía
-					if a = 11 and ley_eneabled[11]
+					if a = 11 and ley_eneabled[a]
 						recurso_construccion[28] += 10 * array_length(edificio_count[34])
 					//Prostitución
 					if a = 15{
-						if ley_eneabled[15]
+						if ley_eneabled[a]
 							prostituta.trabajo_riesgo = 0.01
 						else
 							prostituta.trabajo_riesgo = 0.05
@@ -1429,14 +1429,9 @@ if sel_build{
 					//Ley seca
 					if a = 17
 						if ley_eneabled[a]{
-							for(var b = 0; b < array_length(recurso_lujo); b++)
-								if recurso_lujo[b] = 22{
-									array_delete(recurso_lujo, b, 1)
-									array_delete(recurso_lujo_probabilidad, b, 1)
-									break
-								}
+							prohibir_recurso(22, [11, 35])
 							array_remove(edificio_categoria[3], 11)
-							for(var b = 0; b < array_length(edificio_count[11]); b++){
+							for(b = 0; b < array_length(edificio_count[11]); b++){
 								var edificio = edificio_count[11, b]
 								set_paro(true, edificio)
 								while array_length(edificio.trabajadores) > 0
@@ -1447,47 +1442,29 @@ if sel_build{
 							array_push(recurso_lujo, 22)
 							array_push(recurso_lujo_probabilidad, 1)
 							array_push(edificio_categoria[3], 11)
-							for(var b = 0; b < array_length(edificio_count[11]); b++)
+							for(b = 0; b < array_length(edificio_count[11]); b++)
 								set_paro(false, edificio_count[11, b])
 						}
 					//Ley anti-drogas
 					if a = 18
-						if ley_eneabled[a]{
-							for(var b = 0; b < array_length(recurso_lujo); b++)
-								if recurso_lujo[b] = 7{
-									array_delete(recurso_lujo, b, 1)
-									array_delete(recurso_lujo_probabilidad, b, 1)
-									break
-								}
-						}
+						if ley_eneabled[a]
+							prohibir_recurso(7)
 						else{
 							array_push(recurso_lujo, 7)
 							array_push(recurso_lujo_probabilidad, 1)
 						}
 					//Ley anti-cigarros
 					if a = 19
-						if ley_eneabled[a]{
-							for(var b = 0; b < array_length(recurso_lujo); b++)
-								if recurso_lujo[b] = 4{
-									array_delete(recurso_lujo, b, 1)
-									array_delete(recurso_lujo_probabilidad, b, 1)
-									break
-								}
-						}
+						if ley_eneabled[a]
+							prohibir_recurso(4)
 						else{
 							array_push(recurso_lujo, 4)
 							array_push(recurso_lujo_probabilidad, 1)
 						}
 					//Ley control de armas
 					if a = 20
-						if ley_eneabled[a]{
-							for(var b = 0; b < array_length(recurso_lujo); b++)
-								if recurso_lujo[b] = 29{
-									array_delete(recurso_lujo, b, 1)
-									array_delete(recurso_lujo_probabilidad, b, 1)
-									break
-								}
-						}
+						if ley_eneabled[a]
+							prohibir_recurso(28)
 						else{
 							array_push(recurso_lujo, 29)
 							array_push(recurso_lujo_probabilidad, 0.1)
@@ -4597,7 +4574,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						edificio.count = floor(b)
 						for(d = 0; d < array_length(recurso_lujo); d++){
 							c = recurso_lujo[d]
-							if dia / 360 > recurso_anno[c] and edificio.almacen[c] < edificio.count{
+							if dia / 360 > recurso_anno[c] and edificio.almacen[c] < edificio.count and not (c = 22 and ley_eneabled[17]) and not (c = 7 and ley_eneabled[18]) and not (c = 4 and ley_eneabled[19]) and not (c = 28 and ley_eneabled[20]){
 								e = edificio.almacen[c] + edificio.pedido[c] - edificio.count
 								edificio.ganancia += recurso_precio[c] * e
 								add_encargo(c, e, edificio)

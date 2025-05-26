@@ -92,6 +92,7 @@
     {"id":{"name":"name","path":"scripts/name/name.yy",},},
     {"id":{"name":"perlin","path":"scripts/perlin/perlin.yy",},},
     {"id":{"name":"print_familia","path":"scripts/print_familia/print_familia.yy",},},
+    {"id":{"name":"prohibir_recurso","path":"scripts/prohibir_recurso/prohibir_recurso.yy",},},
     {"id":{"name":"remove_contaminacion","path":"scripts/remove_contaminacion/remove_contaminacion.yy",},},
     {"id":{"name":"scr_color","path":"scripts/scr_color/scr_color.yy",},},
     {"id":{"name":"scr_room_resize","path":"scripts/scr_room_resize/scr_room_resize.yy",},},
