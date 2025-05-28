@@ -60,6 +60,6 @@ function gen_apellido(idioma = 0){
 }
 function gen_nombre_empresa(){
 	with control{
-		return choose(gen_apellido(), pais_nombre[array_pick(pais_current)]) + " " + choose("Ldta.", "S.A.", "Hmns.", "Corp.", "Asociados")
+		return choose(gen_apellido(irandom(6)), array_pick(pais_current).nombre) + " " + choose("Ldta.", "S.A.", "Hmns.", "Corp.", "Asociados")
 	}
 }

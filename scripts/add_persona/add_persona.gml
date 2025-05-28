@@ -28,7 +28,7 @@ function add_persona(){
 			ocios : [],
 			lujos : [],
 			es_hijo : false,
-			nacionalidad : 0,
+			nacionalidad : pais_tropico,
 			religion : false,
 			relacion : {
 				padre : null_relacion,

@@ -59,7 +59,6 @@
     {"id":{"name":"close_show","path":"scripts/close_show/close_show.yy",},},
     {"id":{"name":"cumplir_exigencia","path":"scripts/cumplir_exigencia/cumplir_exigencia.yy",},},
     {"id":{"name":"cumplir_tratado","path":"scripts/cumplir_tratado/cumplir_tratado.yy",},},
-    {"id":{"name":"def_guerra","path":"scripts/def_guerra/def_guerra.yy",},},
     {"id":{"name":"def_mejora","path":"scripts/def_mejora/def_mejora.yy",},},
     {"id":{"name":"delete_candidato","path":"scripts/delete_candidato/delete_candidato.yy",},},
     {"id":{"name":"destroy_edificio","path":"scripts/destroy_edificio/destroy_edificio.yy",},},

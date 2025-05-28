@@ -1,7 +1,7 @@
-function aceptar_tratado(pais, recurso, cantidad, factor, tiempo){
+function aceptar_tratado(recurso, cantidad, factor, tiempo, pais = control.null_pais){
 	with control{
 		var tratado = {
-			pais : real(pais),
+			pais : pais,
 			recurso : real(recurso),
 			cantidad : abs(real(cantidad)),
 			factor : real(factor),
@@ -13,7 +13,7 @@ function aceptar_tratado(pais, recurso, cantidad, factor, tiempo){
 			array_sort(recurso_tratados_venta[recurso], function(a, b){return a.factor > b.factor})
 		}
 		else{
-			recurso_importado[recurso] += abs(real(cantidad))
+			recurso_importado_fijo[recurso] += abs(real(cantidad))
 			array_push(recurso_tratados_compra[recurso], tratado)
 			array_sort(recurso_tratados_compra[recurso], function(a, b){return a.factor > b.factor})
 		}

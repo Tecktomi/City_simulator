@@ -23,104 +23,179 @@ debug = false
 		nombre : "null_guerra",
 		anno_inicio : 0,
 		anno_fin : 0,
-		bando_a : [0],
-		bando_b : [0]
+		bando_a : [],
+		bando_b : []
 	}
 	guerras = [null_guerra]
 	array_pop(guerras)
 	guerras_current = [null_guerra]
 	array_pop(guerras_current)
-	pais_nombre = [	"Trópico", "Cuba", "México", "El Salvador", "Costa Rica", "Honduras", "Panamá", "Guatemala", "Haití", "República Dominicana",
-					"Venezuela", "Colombia", "Brasil", "Belice", "Jamaica", "Nicaragua", "Bahamas", "Estados Unidos", "Gran Colombia", "Provincias Unidas de Centroamérica",
-					"España", "Francia", "Inglaterra", "Portugal", "Holanda", "Virreinato de Nueva España", "Virreinato de Nueva Granada", "Imperio Alemán", "Alemania Nazi", "URSS",
-					"China"]
-	pais_religion = [92, 59, 95, 88, 91, 88, 93, 95, 87, 88,	90, 92, 88, 88, 77, 86, 96, 78, 80, 80,		90, 70, 70, 80, 70, 80, 80, 60, 70, 10, 0]
-	pais_inicio =	[0, 95, 21, 41, 38, 38, 103, 38, 0, 44,		31, 31, 22, 181, 162, 38, 173, 0, 19, 23,	0, 0, 0, 0, 0, 0, 0, 71, 133, 122, 112]
-	pais_fin =		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0,				0, 0, 0, 0, 0, 0, 0, 0, 31, 40,				0, 0, 0, 0, 0, 21, 19, 118, 145, 191, 0]
-	pais_idioma =	[0, 0, 0, 0, 0, 0, 0, 0, 1, 0,				0, 0, 2, 3, 3, 0, 3, 3, 0, 0,				0, 1, 3, 2, 4, 0, 0, 4, 4, 5, 6]
-	pais_industria =[0, 0.3, 0.3, 0.2, 0.2, 0.2, 0.3, 0.2, 0.1, 0.2,  0.3, 0.3, 0.5, 0.2, 0.2, 0.2, 0.2, 0.9, 0.3, 0.3,  0.6, 0.7, 1, 0.6, 0.5, 0.3, 0.3, 0.7, 1, 0.7, 0.6]
+	null_pais = {
+		nombre : "null_pais",
+		religion : 0,
+		inicio : 0,
+		fin : 0,
+		idioma : 0,
+		industria : 0,
+		relacion : 0,
+		guerras : [null_guerra],
+		dia_nacional : 0,
+		recursos : [0]
+	}
+	array_pop(null_pais.guerras)
+	array_pop(null_pais.recursos)
+	array_push(null_guerra.bando_a, null_pais)
+	array_pop(null_guerra.bando_a)
+	array_push(null_guerra.bando_b, null_pais)
+	array_pop(null_guerra.bando_b)
+	pais_dia = array_create(360, null_pais)
+	paises = [null_pais]
+	array_pop(paises)
+	pais_current = [null_pais]
+	array_pop(pais_current)
+	function def_pais(nombre, religion, inicio, fin, idioma, industria){
+		do var a = irandom(359)
+		until pais_dia[a] = null_pais
+		var pais = {
+			nombre : string(nombre),
+			religion : real(religion),
+			inicio : real(inicio),
+			fin : real(fin),
+			idioma : real(idioma),
+			industria : real(industria),
+			relacion : 0,
+			guerras : [null_guerra],
+			dia_nacional : a,
+			recursos : [0]
+		}
+		pais_dia[a] = pais
+		array_pop(pais.guerras)
+		array_pop(pais.recursos)
+		array_push(paises, pais)
+		if inicio = 0
+			array_push(pais_current, pais)
+		return pais
+	}
+	#region Definición de países
+		pais_tropico = def_pais("Trópico", 92, 0, 0, 0, 0)
+		pais_cuba = def_pais("Cuba", 59, 95, 0, 0, 0.3)
+		pais_mexico = def_pais("México", 95, 21, 0, 0, 0.3)
+		pais_el_salvador = def_pais("El Salvador", 88, 41, 0, 0, 0.2)
+		pais_costa_rica = def_pais("Costa Rica", 91, 38, 0, 0, 0.2)
+		pais_honduras = def_pais("Honduras", 88, 38, 0, 0, 0.2)
+		pais_panama = def_pais("Panamá", 93, 103, 0, 0, 0.4)
+		pais_guatemala = def_pais("Guatemala", 95, 38, 0, 0, 0.2)
+		pais_haiti = def_pais("Haití", 87, 0, 0, 1, 0.1)
+		pais_republica_dominicana = def_pais("República Dominicana", 88, 44, 0, 0, 0.2)
+		//10
+		pais_venezuela = def_pais("Venezuela", 90, 31, 0, 0, 0.4)
+		pais_colombia = def_pais("Colombia", 92, 31, 0, 0, 0.3)
+		pais_brasil = def_pais("Brasil", 88, 22, 0, 2, 0.4)
+		pais_belice = def_pais("Belice", 88, 181, 0, 3, 0.2)
+		pais_jamaica = def_pais("Jamaica", 77, 162, 0, 3, 0.2)
+		pais_nicaragua = def_pais("Nicaragua", 86, 38, 0, 0, 0.2)
+		pais_bahamas = def_pais("Bahamas", 96, 173, 0, 3, 0.2)
+		pais_estados_unidos = def_pais("Estados Unidos", 78, 0, 0, 3, 0.9)
+		pais_gran_colombia = def_pais("Gran Colombia", 80, 19, 31, 0, 0.3)
+		pais_probincias_unidas_de_centroamerica = def_pais("Probincias Unidas de Centroamérica", 80, 23, 40, 0, 0.3)
+		//20
+		pais_espanna = def_pais("España", 90, 0, 0, 0, 0.6)
+		pais_francia = def_pais("Francia", 70, 0, 0, 1, 0.7)
+		pais_inglaterra = def_pais("Inglaterra", 70, 0, 0, 3, 1)
+		pais_portugal = def_pais("Portugal", 80, 0, 0, 2, 0.6)
+		pais_holanda = def_pais("Holanda", 70, 0, 0, 4, 0.6)
+		pais_virreinato_de_nueva_espanna = def_pais("Virreinato de Nueva España", 80, 0, 21, 0, 0.3)
+		pais_virreinato_de_nueva_granada = def_pais("Virreinato de Nueva Granada", 80, 0, 19, 0, 0.3)
+		pais_imperio_aleman = def_pais("Imperio Alemán", 60, 71, 118, 4, 0.7)
+		pais_alemania_nazi = def_pais("Alemania Nazi", 70, 133, 145, 4, 1)
+		pais_union_sovietica = def_pais("Unión Soviética", 10, 122, 191, 5, 0.7)
+		//30
+		pais_china = def_pais("China", 0, 112, 0, 6, 0.7)
+	#endregion
 	idioma_nombre = ["Español", "Francés", "Portugués", "Inglés", "Alemán", "Ruso", "Chino"]
-	pais_relacion = []
-	pais_current = []
-	pais_guerras = []
-	pais_dia = array_create(360, 0)
-	for(a = 0; a < array_length(pais_nombre); a++){
-		if pais_inicio[a] = 0
-			array_push(pais_current, a)
-		array_push(pais_relacion, 0)
-		array_push(pais_guerras, [null_guerra])
-		array_pop(pais_guerras[a])
-		do
-			b = irandom(359)
-		until pais_dia[b] = 0
-		pais_dia[b] = a
+	function def_guerra(nombre = "guerra", inicio = 0, fin = 0, bando_a = [null_pais], bando_b = [null_pais]){
+		var guerra = {
+			nombre : nombre,
+			inicio : inicio,
+			fin : fin,
+			bando_a : bando_a,
+			bando_b : bando_b
+		}
+		if nombre = "guerra" and array_length(bando_a) > 0{
+			if array_equals(bando_b, [0])
+				guerra.nombre = $"Guerra civil de {pais_nombre[bando_a[0]]}"
+			else if array_length(bando_b) > 0
+				guerra.nombre = $"Guerra {pais_nombre[bando_a[0]]}-{pais_nombre[bando_b[0]]}"
+		}
+		array_push(guerras, guerra)
+		return guerra
 	}
 	#region Definición de guerras
-		def_guerra("Guerras Revolucionarias Francesas", 0, 4, [20, 21, 24], [8, 17, 22])
-		def_guerra("Revolución haitiana", 0, 4, [8, 20, 22], [21])
-		def_guerra("Guerras Napoleonicas", 4, 8, [17, 20, 21, 24], [22, 23])
-		def_guerra("Guerras Anglo-españolas", 6, 9, [20], [22])
-		def_guerra("Guerras Napoleonicas", 9, 15, [21, 24], [20, 22, 23])
-		def_guerra("Guerras de independencia Hispanoamericanas", 10, 21, [20], [21, 22, 25])
-		def_guerra("Guerras de independencia Hispanoamericanas", 10, 19, [20], [21, 22, 26])
-		def_guerra("Guerras anglo-estadounidences", 12, 12, [22, 25], [17])
-		def_guerra("Toma de Amelia", 17, 17, [17, 20], [])
-		def_guerra("Reconquista de México", 21, 29, [2], [20])
-		def_guerra("Guerra de los Comanches", 21, 48, [2], [])
-		def_guerra("Independencia de Brasil", 22, 25, [12, 22], [23])
-		def_guerra("guerra de los Pasteles", 38, 39, [2], [21])
-		def_guerra("Intervención", 46, 48, [2], [17])
-		def_guerra("Guerra nacional Centroamericana", 55, 57, [3, 4, 5, 7], [1, 15])
-		def_guerra("Guerra de Reforma", 57, 61, [2, 17], [21])
-		def_guerra("Intervención francesa en México", 62, 67, [2, 17], [20, 21, 22])
-		def_guerra("Guerra de la Restauración", 63, 65, [9], [20])
-		def_guerra("Intento de Barrios", 85, 85, [5, 7], [2, 3, 4, 15])
-		def_guerra("Crisis de Panamá", 85, 85, [11], [17])
-		def_guerra("Independencia Cubana", 95, 98, [1, 17], [20])
-		def_guerra("Guerra hispano-estadounidence", 98, 98, [20], [17, 1])
-		def_guerra("Guerras bananeras", 98, 134, [17], [1, 2, 5, 6, 8, 9, 11, 15])
-		def_guerra("Guerra de los Mil días", 99, 102, [10, 11], [7, 15])
-		def_guerra("Bloqueo internacional a Venezuela", 102, 103, [10, 17], [2, 20, 22])
-		def_guerra("Guerrita de agosto", 106, 106, [1, 17], [])
-		def_guerra("Revolución mexicana", 110, 120, [2], [17, 22])
-		def_guerra("Primera Guerra Mundial", 114, 118, [17, 21, 22, 30], [27])
-		def_guerra("Primera guerra civil de Honduras", 119, 119, [2, 5, 17], [3])
-		def_guerra("Guerra de Coto", 121, 121, [4], [6])
-		def_guerra("Segunda guerra civil de Honduras", 24, 24, [5], [17])
-		def_guerra("Guerra cistera", 126, 129, [2, 17], [])
-		def_guerra("Guerra Constitucionalista de Nicaragua", 126, 127, [15], [])
-		def_guerra("La Violencia", 130, 160, [11], [])
-		def_guerra("Segunda guerra cristera", 134, 138, [2], [])
-		def_guerra("Guerra civil española", 136, 139, [2, 21], [20, 23])
-		def_guerra("Segunda Guerra Mundial", 139, 145, [2, 12, 17, 21, 22, 24, 29, 30], [20, 28])
-		def_guerra("Guerra civil de Costa Rica", 148, 148, [4], [])
-		def_guerra("Crisis del Archipielago Los Monjes", 152, 152, [10], [11])
-		def_guerra("Revolución Cubana", 153, 159, [1], [17])
-		def_guerra("Invasión de Costa Rica", 155, 155, [10, 15], [4])
-		def_guerra("Guerra de Mocorón", 157, 160, [5], [15])
-		def_guerra("Invasión cubana", 159, 159, [1], [6, 9])
-		def_guerra("Rebelión del Escambray", 160, 165, [1], [17])
-		def_guerra("Conflicto interno Colombiano", 160, 0, [11, 12, 17], [])
-		def_guerra("Guerra civil de Guatemala", 160, 196, [7, 17], [1])
-		def_guerra("Guerra de independencia de Angola", 161, 175, [1], [23])
-		def_guerra("Invasión Bahía de Cochinos", 161, 161, [1], [17])
-		def_guerra("Invasiones cubanas en Venezuela", 161, 167, [1], [10])
-		def_guerra("Operación cuarentena", 162, 162, [9, 10, 17], [1])
-		def_guerra("Guerrillas en Venezuela", 162, 0, [10, 11], [1])
-		def_guerra("Guerra de las Arenas", 163, 164, [1], [17, 21])
-		def_guerra("Independencia de Guinea-Bisau", 164, 174, [1], [23])
-		def_guerra("Crisis del Congo", 165, 165, [1], [])
-		def_guerra("Guerra civil dominicana", 165, 165, [17], [9])
-		def_guerra("Guerra de desgaste", 168, 170, [1, 29], [])
-		def_guerra("Guerra de Yom Kipur", 173, 173, [1, 29], [17, 21, 22])
-		def_guerra("Independencia de Eritrea", 177, 191, [1], [])
-		def_guerra("Revolución Sandinista", 179, 190, [5, 15, 17], [1])
-		def_guerra("Guerra civil de El Salvador", 179, 192, [3, 15, 17], [30])
-		def_guerra("operación Charly", 179, 181, [3, 5, 7, 15], [])
-		def_guerra("Invasión de Granada", 183, 183, [17], [1])
-		def_guerra("Invasiónde Panamá", 189, 190, [6], [17])
-		def_guerra("Operación Uphold Democracy", 194, 196, [17], [8])
-		def_guerra("Guerra contra el narcotráfico", 206, 0, [2, 17], [])
+		def_guerra("Guerras Revolucionarias Francesas", 0, 4, [pais_espanna, pais_francia, pais_holanda], [pais_haiti, pais_estados_unidos, pais_inglaterra])
+		def_guerra("Revolución haitiana", 0, 4, [8, pais_espanna, pais_inglaterra], [pais_francia])
+		def_guerra("Guerras Napoleonicas", 4, 8, [pais_estados_unidos, pais_espanna, pais_francia, pais_holanda], [pais_inglaterra, pais_portugal])
+		def_guerra("Guerras Anglo-españolas", 6, 9, [pais_espanna], [pais_inglaterra])
+		def_guerra("Guerras Napoleonicas", 9, 15, [pais_francia, pais_holanda], [pais_espanna, pais_inglaterra, pais_portugal])
+		def_guerra("Guerras de independencia Hispanoamericanas", 10, 21, [pais_espanna], [pais_francia, pais_inglaterra, pais_virreinato_de_nueva_espanna])
+		def_guerra("Guerras de independencia Hispanoamericanas", 10, 19, [pais_espanna], [pais_francia, pais_inglaterra, pais_virreinato_de_nueva_granada])
+		def_guerra("Guerras anglo-estadounidences", 12, 12, [pais_inglaterra, pais_virreinato_de_nueva_espanna], [pais_estados_unidos])
+		def_guerra("Toma de Amelia", 17, 17, [pais_estados_unidos, pais_espanna], [])
+		def_guerra("Reconquista de México", 21, 29, [pais_mexico], [pais_espanna])
+		def_guerra("Guerra de los Comanches", 21, 48, [pais_mexico], [])
+		def_guerra("Independencia de Brasil", 22, 25, [pais_brasil, pais_inglaterra], [pais_portugal])
+		def_guerra("guerra de los Pasteles", 38, 39, [pais_mexico], [pais_francia])
+		def_guerra("Intervención", 46, 48, [pais_mexico], [pais_estados_unidos])
+		def_guerra("Guerra nacional Centroamericana", 55, 57, [pais_el_salvador, pais_costa_rica, pais_honduras, pais_guatemala], [pais_cuba, pais_nicaragua])
+		def_guerra("Guerra de Reforma", 57, 61, [pais_mexico, pais_estados_unidos], [pais_francia])
+		def_guerra("Intervención francesa en México", 62, 67, [pais_mexico, pais_estados_unidos], [pais_espanna, pais_francia, pais_inglaterra])
+		def_guerra("Guerra de la Restauración", 63, 65, [9], [pais_espanna])
+		def_guerra("Intento de Barrios", 85, 85, [pais_honduras, pais_guatemala], [pais_mexico, pais_el_salvador, pais_costa_rica, pais_nicaragua])
+		def_guerra("Crisis de Panamá", 85, 85, [pais_colombia], [pais_estados_unidos])
+		def_guerra("Independencia Cubana", 95, 98, [pais_cuba, pais_estados_unidos], [pais_espanna])
+		def_guerra("Guerra hispano-estadounidence", 98, 98, [pais_espanna], [pais_estados_unidos, pais_cuba])
+		def_guerra("Guerras bananeras", 98, 134, [pais_estados_unidos], [pais_cuba, pais_mexico, pais_honduras, pais_panama, pais_haiti, pais_republica_dominicana, pais_colombia, pais_nicaragua])
+		def_guerra("Guerra de los Mil días", 99, 102, [pais_venezuela, pais_colombia], [pais_guatemala, pais_nicaragua])
+		def_guerra("Bloqueo internacional a Venezuela", 102, 103, [pais_venezuela, pais_estados_unidos], [pais_mexico, pais_espanna, pais_inglaterra])
+		def_guerra("Guerrita de agosto", 106, 106, [pais_cuba, pais_estados_unidos], [])
+		def_guerra("Revolución mexicana", 110, 120, [pais_mexico], [pais_estados_unidos, pais_inglaterra])
+		def_guerra("Primera Guerra Mundial", 114, 118, [pais_estados_unidos, pais_francia, pais_inglaterra, pais_china], [pais_imperio_aleman])
+		def_guerra("Primera guerra civil de Honduras", 119, 119, [pais_mexico, pais_honduras, pais_estados_unidos], [pais_el_salvador])
+		def_guerra("Guerra de Coto", 121, 121, [pais_costa_rica], [pais_panama])
+		def_guerra("Segunda guerra civil de Honduras", 24, 24, [pais_honduras], [pais_estados_unidos])
+		def_guerra("Guerra cistera", 126, 129, [pais_mexico, pais_estados_unidos], [])
+		def_guerra("Guerra Constitucionalista de Nicaragua", 126, 127, [pais_nicaragua], [])
+		def_guerra("La Violencia", 130, 160, [pais_colombia], [])
+		def_guerra("Segunda guerra cristera", 134, 138, [pais_mexico], [])
+		def_guerra("Guerra civil española", 136, 139, [pais_mexico, pais_francia], [pais_espanna, pais_portugal])
+		def_guerra("Segunda Guerra Mundial", 139, 145, [pais_mexico, pais_brasil, pais_estados_unidos, pais_francia, pais_inglaterra, pais_holanda, pais_union_sovietica, pais_china], [pais_espanna, pais_alemania_nazi])
+		def_guerra("Guerra civil de Costa Rica", 148, 148, [pais_costa_rica], [])
+		def_guerra("Crisis del Archipielago Los Monjes", 152, 152, [pais_venezuela], [pais_colombia])
+		def_guerra("Revolución Cubana", 153, 159, [pais_cuba], [pais_estados_unidos])
+		def_guerra("Invasión de Costa Rica", 155, 155, [pais_venezuela, pais_nicaragua], [pais_costa_rica])
+		def_guerra("Guerra de Mocorón", 157, 160, [pais_honduras], [pais_nicaragua])
+		def_guerra("Invasión cubana", 159, 159, [pais_cuba], [pais_panama, pais_republica_dominicana])
+		def_guerra("Rebelión del Escambray", 160, 165, [pais_cuba], [pais_estados_unidos])
+		def_guerra("Conflicto interno Colombiano", 160, 0, [pais_colombia, pais_brasil, pais_estados_unidos], [])
+		def_guerra("Guerra civil de Guatemala", 160, 196, [pais_guatemala, pais_estados_unidos], [pais_cuba])
+		def_guerra("Guerra de independencia de Angola", 161, 175, [pais_cuba], [pais_portugal])
+		def_guerra("Invasión Bahía de Cochinos", 161, 161, [pais_cuba], [pais_estados_unidos])
+		def_guerra("Invasiones cubanas en Venezuela", 161, 167, [pais_cuba], [pais_venezuela])
+		def_guerra("Operación cuarentena", 162, 162, [9, pais_venezuela, pais_estados_unidos], [pais_cuba])
+		def_guerra("Guerrillas en Venezuela", 162, 0, [pais_venezuela, pais_colombia], [pais_cuba])
+		def_guerra("Guerra de las Arenas", 163, 164, [pais_cuba], [pais_estados_unidos, pais_francia])
+		def_guerra("Independencia de Guinea-Bisau", 164, 174, [pais_cuba], [pais_portugal])
+		def_guerra("Crisis del Congo", 165, 165, [pais_cuba], [])
+		def_guerra("Guerra civil dominicana", 165, 165, [pais_estados_unidos], [pais_republica_dominicana])
+		def_guerra("Guerra de desgaste", 168, 170, [pais_cuba, pais_union_sovietica], [])
+		def_guerra("Guerra de Yom Kipur", 173, 173, [pais_cuba, pais_union_sovietica], [pais_estados_unidos, pais_francia, pais_inglaterra])
+		def_guerra("Independencia de Eritrea", 177, 191, [pais_cuba], [])
+		def_guerra("Revolución Sandinista", 179, 190, [pais_honduras, pais_nicaragua, pais_estados_unidos], [pais_cuba])
+		def_guerra("Guerra civil de El Salvador", 179, 192, [pais_el_salvador, pais_nicaragua, pais_estados_unidos], [pais_china])
+		def_guerra("operación Charly", 179, 181, [pais_el_salvador, pais_honduras, pais_guatemala, pais_nicaragua], [])
+		def_guerra("Invasión de Granada", 183, 183, [pais_estados_unidos], [pais_cuba])
+		def_guerra("Invasiónde Panamá", 189, 190, [pais_panama], [pais_estados_unidos])
+		def_guerra("Operación Uphold Democracy", 194, 196, [pais_estados_unidos], [pais_haiti])
+		def_guerra("Guerra contra el narcotráfico", 206, 0, [pais_mexico, pais_estados_unidos], [])
 	#endregion
 	#region Leyes
 		ley_nombre = []
@@ -312,25 +387,25 @@ debug = false
 	recurso_mineral_rareza = [0.85, 0.875, 0.95, 0.85, 0.9, 0.925]
 	ganado_nombre = ["Vacas", "Cabras", "Ovejas", "Cerdos"]
 	ganado_produccion = [[18, 21], [19], [20], [18]]
-	for(a = 0; a < array_length(pais_nombre); a++){
-		var industria = pais_industria[a], c = 0, d = 0, text = $"{pais_nombre[a]}: ["
-		pais_recursos[a] = []
+	for(a = 0; a < array_length(paises); a++){
+		var pais = paises[a], industria = pais.industria, c = 0, d = 0, text = $"{pais.nombre}: ["
+		pais.recursos = []
 		for(b = 0; b < array_length(recurso_nombre); b++){
 			d = (recurso_prima[b] ? random(1) - industria : random(1) + industria - 1)
 			d = sign(d) * sqrt(abs(d))
-			array_push(pais_recursos[a], d)
+			array_push(pais.recursos, d)
 			c += abs(d)
 		}
 		for(b = 0; b < array_length(recurso_nombre); b++){
-			d = pais_recursos[a, b] / c
-			array_set(pais_recursos[a], b, d)
+			d = pais.recursos[b] / c
+			pais.recursos[b] = d
 			text += $"{d}, "
 		}
 		if debug
 			show_debug_message(text + "]")
 	}
 	null_tratado = {
-		pais : 0,
+		pais : null_pais,
 		recurso : 0,
 		cantidad : 0,
 		factor : 1,
@@ -1300,7 +1375,7 @@ debug = false
 	repeat(10)
 		add_empresa(power(10, random_range(3, 4.2)))
 	while array_length(personas) < 50
-		add_familia(0)
+		add_familia(pais_tropico)
 #endregion
 #region Edificios iniciales
 	#region Puerto principal

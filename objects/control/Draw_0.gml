@@ -23,7 +23,7 @@ if menu_principal{
 		if mouse_lastbutton = mb_right
 			dia = max(0, dia - 360)
 		else
-			dia = min(dia + 360, 73000)
+			dia = min(dia + 360, 360 * (current_year - 1800))
 	pos += 20
 	if draw_boton(room_width / 2, pos, "Tutorial", true){
 		tutorial = 0
@@ -1182,25 +1182,25 @@ if sel_build{
 		else if ministerio = 6{
 			draw_text_pos(100, pos, "Relaciones Exteriores")
 			for(var a = 1; a < array_length(pais_current); a++){
-				e = pais_current[a]
+				var pais = pais_current[a]
 				d = 0
 				var f = 0
 				for(b = 0; b < array_length(recurso_nombre); b++){
 					for(c = 0; c < array_length(recurso_tratados_venta[b]); c++)
-						d += (recurso_tratados_venta[b, c].pais = e)
+						d += (recurso_tratados_venta[b, c].pais = pais)
 					for(c = 0; c < array_length(recurso_tratados_compra[b]); c++)
-						f += (recurso_tratados_compra[b, c].pais = e)
+						f += (recurso_tratados_compra[b, c].pais = pais)
 				}
-				if draw_menu(110, pos, $"{pais_nombre[e]}: {pais_relacion[e]} {d + f > 0 ? "(" + string(d + f) + ")" : ""}", a){
+				if draw_menu(110, pos, $"{pais.nombre}: {pais.relacion} {d + f > 0 ? "(" + string(d + f) + ")" : ""}", a){
 					if d + f > 0{
 						draw_text_pos(120, pos, $"{d + f} tratado{d + f = 1 ? "" : "s"} comercial{d + f = 1 ? "" : "es"} activo{d + f = 1 ? "" : "s"}")
 						for(b = 0; b < array_length(recurso_nombre); b++){
 							for(c = 0; c < array_length(recurso_tratados_venta[b]); c++){
 								var tratado = recurso_tratados_venta[b, c]
-								if tratado.pais = e
+								if tratado.pais = pais
 									if draw_boton(130, pos, $"Vender {tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (+{floor(tratado.factor * 100) - 100}%)",,,,,,, true) and mouse_lastbutton = mb_right{
-										add_noticia("Tratado cancelado", $"Has cancelado el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
-										pais_relacion[tratado.pais]--
+										add_noticia("Tratado cancelado", $"Has cancelado el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {tratado.pais.nombre}")
+										tratado.pais.relacion--
 										array_remove(recurso_tratados_venta[tratado.recurso], tratado, 1)
 										credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
 										tratados_num--
@@ -1208,10 +1208,10 @@ if sel_build{
 							}
 							for(c = 0; c < array_length(recurso_tratados_compra[b]); c++){
 								var tratado = recurso_tratados_compra[b, c]
-								if tratado.pais = e
+								if tratado.pais = pais
 									if draw_boton(130, pos, $"Comprar {tratado.cantidad} de {recurso_nombre[tratado.recurso]}, {tratado.tiempo} meses restantes.  (-{floor(tratado.factor * 100) - 100}%)",,,,,,, true) and mouse_lastbutton = mb_right{
-										add_noticia("Tratado cancelado", $"Has cancelado el tratado de importar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
-										pais_relacion[tratado.pais]--
+										add_noticia("Tratado cancelado", $"Has cancelado el tratado de importar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {tratado.pais.nombre}")
+										tratado.pais.relacion--
 										array_remove(recurso_tratados_compra[tratado.recurso], tratado, 1)
 										credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
 										tratados_num--
@@ -1219,17 +1219,17 @@ if sel_build{
 							}
 						}
 					}
-					if array_length(pais_guerras[e]) > 0{
+					if array_length(pais.guerras) > 0{
 						var temp_array = [], temp_array_2 = [], flag = false, flag_2 = false
-						for(b = 0; b < array_length(pais_nombre); b++){
+						for(b = 0; b < array_length(paises); b++){
 							array_push(temp_array, false)
 							array_push(temp_array_2, false)
 						}
-						for(b = 0; b < array_length(pais_guerras[e]); b++){
-							var guerra = pais_guerras[e, b]
-							if array_contains(guerra.bando_a, e){
+						for(b = 0; b < array_length(pais.guerras); b++){
+							var guerra = pais.guerras[b]
+							if array_contains(guerra.bando_a, pais){
 								for(c = 0; c < array_length(guerra.bando_a); c++)
-									if guerra.bando_a[c] != e{
+									if guerra.bando_a[c] != pais{
 										temp_array_2[guerra.bando_a[c]] = true
 										flag_2 = true
 									}
@@ -1244,7 +1244,7 @@ if sel_build{
 									flag = true
 								}
 								for(c = 0; c < array_length(guerra.bando_b); c++)
-									if guerra.bando_b[c] != e{
+									if guerra.bando_b[c] != pais{
 										temp_array_2[guerra.bando_b[c]] = true
 										flag_2 = true
 									}
@@ -1252,17 +1252,17 @@ if sel_build{
 						}
 						if flag{
 							draw_text_pos(120, pos, "En guerra con:")
-							for(b = 0; b < array_length(pais_nombre); b++)
+							for(b = 0; b < array_length(paises); b++)
 								if temp_array[b]
-									draw_text_pos(130, pos, pais_nombre[b])
+									draw_text_pos(130, pos, paises[b].nombre)
 						}
 						else
 							draw_text_pos(120, pos, "Solo guerras internas")
 						if flag_2{
 							draw_text_pos(120, pos, "Aliado con:")
-							for(b = 0; b < array_length(pais_nombre); b++)
+							for(b = 0; b < array_length(paises); b++)
 								if temp_array_2[b]
-									draw_text_pos(130, pos, pais_nombre[b])
+									draw_text_pos(130, pos, paises[b].nombre)
 						}
 					}
 					else
@@ -1275,8 +1275,8 @@ if sel_build{
 			draw_text_pos(590, pos, $"{tratados_num} aceptado{tratados_num = 1 ? "" : "s"} de {tratados_max}")
 			for(var a = 0; a < array_length(tratados_ofertas); a++){
 				var tratado = tratados_ofertas[a]
-				if draw_boton_color(600, pos, $"{tratado.cantidad > 0 ? "#FF0000Vender" : "#0000FFComprar"}#000000 {abs(tratado.cantidad)} de #0000FF{recurso_nombre[tratado.recurso]}#000000 a #FF0000{pais_nombre[tratado.pais]}#000000 ({tratado.tipo ? "+" : "-"}{floor(100 * (tratado.factor - 1))}%)") and tratados_num < tratados_max{
-					aceptar_tratado(tratado.pais, tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo)
+				if draw_boton_color(600, pos, $"{tratado.cantidad > 0 ? "#FF0000Vender" : "#0000FFComprar"}#000000 {abs(tratado.cantidad)} de #0000FF{recurso_nombre[tratado.recurso]}#000000 a #FF0000{tratado.pais.nombre}#000000 ({tratado.tipo ? "+" : "-"}{floor(100 * (tratado.factor - 1))}%)") and tratados_num < tratados_max{
+					aceptar_tratado(tratado.recurso, tratado.cantidad, tratado.factor, tratado.tiempo, tratado.pais)
 					array_delete(tratados_ofertas, a, 1)
 				}
 			}
@@ -3051,20 +3051,20 @@ if (keyboard_check(vk_space) or step >= 60){
 		var dia_de_anno = (dia mod 360), dia_de_mes = (dia mod 30)
 		//Día nacional
 		if pais_dia[dia_de_anno] > 0 and array_contains(pais_current, pais_dia[dia_de_anno]){
-			var pais = pais_dia[dia_de_anno], industria = pais_industria[pais], b = 0
+			var pais = pais_dia[dia_de_anno], industria = pais.industria, b = 0
 			c = 0
-			text = $"{fecha(dia)} {pais_nombre[pais]}: ["
+			text = $"{fecha(dia)} {pais.nombre}: ["
 			for(var a = 0; a < array_length(recurso_nombre); a++){
 				if array_contains(recurso_prima, a)
-					b = pais_recursos[pais, a] + random_range(-0.02 * industria, 0.02 * (1 - industria))
+					b = pais.recursos[a] + random_range(-0.02 * industria, 0.02 * (1 - industria))
 				else
-					b = pais_recursos[pais, a] + random_range(-0.02 * (1 - industria), 0.02 * industria)
-				array_set(pais_recursos[pais], a, b)
+					b = pais.recursos[a] + random_range(-0.02 * (1 - industria), 0.02 * industria)
+				pais.recursos[a] = b
 				c += abs(b)
 			}
 			for(var a = 0; a < array_length(recurso_nombre); a++){
-				b = pais_recursos[pais, a] / c
-				array_set(pais_recursos[pais], a, b)
+				b = pais.recursos[a] / c
+				pais.recursos[a] = b
 				text += $"{b}, "
 			}
 			if debug
@@ -3237,8 +3237,8 @@ if (keyboard_check(vk_space) or step >= 60){
 					var tratado = recurso_tratados_venta[a, b]
 					tratado.tiempo--
 					if tratado.tiempo = 0{
-						add_noticia("Tratado fallido", $"No has podido cumplir el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
-						pais_relacion[tratado.pais]--
+						add_noticia("Tratado fallido", $"No has podido cumplir el tratado de exportar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {tratado.pais.nombre}")
+						tratado.pais.relacion--
 						array_delete(recurso_tratados_venta[a], b--, 1)
 						credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
 						tratados_num--
@@ -3248,8 +3248,8 @@ if (keyboard_check(vk_space) or step >= 60){
 					var tratado = recurso_tratados_compra[a, b]
 					tratado.tiempo--
 					if tratado.tiempo = 0{
-						add_noticia("Tratado fallido", $"No has podido cumplir el tratado de importar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {pais_nombre[tratado.pais]}")
-						pais_relacion[tratado.pais]--
+						add_noticia("Tratado fallido", $"No has podido cumplir el tratado de importar {tratado.cantidad} de {recurso_nombre[tratado.recurso]} a {tratado.pais.nombre}")
+						tratado.pais.relacion--
 						array_delete(recurso_tratados_compra[a], b--, 1)
 						credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
 						tratados_num--
@@ -3264,15 +3264,15 @@ if (keyboard_check(vk_space) or step >= 60){
 				array_shift(tratados_ofertas)
 			//Inmigración
 			if ley_eneabled[1] and (irandom(felicidad_total) > felicidad_minima or irandom(credibilidad_financiera) > 7 or dia < 360){
-				var b = 0, origen = -1
+				var b = 0, origen = null_pais
 				if brandom(){
 					for(var a = 0; a < array_length(pais_current); a++)
-						b += max(pais_relacion[pais_current[a]], 0)
+						b += max(pais_current[a].relacion, 0)
 					if b > 0{
 						b = irandom(b - 1)
 						for(var a = 0; a < array_length(pais_current); a++)
-							if max(pais_relacion[pais_current[a]], 0) <= b
-								b -= max(pais_relacion[pais_current[a]], 0)
+							if max(pais_current[a].relacion, 0) <= b
+								b -= max(pais_current[a].relacion, 0)
 							else{
 								origen = pais_current[a]
 								break
