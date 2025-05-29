@@ -210,6 +210,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 					array_set(construccion_reservada[a], b, false)
 					array_set(bosque[a], b, false)
 					array_set(draw_construccion[a], b, null_construccion)
+					if calle[a, b]
+						set_calle(a, b, false)
 				}
 			//Modificar belleza
 			if edificio_belleza[tipo] != 50{

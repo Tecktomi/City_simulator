@@ -17,8 +17,7 @@ debug = false
 	window_set_fullscreen(ini_read_real("MAIN", "fullscreen", 0))
 	ini_close()
 #endregion
-#region Definiciones independientes
-	dia = 1
+#region Paises y Guerras
 	null_guerra = {
 		nombre : "null_guerra",
 		anno_inicio : 0,
@@ -197,6 +196,9 @@ debug = false
 		def_guerra("Operación Uphold Democracy", 194, 196, [pais_estados_unidos], [pais_haiti])
 		def_guerra("Guerra contra el narcotráfico", 206, 0, [pais_mexico, pais_estados_unidos], [])
 	#endregion
+#endregion
+#region Leyes, ministerios, noticias y zonas de pesca
+	dia = 1
 	#region Leyes
 		ley_nombre = []
 		ley_eneabled = []
@@ -263,6 +265,14 @@ debug = false
 		cantidad : 0,
 		cantidad_max : 0
 	}
+	null_carretera = {
+		index : 0,
+		tramos : [{a : 0, b : 0}],
+		edificios : []
+	}
+	array_pop(null_carretera.tramos)
+	carreteras = [null_carretera]
+	array_pop(carreteras)
 #endregion
 #region Personas
 	null_relacion = {
@@ -805,6 +815,8 @@ debug = false
 	array_pop(trabajos)
 	iglesias = [null_edificio]
 	array_pop(iglesias)
+	array_push(null_carretera.edificios, null_edificio)
+	array_pop(null_carretera.edificios)
 	edificios_por_mantenimiento = []
 	for(a = 0; a < 21; a++){
 		array_push(edificios_por_mantenimiento, [null_edificio])
@@ -1019,9 +1031,7 @@ debug = false
 		array_push(temp_array, false)
 	var temp_array_length = array_length(temp_array)
 	array_pop(mares[0])
-	var temp_color_array = []
-	repeat(array_length(recurso_cultivo))
-		array_push(temp_color_array, c_red)
+	var temp_color_array = [c_red, c_red, c_red, c_red, c_red, c_red, c_red]
 	//Matriz del mundo
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
@@ -1075,7 +1085,6 @@ debug = false
 			}
 			else
 				prev_mar_bool = false
-			#region altura color
 			altura_color[a, b] = c_gray
 			if mar[a, b]
 				altura_color[a, b] = make_color_rgb(63 * c, 63 * c, 255 * c)
@@ -1083,10 +1092,8 @@ debug = false
 				altura_color[a, b] = make_color_rgb(255 / 0.65 * (1.1 - c), 255 / 0.65 * (1.1 - c), 127)
 			else
 				altura_color[a, b] = make_color_rgb(31 + 96 * c, 127, 31 + 96 * c)
-			#endregion
-			
 			if not mar[a, b]{
-				var e = 0, f = 0
+				var e = 0, f = 0, temp_color_array_2 = []
 				for(var d = 0; d < array_length(recurso_cultivo); d++){
 					var temp_altura_minima = cultivo_altura_minima[d], temp_cultivo = cultivo[d]
 					if c < temp_altura_minima
@@ -1094,12 +1101,13 @@ debug = false
 					else if c < temp_altura_minima + 0.05
 						ds_grid_multiply(temp_cultivo, a, b, 20 * (c - temp_altura_minima))
 					var g = temp_cultivo[# a, b]
-					array_set(cultivo_color[a, b], d, make_color_rgb(255 * (1 - g), 255 * g, 0))
+					array_push(temp_color_array_2, make_color_rgb(255 * (1 - g), 255 * g, 0))
 					if e < temp_cultivo[# a, b]{
 						e = max(e, temp_cultivo[# a, b])
 						f = d
 					}
 				}
+				array_set(cultivo_color[a], b, temp_color_array_2)
 				cultivo_max[a, b] = f
 			}
 			for(var d = 0; d < array_length(recurso_mineral); d++){
@@ -1122,6 +1130,9 @@ debug = false
 			land_checked[a, b] = false
 			land_matrix[a, b] = false
 			bosque_venta[a, b] = false
+			calle[a, b] = false
+			calle_sprite[a, b] = 0
+			calle_carretera[a, b] = null_carretera
 		}
 	world_update = true
 	for(a = 0; a < xsize / 16; a++)
@@ -1211,6 +1222,7 @@ debug = false
 	build_pressed = false
 	build_terreno = false
 	build_terreno_permisos = temp_array
+	build_calle = false
 	last_width = 0
 	last_height = 0
 	show_grid = false

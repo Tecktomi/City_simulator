@@ -83,9 +83,11 @@ if menu_principal{
 					for(var c = 0; c < e; c++)
 						for(var d = 0; d < f; d++)
 							if escombros[g + c, h + d]
-								draw_sprite_ext(spr_tile, 0, tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, 1, 1, 0, c_ltgray, 1)
+								draw_sprite_ext(spr_tile, 0, tile_width * (16 + c - d), (c + d) * tile_height, 1, 1, 0, c_ltgray, 1)
+							else if calle[g + c, h + d]
+								draw_sprite_ext(spr_calle, calle_sprite[g + c, h + d], tile_width * (16 + c - d), (c + d) * tile_height, 1, 1, 0, c_white, 1)
 							else
-								draw_sprite_ext(spr_tile, 0, tile_width * 16 + (c - d) * tile_width, (c + d) * tile_height, 1, 1, 0, altura_color[g + c, h + d], 1)
+								draw_sprite_ext(spr_tile, 0, tile_width * (16 + c - d), (c + d) * tile_height, 1, 1, 0, altura_color[g + c, h + d], 1)
 					var sprite = sprite_create_from_surface(surf, 0, 0, tile_width * 32, tile_height * 32, true, false, 0, 0)
 					array_set(chunk[a], b, sprite)
 					array_set(chunk_update[a], b, false)
@@ -388,7 +390,7 @@ if menu{
 		mouse_clear(mb_left)
 }
 //Abrir menú de construcción
-if mouse_check_button_pressed(mb_right) and not build_sel and not sel_build and not build_terreno{
+if mouse_check_button_pressed(mb_right) and not build_sel and not sel_build and not build_terreno and not build_calle{
 	mouse_clear(mb_right)
 	close_show()
 	sel_build = true
@@ -465,6 +467,10 @@ if sel_build{
 						tutorial_complete = true
 				}
 			}
+		}
+		if edificio_categoria_nombre[build_categoria] = "Infrastructura" and draw_boton(110, pos, "Calles $10"){
+			sel_build = false
+			build_calle = true
 		}
 	}
 	//Privatizar terreno
@@ -1858,7 +1864,7 @@ if build_terreno{
 	draw_rectangle(0, 0, room_width, room_height, false)
 	draw_set_alpha(1)
 	draw_set_color(c_white)
-	draw_text(0, 0, "Arrastra para privatizar")
+	show_string += "Arrastra para privatizar\n"
 	if mouse_check_button_pressed(mb_left){
 		build_x = mx
 		build_y = my
@@ -1926,12 +1932,68 @@ if build_terreno{
 		build_terreno = false
 	}
 }
-if not build_sel and not build_terreno and not sel_build
+//Construir calles
+if build_calle{
+	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
+	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
+	show_string += "Arrastra para construir una calle\nClic derecho para borrar calles\n"
+	if mouse_check_button_pressed(mb_left){
+		build_x = mx
+		build_y = my
+	}
+	if abs(build_x - mx) > abs(build_y - my)
+		my = build_y
+	else
+		mx = build_x
+	if build_pressed{
+		draw_set_color(c_black)
+		draw_arrow((build_x - build_y) * tile_width - xpos, (build_x + build_y + 1) * tile_height - ypos, (mx - my) * tile_width - xpos, (mx + my + 1) * tile_height - ypos, 8)
+		if mouse_check_button_released(mb_left){
+			var b = 0
+			if mx = build_x{
+				for(var a = build_y; true; a += sign(my - build_y)){
+					if not calle[mx, a]{
+						set_calle(mx, a, true)
+						b++
+					}
+					if a = my
+						break
+				}
+			}
+			else for(var a = build_x; true; a += sign(mx - build_x)){
+				if not calle[a, my]{
+					set_calle(a, my, true)
+					b++
+				}
+				if a = mx
+					break
+			}
+			world_update = true
+			dinero -= 10 * b
+			mes_construccion[current_mes] += 10 * b
+			recurso_construccion[26] += b
+			if keyboard_check(vk_lshift)
+				build_pressed = false
+			else
+				build_calle = false
+		}
+	}
+	if mouse_check_button_pressed(mb_left)
+		build_pressed = true
+	if mouse_check_button_pressed(mb_right){
+		mouse_clear(mb_right)
+		if calle[mx, my]
+			set_calle(mx, my, false)
+		else
+			build_calle = false
+	}
+}
+if not build_sel and not build_terreno and not sel_build and not build_calle
 	build_pressed = false
 //Seleccionar edificio
 var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build and not getstring and not build_terreno{
+if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build and not getstring and not build_terreno and not build_calle{
 	if debug
 		show_string += $"  ({mx}, {my}) Altura: {altura[# mx, my]}\n"
 	if bool_edificio[mx, my] or construccion_reservada[mx, my] or zona_privada_venta[mx, my]

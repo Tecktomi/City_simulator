@@ -9,8 +9,8 @@ function perlin(xsize, ysize, maximo, integer = false, s = 4){
 		var f = a mod s, h = s - f
 	    for(b = 0; b < ysize; b++){
 			e = floor(b / s)
-			var g = b mod s, i = s - g
-	        ds_grid_set(grid, a, b, c[d, e] * h * i + c[d + 1, e] * f * i +  c[d, e + 1] * h * g + c[d + 1, e + 1] * f * g)
+			var g = b mod s, i = s - g, j = d + 1, k = e + 1
+	        ds_grid_set(grid, a, b, c[d, e] * h * i + c[j, e] * f * i +  c[d, k] * h * g + c[j, k] * f * g)
 		}
 	}
 	d = maximo / ds_grid_get_max(grid, 0, 0, xsize, ysize)
