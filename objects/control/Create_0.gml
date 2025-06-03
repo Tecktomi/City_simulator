@@ -265,9 +265,10 @@ debug = false
 		cantidad : 0,
 		cantidad_max : 0
 	}
+	carreteras_index = 0
 	null_carretera = {
 		index : 0,
-		tramos : [{a : 0, b : 0}],
+		tramos : [[0, 0]],
 		edificios : []
 	}
 	array_pop(null_carretera.tramos)
@@ -785,7 +786,8 @@ debug = false
 		seguro_fuego : 0,
 		zona_pesca : null_zona_pesca,
 		mejoras : [],
-		precio : 0
+		precio : 0,
+		carreteras : [null_carretera]
 	}
 	array_pop(null_edificio.familias)
 	array_pop(null_edificio.trabajadores)
@@ -801,6 +803,7 @@ debug = false
 	array_pop(null_edificio.input_num)
 	array_pop(null_edificio.output_id)
 	array_pop(null_edificio.output_num)
+	array_pop(null_edificio.carreteras)
 	null_edificio.muelle_cercano = null_edificio
 	null_edificio.comisaria = null_edificio
 	edificios = [null_edificio]
@@ -1033,6 +1036,12 @@ debug = false
 	array_pop(mares[0])
 	var temp_color_array = [c_red, c_red, c_red, c_red, c_red, c_red, c_red]
 	//Matriz del mundo
+	calle = ds_grid_create(xsize, ysize)
+	ds_grid_clear(calle, false)
+	calle_sprite = ds_grid_create(xsize, ysize)
+	ds_grid_clear(calle_sprite, 0)
+	calle_carretera = ds_grid_create(xsize, ysize)
+	ds_grid_clear(calle_carretera, null_carretera)
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
 			var c = altura[# a, b], temp_bosque = grid[# a, b]
@@ -1130,9 +1139,6 @@ debug = false
 			land_checked[a, b] = false
 			land_matrix[a, b] = false
 			bosque_venta[a, b] = false
-			calle[a, b] = false
-			calle_sprite[a, b] = 0
-			calle_carretera[a, b] = null_carretera
 		}
 	world_update = true
 	for(a = 0; a < xsize / 16; a++)

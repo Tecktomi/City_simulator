@@ -22,7 +22,6 @@ function add_familia(origen = null_pais, generada = true){
 				persona.nacionalidad = pais_current[irandom_range(1, array_length(pais_current) - 1)]
 			else
 				persona.nacionalidad = origen
-			show_debug_message(persona.nacionalidad.nombre)
 			persona.nombre = gen_nombre(persona.sexo, persona.nacionalidad.idioma)
 			persona.apellido = gen_apellido(persona.nacionalidad.idioma)
 			persona.religion = (irandom(100) < persona.nacionalidad.religion)

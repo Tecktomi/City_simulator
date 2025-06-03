@@ -59,7 +59,6 @@ function gen_apellido(idioma = 0){
 		return choose("Li", "Wang", "Zhang", "Chen", "Yang", "Zhao", "Wu", "Sun")
 }
 function gen_nombre_empresa(){
-	with control{
+	with control
 		return choose(gen_apellido(irandom(6)), array_pick(pais_current).nombre) + " " + choose("Ldta.", "S.A.", "Hmns.", "Corp.", "Asociados")
-	}
 }

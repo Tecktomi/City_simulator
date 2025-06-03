@@ -55,6 +55,13 @@ if menu_principal{
 }
 #region Visual
 	show_string = ""
+	if keyboard_check(ord("Z"))
+		for(var a = 0; a < array_length(carreteras); a++){
+			var carretera = carreteras[a]
+			show_string += $"Carretera {carretera.index}: {array_length(carretera.tramos)} tramos, {array_length(carretera.edificios)} edificios\n"
+			for(var b = 0; b < array_length(carretera.edificios); b++)
+				show_string += $"    {carretera.edificios[b].nombre}\n"
+		}
 	if tutorial_bool and not menu{
 		tutorial_complete = false
 		for(var a = 0; a < array_length(tutorial_keys[tutorial]); a++)
@@ -73,8 +80,9 @@ if menu_principal{
 		tile_height = 16
 		var surf = surface_create(tile_width * 32, tile_height * 32)
 		surface_set_target(surf)
-		for(var a = 0; a < xsize / 16; a++)
-			for(var b = 0; b < ysize / 16; b++)
+		var i = xsize / 16, j = ysize / 16
+		for(var a = 0; a < i; a++)
+			for(var b = 0; b < j; b++)
 				if chunk_update[a, b]{
 					if sprite_exists(chunk[a, b])
 						sprite_delete(chunk[a, b])
@@ -84,8 +92,8 @@ if menu_principal{
 						for(var d = 0; d < f; d++)
 							if escombros[g + c, h + d]
 								draw_sprite_ext(spr_tile, 0, tile_width * (16 + c - d), (c + d) * tile_height, 1, 1, 0, c_ltgray, 1)
-							else if calle[g + c, h + d]
-								draw_sprite_ext(spr_calle, calle_sprite[g + c, h + d], tile_width * (16 + c - d), (c + d) * tile_height, 1, 1, 0, c_white, 1)
+							else if calle[# g + c, h + d]
+								draw_sprite_ext(spr_calle, calle_sprite[# g + c, h + d], tile_width * (16 + c - d), (c + d) * tile_height, 1, 1, 0, c_white, 1)
 							else
 								draw_sprite_ext(spr_tile, 0, tile_width * (16 + c - d), (c + d) * tile_height, 1, 1, 0, altura_color[g + c, h + d], 1)
 					var sprite = sprite_create_from_surface(surf, 0, 0, tile_width * 32, tile_height * 32, true, false, 0, 0)
@@ -204,6 +212,17 @@ if menu_principal{
 			}	
 		}
 	#region vistas post-dibujo
+		if keyboard_check(ord("Z"))
+			for(var a = 0; a < array_length(carreteras); a++){
+				var carretera = carreteras[a]
+				c = (a mod 4) * 4
+				d = floor(a / 4) * 4
+				draw_set_color(make_color_hsv(255 * a / array_length(carreteras), 191, 255))
+				for(var b = 0; b < array_length(carretera.tramos); b++){
+					var temp_calle = carretera.tramos[b]
+					draw_circle(tile_width * (temp_calle[0] - temp_calle[1]) - xpos + c, tile_height * (temp_calle[0] + temp_calle[1]) - ypos + d, 3, false)
+				}
+			}
 		if keyboard_check(ord("V"))
 			draw_gradiente(0, 4)
 		if keyboard_check(ord("T"))
@@ -1936,6 +1955,7 @@ if build_terreno{
 if build_calle{
 	var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 	var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
+	draw_rombo_coord(mx, my, 1, 1, true)
 	show_string += "Arrastra para construir una calle\nClic derecho para borrar calles\n"
 	if mouse_check_button_pressed(mb_left){
 		build_x = mx
@@ -1952,8 +1972,8 @@ if build_calle{
 			var b = 0
 			if mx = build_x{
 				for(var a = build_y; true; a += sign(my - build_y)){
-					if not calle[mx, a]{
-						set_calle(mx, a, true)
+					if not calle[# mx, a] and not mar[mx, a] and not bool_edificio[mx, a]{
+						add_calle(mx, a)
 						b++
 					}
 					if a = my
@@ -1961,8 +1981,8 @@ if build_calle{
 				}
 			}
 			else for(var a = build_x; true; a += sign(mx - build_x)){
-				if not calle[a, my]{
-					set_calle(a, my, true)
+				if not calle[# a, my] and not mar[a, my] and not bool_edificio[a, my]{
+					add_calle(a, my)
 					b++
 				}
 				if a = mx
@@ -1982,8 +2002,8 @@ if build_calle{
 		build_pressed = true
 	if mouse_check_button_pressed(mb_right){
 		mouse_clear(mb_right)
-		if calle[mx, my]
-			set_calle(mx, my, false)
+		if calle[# mx, my]
+			destroy_calle(mx, my)
 		else
 			build_calle = false
 	}
@@ -2780,6 +2800,8 @@ if sel_info{
 			if not sel_edificio.privado and ((var_edificio_nombre != "Muelle" and var_edificio_nombre != "Oficina de Construcción") or array_length(edificio_count[index]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.huelga)
 				destroy_edificio(sel_edificio)
 		}
+		for(var a = 0; a < array_length(sel_edificio.carreteras); a++)
+			draw_text_pos(room_width - 20, pos, $"Carretera {sel_edificio.carreteras[a].index}")
 		draw_set_alpha(1)
 	}
 	//Información familias

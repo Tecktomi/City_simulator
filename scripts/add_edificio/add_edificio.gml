@@ -64,7 +64,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 			seguro_fuego : 0,
 			zona_pesca : null_zona_pesca,
 			mejoras : [],
-			precio : edificio_precio[tipo]
+			precio : edificio_precio[tipo],
+			carreteras : [null_carretera]
 		}
 		array_pop(edificio.familias)
 		array_pop(edificio.trabajadores)
@@ -81,6 +82,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 			array_push(edificio.almacen, 0)
 			array_push(edificio.pedido, 0)
 		}
+		array_pop(edificio.carreteras)
 		if fisico{
 			if pre_width = -1
 				var width = edificio_width[tipo]
@@ -210,8 +212,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 					array_set(construccion_reservada[a], b, false)
 					array_set(bosque[a], b, false)
 					array_set(draw_construccion[a], b, null_construccion)
-					if calle[a, b]
-						set_calle(a, b, false)
+					if calle[# a, b]
+						destroy_calle(a, b)
 				}
 			//Modificar belleza
 			if edificio_belleza[tipo] != 50{
@@ -232,6 +234,9 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 			//Modificar contaminacion
 			if edificio_contaminacion[tipo] != 0
 				set_contaminacion(edificio)
+			//Conectar con calles
+			if edificio_nombre[tipo] != "Toma"
+				edificio_calles(x, y, width, height, edificio)
 		}
 		return edificio
 	}

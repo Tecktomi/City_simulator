@@ -120,5 +120,8 @@ function destroy_edificio(edificio = control.null_edificio){
 			sel_info = false
 		}
 		array_remove(edificios_por_mantenimiento[min(20, edificio.mantenimiento)], edificio)
+		for(var a = 0; a < array_length(edificio.carreteras); a++)
+			array_remove(edificio.carreteras[a].edificios, edificio)
+		delete edificio
 	}
 }

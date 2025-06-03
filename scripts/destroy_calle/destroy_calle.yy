@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"set_calle",
+  "%Name":"destroy_calle",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"set_calle",
+  "name":"destroy_calle",
   "parent":{
     "name":"City_simulator",
     "path":"City_simulator.yyp",
