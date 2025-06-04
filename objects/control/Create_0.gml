@@ -1,6 +1,6 @@
 randomize()
 var a, b
-debug = false
+debug = true
 #region Save
 	roaming = game_save_id
 	directory_create(roaming + "Personas")
@@ -269,11 +269,14 @@ debug = false
 	null_carretera = {
 		index : 0,
 		tramos : [[0, 0]],
-		edificios : []
+		edificios : [],
+		taxis : 0
 	}
 	array_pop(null_carretera.tramos)
 	carreteras = [null_carretera]
 	array_pop(carreteras)
+	autos = [[0, 0, 0]]
+	array_pop(autos)
 #endregion
 #region Personas
 	null_relacion = {
@@ -500,7 +503,8 @@ debug = false
 		"Infaltable para el ocio nocturno de tus habitantes, ojalá que nadie viva al lado",
 		"Transmite para todas las casas y trabajos con electricidad en el área",
 		"Usa el poder del sol para generar energía infinita y limpia, ¡que milagro!",
-		""]
+		"",
+		"Permite a los ciudadanos moverse rápidamente entre edificios conectados por calles"]
 	#endregion
 	#region arreglos vacíos
 		edificio_nombre = []
@@ -685,9 +689,10 @@ debug = false
 		def_edificio_base("Paneles Solares", 5, 5, 4000, 1800, [15, 26, 33], [20, 10, 20], 25,,,,,,,,,,,, 200); def_edificio_servicio(); def_edificio_trabajo(true, 1, 80, 15, 3)
 		def_edificio_base("Prostitución"); def_edificio_servicio(); def_edificio_trabajo(,,10, 2,, 0.05)
 		//60
+		def_edificio_base("Depósito de Taxis", 3, 3, 2000, 540, [15, 31], [25, 10], 4, 35, 10,,,,,,,,,, 80); def_edificio_servicio(); def_edificio_trabajo(true, 4, 40, 5, 1, 0.02,,,,,, 10)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
-	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 16, 21, 34, 35, 43, 46, 57], [11, 12, 24, 53, 54, 55, 56], [13, 20, 22, 41, 42, 44, 58], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
+	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 16, 21, 34, 35, 43, 46, 57], [11, 12, 24, 53, 54, 55, 56], [13, 20, 22, 41, 42, 44, 58, 60], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
 	edificio_color = []
 	for(a = 0; a < array_length(edificio_nombre); a++){
 		var flag = false
@@ -1042,11 +1047,15 @@ debug = false
 	ds_grid_clear(calle_sprite, 0)
 	calle_carretera = ds_grid_create(xsize, ysize)
 	ds_grid_clear(calle_carretera, null_carretera)
+	bool_edificio = ds_grid_create(xsize, ysize)
+	ds_grid_clear(bool_edificio, false)
+	bosque_venta = ds_grid_create(xsize, ysize)
+	ds_grid_clear(bosque_venta, false)
+	id_edificio = ds_grid_create(xsize, ysize)
+	ds_grid_clear(id_edificio, null_edificio)
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
 			var c = altura[# a, b], temp_bosque = grid[# a, b]
-			bool_edificio[a, b] = false
-			id_edificio[a, b] = null_edificio
 			construccion_reservada[a, b] = false
 			bool_draw_edificio[a, b] = false
 			draw_edificio[a, b] = null_edificio
@@ -1138,7 +1147,6 @@ debug = false
 			mar_checked[a, b] = false
 			land_checked[a, b] = false
 			land_matrix[a, b] = false
-			bosque_venta[a, b] = false
 		}
 	world_update = true
 	for(a = 0; a < xsize / 16; a++)
@@ -1214,6 +1222,7 @@ debug = false
 	sel_persona = null_persona
 	sel_construccion = null_construccion
 	sel_terreno = null_terreno
+	sel_carretera = null_carretera
 	sel_tipo = 0
 	sel_build = false
 	sel_modo = false

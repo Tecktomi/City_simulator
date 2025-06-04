@@ -21,7 +21,7 @@ function destroy_empresa(empresa = control.null_empresa){
 		}
 		for(var a = 0; a < array_length(empresa.terreno); a++){
 			var complex =  empresa.terreno[a]
-			if bool_edificio[complex.a, complex.b]
+			if bool_edificio[# complex.a, complex.b]
 				array_delete(empresa.terreno, a--, 1)
 			else{
 				array_set(zona_privada[complex.a], complex.b, false)

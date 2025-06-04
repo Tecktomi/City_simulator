@@ -1,4 +1,4 @@
-function select(edificio = control.null_edificio, familia = control.null_familia, persona = control.null_persona, construccion = control.null_construccion, terreno = control.null_terreno){
+function select(edificio = control.null_edificio, familia = control.null_familia, persona = control.null_persona, construccion = control.null_construccion, terreno = control.null_terreno, carretera = control.null_carretera){
 	with control{
 		close_show()
 		sel_build = false
@@ -7,6 +7,7 @@ function select(edificio = control.null_edificio, familia = control.null_familia
 		sel_familia = null_familia
 		sel_persona = null_persona
 		sel_construccion = null_construccion
+		sel_carretera = null_carretera
 		if edificio != null_edificio{
 			sel_tipo = 0
 			sel_edificio = edificio
@@ -26,6 +27,10 @@ function select(edificio = control.null_edificio, familia = control.null_familia
 		if terreno != null_terreno{
 			sel_tipo = 4
 			sel_terreno = terreno
+		}
+		if carretera != null_carretera{
+			sel_tipo = 5
+			sel_carretera = carretera
 		}
 		return false
 	}

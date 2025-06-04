@@ -34,8 +34,8 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 						array_set(zona_privada[a], b, false)
 						array_set(zona_empresa[a], b, null_empresa)
 					}
-					if bool_edificio[a, b] and id_edificio[a, b].tipo = 32
-						destroy_edificio(id_edificio[a, b])
+					if bool_edificio[# a, b] and id_edificio[# a, b].tipo = 32
+						destroy_edificio(id_edificio[# a, b])
 					if escombros[a, b]{
 						array_set(escombros[a], b, false)
 						array_set(chunk_update[floor(a / 16)], floor(b / 16), true)

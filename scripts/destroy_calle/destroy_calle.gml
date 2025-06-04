@@ -47,8 +47,8 @@ function destroy_calle(x, y){
 						ds_grid_set(calle_carretera, cx, cy, null_carretera)
 						for(var k = 0; k < 4; k++){
 							var vx = vecinos[k, 0], vy = vecinos[k, 1]
-							if vx >= 0 and vy >= 0 and vx < xsize and vy < ysize and bool_edificio[vx, vy] and edificio_nombre[id_edificio[vx, vy].tipo] != "Toma"{
-								var ed = id_edificio[vx, vy]
+							if vx >= 0 and vy >= 0 and vx < xsize and vy < ysize and bool_edificio[# vx, vy] and edificio_nombre[id_edificio[# vx, vy].tipo] != "Toma"{
+								var ed = id_edificio[# vx, vy]
 								if not array_contains(edificios, ed)
 									array_push(edificios, ed)
 							}
@@ -57,7 +57,8 @@ function destroy_calle(x, y){
 					var nueva_carretera = {
 						index : carreteras_index++,
 						tramos : comp,
-						edificios : edificios
+						edificios : edificios,
+						taxis : 0
 					}
 					for(var j = 0; j < array_length(comp); j++)
 						ds_grid_set(calle_carretera, comp[j, 0], comp[j, 1], nueva_carretera)

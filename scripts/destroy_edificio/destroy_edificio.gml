@@ -34,6 +34,9 @@ function destroy_edificio(edificio = control.null_edificio){
 				energia_input -= edificio.count
 			else if var_edificio_nombre = "Radio"
 				radioemisoras -= edificio.count
+			else if var_edificio_nombre = "Depósito de Taxis"
+				for(var a = 0; a < array_length(edificio.carreteras); a++)
+					edificio.carreteras[a].taxis -= floor(edificio.count / edificio.array_complex[0].a)
 		}
 		if edificio_es_casa[tipo]{
 			array_remove(casas, edificio, "eliminar casa")
@@ -74,10 +77,8 @@ function destroy_edificio(edificio = control.null_edificio){
 				if edificios[a].muelle_cercano = edificio
 					buscar_muelle_cercano(edificios[a])
 		}
-		var c = edificio.x + width, d = edificio.y + height
-		for(var a = edificio.x; a < c; a++)
-			for(var b = edificio.y; b < d; b++)
-				array_set(bool_edificio[a], b, false)
+		ds_grid_set_region(bool_edificio, edificio.x, edificio.y, edificio.x + width - 1, edificio.y + height - 1, false)
+		ds_grid_set_region(id_edificio, edificio.x, edificio.y, edificio.x + width - 1, edificio.y + height - 1, null_edificio)
 		if edificio.privado
 			array_remove(edificio.empresa.edificios, edificio, "eliminar edificio de la empresa")
 		array_remove(edificios, edificio, "eliminar edificio")
@@ -105,8 +106,8 @@ function destroy_edificio(edificio = control.null_edificio){
 			for(var a = max(0, edificio.x - size); a < c; a++)
 				for(var b = d; b < e; b++){
 					array_set(belleza[a], b, round(belleza[a, b] - (edificio_belleza[tipo] - 50) / (1 + distancia_punto(a, b, edificio))))
-					if bool_edificio[a, b]{
-						var edificio_2 = id_edificio[a, b]
+					if bool_edificio[# a, b]{
+						var edificio_2 = id_edificio[# a, b]
 						if edificio_es_casa[edificio_2.tipo]
 							set_calidad_vivienda(edificio_2)
 					}

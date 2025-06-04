@@ -133,7 +133,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 				var c = min(x + width + 5, xsize), d = min(y + height + 5, ysize), e = max(0, y - 5)
 				for(var a = max(0, x - 5); a < c; a++)
 					for(var b = e; b < d; b++)
-						if bosque[a, b] and not bosque_venta[a, b]
+						if bosque[a, b] and not bosque_venta[# a, b]
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
 			}
@@ -145,6 +145,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 				buscar_zona_pesca(edificio)
 			else if var_edificio_nombre = "Conservadora"
 				edificio.array_complex = [{a : 18, b : 1}]
+			else if var_edificio_nombre = "Depósito de Taxis"
+				edificio.array_complex = [{a : 1, b : 0}]
 			if in(var_edificio_nombre, "Pozo Petrolífero", "Departamentos", "Bloque Habitacional", "Planta Química"){
 				edificio.agua = true
 				edificio.agua_consumo += edificio_agua[tipo]
@@ -178,8 +180,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 			if edificio_es_casa[tipo]
 				for(var a = max(0, x - 8); a < c; a++)
 					for(var b = e; b < d; b++)
-						if bool_edificio[a, b]{
-							var temp_edificio = id_edificio[a, b], g = temp_edificio.trabajo_educacion
+						if bool_edificio[# a, b]{
+							var temp_edificio = id_edificio[# a, b], g = temp_edificio.trabajo_educacion
 							if edificio_es_trabajo[temp_edificio.tipo] and not array_contains(edificio.trabajos_cerca[g], temp_edificio){
 								array_push(temp_edificio.casas_cerca, edificio)
 								array_push(edificio.trabajos_cerca[g], temp_edificio)
@@ -192,8 +194,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 				var g = edificio.trabajo_educacion
 				for(var a = max(0, x - 8); a < c; a++)
 					for(var b = e; b < d; b++)
-						if bool_edificio[a, b]{
-							var temp_edificio = id_edificio[a, b]
+						if bool_edificio[# a, b]{
+							var temp_edificio = id_edificio[# a, b]
 							if edificio_es_casa[temp_edificio.tipo] and edificio_nombre[temp_edificio.tipo] != "Toma" and not array_contains(edificio.casas_cerca, temp_edificio){
 								array_push(edificio.casas_cerca, temp_edificio)
 								array_push(temp_edificio.trabajos_cerca[g], edificio)
@@ -203,12 +205,12 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 						}
 			}
 			//Marcar terreno
+			ds_grid_set_region(bool_edificio, x, y, x + width - 1, y + height - 1, true)
+			ds_grid_set_region(id_edificio, x, y, x + width - 1, y + height - 1, edificio)
 			c = x + width
 			d = y + height
 			for(var a = x; a < c; a++)
 				for(var b = y; b < d; b++){
-					array_set(bool_edificio[a], b, true)
-					array_set(id_edificio[a], b, edificio)
 					array_set(construccion_reservada[a], b, false)
 					array_set(bosque[a], b, false)
 					array_set(draw_construccion[a], b, null_construccion)
@@ -224,8 +226,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 				for(var a = max(0, x - size); a < c; a++)
 					for(var b = e; b < d; b++){
 						array_set(belleza[a], b, round(belleza[a, b] + (edificio_belleza[tipo] - 50) / (1 + distancia_punto(a, b, edificio))))
-						if bool_edificio[a, b]{
-							var edificio_2 = id_edificio[a, b]
+						if bool_edificio[# a, b]{
+							var edificio_2 = id_edificio[# a, b]
 							if edificio_es_casa[edificio_2.tipo]
 								set_calidad_vivienda(edificio_2)
 						}
@@ -235,8 +237,32 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 			if edificio_contaminacion[tipo] != 0
 				set_contaminacion(edificio)
 			//Conectar con calles
-			if edificio_nombre[tipo] != "Toma"
-				edificio_calles(x, y, width, height, edificio)
+			if edificio_nombre[tipo] != "Toma"{
+				function detect_carretera_x(mina, maxa, b, edificio){
+					for(var a = mina; a < maxa; a++)
+						if calle[# a, b]{
+							var carretera = calle_carretera[# a, b]
+							if not array_contains(carretera.edificios, edificio){
+								array_push(carretera.edificios, edificio)
+								array_push(edificio.carreteras, carretera)
+							}
+						}
+				}
+				detect_carretera_x(x, x + width, y - 1, edificio)
+				detect_carretera_x(x, x + width, y + height, edificio)
+				function detect_carretera_y(mina, maxa, b, edificio){
+					for(var a = mina; a < maxa; a++)
+						if calle[# b, a]{
+							var carretera = calle_carretera[# b, a]
+							if not array_contains(carretera.edificios, edificio){
+								array_push(carretera.edificios, edificio)
+								array_push(edificio.carreteras, carretera)
+							}
+						}
+				}
+				detect_carretera_y(y, y + height, x - 1, edificio)
+				detect_carretera_y(y, y + height, x + width, edificio)
+			}
 		}
 		return edificio
 	}

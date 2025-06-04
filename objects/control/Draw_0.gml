@@ -163,8 +163,8 @@ if menu_principal{
 			if bosque[a, b]
 				draw_sprite_stretched(spr_arbol, 0, (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
 			if bool_draw_edificio[a, b]
-				if edificio_sprite[id_edificio[a, b].tipo]
-					draw_sprite_stretched(edificio_sprite_id[id_edificio[a, b].tipo], draw_edificio_flip[a, b], (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
+				if edificio_sprite[id_edificio[# a, b].tipo]
+					draw_sprite_stretched(edificio_sprite_id[id_edificio[# a, b].tipo], draw_edificio_flip[a, b], (a - b - 1) * tile_width - xpos, (a + b - 2) * tile_height - ypos, tile_width * 2, tile_width * 2)
 				else{
 					var edificio = draw_edificio[a, b], width = edificio.width, height = edificio.height
 					c = edificio.x
@@ -209,8 +209,37 @@ if menu_principal{
 				draw_set_color(c_white)
 				draw_rombo_coord(c, d, width, height, true)
 				draw_text((c - d) * tile_width - xpos, (c + d) * tile_height - ypos, $"{var_edificio_nombre}{var_edificio_nombre = "Mina" ? "\n" + recurso_nombre[recurso_mineral[next_build.tipo]] : ""}{var_edificio_nombre = "Granja" ? "\n" + recurso_nombre[recurso_cultivo[next_build.tipo]] : ""}{var_edificio_nombre = "Rancho" ? "\n" + ganado_nombre[next_build.tipo] : ""}")
-			}	
+			}
 		}
+	//Dibujo de autitos ^w^
+	if tile_width >= 32{
+		for(var a = 0; a < array_length(autos); a++){
+			var auto = autos[a], b = real(auto[0])
+			c = real(auto[1])
+			d = real(auto[2])
+			var vecinos = [[c - 1, d], [c, d - 1], [c + 1, d], [c, d + 1]], f = vecinos[auto[3]], g = f[0], h = f[1]
+			draw_sprite_ext(spr_auto, 0, (b - c) * tile_width - xpos, (b + c) * tile_height - ypos, tile_width / 32, tile_height / 16, 0, c_white, 1)
+			if (d mod 60) = 0{
+				for(e = 0; e < 4; e++){
+					var vx = vecinos[(e + auto[3]) mod 4, 0], vy = vecinos[(e + auto[3]) mod 4, 1]
+					if vx >= 0 and vy >= 0 and vx < xsize and vy < ysize and calle[# vx, vy]{
+						auto[0] = vx
+						auto[1] = vy
+						auto[3] += e
+					}
+				}
+			}
+			if d > 0
+				auto[2]--
+			else
+				array_delete(autos, a--, 1)
+		}
+		if random(1) < 0.1{
+			var a = irandom_range(min_camx, max_camx), b = irandom_range(min_camy, max_camy)
+			if calle[# a, b]
+				array_push(autos, [a, b, irandom_range(300, 600), irandom(3)])
+		}
+	}
 	#region vistas post-dibujo
 		if keyboard_check(ord("Z"))
 			for(var a = 0; a < array_length(carreteras); a++){
@@ -1773,12 +1802,12 @@ if build_sel{
 	e = max(0, my - 5)
 	for(var a = max(0, mx - 5); a < c; a++)
 		for(var b = e; b < d; b++)
-			if zona_privada[a, b] or bool_edificio[a, b] or construccion_reservada[a, b]{
+			if zona_privada[a, b] or bool_edificio[# a, b] or construccion_reservada[a, b]{
 				if zona_privada[a, b]
 					draw_set_color(c_blue)
 				else if construccion_reservada[a, b]
 					draw_set_color(c_green)
-				else if bool_edificio[a, b]
+				else if bool_edificio[# a, b]
 					draw_set_color(c_red)
 				draw_rombo_coord(a, b, 1, 1, false)
 			}
@@ -1797,7 +1826,7 @@ if build_sel{
 			var f = max(0, my - 5)
 			for(var a = max(0, mx - 5); a < d; a++)
 				for(var b = f; b < e; b++)
-					if bosque[a, b] and not bosque_venta[a, b] and not (a >= mx and a < mx + width and b >= my and b < my + height){
+					if bosque[a, b] and not bosque_venta[# a, b] and not (a >= mx and a < mx + width and b >= my and b < my + height){
 						flag_2 = true
 						c += bosque_madera[a, b]
 					}
@@ -1907,7 +1936,7 @@ if build_terreno{
 		d = miny + height
 		for(var a = minx; a < c; a++){
 			for(var b = miny; b < d; b++)
-				if (bool_edificio[a, b] and edificio_nombre[id_edificio[a, b].tipo] != "Toma") or mar[a, b] or construccion_reservada[a, b] or zona_privada[a, b] or zona_privada_venta[a, b]{
+				if (bool_edificio[# a, b] and not edificio_nombre[id_edificio[# a, b].tipo] = "Toma") or mar[a, b] or construccion_reservada[a, b] or zona_privada[a, b] or zona_privada_venta[a, b]{
 					flag = false
 					break
 				}
@@ -1972,7 +2001,7 @@ if build_calle{
 			var b = 0
 			if mx = build_x{
 				for(var a = build_y; true; a += sign(my - build_y)){
-					if not calle[# mx, a] and not mar[mx, a] and not bool_edificio[mx, a]{
+					if not calle[# mx, a] and not mar[mx, a] and not bosque[mx, a] and not zona_privada[mx, a] and (not bool_edificio[# mx, a] or edificio_nombre[id_edificio[# mx, a]] = "Toma"){
 						add_calle(mx, a)
 						b++
 					}
@@ -1981,7 +2010,7 @@ if build_calle{
 				}
 			}
 			else for(var a = build_x; true; a += sign(mx - build_x)){
-				if not calle[# a, my] and not mar[a, my] and not bool_edificio[a, my]{
+				if not calle[# a, my] and not mar[a, my] and not bosque[a, my] and not zona_privada[a, my] and (not bool_edificio[# a, my] or edificio_nombre[id_edificio[# a, my]] = "Toma"){
 					add_calle(a, my)
 					b++
 				}
@@ -1994,8 +2023,10 @@ if build_calle{
 			recurso_construccion[26] += b
 			if keyboard_check(vk_lshift)
 				build_pressed = false
-			else
+			else{
 				build_calle = false
+				select(,,,,, calle_carretera[# mx, my])
+			}
 		}
 	}
 	if mouse_check_button_pressed(mb_left)
@@ -2016,19 +2047,19 @@ var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_w
 if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build and not getstring and not build_terreno and not build_calle{
 	if debug
 		show_string += $"  ({mx}, {my}) Altura: {altura[# mx, my]}\n"
-	if bool_edificio[mx, my] or construccion_reservada[mx, my] or zona_privada_venta[mx, my]
+	if bool_edificio[# mx, my] or construccion_reservada[mx, my] or zona_privada_venta[mx, my] or calle[# mx, my]
 		cursor = cr_handpoint
 	if mouse_check_button_pressed(mb_left) and not build_sel{
 		mouse_clear(mb_left)
-		sel_info = bool_edificio[mx, my] or construccion_reservada[mx, my] or zona_privada_venta[mx, my]
+		sel_info = bool_edificio[# mx, my] or construccion_reservada[mx, my] or zona_privada_venta[mx, my] or calle[# mx, my]
 		if sel_info{
 			sel_familia = null_familia
 			sel_persona = null_persona
 			close_show()
 			if construccion_reservada[mx, my]
 				select(,,, draw_construccion[mx, my])
-			else if bool_edificio[mx, my]{
-				var edificio = id_edificio[mx, my]
+			else if bool_edificio[# mx, my]{
+				var edificio = id_edificio[# mx, my]
 				if sel_comisaria{
 					if edificio_nombre[edificio.tipo] != "Comisaría"{
 						if sel_edificio.comisaria != null_edificio
@@ -2042,8 +2073,10 @@ if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - 
 				if tutorial_bool and tutorial = 10
 					tutorial_complete = true
 			}
-			else
+			else if zona_privada_venta[mx, my]
 				select(,,,, zona_privada_venta_terreno[mx, my])
+			else if calle[# mx, my]
+				select(,,,,, calle_carretera[# mx, my])
 		}
 		else if sel_comisaria{
 			if sel_edificio.comisaria != null_edificio
@@ -2656,6 +2689,15 @@ if sel_info{
 						}
 					}
 				}
+				else if var_edificio_nombre = "Depósito de Taxis"{
+					if array_length(sel_edificio.carreteras) = 0
+						draw_text_pos(room_width - 20, pos, "¡Necesitamos conección a\ncarreteras para funcionar!")
+					else{
+						draw_text_pos(room_width - 20, pos, "Conectado a")
+						for(var a = 0; a < array_length(sel_edificio.carreteras); a++)
+							draw_text_pos(room_width - 40, pos, $"Carretera {sel_edificio.carreteras[a].index}")
+					}
+				}
 				pos += 20
 			}
 			//Información escuelas / consultas
@@ -2800,8 +2842,6 @@ if sel_info{
 			if not sel_edificio.privado and ((var_edificio_nombre != "Muelle" and var_edificio_nombre != "Oficina de Construcción") or array_length(edificio_count[index]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.huelga)
 				destroy_edificio(sel_edificio)
 		}
-		for(var a = 0; a < array_length(sel_edificio.carreteras); a++)
-			draw_text_pos(room_width - 20, pos, $"Carretera {sel_edificio.carreteras[a].index}")
 		draw_set_alpha(1)
 	}
 	//Información familias
@@ -3087,6 +3127,25 @@ if sel_info{
 		draw_set_color(c_white)
 		draw_rombo_coord(sel_terreno.x, sel_terreno.y, sel_terreno.width, sel_terreno.height, false)
 		draw_rombo_coord(sel_terreno.x, sel_terreno.y, sel_terreno.width, sel_terreno.height, true)
+		draw_set_color(c_black)
+		draw_set_alpha(1)
+	}
+	//Información carreteras
+	else if sel_tipo = 5 and sel_carretera != null_carretera{
+		draw_text_pos(room_width, pos, $"Carretera {sel_carretera.index}")
+		pos += 20
+		draw_text_pos(room_width - 20, pos, $"Taxis: {sel_carretera.taxis}")
+		draw_set_color(c_red)
+		draw_set_alpha(0.5)
+		for(var a = 0; a < array_length(sel_carretera.tramos); a++){
+			var temp_array = sel_carretera.tramos[a]
+			draw_rombo_coord(temp_array[0], temp_array[1], 1, 1, false)
+		}
+		draw_set_color(c_blue)
+		for(var a = 0; a < array_length(sel_carretera.edificios); a++){
+			var edificio = sel_carretera.edificios[a]
+			draw_rombo_coord(edificio.x, edificio.y, edificio.width, edificio.height, false)
+		}
 		draw_set_color(c_black)
 		draw_set_alpha(1)
 	}
@@ -3659,7 +3718,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						var f = edificio.y - 2
 						for(var b = edificio.x - 2; b < d; b++)
 							for(c = f; c < e; c++)
-								if not bool_edificio[b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c]
+								if not bool_edificio[# b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c]
 									array_push(temp_array_coord, {x : b, y : c})
 						temp_array_coord = array_shuffle(temp_array_coord)
 						edificio = spawn_build(temp_array_coord, 32)
@@ -4023,8 +4082,10 @@ if (keyboard_check(vk_space) or step >= 60){
 					edificio.privado = true
 					if edificio_nombre[edificio.tipo] = "Aserradero"{
 						edificio.modo = 0
-						for(var b = 0; b < array_length(edificio.array_complex); b++)
-							array_set(bosque_venta[edificio.array_complex[b].a], edificio.array_complex[b].b, true)
+						for(var b = 0; b < array_length(edificio.array_complex); b++){
+							var temp_complex = edificio.array_complex[b]
+							ds_grid_set(bosque_venta, temp_complex.a, temp_complex.b, true)
+						}
 					}
 					edificio.empresa = empresa
 					array_push(empresa.edificios, edificio)
@@ -4058,9 +4119,9 @@ if (keyboard_check(vk_space) or step >= 60){
 				var terreno = array_pick(empresa.terreno), temp_array = []
 				mx = terreno.a
 				my = terreno.b
-				while zona_empresa[mx - 1, my] = empresa and (not bool_edificio[mx - 1, my] or id_edificio[mx - 1, my].tipo = 32)
+				while zona_empresa[mx - 1, my] = empresa and (not bool_edificio[# mx - 1, my] or id_edificio[# mx - 1, my].tipo = 32)
 					mx--
-				while zona_empresa[mx, my - 1] = empresa and (not bool_edificio[mx, my - 1] or id_edificio[mx, my - 1].tipo = 32)
+				while zona_empresa[mx, my - 1] = empresa and (not bool_edificio[# mx, my - 1] or id_edificio[# mx, my - 1].tipo = 32)
 					my--
 				for(var b = 0; b < array_length(edificio_categoria_nombre); b++)
 					if zona_privada_permisos[mx, my][b]
@@ -4102,7 +4163,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							e = my - 5
 							for(c = mx - 5; c < max_c; c++)
 								for(d = e; d < max_d; d++)
-									if bosque[c, d] and not bosque_venta[c, d]
+									if bosque[c, d] and not bosque_venta[# c, d]
 										b += bosque_madera[c, d]
 							temp_precio_2 = recurso_precio[0] * b
 							flag = (temp_precio_2 * (1 - impuesto_maderero) > 1000 + 2 * edificio_precio[index])
@@ -4136,7 +4197,7 @@ if (keyboard_check(vk_space) or step >= 60){
 								height = 0
 								for(c = my; c < my + 10; c++)
 									if b >= mx + edificio_width[index] or c >= my + edificio_height[index]{
-										if zona_empresa[b, c] != empresa or construccion_reservada[b, c] or (bool_edificio[b, c] and id_edificio[b, c].tipo != 32){
+										if zona_empresa[b, c] != empresa or construccion_reservada[b, c] or (bool_edificio[# b, c] and id_edificio[# b, c].tipo != 32){
 											if c = my{
 												height = prev_height
 												flag_2 = true
@@ -4185,12 +4246,8 @@ if (keyboard_check(vk_space) or step >= 60){
 							for(var b = mx; b < mx + width; b++)
 								for(c = my; c < my + height; c++)
 									temp_altura += altura[# b, c]
-							if var_edificio_nombre = "Aserradero"{
-								var max_c = mx + width + 5, max_d = my + height + 5
-								for(c = mx - 5; c < max_c; c++)
-									for(d = my - 5; d < max_d; d++)
-										array_set(bosque_venta[c], d, true)
-							}
+							if var_edificio_nombre = "Aserradero"
+								ds_grid_set_region(bosque_venta, mx - 5, my - 5, mx + width + 4, my + height + 4, true)
 							array_push(empresa.construcciones, add_construccion(, mx, my, index, tipo, edificio_construccion_tiempo[index] + temp_tiempo, temp_altura / width / height, width, height, temp_precio, true, empresa, mx, my))
 						}
 					}
@@ -4848,6 +4905,16 @@ if (keyboard_check(vk_space) or step >= 60){
 						energia_input -= edificio.count
 						edificio.count = round(100 * b)
 						energia_input += edificio.count
+					}
+					else if var_edificio_nombre = "Depósito de Taxis"{
+						d = edificio.array_complex[0].a
+						for(c = 0; c < d; c++)
+							edificio.carreteras[c].taxis -= floor(edificio.count / d)
+						edificio.count = b
+						d = array_length(edificio.carreteras)
+						edificio.array_complex[0].a = d
+						for(c = 0; c < d; c++)
+							edificio.carreteras[c].taxis += floor(edificio.count / d)
 					}
 					for(c = 0; c < array_length(edificio.input_id); c++)
 						if edificio.input_num[c] > 0

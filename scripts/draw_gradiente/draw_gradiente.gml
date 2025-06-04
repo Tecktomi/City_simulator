@@ -3,7 +3,7 @@ function draw_gradiente(tipo, modo){
 		if modo = 0{
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
-					if not mar[a, b] and not bosque[a, b] and not bool_edificio[a, b]{
+					if not mar[a, b] and not bosque[a, b] and not bool_edificio[# a, b]{
 						draw_set_color(cultivo_color[a, b][tipo])
 						draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height / 2, false)
 					}
@@ -22,7 +22,7 @@ function draw_gradiente(tipo, modo){
 			draw_set_color(recurso_mineral_color[tipo])
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
-					if not bosque[a, b] and not bool_edificio[a, b] and mineral[tipo][a, b]
+					if not bosque[a, b] and not bool_edificio[# a, b] and mineral[tipo][a, b]
 						draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height / 2, false)
 			show_string += $"Depósitos de {recurso_nombre[recurso_mineral[tipo]]}\n"
 		}
@@ -76,8 +76,8 @@ function draw_gradiente(tipo, modo){
 			}
 			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-			if bool_edificio[mx, my]{
-				var edificio = id_edificio[mx, my]
+			if bool_edificio[# mx, my]{
+				var edificio = id_edificio[# mx, my]
 				if edificio_es_casa[edificio.tipo]
 					show_string += $"Familias: {array_length(edificio.familias)}/{edificio_familias_max[edificio.tipo]}\n"
 			}
@@ -98,8 +98,8 @@ function draw_gradiente(tipo, modo){
 			}
 			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-			if bool_edificio[mx, my]{
-				var edificio = id_edificio[mx, my]
+			if bool_edificio[# mx, my]{
+				var edificio = id_edificio[# mx, my]
 				if edificio_es_trabajo[edificio.tipo]
 					show_string += $"Trabajadores: {array_length(edificio.trabajadores)}/{edificio.trabajadores_max}\n"
 			}
@@ -125,8 +125,8 @@ function draw_gradiente(tipo, modo){
 			}
 			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-			if bool_edificio[mx, my]{
-				var a = id_edificio[mx, my].seguro_fuego
+			if bool_edificio[# mx, my]{
+				var a = id_edificio[# mx, my].seguro_fuego
 				if a = 0
 					show_string += $"Este edificio podría incendiarse\n"
 				else

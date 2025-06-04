@@ -3,6 +3,13 @@ function add_calle(x, y){
 		var a = 0
 		array_set(chunk_update[floor(x / 16)], floor(y / 16), true)
 		world_update = true
+		if bool_edificio[# x, y]{
+			var edificio = id_edificio[# x, y]
+			if edificio_nombre[edificio] = "Toma"
+				destroy_edificio(edificio)
+			else
+				show_error("Intentando construir una calle sobre un edificio", true)
+		}
 		ds_grid_set(calle, x, y, true)
 		if x > 0 and calle[# x - 1, y]{
 			a += 2
@@ -35,17 +42,18 @@ function add_calle(x, y){
 					if carretera != null_carretera and not array_contains(conectadas, carretera)
 						array_push(conectadas, carretera)
 				}
-				else if bool_edificio[b, c]{
-					var edificio = id_edificio[b, c]
+				else if bool_edificio[# b, c]{
+					var edificio = id_edificio[# b, c]
 					if edificio_nombre[edificio.tipo] != "Toma"
-						array_push(temp_edificios, id_edificio[b, c])
+						array_push(temp_edificios, id_edificio[# b, c])
 				}
 		}
 		if array_length(conectadas) = 0{
 			var carretera = {
 				index : carreteras_index++,
 				tramos : [[x, y]],
-				edificios : temp_edificios
+				edificios : temp_edificios,
+				taxis : 0
 			}
 			array_push(carreteras, carretera)
 			ds_grid_set(calle_carretera, x, y, carretera)

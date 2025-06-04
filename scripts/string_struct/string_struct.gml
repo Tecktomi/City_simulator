@@ -52,6 +52,8 @@ function string_struct(struct, b = 0){
 			return string_repeat(" ", b) + "null_relacion"
 		else if struct = control.null_construccion
 			return string_repeat(" ", b) + "null_construccion"
+		else if struct = control.null_carretera
+			return string_repeat(" ", b) + "null_carretera"
 		else if array_contains(global.stack, struct)
 			return string_repeat(" ", b) + "..."
 		else{

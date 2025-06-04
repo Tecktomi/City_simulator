@@ -60,9 +60,11 @@ function year_history(anno){
 			var guerra = guerras_current[a]
 			if guerra.fin = 0 or anno >= guerra.fin{
 				for(var b = 0; b < array_length(guerra.bando_a); b++)
-					array_remove(guerra.bando_a[b].guerras, guerra, "Eliminar guerra de un país")
+					if array_contains(pais_current, guerra.bando_a[b]) and array_contains(guerra.bando_a[b].guerras, guerra)
+						array_remove(guerra.bando_a[b].guerras, guerra, "Eliminar guerra de un país")
 				for(var b = 0; b < array_length(guerra.bando_b); b++)
-					array_remove(guerra.bando_b[b].guerras, guerra, "Eliminar guerra de un país")
+					if array_contains(pais_current, guerra.bando_b[b]) and array_contains(guerra.bando_b[b].guerras, guerra)
+						array_remove(guerra.bando_b[b].guerras, guerra, "Eliminar guerra de un país")
 				add_noticia("Guerra terminada", $"Ha terminado la guerra {guerra.nombre}")
 				array_delete(guerras_current, a--, 1)
 			}
