@@ -214,30 +214,62 @@ if menu_principal{
 	//Dibujo de autitos ^w^
 	if tile_width >= 32{
 		for(var a = 0; a < array_length(autos); a++){
-			var auto = autos[a], b = real(auto[0])
-			c = real(auto[1])
-			d = real(auto[2])
-			var vecinos = [[c - 1, d], [c, d - 1], [c + 1, d], [c, d + 1]], f = vecinos[auto[3]], g = f[0], h = f[1]
-			draw_sprite_ext(spr_auto, 0, (b - c) * tile_width - xpos, (b + c) * tile_height - ypos, tile_width / 32, tile_height / 16, 0, c_white, 1)
-			if (d mod 60) = 0{
-				for(e = 0; e < 4; e++){
-					var vx = vecinos[(e + auto[3]) mod 4, 0], vy = vecinos[(e + auto[3]) mod 4, 1]
-					if vx >= 0 and vy >= 0 and vx < xsize and vy < ysize and calle[# vx, vy]{
-						auto[0] = vx
-						auto[1] = vy
-						auto[3] += e
+			var auto = autos[a]
+			auto.x += auto.hmove
+			auto.y += auto.vmove
+			if floor(100 * frac(auto.x)) = 0 and floor(100 * frac(auto.y)) = 0{
+				c = auto.x
+				d = auto.y
+				var f = 0, g = 0, vecinos = [[c - 1, d], [c, d - 1], [c + 1, d], [c, d + 1]], flag  = false, temp_array = array_shuffle([0, 1, 2, 3])
+				array_remove(temp_array, (auto.dir + 2) mod 4)
+				for(e = 0; e < 4; e++)
+					if calle[# vecinos[e, 0], vecinos[e, 1]]{
+						flag = true
+						break
 					}
+				if flag{
+					flag = false
+					while array_length(temp_array) > 0{
+						e = array_pop(temp_array)
+						f = vecinos[e, 0]
+						g = vecinos[e, 1]
+						if f >= 0 and f < xsize and g >= 0 and g < ysize and calle[# f, g]{
+							flag = true
+							auto.dir = e
+							auto.hmove = (f - c) / 100
+							auto.vmove = (g - d) / 100
+							break
+						}
+					}
+					if not flag
+						array_delete(autos, a--, 1)
 				}
+				else
+					array_delete(autos, a--, 1)
 			}
-			if d > 0
-				auto[2]--
-			else
+			draw_sprite_ext(spr_auto, auto.dir, (auto.x - auto.y - 1) * tile_width - xpos, (auto.x + auto.y) * tile_height - ypos, tile_width / 32, tile_height / 16, 0, c_white, 1)
+			auto.time--
+			if auto.time = 0
 				array_delete(autos, a--, 1)
 		}
 		if random(1) < 0.1{
-			var a = irandom_range(min_camx, max_camx), b = irandom_range(min_camy, max_camy)
-			if calle[# a, b]
-				array_push(autos, [a, b, irandom_range(300, 600), irandom(3)])
+			var a = irandom_range(min_camx, max_camx), b = irandom_range(min_camy, max_camy), vecinos = [[a - 1, b], [a, b - 1], [a + 1, b], [a, b + 1]], flag = false
+			if calle[# a, b]{
+				for(c = 0; c < 4; c++)
+					if calle[# vecinos[c, 0], vecinos[c, 1]]{
+						flag = true
+						break
+					}
+				if flag{
+					do{
+						c = irandom(3)
+						d = vecinos[c, 0]
+						e = vecinos[c, 1]
+					}
+					until d >= 0 and e >= 0 and d < xsize and e < ysize and calle[# d, e]
+					array_push(autos, {x : a, y : b, hmove : (d - a) / 100, vmove : (e - b) / 100, dir : c, time : irandom_range(300, 500)})
+				}
+			}
 		}
 	}
 	#region vistas post-dibujo
@@ -488,35 +520,50 @@ if sel_build{
 	if ministerio = -1{
 		for(var a = 0; a < array_length(edificio_categoria[build_categoria]); a++){
 			b = edificio_categoria[build_categoria, a]
-			if floor(dia / 360) >= edificio_anno[b] and draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}",,, function(b){
-					draw_set_valign(fa_bottom)
-					var text = "", temp_precio = 0
-					for(var a = 0; a < array_length(edificio_recursos_id[b]); a++){
-						text += $"{recurso_nombre[edificio_recursos_id[b, a]]}: {edificio_recursos_num[b, a]}   "
-						temp_precio += recurso_precio[edificio_recursos_id[b, a]] * edificio_recursos_num[b, a]
+			if floor(dia / 360) >= edificio_anno[b]{
+				if edificio_categoria_nombre[build_categoria] = "Industria"{
+					c = room_width - 120
+					for(d = 0; d < array_length(edificio_industria_output_id[b]); d++){
+						draw_sprite(spr_recursos, edificio_industria_output_id[b, d], c, pos)
+						c -= 20
 					}
-					draw_text(100, room_height - 100, text + $"(+${floor(temp_precio)})\n" +
-						(edificio_es_casa[b] ? $"Espacio para {edificio_familias_max[b]} familias\n" : "") +
-						(edificio_es_trabajo[b] ? $"Necesita {edificio_trabajadores_max[b]} trabajadores {edificio_trabajo_educacion[b] = 0 ? "sin educación" : "con " + educacion_nombre[edificio_trabajo_educacion[b]]}\n" : "") +
-						(edificio_es_escuela[b] ? $"Enseña a {edificio_servicio_clientes[b]} alumnos\n" : "") +
-						(edificio_es_medico[b] ? $"Atiende a {edificio_servicio_clientes[b]} pacientes\n" : "") +
-						(edificio_es_ocio[b] or edificio_es_iglesia[b] ? $"Acepta {edificio_servicio_clientes[b]} visitantes\n" : "") + edificio_descripcion[b])
-					draw_set_valign(fa_top)
-				}, b) and dinero + 2500 >= edificio_precio[b]{
-				build_index = b
-				build_sel = true
-				sel_build = false
-				if tutorial_bool{
-					if tutorial = 7 and edificio_nombre[b] = "Chabola"
-						tutorial_complete = true
-					if tutorial = 12 and edificio_nombre[b] = "Granja"
-						tutorial_complete = true
-					if tutorial = 14 and edificio_nombre[b] = "Aserradero"
-						tutorial_complete = true
+					draw_text(c, pos, "->")
+					c -= 30
+					for(d = 0; d < array_length(edificio_industria_input_id[b]); d++){
+						draw_sprite(spr_recursos, edificio_industria_input_id[b, d], c, pos)
+						c -= 20
+					}
+				}
+				if draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}",,, function(b){
+						draw_set_valign(fa_bottom)
+						var text = "", temp_precio = 0
+						for(var a = 0; a < array_length(edificio_recursos_id[b]); a++){
+							text += $"{recurso_nombre[edificio_recursos_id[b, a]]}: {edificio_recursos_num[b, a]}   "
+							temp_precio += recurso_precio[edificio_recursos_id[b, a]] * edificio_recursos_num[b, a]
+						}
+						draw_text(100, room_height - 100, text + $"(+${floor(temp_precio)})\n" +
+							(edificio_es_casa[b] ? $"Espacio para {edificio_familias_max[b]} familias\n" : "") +
+							(edificio_es_trabajo[b] ? $"Necesita {edificio_trabajadores_max[b]} trabajadores {edificio_trabajo_educacion[b] = 0 ? "sin educación" : "con " + educacion_nombre[edificio_trabajo_educacion[b]]}\n" : "") +
+							(edificio_es_escuela[b] ? $"Enseña a {edificio_servicio_clientes[b]} alumnos\n" : "") +
+							(edificio_es_medico[b] ? $"Atiende a {edificio_servicio_clientes[b]} pacientes\n" : "") +
+							(edificio_es_ocio[b] or edificio_es_iglesia[b] ? $"Acepta {edificio_servicio_clientes[b]} visitantes\n" : "") + edificio_descripcion[b])
+						draw_set_valign(fa_top)
+					}, b) and dinero + 2500 >= edificio_precio[b]{
+					build_index = b
+					build_sel = true
+					sel_build = false
+					if tutorial_bool{
+						if tutorial = 7 and edificio_nombre[b] = "Chabola"
+							tutorial_complete = true
+						if tutorial = 12 and edificio_nombre[b] = "Granja"
+							tutorial_complete = true
+						if tutorial = 14 and edificio_nombre[b] = "Aserradero"
+							tutorial_complete = true
+					}
 				}
 			}
 		}
-		if edificio_categoria_nombre[build_categoria] = "Infrastructura" and draw_boton(110, pos, "Calles $10"){
+		if floor(dia / 360) > 80 and edificio_categoria_nombre[build_categoria] = "Infrastructura" and draw_boton(110, pos, "Calles $10"){
 			sel_build = false
 			build_calle = true
 		}
@@ -1614,7 +1661,7 @@ if sel_build{
 		sel_build = false
 	}
 }
-//Colocar edificio
+////Colocar edificio
 if build_sel{
 	var width = edificio_width[build_index], height = edificio_height[build_index], temp_altura = 0, temp_precio = edificio_precio[build_index], temp_tiempo = edificio_construccion_tiempo[build_index], var_edificio_nombre = edificio_nombre[build_index]
 	text = ""
@@ -2481,6 +2528,7 @@ if sel_info{
 				}
 				else if var_edificio_nombre = "Planta Siderúrgica"{
 					//Mejoras
+					edificio_mejora(sel_edificio, mejora_acero_inoxidable)
 					edificio_mejora(sel_edificio, mejora_proceso_bassemer)
 					edificio_mejora(sel_edificio, mejora_horno_de_arco_electrico)
 				}
@@ -2519,7 +2567,14 @@ if sel_info{
 				}
 				else if var_edificio_nombre = "Astillero"{
 					edificio_mejora(sel_edificio, mejora_ferrocarriles)
-					edificio_mejora(sel_edificio, mejora_barcos_a_vapor)
+					if edificio_mejora(sel_edificio, mejora_barcos_a_vapor){
+						set_industria_io(sel_edificio, [1], [0])
+						add_industria_io(sel_edificio, [15], [20])
+					}
+					if edificio_mejora(sel_edificio, mejora_barcos_factoria){
+						set_industria_io(sel_edificio, [1], [0])
+						add_industria_io(sel_edificio, [15], [20])
+					}
 					edificio_mejora(sel_edificio, mejora_gruas_a_vapor)
 					if array_contains(sel_edificio.input_id, 9)
 						edificio_mejora(sel_edificio, mejora_motor_de_diesel)
@@ -3718,7 +3773,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						var f = edificio.y - 2
 						for(var b = edificio.x - 2; b < d; b++)
 							for(c = f; c < e; c++)
-								if not bool_edificio[# b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c]
+								if not bool_edificio[# b, c] and not construccion_reservada[b, c] and not mar[b, c] and not bosque[b, c] and not calle[# b, c]
 									array_push(temp_array_coord, {x : b, y : c})
 						temp_array_coord = array_shuffle(temp_array_coord)
 						edificio = spawn_build(temp_array_coord, 32)

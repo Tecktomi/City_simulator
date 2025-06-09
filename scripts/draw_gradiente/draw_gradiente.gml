@@ -4,8 +4,11 @@ function draw_gradiente(tipo, modo){
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
 					if not mar[a, b] and not bosque[a, b] and not bool_edificio[# a, b]{
+						var c = cultivo_max[a, b], d = (a - b) * tile_width - xpos, e = (a + b + 1) * tile_height - ypos
 						draw_set_color(cultivo_color[a, b][tipo])
-						draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height / 2, false)
+						draw_circle(d, e, tile_height / 2, false)
+						if cultivo[c][# a, b] > 0
+							draw_sprite_stretched(spr_recursos, recurso_cultivo[c], d - tile_height / 2, e - tile_height / 2, tile_height, tile_height)
 					}
 			show_string += $"Eficiencia de {recurso_nombre[recurso_cultivo[tipo]]}\n"
 			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)

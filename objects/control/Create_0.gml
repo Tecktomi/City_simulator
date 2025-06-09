@@ -1,6 +1,6 @@
 randomize()
 var a, b
-debug = true
+debug = false
 #region Save
 	roaming = game_save_id
 	directory_create(roaming + "Personas")
@@ -275,7 +275,15 @@ debug = true
 	array_pop(null_carretera.tramos)
 	carreteras = [null_carretera]
 	array_pop(carreteras)
-	autos = [[0, 0, 0]]
+	null_auto = {
+		x : 0,
+		y : 0,
+		hmove : 0,
+		vmove : 0,
+		dir : 0,
+		time : 0
+	}
+	autos = [null_auto]
 	array_pop(autos)
 #endregion
 #region Personas
@@ -842,6 +850,7 @@ debug = true
 	array_pop(null_mejora.recurso_id)
 	array_pop(null_mejora.recurso_num)
 	array_pop(mejoras)
+	mejora_acero_inoxidable = def_mejora("Acero inoxidable", "Mejora la producción de acero usando niquel", 115, 500, [24], [15],,,,, function(edificio = null_edificio){add_mantenimiento(1, edificio); add_industria_io(edificio, [9, 14], [- 0.5, 0.1], [15], [0.5])}, [15], 0.9)
 	mejora_anestesia = def_mejora("Anestesia", "Mejora el servicio y consume químicos", 70, 500, [30], [10],,,,, function(edificio = null_edificio){edificio.ahorro += 0.2; add_mantenimiento(2, edificio); set_calidad_servicio(edificio); add_industria_io(edificio, [30], [0.1])}, [])
 	mejora_barcos_a_vapor = def_mejora("Barcos a vapor", "Aumenta la eficiencia y contaminación, consume carbón", 70, 800, [15, 17, 24], [10, 1, 10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(5, edificio); add_contaminacion(10, edificio); add_industria_io(edificio, [9], [0.1])}, [8], 0.9)
 	mejora_barcos_factoria = def_mejora("Barcos factoría", "Aumenta la eficiencia y contaminación, consume petróleo", 150, 1000, [17, 31], [2, 5],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.5; add_mantenimiento(3, edificio); add_contaminacion(10, edificio); set_trabajo_educacion(1, edificio); add_trabajo_sueldo(1, edificio); add_industria_io(edificio, [27], [0.5])}, [8], 0.8)

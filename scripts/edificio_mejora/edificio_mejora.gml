@@ -31,8 +31,10 @@ function edificio_mejora(edificio = control.null_edificio, mejora = control.null
 					array_push(edificio.mejoras, string(nombre))
 					mejora.efecto(edificio)
 					edificio.precio += precio
+					return true
 				}
 			}
 		}
 	}
+	return false
 }
