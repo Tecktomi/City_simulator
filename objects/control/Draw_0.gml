@@ -2200,12 +2200,15 @@ if sel_info{
 				}
 				if draw_boton(room_width - 40, pos, exigencia_nombre[sel_edificio.huelga_motivo]) and show_question($"Aceptar exigencia?\n\n{exigencia_nombre[sel_edificio.huelga_motivo]}"){
 					var array_edificio = [], b = sel_edificio.huelga_motivo
-					for(a = 0; a < array_length(edificios); a++)
-						if edificios[a].huelga
-							if edificios[a].huelga_motivo = b{
-								array_push(array_edificio, edificios[a])
-								set_paro(false, edificios[a])
+					for(a = 0; a < array_length(edificios); a++){
+						var edificio = edificios[a]
+						if edificio.huelga
+							if edificio.huelga_motivo = b{
+								array_push(array_edificio, edificio)
+								edificio.huelga = false
+								set_paro(false, edificio)
 							}
+					}
 					var temp_exigencia = add_exigencia(b, array_edificio)
 					for(a = 0; a < array_length(temp_exigencia.edificios); a++)
 						temp_exigencia.edificios[a].exigencia = temp_exigencia
@@ -2932,7 +2935,7 @@ if sel_info{
 		if sel_persona.preso
 			draw_text_pos(room_width - 20, pos, $"Pres{sel_persona.sexo ? "a" : "o"}")
 		draw_text_pos(room_width - 20, pos, $"Edad: {sel_persona.edad} ({fecha(sel_persona.cumple, false)})")
-		draw_text_pos(room_width - 20, pos, $"Nacionalidad: {pais_nombre[sel_persona.nacionalidad]}")
+		draw_text_pos(room_width - 20, pos, $"Nacionalidad: {sel_persona.nacionalidad.nombre}")
 		if draw_boton(room_width - 20, pos, name_familia(sel_persona.familia))
 			select(, sel_persona.familia)
 		pos += 10
@@ -3779,6 +3782,30 @@ if (keyboard_check(vk_space) or step >= 60){
 						edificio = spawn_build(temp_array_coord, 32)
 						if edificio != null_edificio
 							cambiar_casa(persona.familia, edificio)
+					}
+					//Ir al trabajo en taxi
+					if floor(dia / 360) >= 80 and persona.familia.riqueza > 6 and not in(persona.trabajo, null_edificio, jubilado, delincuente, prostituta){
+						for(var b = 0; b < array_length(persona.familia.casa.carreteras); b++){
+							var carretera = persona.familia.casa.carreteras[b]
+							if carretera.taxis > 0{
+								if array_contains(carretera.edificios, persona.trabajo){
+									persona.familia.riqueza -= 6
+									dinero += 6
+									mes_tarifas[current_mes] += 6
+									for(c = 0; c < array_length(carretera.edificios); c++){
+										var edificio = carretera.edificios[c]
+										if edificio_nombre[edificio.tipo] = "Depósito de Taxis"{
+											edificio.count--
+											edificio.ganancia += 6
+											break
+										}
+									}
+									carretera.taxis--
+									persona.felicidad_transporte = (100 + persona.felicidad_transporte) / 2
+									break
+								}
+							}
+						}
 					}
 				}
 				//Vejez

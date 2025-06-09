@@ -697,7 +697,7 @@ debug = false
 		def_edificio_base("Paneles Solares", 5, 5, 4000, 1800, [15, 26, 33], [20, 10, 20], 25,,,,,,,,,,,, 200); def_edificio_servicio(); def_edificio_trabajo(true, 1, 80, 15, 3)
 		def_edificio_base("Prostitución"); def_edificio_servicio(); def_edificio_trabajo(,,10, 2,, 0.05)
 		//60
-		def_edificio_base("Depósito de Taxis", 3, 3, 2000, 540, [15, 31], [25, 10], 4, 35, 10,,,,,,,,,, 80); def_edificio_servicio(); def_edificio_trabajo(true, 4, 40, 5, 1, 0.02,,,,,, 10)
+		def_edificio_base("Depósito de Taxis", 3, 3, 2000, 540, [15, 31], [25, 10], 4, 35, 10,,,,,,,,,, 80); def_edificio_servicio(); def_edificio_trabajo(true, 4, 40, 5, 1, 0.02,,,,,, 5)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
 	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 16, 21, 34, 35, 43, 46, 57], [11, 12, 24, 53, 54, 55, 56], [13, 20, 22, 41, 42, 44, 58, 60], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
