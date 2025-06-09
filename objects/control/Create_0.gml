@@ -1399,6 +1399,7 @@ debug = false
 	esperanza_de_vida_num = 0
 	radioemisoras = 0
 	probabilidad_hijos = 0
+	adoctrinamiento_escuela = 1
 	null_encargo = {
 		recurso : 0,
 		cantidad : 0,

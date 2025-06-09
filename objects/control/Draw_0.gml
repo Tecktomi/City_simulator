@@ -927,6 +927,11 @@ if sel_build{
 								select(edificio_count[a, b])
 			if radioemisoras > 0
 				draw_text_pos(110, pos, $"Calidad de la radio: {radioemisoras}")
+			if draw_boton(110, pos, $"Propaganda política en escuelas : {adoctrinamiento_escuela}"){
+				adoctrinamiento_escuela = ++adoctrinamiento_escuela mod 6
+				for(var a = 0; a < array_length(edificio_count[6]); a++)
+					set_calidad_servicio(edificio_count[6, a])
+			}
 		}
 		//Ministerio de Economía
 		else if ministerio = 5{
@@ -1391,7 +1396,7 @@ if sel_build{
 				impuesto_empresa_fijo = (impuesto_empresa_fijo + 5) mod 30
 			if draw_boton(110, pos, $"Impuesto laboral {floor(100 * impuesto_trabajador)}%")
 				impuesto_trabajador = ((20 * impuesto_trabajador + 1) mod 6) / 20
-			if draw_boton(110, pos, $"Impuesto  minero {round(100 * impuesto_minero)}%")
+			if draw_boton(110, pos, $"Impuesto minero {round(100 * impuesto_minero)}%")
 				impuesto_minero = ((10 * impuesto_minero + 1) mod 6) / 10
 			if draw_boton(110, pos, $"Impuesto forestal {round(100 * impuesto_maderero)}%")
 				impuesto_maderero = ((10 * impuesto_maderero + 1) mod 6) / 10
@@ -1634,9 +1639,17 @@ if sel_build{
 				if draw_menu(tempx, pos, "Mostrar votantes", 0){
 					draw_set_alpha(0.5)
 					draw_set_color(c_black)
-					for(var a = 0; a < array_length(personas); a++)
-						if not personas[a].es_hijo and not personas[a].candidato
-							draw_circle(tempx + 50 * personas[a].politica_economia, tempy + 300 - 50 * personas[a].politica_sociocultural, 4, false)
+					for(var a = 0; a < array_length(personas); a++){
+						var persona = personas[a]
+						if not persona.candidato{
+							b = tempx + 50 * persona.politica_economia
+							c = tempy + 300 - 50 * persona.politica_sociocultural
+							if not persona.es_hijo
+								draw_circle(b, c, 4, false)
+							else
+								draw_triangle(b, c - 4, b - 3, c + 1, b + 3, c + 1, false)
+						}
+					}
 					draw_set_alpha(1)
 				}
 				if elecciones and draw_menu(tempx, pos, $"Mostrar candidato{array_length(candidatos) = 1 ? "" : "s"}", 1){
@@ -3629,6 +3642,10 @@ if (keyboard_check(vk_space) or step >= 60){
 						else if ley_eneabled[2] and random(1) < 0.1 and buscar_trabajo(persona){
 							cambiar_escuela(persona, null_edificio)
 							buscar_escuela(persona)
+						}
+						if edificio_nombre[persona.escuela.tipo] != "Escuela Parroquial"{
+							persona.politica_economia = (20 * persona.politica_economia + adoctrinamiento_escuela * politica_economia) / (20 + adoctrinamiento_escuela)
+							persona.politica_sociocultural = (20 * persona.politica_sociocultural + adoctrinamiento_escuela * politica_sociocultural) / (20 + adoctrinamiento_escuela)
 						}
 					}
 					//Mudarse a un albergue
