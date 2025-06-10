@@ -36,6 +36,8 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 			vivienda_calidad : edificio_familias_calidad[tipo],
 			vivienda_renta : edificio_familias_renta[tipo],
 			servicio_calidad : edificio_servicio_calidad[tipo],
+			servicio_max : edificio_servicio_clientes[tipo],
+			servicio_tarifa : edificio_servicio_tarifa[tipo],
 			trabajadores_max : edificio_trabajadores_max[tipo], 
 			trabajo_calidad : edificio_trabajo_calidad[tipo],
 			trabajo_sueldo : max(sueldo_minimo, edificio_trabajo_sueldo[tipo]),
@@ -109,7 +111,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 			}
 			if edificio_es_medico[tipo]{
 				array_push(medicos, edificio)
-				repeat(min(edificio_servicio_clientes[tipo], array_length(desausiado.clientes)))
+				repeat(min(edificio.servicio_max, array_length(desausiado.clientes)))
 					traer_paciente_en_espera(edificio)
 				cumplir_exigencia(0)
 			}

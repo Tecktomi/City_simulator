@@ -90,7 +90,7 @@ if menu_principal{
 					var e = min(16, xsize - a * 16), f = min(16, ysize - b * 16), g = a * 16, h = b * 16
 					for(var c = 0; c < e; c++)
 						for(var d = 0; d < f; d++)
-							if escombros[g + c, h + d]
+							if escombros[# g + c, h + d]
 								draw_sprite_ext(spr_tile, 0, tile_width * (16 + c - d), (c + d) * tile_height, 1, 1, 0, c_ltgray, 1)
 							else if calle[# g + c, h + d]
 								draw_sprite_ext(spr_calle, calle_sprite[# g + c, h + d], tile_width * (16 + c - d), (c + d) * tile_height, 1, 1, 0, c_white, 1)
@@ -709,47 +709,60 @@ if sel_build{
 				draw_text_pos(130, pos, $"Delincuencia: {floor(fel_cri / len)}")
 				draw_text_pos(130, pos, $"Eventos recientes: {floor(fel_temp / len)}")
 			}
+			//Mostrar personas
 			pos = 120
 			if mouse_wheel_up()
 				show_scroll--
 			if mouse_wheel_down()
 				show_scroll++
-			if draw_menu(400, pos, show[4] ? "Favoritos" : "Todo el mundo", 4)
-				var temp_array_personas = personas_favoritas
-			else
-				temp_array_personas = personas
-			var last_pos = pos
-			show_scroll = max(0, min(show_scroll, array_length(temp_array_personas) - 20))
-			var max_width = 400, max_width_2 = 0
-			if draw_boton(max_width, pos, "Nombre")
-				array_sort(temp_array_personas, function(a = null_persona, b = null_persona){return (a.nombre > b.nombre) ? 1 : -1})
-			for(var a = 0; a < min(20, array_length(temp_array_personas)); a++){
-				if draw_boton(max_width, pos, name(temp_array_personas[a + show_scroll]))
-					select(,, temp_array_personas[a + show_scroll])
-				max_width_2 = max(max_width_2, last_width)
-			}
-			max_width += max_width_2 + 10
-			pos = last_pos
-			max_width_2 = 0
-			if draw_boton(max_width, pos, "Edad")
-				array_sort(temp_array_personas, function(a = null_persona, b = null_persona){return (a.edad > b.edad) ? 1 : -1})
-			for(var a = 0; a < min(20, array_length(temp_array_personas)); a++){
-				draw_text_pos(max_width, pos, $"{temp_array_personas[a + show_scroll].edad} años")
-				max_width_2 = max(max_width_2, last_width)
-			}
-			max_width += max_width_2 + 10
-			if array_length(temp_array_personas) > 20{
-				draw_rectangle(max_width - 1, last_pos, max_width + 1, pos, false)
-				draw_circle(max_width, last_pos + (show_scroll / (array_length(temp_array_personas) - 20)) * (pos - last_pos), 6, false)
-				if mouse_x >= max_width - 5 and mouse_y > last_pos and mouse_x <= max_width + 5 and mouse_y <= pos{
-					cursor = cr_handpoint
-					if mouse_check_button_pressed(mb_left)
-						build_pressed = true
+			if draw_menu(400, pos, show[5] ? "Personas" : "Familias", 5){
+				if draw_menu(400, pos, show[4] ? "Favoritos" : "Todo el mundo", 4)
+					var temp_array_personas = personas_favoritas
+				else
+					temp_array_personas = personas
+				var last_pos = pos
+				show_scroll = max(0, min(show_scroll, array_length(temp_array_personas) - 20))
+				var max_width = 400, max_width_2 = 0
+				if draw_boton(max_width, pos, "Nombre")
+					array_sort(temp_array_personas, function(a = null_persona, b = null_persona){return (a.nombre > b.nombre) ? 1 : -1})
+				for(var a = 0; a < min(20, array_length(temp_array_personas)); a++){
+					var persona = temp_array_personas[a + show_scroll]
+					if draw_boton(max_width, pos, name(persona))
+						select(,, persona)
+					max_width_2 = max(max_width_2, last_width)
 				}
-				if mouse_check_button_released(mb_left)
-					build_pressed = false
-				if build_pressed and mouse_y > last_pos and mouse_y <= pos
-					show_scroll = floor((mouse_y - last_pos) * (array_length(temp_array_personas) - 20) / (pos - last_pos))
+				max_width += max_width_2 + 10
+				pos = last_pos
+				max_width_2 = 0
+				if draw_boton(max_width, pos, "Edad")
+					array_sort(temp_array_personas, function(a = null_persona, b = null_persona){return (a.edad > b.edad) ? 1 : -1})
+				for(var a = 0; a < min(20, array_length(temp_array_personas)); a++){
+					var persona = temp_array_personas[a + show_scroll]
+					draw_text_pos(max_width, pos, $"{persona.edad} años")
+					max_width_2 = max(max_width_2, last_width)
+				}
+				max_width += max_width_2 + 10
+				if array_length(temp_array_personas) > 20{
+					draw_rectangle(max_width - 1, last_pos, max_width + 1, pos, false)
+					draw_circle(max_width, last_pos + (show_scroll / (array_length(temp_array_personas) - 20)) * (pos - last_pos), 6, false)
+					if mouse_x >= max_width - 5 and mouse_y > last_pos and mouse_x <= max_width + 5 and mouse_y <= pos{
+						cursor = cr_handpoint
+						if mouse_check_button_pressed(mb_left)
+							build_pressed = true
+					}
+					if mouse_check_button_released(mb_left)
+						build_pressed = false
+					if build_pressed and mouse_y > last_pos and mouse_y <= pos
+						show_scroll = floor((mouse_y - last_pos) * (array_length(temp_array_personas) - 20) / (pos - last_pos))
+				}
+			}
+			else{
+				show_scroll = max(0, min(show_scroll, array_length(familias) - 20))
+				for(var a = 0; a < min(20, array_length(familias)); a++){
+					var familia = familias[show_scroll + a]
+					if draw_boton(400, pos, $"{name_familia(familia)} ({familia.integrantes})")
+						select(, familia)
+				}
 			}
 		}
 		//Ministerio de Vivienda
@@ -927,11 +940,19 @@ if sel_build{
 								select(edificio_count[a, b])
 			if radioemisoras > 0
 				draw_text_pos(110, pos, $"Calidad de la radio: {radioemisoras}")
-			if draw_boton(110, pos, $"Propaganda política en escuelas : {adoctrinamiento_escuela}"){
-				adoctrinamiento_escuela = ++adoctrinamiento_escuela mod 6
-				for(var a = 0; a < array_length(edificio_count[6]); a++)
-					set_calidad_servicio(edificio_count[6, a])
+			if draw_boton(110, pos, $"Propaganda política: {adoctrinamiento}"){
+				adoctrinamiento = ++adoctrinamiento mod 6
+				if adoctrinamiento_escuelas
+					for(var a = 0; a < array_length(edificio_count[6]); a++)
+						set_calidad_servicio(edificio_count[6, a])
+				if adoctrinamiento_biblioteca
+					for(var a = 0; a < array_length(edificio_count[61]); a++)
+						set_calidad_servicio(edificio_count[61, a])
 			}
+			adoctrinamiento_escuelas = draw_boton_rectangle(110, pos, 125, pos + 15, adoctrinamiento_escuelas)
+			draw_text_pos(130, pos, "Porpaganda en escuelas")
+			adoctrinamiento_biblioteca = draw_boton_rectangle(110, pos, 125, pos + 15, adoctrinamiento_biblioteca)
+			draw_text_pos(130, pos, "Porpaganda en bibliotecas")
 		}
 		//Ministerio de Economía
 		else if ministerio = 5{
@@ -1452,8 +1473,8 @@ if sel_build{
 					if not debug
 						ley_tiempo[a] = 12
 					ley_eneabled[a] = not ley_eneabled[a]
-					if in(a, 0, 15, 16)
-						politica_religion = 5 * ley_eneabled[0] + 5 * ley_eneabled[15] + 10 * ley_eneabled[16]
+					if in(a, 0, 15, 16, 21)
+						politica_religion = 5 * ley_eneabled[0] + 5 * ley_eneabled[15] + 10 * ley_eneabled[16] + 10 * ley_eneabled[21]
 					//Prohibir trabajo infantil
 					if a = 2 and not ley_eneabled[a]
 						for(b = 0; b < array_length(familias); b++)
@@ -1578,10 +1599,14 @@ if sel_build{
 				}
 			if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
 				credibilidad_financiera += floor(sueldo_minimo / 2)
-				sueldo_minimo = (sueldo_minimo + 1) mod 6
+				sueldo_minimo = ++sueldo_minimo mod 6
 				credibilidad_financiera = clamp(credibilidad_financiera - floor(sueldo_minimo / 2), 1, 10)
 				for(var a = 0; a < array_length(edificios); a++)
 					edificios[a].trabajo_sueldo = max(sueldo_minimo, edificio_trabajo_sueldo[edificios[a].tipo] + edificios[a].presupuesto - 2)
+			}
+			if ley_eneabled[3] and draw_boton(110, pos, $"Pensión ${jubilado.trabajo_sueldo}"){
+				jubilado.trabajo_sueldo = clamp((++jubilado.trabajo_sueldo mod 6), 1, 5)
+				jubilado.trabajo_calidad = 11 + sqr(jubilado.trabajo_sueldo)
 			}
 			#region Mapa político
 				b = 0
@@ -1598,7 +1623,7 @@ if sel_build{
 						b += 6 - ley_economia[a]
 						c += 6 - ley_sociocultural[a]
 					}
-				b += 3 - sueldo_minimo
+				b += 3 - sueldo_minimo - jubilado.trabajo_sueldo
 				politica_economia = b / d
 				politica_sociocultural = c / d
 				if politica_economia < 3
@@ -1925,7 +1950,7 @@ if build_sel{
 			for(var b = my; b < d; b++){
 				coste_terreno += valor_terreno * zona_privada[a, b]
 				coste_deforestar += 10 * bosque[a, b]
-				coste_escombros += 25 * escombros[a, b]
+				coste_escombros += 25 * escombros[# a, b]
 			}
 		if coste_terreno > 0{
 			text += $"\nEstatizar terreno: ${coste_terreno}"
@@ -2270,7 +2295,7 @@ if sel_info{
 				pos += 40
 				draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[index] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
 					edificio_es_casa[index] ? "Calidad vivienda: " + string(sel_edificio.vivienda_calidad) + "  Renta: $" + string(sel_edificio.vivienda_renta) + "\n" : ""}{
-					(edificio_servicio_calidad[index] > 0) ? "Calidad servicio: " + string(sel_edificio.servicio_calidad) + ((edificio_servicio_tarifa[index] > 0) ? "  Tarifa: $" + string(edificio_servicio_tarifa[index] + (var_edificio_nombre = "Taberna") ? ceil(recurso_precio[22] * 1.1) : 0) : "  Sin tarifa") + "\n" : ""}")
+					(edificio_servicio_calidad[index] > 0) ? "Calidad servicio: " + string(sel_edificio.servicio_calidad) + ((sel_edificio.servicio_tarifa > 0) ? "  Tarifa: $" + string(sel_edificio.servicio_tarifa + (var_edificio_nombre = "Taberna") ? ceil(recurso_precio[22] * 1.1) : 0) : "  Sin tarifa") + "\n" : ""}")
 			#endregion
 			//Prisiones
 			if var_edificio_nombre = "Comisaría"{
@@ -2316,9 +2341,9 @@ if sel_info{
 					set_calidad_vivienda(sel_edificio)
 				}
 			}
-			//Información trabajadores
 			mejora_requiere_agua = false
 			mejora_requiere_energia = false
+			//Información trabajadores
 			if edificio_es_trabajo[index]{
 				if draw_menu(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{sel_edificio.trabajadores_max}", 4)
 					for(var a = 0; a < array_length(sel_edificio.trabajadores); a++)
@@ -2679,6 +2704,47 @@ if sel_info{
 				else if in(var_edificio_nombre, "Escuela", "Escuela parroquial"){
 					edificio_mejora(sel_edificio, mejora_computadores)
 					edificio_mejora(sel_edificio, mejora_internet)
+					if var_edificio_nombre = "Escuela"{
+						pos += 20
+						if sel_edificio.modo = 0
+							draw_text_pos(room_width - 20, pos, "Cobertura")
+						else if sel_edificio.modo = 1
+							draw_text_pos(room_width - 20, pos, "Excelencia")
+						else if sel_edificio.modo = 2
+							draw_text_pos(room_width - 20, pos, "Vespertina")
+						if draw_menu(room_width - 30, pos, "Cambiar modo", 3){
+							if sel_edificio.modo != 0 and draw_boton(room_width - 40, pos, "Cobertura"){
+								sel_edificio.servicio_max = 20
+								if sel_edificio.modo = 2{
+									sel_edificio.modo = 0
+									while array_length(sel_edificio.clientes) > 0
+										buscar_escuela(array_pop(sel_edificio.clientes))
+								}
+								sel_edificio.modo = 0
+								set_calidad_servicio(sel_edificio)
+								close_show()
+							}
+							if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, "Excelencia"){
+								sel_edificio.servicio_max = 12
+								if sel_edificio.modo = 2{
+									sel_edificio.modo = 1
+									while array_length(sel_edificio.clientes) > 0
+										buscar_escuela(array_pop(sel_edificio.clientes))
+								}
+								sel_edificio.modo = 1
+								set_calidad_servicio(sel_edificio)
+								close_show()
+							}
+							if sel_edificio.modo != 2 and draw_boton(room_width - 40, pos, "Vespertina"){
+								sel_edificio.servicio_max = 20
+								sel_edificio.modo = 2
+								set_calidad_servicio(sel_edificio)
+								close_show()
+								while array_length(sel_edificio.clientes) > 0
+									buscar_escuela(array_pop(sel_edificio.clientes))
+							}
+						}
+					}
 				}
 				else if in(var_edificio_nombre, "Consultorio", "Hospicio"){
 					edificio_mejora(sel_edificio, mejora_anestesia)
@@ -2686,6 +2752,26 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_vacunas)
 					edificio_mejora(sel_edificio, mejora_computadores)
 					edificio_mejora(sel_edificio, mejora_internet)
+					if var_edificio_nombre = "Consultorio"{
+						pos += 20
+						draw_text_pos(room_width - 20, pos, (sel_edificio.modo = 0) ? "Tratamiento convencional" : "Tratamiento tradicional")
+						if draw_menu(room_width - 30, pos, "Cambiar modo", 3){
+							if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, "Tratamiento tradicional"){
+								sel_edificio.modo = 1
+								set_trabajo_educacion(1, sel_edificio)
+								add_trabajo_sueldo(-2, sel_edificio)
+								set_calidad_servicio(sel_edificio)
+								close_show()
+							}
+							if sel_edificio.modo != 0 and draw_boton(room_width - 40, pos, "Tratamiento convencional"){
+								sel_edificio.modo = 0
+								set_trabajo_educacion(2, sel_edificio)
+								add_trabajo_sueldo(2, sel_edificio)
+								set_calidad_servicio(sel_edificio)
+								close_show()
+							}
+						}
+					}
 				}
 				else if var_edificio_nombre = "Mercado"{
 					draw_text_pos(room_width - 20, pos, sel_edificio.count = 0 ? "Sin más ventas por este mes" : $"{sel_edificio.count} ventas disponibles")
@@ -2769,11 +2855,62 @@ if sel_info{
 							draw_text_pos(room_width - 40, pos, $"Carretera {sel_edificio.carreteras[a].index}")
 					}
 				}
+				else if var_edificio_nombre = "Biblioteca"{
+					//Mejoras
+					edificio_mejora(sel_edificio, mejora_maquinas_de_escribir)
+					edificio_mejora(sel_edificio, mejora_maquinas_de_escribir_electricas)
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_internet)
+					pos += 20
+					if sel_edificio.modo = 0
+						draw_text_pos(room_width - 20, pos, "Venta de libros")
+					else if sel_edificio.modo = 1
+						draw_text_pos(room_width - 20, pos, "Libros educativos")
+					else{
+						draw_text_pos(room_width - 20, pos, $"Investigando {edificio_nombre[edificio_categoria[5, sel_edificio.modo - 2]]}")
+						if draw_menu(room_width - 30, pos, "Cambiar industria", 4)
+							for(var a = 0; a < array_length(edificio_categoria[5]); a++){
+								var b = edificio_categoria[5, a]
+								if sel_edificio.modo != (2 + a) and array_length(edificio_count[b]) > 0 and (dia / 360) >= edificio_anno[b] and draw_boton(room_width - 40, pos, edificio_nombre[b]){
+									sel_edificio.modo = 2 + a
+									close_show()
+								}
+							}
+					}
+					if draw_menu(room_width - 30, pos, "Cambiar modo", 3){
+						if sel_edificio.modo != 0 and draw_boton(room_width - 40, pos, "Venta de libros"){
+							sel_edificio.servicio_max = 20
+							sel_edificio.servicio_tarifa = 3
+							sel_edificio.modo = 0
+							set_calidad_servicio(sel_edificio)
+							close_show()
+						}
+						if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, "Libros educativos"){
+							sel_edificio.servicio_max =  10
+							sel_edificio.servicio_tarifa = 0
+							sel_edificio.modo = 1
+							set_calidad_servicio(sel_edificio)
+							close_show()
+						}
+						var flag = false, a
+						for(a = 0; a < array_length(edificio_categoria[5]); a++)
+							if array_length(edificio_count[edificio_categoria[5, a]]) > 0{
+								flag = true
+								break
+							}
+						if flag and draw_boton(room_width - 40, pos, "Investigación"){
+							sel_edificio.servicio_max = 0
+							sel_edificio.servicio_tarifa = 0
+							sel_edificio.modo = 2 + a
+							close_show()
+						}
+					}
+				}
 				pos += 20
 			}
 			//Información escuelas / consultas
 			if edificio_es_escuela[index] or edificio_es_medico[index]
-				if draw_menu(room_width - 20, pos, $"{edificio_es_escuela[index] ? "Estudientes" : "Clientes"}: {array_length(sel_edificio.clientes)}/{edificio_servicio_clientes[index]}", 2)
+				if draw_menu(room_width - 20, pos, $"{edificio_es_escuela[index] ? "Estudientes" : "Clientes"}: {array_length(sel_edificio.clientes)}/{sel_edificio.servicio_max}", 2)
 					for(var a = 0; a < array_length(sel_edificio.clientes); a++)
 						if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a]))
 							select(,, sel_edificio.clientes[a])
@@ -3393,11 +3530,12 @@ if (keyboard_check(vk_space) or step >= 60){
 					b += mes_muertos_accidentes[current_mes] - c
 				}
 				add_noticia("Incendio", $"Se ha quemado {edificio.nombre}{b = 0 ? "" : ", ha"}{b = 1 ? "" : "n"} muerto {b} persona{b = 1 ? "" : "s"}")
-				for(var a = edificio.x; a < edificio.x + edificio.width; a++)
-					for(b = edificio.y; b < edificio.y + edificio.height; b++){
-						array_set(escombros[a], b, true)
+				c = edificio.x + edificio.width
+				d = edificio.y + edificio.height
+				ds_grid_set_region(escombros, edificio.x, edificio.y, c - 1, d - 1, true)
+				for(var a = edificio.x; a < c; a++)
+					for(b = edificio.y; b < d; b++)
 						array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
-					}
 				world_update = true
 				destroy_edificio(edificio)
 			}
@@ -3630,24 +3768,27 @@ if (keyboard_check(vk_space) or step >= 60){
 				if random(1) < 0.2 - 0.1 * persona.familia.casa.agua + 0.1 * persona.edad < 12 and persona.medico = null_edificio
 					buscar_atencion_medica(persona)
 				//Estudiar
-				if persona.edad > 4 and persona.edad < 18 and not persona.preso{
-					if persona.escuela = null_edificio
-						buscar_escuela(persona)
-					else{
-						persona.educacion += random_range(0.1, 0.2)
-						if persona.educacion >= edificio_escuela_max[persona.escuela.tipo]{
-							persona.educacion = edificio_escuela_max[persona.escuela.tipo]
-							cambiar_escuela(persona, null_edificio)
-						}
-						else if ley_eneabled[2] and random(1) < 0.1 and buscar_trabajo(persona){
-							cambiar_escuela(persona, null_edificio)
-							buscar_escuela(persona)
-						}
-						if edificio_nombre[persona.escuela.tipo] != "Escuela Parroquial"{
-							persona.politica_economia = (20 * persona.politica_economia + adoctrinamiento_escuela * politica_economia) / (20 + adoctrinamiento_escuela)
-							persona.politica_sociocultural = (20 * persona.politica_sociocultural + adoctrinamiento_escuela * politica_sociocultural) / (20 + adoctrinamiento_escuela)
-						}
+				if persona.escuela != null_edificio{
+					var escuela = persona.escuela
+					persona.educacion += random_range(0.1, 0.1 + escuela.servicio_calidad / 100)
+					if adoctrinamiento_escuelas and edificio_nombre[escuela.tipo] = "Escuela"
+						adoctrinar(persona)
+					if persona.educacion >= edificio_escuela_max[escuela.tipo]{
+						persona.educacion = edificio_escuela_max[escuela.tipo]
+						cambiar_escuela(persona, null_edificio)
 					}
+					else if ley_eneabled[2] and random(1) < 0.1 and buscar_trabajo(persona){
+						cambiar_escuela(persona, null_edificio)
+						buscar_escuela(persona)
+					}
+					if persona.edad > 18 and random(1) < 0.1
+						cambiar_escuela(persona, null_edificio)
+				}
+				//Acciones de un niño
+				if persona.edad > 4 and persona.edad < 18{
+					//Buscar escuela
+					if persona.escuela = null_edificio and not persona.preso
+						buscar_escuela(persona)
 					//Mudarse a un albergue
 					if persona.familia.padre = null_persona and persona.familia.madre = null_persona and edificio_nombre[persona.familia.casa.tipo] != "Albergue" and array_length(edificio_count[18]) > 0{
 						var edificio = array_pick(edificio_count[18])
@@ -3699,7 +3840,7 @@ if (keyboard_check(vk_space) or step >= 60){
 					//Casarse
 					if persona.pareja = null_persona and (persona.religion or ley_eneabled[16]){
 						var persona_2 = array_pick(personas)
-						if persona.sexo != persona_2.sexo and persona_2.edad > 18 and abs(persona.edad - persona_2.edad) < 8 and persona_2.pareja = null_persona and (persona_2.familia.padre = persona_2 or persona_2.familia.madre = persona_2) and persona.familia != persona_2.familia and (persona_2.religion or ley_eneabled[16]){
+						if ((persona.sexo != persona_2.sexo) or ley_eneabled[21]) and persona_2.edad > 18 and abs(persona.edad - persona_2.edad) < 8 and persona_2.pareja = null_persona and (persona_2.familia.padre = persona_2 or persona_2.familia.madre = persona_2) and persona.familia != persona_2.familia and (persona_2.religion or ley_eneabled[16]){
 							persona.pareja = persona_2
 							persona_2.pareja = persona
 							//Transferir hijos
@@ -3750,7 +3891,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						buscar_casa(persona)
 					}
 					//Tener hijos
-					else if irandom(3 + probabilidad_hijos * array_length(persona.familia.hijos)) = 0 and persona.familia.madre != null_persona and persona.familia.madre.edad < 45 and persona.familia.madre.embarazo = -1{
+					else if irandom(3 + probabilidad_hijos * array_length(persona.familia.hijos)) = 0 and persona.familia.madre != null_persona and persona.familia.madre.edad < 45 and persona.familia.madre.embarazo = -1 and not (persona.pareja != null_persona and persona.pareja.sexo != persona.sexo){
 						persona.familia.madre.embarazo = (dia + irandom_range(240, 280)) mod 360
 						array_push(embarazo[persona.familia.madre.embarazo], persona.familia.madre)
 					}
@@ -3778,6 +3919,9 @@ if (keyboard_check(vk_space) or step >= 60){
 							}
 						}
 					}
+					//Buscar educación vespertina
+					if floor(persona.educacion) = 0 and persona.trabajo = null_edificio
+						buscar_escuela(persona)
 					//Crear empresa nacional
 					else if persona.empresa = null_empresa and irandom(persona.familia.riqueza) > 750{
 						var empresa = add_empresa(500, true, persona)
@@ -3878,15 +4022,19 @@ if (keyboard_check(vk_space) or step >= 60){
 					for(var b = 0; b < array_length(temp_array); b++){
 						c = temp_array[b]
 						var var_edificio_nombre = edificio_nombre[c]
-						if array_length(edificio_count[c]) > 0 and (persona.edad > 12 or (var_edificio_nombre != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (var_edificio_nombre != "Circo")) and ((not persona.sexo and persona.edad > 15) or (var_edificio_nombre != "Cabaret")) and (persona.educacion > 0 or (var_edificio_nombre != "Periódico")){
-							var ocio = array_pick(edificio_count[c]), temp_precio = edificio_servicio_tarifa[c]
+						if array_length(edificio_count[c]) > 0 and (persona.edad > 12 or (var_edificio_nombre != "Taberna")) and (array_length(persona.familia.hijos) > 0 or (var_edificio_nombre != "Circo")) and ((not persona.sexo and persona.edad > 15) or (var_edificio_nombre != "Cabaret")) and (persona.educacion >= 0.6 or not in(var_edificio_nombre, "Periódico", "Biblioteca")){
+							var ocio = array_pick(edificio_count[c]), temp_precio = ocio.servicio_tarifa
 							if var_edificio_nombre = "Taberna"{
 								temp_precio += ceil(recurso_precio[22] * 1.1)
 								if ocio.almacen[22] = 0
 									continue
 							}
+							else if var_edificio_nombre = "Biblioteca"{
+								if ocio.modo = 1
+									persona.educacion = min(persona.educacion + random(0.1), 1.6)
+							}
 							set_calidad_servicio(ocio)
-							if ocio.count < edificio_servicio_clientes[c] and persona.familia.riqueza >= temp_precio{
+							if ocio.count < ocio.servicio_max and persona.familia.riqueza >= temp_precio{
 								persona.familia.riqueza -= temp_precio
 								ocio.ganancia += temp_precio
 								if ocio.privado{
@@ -3902,6 +4050,10 @@ if (keyboard_check(vk_space) or step >= 60){
 								else if var_edificio_nombre = "Taberna"{
 									persona.lujos[2] = true
 									ocio.almacen[22]--
+								}
+								else if var_edificio_nombre = "Biblioteca"{
+									if adoctrinamiento_biblioteca
+										adoctrinar(persona)
 								}
 								ocio.count++
 								persona.ocios[b] = ocio.servicio_calidad
@@ -3960,7 +4112,7 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					else
 						iglesia = array_pick(iglesias)
-					if iglesia.count < edificio_servicio_clientes[iglesia.tipo]{
+					if iglesia.count < iglesia.servicio_max{
 						iglesia.count++
 						persona.felicidad_religion = min(110, persona.felicidad_religion + edificio_servicio_calidad[iglesia.tipo])
 					}
@@ -4798,7 +4950,7 @@ if (keyboard_check(vk_space) or step >= 60){
 								cambiar_trabajo(persona, null_edificio)
 							}
 						}
-						for(d = irandom(b * (1 + ley_eneabled[11])); d > 0 and array_length(edificio.clientes) < edificio_servicio_clientes[index]; d--){
+						for(d = irandom(b * (1 + ley_eneabled[11])); d > 0 and array_length(edificio.clientes) < edificio.servicio_max; d--){
 							var temp_edificio = array_pick(edificio.casas_cerca)
 							if temp_edificio.ladron != null_persona
 								arrestar_persona(edificio, temp_edificio.ladron)
@@ -5014,6 +5166,13 @@ if (keyboard_check(vk_space) or step >= 60){
 						edificio.array_complex[0].a = d
 						for(c = 0; c < d; c++)
 							edificio.carreteras[c].taxis += floor(edificio.count / d)
+					}
+					else if var_edificio_nombre = "Biblioteca"{
+						if edificio.modo > 1{
+							c = edificio_categoria[5, edificio.modo - 2]
+							repeat(3 + edificio.presupuesto)
+								edificio_experiencia[c] = 2 - 0.99 * (2 - edificio_experiencia[c])
+						}
 					}
 					for(c = 0; c < array_length(edificio.input_id); c++)
 						if edificio.input_num[c] > 0

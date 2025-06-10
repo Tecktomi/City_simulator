@@ -36,13 +36,13 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 					}
 					if bool_edificio[# a, b] and id_edificio[# a, b].tipo = 32
 						destroy_edificio(id_edificio[# a, b])
-					if escombros[a, b]{
-						array_set(escombros[a], b, false)
+					if escombros[# a, b]{
 						array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
 						world_update = true
 					}
 					array_set(draw_construccion[a], b, construccion)
 				}
+			ds_grid_set_region(escombros, x, y, d - 1, e - 1, false)
 			if array_length(cola_construccion) = 0 and ley_eneabled[6]
 				for(var a = 0; a < array_length(edificio_count[20]); a++)
 					set_paro(false, edificio_count[20, a])

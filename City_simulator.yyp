@@ -41,6 +41,7 @@
     {"id":{"name":"add_noticia","path":"scripts/add_noticia/add_noticia.yy",},},
     {"id":{"name":"add_persona","path":"scripts/add_persona/add_persona.yy",},},
     {"id":{"name":"add_tuberias","path":"scripts/add_tuberias/add_tuberias.yy",},},
+    {"id":{"name":"adoctrinar","path":"scripts/adoctrinar/adoctrinar.yy",},},
     {"id":{"name":"array_add","path":"scripts/array_add/array_add.yy",},},
     {"id":{"name":"array_pick","path":"scripts/array_pick/array_pick.yy",},},
     {"id":{"name":"array_remove","path":"scripts/array_remove/array_remove.yy",},},

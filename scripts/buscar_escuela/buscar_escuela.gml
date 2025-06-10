@@ -3,7 +3,7 @@ function buscar_escuela(persona = control.null_persona){
 		var escuela = null_edificio
 		if array_length(escuelas) > 0{
 			escuela = array_pick(escuelas)
-			if array_length(escuela.clientes) < edificio_servicio_clientes[escuela.tipo]{
+			if array_length(escuela.clientes) < escuela.servicio_max and ((persona.edad <= 18 and escuela.modo != 2) or (persona.edad > 18 and escuela.modo = 2)){
 				cambiar_escuela(persona, escuela)
 				return true
 			}

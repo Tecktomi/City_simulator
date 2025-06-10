@@ -241,6 +241,7 @@ debug = false
 		def_ley("Prohibición de colillas", false, 210, 800, 3, 4, "Impide la venta recreativa de Tabaco a la población")
 		//20
 		def_ley("Prohibición de armas", false, 100, 800, 1, 5, "Impide la venta recreativa de Armas a la población")
+		def_ley("Matrimonio igualitario", false, 200, 800, 0, 1, "Permite a personas del mismo sexo casarse")
 	#endregion
 	politica_economia_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
 	politica_sociocultural_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]
@@ -512,7 +513,8 @@ debug = false
 		"Transmite para todas las casas y trabajos con electricidad en el área",
 		"Usa el poder del sol para generar energía infinita y limpia, ¡que milagro!",
 		"",
-		"Permite a los ciudadanos moverse rápidamente entre edificios conectados por calles"]
+		"Permite a los ciudadanos moverse rápidamente entre edificios conectados por calles",
+		"Entrega entretenimiento a la gente que sepa leer, además de mejorar la especialización de la industria"]
 	#endregion
 	#region arreglos vacíos
 		edificio_nombre = []
@@ -698,9 +700,15 @@ debug = false
 		def_edificio_base("Prostitución"); def_edificio_servicio(); def_edificio_trabajo(,,10, 2,, 0.05)
 		//60
 		def_edificio_base("Depósito de Taxis", 3, 3, 2000, 540, [15, 31], [25, 10], 4, 35, 10,,,,,,,,,, 80); def_edificio_servicio(); def_edificio_trabajo(true, 4, 40, 5, 1, 0.02,,,,,, 5)
+		def_edificio_base("Biblioteca", 3, 5, 1800, 720, [1, 15], [20, 10], 12, 70); def_edificio_servicio(, true,,,, 20, 50, 3); def_edificio_trabajo(true, 3, 60, 7, 2)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
-	edificio_categoria = [[8, 9, 10, 18, 31, 47, 48, 49], [4, 5, 14, 15, 27, 38, 40], [6, 7, 16, 21, 34, 35, 43, 46, 57], [11, 12, 24, 53, 54, 55, 56], [13, 20, 22, 41, 42, 44, 58, 60], [23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
+	edificio_categoria = [	[8, 9, 10, 18, 31, 47, 48, 49],
+							[4, 5, 14, 15, 27, 38, 40],
+							[6, 7, 16, 21, 34, 35, 43, 46, 57, 61],
+							[11, 12, 24, 53, 54, 55, 56],
+							[13, 20, 22, 41, 42, 44, 58, 60],
+							[23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
 	edificio_color = []
 	for(a = 0; a < array_length(edificio_nombre); a++){
 		var flag = false
@@ -772,6 +780,7 @@ debug = false
 		vivienda_calidad : 0,
 		vivienda_renta : 0,
 		servicio_calidad : 0,
+		servicio_max : 0,
 		trabajadores_max : 0,
 		trabajo_calidad : 0,
 		trabajo_sueldo : 0,
@@ -1062,6 +1071,9 @@ debug = false
 	ds_grid_clear(bosque_venta, false)
 	id_edificio = ds_grid_create(xsize, ysize)
 	ds_grid_clear(id_edificio, null_edificio)
+	escombros = ds_grid_create(xsize, ysize)
+	ds_grid_clear(escombros, false)
+	//Ciclo principal
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
 			var c = altura[# a, b], temp_bosque = grid[# a, b]
@@ -1071,7 +1083,6 @@ debug = false
 			bool_draw_construccion[a, b] = false
 			draw_construccion[a, b] = null_construccion
 			draw_edificio_flip[a, b] = random(1) < 0.5
-			escombros[a, b] = false
 			cultivo_color[a, b] = temp_color_array
 			bosque[a, b] = temp_bosque > 0.7 and c > 0.62
 			if bosque[a, b]{
@@ -1399,7 +1410,9 @@ debug = false
 	esperanza_de_vida_num = 0
 	radioemisoras = 0
 	probabilidad_hijos = 0
-	adoctrinamiento_escuela = 1
+	adoctrinamiento = 1
+	adoctrinamiento_escuelas = true
+	adoctrinamiento_biblioteca = false
 	null_encargo = {
 		recurso : 0,
 		cantidad : 0,
@@ -1411,7 +1424,7 @@ debug = false
 		generar_tratado()
 	repeat(10)
 		add_empresa(power(10, random_range(3, 4.2)))
-	while array_length(personas) < 50
+	while array_length(personas) < 80
 		add_familia(pais_tropico)
 #endregion
 #region Edificios iniciales
@@ -1452,8 +1465,10 @@ debug = false
 	checked  = array_shuffle(checked)
 	spawn_build(checked, 17)
 	spawn_build(checked, 20)
-	spawn_build(checked, 8, 3)
+	spawn_build(checked, 8, 5)
 	spawn_build(checked, 9, 3)
+	spawn_build(checked, 6)
+	spawn_build(checked, 11)
 	for(a = 0; a < array_length(personas); a++){
 		var persona = personas[a]
 		if not persona.es_hijo{
