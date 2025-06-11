@@ -26,9 +26,10 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 		}
 		if not null{
 			var d = x + width, e = y + height
+			ds_grid_set_region(construccion_reservada, x, y, d - 1, e - 1, true)
+			ds_grid_set_region(draw_construccion, x, y, d - 1, e - 1, construccion)
 			for(var a = x; a < d; a++)
 				for(var b = y; b < e; b++){
-					array_set(construccion_reservada[a], b, true)
 					if not privado and zona_privada[a, b]{
 						zona_empresa[a, b].dinero += valor_terreno
 						array_set(zona_privada[a], b, false)
@@ -40,7 +41,6 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 						array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
 						world_update = true
 					}
-					array_set(draw_construccion[a], b, construccion)
 				}
 			ds_grid_set_region(escombros, x, y, d - 1, e - 1, false)
 			if array_length(cola_construccion) = 0 and ley_eneabled[6]
@@ -60,7 +60,7 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 				}
 			}
 			array_push(cola_construccion, construccion)
-			array_set(bool_draw_construccion[x], y, true)
+			ds_grid_set(bool_draw_construccion, x, y, true)
 		}
 		return construccion
 	}

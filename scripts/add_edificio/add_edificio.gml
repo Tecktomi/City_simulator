@@ -38,6 +38,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 			servicio_calidad : edificio_servicio_calidad[tipo],
 			servicio_max : edificio_servicio_clientes[tipo],
 			servicio_tarifa : edificio_servicio_tarifa[tipo],
+			escuela_max : edificio_escuela_max[tipo],
 			trabajadores_max : edificio_trabajadores_max[tipo], 
 			trabajo_calidad : edificio_trabajo_calidad[tipo],
 			trabajo_sueldo : max(sueldo_minimo, edificio_trabajo_sueldo[tipo]),
@@ -96,9 +97,9 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 				height = pre_height
 			edificio.width = width
 			edificio.height = height
-			array_set(bool_draw_construccion[x], y, false)
-			array_set(bool_draw_edificio[x], y, true)
-			array_set(draw_edificio[x], y, edificio)
+			ds_grid_set(bool_draw_construccion, x, y, false)
+			ds_grid_set(bool_draw_edificio, x, y, true)
+			ds_grid_set(draw_edificio, x, y, edificio)
 			array_push(edificios, edificio)
 			array_push(edificios_por_mantenimiento[min(20, edificio.mantenimiento)], edificio)
 			if edificio_es_trabajo[tipo]{
@@ -135,7 +136,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 				var c = min(x + width + 5, xsize), d = min(y + height + 5, ysize), e = max(0, y - 5)
 				for(var a = max(0, x - 5); a < c; a++)
 					for(var b = e; b < d; b++)
-						if bosque[a, b] and not bosque_venta[# a, b]
+						if bosque[# a, b] and not bosque_venta[# a, b]
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
 			}
@@ -207,18 +208,17 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 						}
 			}
 			//Marcar terreno
-			ds_grid_set_region(bool_edificio, x, y, x + width - 1, y + height - 1, true)
-			ds_grid_set_region(id_edificio, x, y, x + width - 1, y + height - 1, edificio)
-			c = x + width
-			d = y + height
-			for(var a = x; a < c; a++)
-				for(var b = y; b < d; b++){
-					array_set(construccion_reservada[a], b, false)
-					array_set(bosque[a], b, false)
-					array_set(draw_construccion[a], b, null_construccion)
+			c = x + width - 1
+			d = y + height - 1
+			ds_grid_set_region(bool_edificio, x, y, c, d, true)
+			ds_grid_set_region(id_edificio, x, y, c, d, edificio)
+			ds_grid_set_region(construccion_reservada, x, y, c, d, false)
+			ds_grid_set_region(draw_construccion, x, y, c, d, null_construccion)
+			ds_grid_set_region(bosque, x, y, c, d, false)
+			for(var a = x; a <= c; a++)
+				for(var b = y; b <= d; b++)
 					if calle[# a, b]
 						destroy_calle(a, b)
-				}
 			//Modificar belleza
 			if edificio_belleza[tipo] != 50{
 				var size = ceil(abs(edificio_belleza[tipo] - 50) / 5)

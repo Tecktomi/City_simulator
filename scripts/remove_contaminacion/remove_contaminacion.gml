@@ -1,8 +1,7 @@
 function remove_contaminacion(edificio = control.null_edificio){
 	with control{
-		var a = edificio.x, b = edificio.y, cont = edificio.contaminacion, size = ceil(cont / 5), e = min(xsize, a + edificio.width + size), f = min(ysize, b + edificio.height + size), g = max(0, b - size)
-		for(var c = max(0, a - size); c < e; c++)
-			for(var d = g; d < f; d++)
-				array_set(contaminacion[c], d, round(contaminacion[c, d] - cont / (1 + distancia_punto(c, d, edificio))))
+		var width = edificio.width, height = edificio.height, a = edificio.x + width / 2, b = edificio.y + height / 2, size = ceil(edificio.contaminacion / 5), d = min(width, height) / 2
+		for(var c = 0; c <= size; c++)
+			ds_grid_add_disk(contaminacion, a, b, c + d, -5 - c)
 	}
 }

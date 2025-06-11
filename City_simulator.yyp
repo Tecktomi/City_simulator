@@ -102,6 +102,8 @@
     {"id":{"name":"set_calidad_servicio","path":"scripts/set_calidad_servicio/set_calidad_servicio.yy",},},
     {"id":{"name":"set_calidad_vivienda","path":"scripts/set_calidad_vivienda/set_calidad_vivienda.yy",},},
     {"id":{"name":"set_contaminacion","path":"scripts/set_contaminacion/set_contaminacion.yy",},},
+    {"id":{"name":"set_escuela_clientes_max","path":"scripts/set_escuela_clientes_max/set_escuela_clientes_max.yy",},},
+    {"id":{"name":"set_escuela_servicio_max","path":"scripts/set_escuela_servicio_max/set_escuela_servicio_max.yy",},},
     {"id":{"name":"set_industria_io","path":"scripts/set_industria_io/set_industria_io.yy",},},
     {"id":{"name":"set_mantenimiento","path":"scripts/set_mantenimiento/set_mantenimiento.yy",},},
     {"id":{"name":"set_paro","path":"scripts/set_paro/set_paro.yy",},},

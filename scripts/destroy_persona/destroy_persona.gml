@@ -54,7 +54,7 @@ function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 		if persona.muerte != -1 and persona.muerte != (dia mod 360)
 			array_remove(control.muerte[persona.muerte], persona, "eliminar persona que iba a morir")
 		if persona.escuela != null_edificio
-			array_remove(persona.escuela.clientes, persona, "eliminar persona de la escuela")
+			cambiar_escuela(persona, null_edificio)
 		if persona.medico != null_edificio{
 			if debug
 				show_debug_message($"{fecha(dia)} {name(persona)} eliminad" + (persona.sexo ? "a" : "o") + $" de la lista de espera en {persona.medico.nombre}")

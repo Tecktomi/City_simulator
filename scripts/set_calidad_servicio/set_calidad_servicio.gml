@@ -10,6 +10,10 @@ function set_calidad_servicio(edificio = control.null_edificio){
 			if adoctrinamiento_escuelas
 				a -= floor(power(2, adoctrinamiento - 1))
 		}
+		if var_edificio_nombre = "Universidad"{
+			if adoctrinamiento_universidades
+				a -= floor(power(2, adoctrinamiento - 1))
+		}
 		if adoctrinamiento_biblioteca and var_edificio_nombre = "Biblioteca" and edificio.modo < 2
 			a -= floor(power(2, adoctrinamiento - 1))
 		if var_edificio_nombre = "Consultorio" and edificio.modo = 1

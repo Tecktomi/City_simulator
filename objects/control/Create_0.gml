@@ -514,7 +514,8 @@ debug = false
 		"Usa el poder del sol para generar energía infinita y limpia, ¡que milagro!",
 		"",
 		"Permite a los ciudadanos moverse rápidamente entre edificios conectados por calles",
-		"Entrega entretenimiento a la gente que sepa leer, además de mejorar la especialización de la industria"]
+		"Entrega entretenimiento a la gente que sepa leer, además de mejorar la especialización de la industria",
+		"Entrega educación de mayor alto nivel, es muy caro de mantener"]
 	#endregion
 	#region arreglos vacíos
 		edificio_nombre = []
@@ -651,7 +652,7 @@ debug = false
 		def_edificio_base("Pescadería", 5, 5, 200, 360, [1, 15, 17], [10, 5, 2], 6, 25, 10, false, true, true); def_edificio_servicio(,,,,,,,,,,,, true); def_edificio_trabajo(true, 6, 25, 5,, 0.04,,,,,, 9)
 		def_edificio_base("Mina", 4, 3, 800, 720, [1, 15, 26], [20, 10, 10], 10, 25, 15, false); def_edificio_servicio(,,,,,,,,,, true, 10); def_edificio_trabajo(true, 8, 20, 5,, 0.04,,,,,, 5)
 		def_edificio_base("Capilla", 4, 3, 1100, 600, [1, 15, 26], [20, 5, 30], 10, 65); def_edificio_servicio(,, true,,, 12, 40); def_edificio_trabajo(true, 2, 60, 6, 1,,,,,,, 1.5)
-		def_edificio_base("Hospicio", 4, 3, 1500, 1080, [1, 15, 24, 26], [20, 5, 5, 30], 15, 50); def_edificio_servicio(true,, true,,, 6, 30,, true, 20); def_edificio_trabajo(true, 5, 60, 8, 2,,,,,,, 1)
+		def_edificio_base("Hospicio", 4, 3, 1500, 1080, [1, 15, 24, 26], [20, 5, 5, 30], 15, 50); def_edificio_servicio(true,, true,,, 10, 30,, true, 20); def_edificio_trabajo(true, 5, 60, 8, 2,,,,,,, 1)
 		def_edificio_base("Albergue", 4, 3, 1300, 600, [1, 15, 26], [20, 5, 30], 12, 40,,,,,,, true, 10, 25); def_edificio_servicio(,, true,,, 10, 30,, true, 10); def_edificio_trabajo(true, 3, 50, 5, 1,,,,,,, 1)
 		def_edificio_base("Escuela parroquial", 4, 3, 1300, 720, [1, 15, 26], [20, 5, 30], 12, 45); def_edificio_servicio(,, true, true, 1, 10, 35, 10); def_edificio_trabajo(true, 5, 60, 6, 2,,,,,,, 1)
 		//20
@@ -701,11 +702,12 @@ debug = false
 		//60
 		def_edificio_base("Depósito de Taxis", 3, 3, 2000, 540, [15, 31], [25, 10], 4, 35, 10,,,,,,,,,, 80); def_edificio_servicio(); def_edificio_trabajo(true, 4, 40, 5, 1, 0.02,,,,,, 5)
 		def_edificio_base("Biblioteca", 3, 5, 1800, 720, [1, 15], [20, 10], 12, 70); def_edificio_servicio(, true,,,, 20, 50, 3); def_edificio_trabajo(true, 3, 60, 7, 2)
+		def_edificio_base("Universidad", 5, 6, 12000, 1440, [1, 15, 24], [50, 30, 20], 25, 80); def_edificio_servicio(,,, true, 4, 20, 80, 3); def_edificio_trabajo(true, 5, 80, 14, 3)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
 	edificio_categoria = [	[8, 9, 10, 18, 31, 47, 48, 49],
 							[4, 5, 14, 15, 27, 38, 40],
-							[6, 7, 16, 21, 34, 35, 43, 46, 57, 61],
+							[6, 7, 16, 21, 34, 35, 43, 46, 57, 61, 62],
 							[11, 12, 24, 53, 54, 55, 56],
 							[13, 20, 22, 41, 42, 44, 58, 60],
 							[23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
@@ -781,6 +783,8 @@ debug = false
 		vivienda_renta : 0,
 		servicio_calidad : 0,
 		servicio_max : 0,
+		servicio_tarifa : 0,
+		escuela_max : 0,
 		trabajadores_max : 0,
 		trabajo_calidad : 0,
 		trabajo_sueldo : 0,
@@ -1073,22 +1077,33 @@ debug = false
 	ds_grid_clear(id_edificio, null_edificio)
 	escombros = ds_grid_create(xsize, ysize)
 	ds_grid_clear(escombros, false)
+	bool_draw_edificio = ds_grid_create(xsize, ysize)
+	ds_grid_clear(bool_draw_edificio, false)
+	construccion_reservada = ds_grid_create(xsize, ysize)
+	ds_grid_clear(construccion_reservada, false)
+	bool_draw_construccion = ds_grid_create(xsize, ysize)
+	ds_grid_clear(bool_draw_construccion, false)
+	draw_edificio = ds_grid_create(xsize, ysize)
+	ds_grid_clear(draw_edificio, null_edificio)
+	draw_construccion = ds_grid_create(xsize, ysize)
+	ds_grid_clear(draw_construccion, null_construccion)
+	draw_edificio_flip = ds_grid_create(xsize, ysize)
+	ds_grid_clear(draw_edificio_flip, false)
+	bosque = ds_grid_create(xsize, ysize)
+	ds_grid_clear(bosque, false)
+	contaminacion = ds_grid_create(xsize, ysize)
+	ds_grid_clear(contaminacion, 0)
 	//Ciclo principal
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
 			var c = altura[# a, b], temp_bosque = grid[# a, b]
-			construccion_reservada[a, b] = false
-			bool_draw_edificio[a, b] = false
-			draw_edificio[a, b] = null_edificio
-			bool_draw_construccion[a, b] = false
-			draw_construccion[a, b] = null_construccion
-			draw_edificio_flip[a, b] = random(1) < 0.5
+			if brandom()
+				ds_grid_set(draw_edificio_flip, a, b, true)
 			cultivo_color[a, b] = temp_color_array
-			bosque[a, b] = temp_bosque > 0.7 and c > 0.62
-			if bosque[a, b]{
+			if c > 0.62 and temp_bosque > 0.7{
+				ds_grid_set(bosque, a, b, true)
 				var d = floor(350 * temp_bosque)
 				bosque_madera[a, b] = d
-				bosque_alpha[a, b] = 0.5 + d / 400
 				bosque_max[a, b] = d
 			}
 			mar[a, b] = false
@@ -1155,7 +1170,6 @@ debug = false
 					mineral_cantidad[d][a, b] = round(750 * temp_mineral * temp_mineral * temp_mineral)
 			}
 			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
-			contaminacion[a, b] = 0
 			petroleo[a, b] = floor(max(0, 10000 * (grid_petroleo[# a, b] - 0.85)))
 			zona_privada[a, b] = false
 			zona_empresa[a, b]= null_empresa
@@ -1163,7 +1177,7 @@ debug = false
 			zona_privada_permisos[a, b] = [false]
 			array_copy(zona_privada_permisos[a, b], 0, temp_array, 0, array_length(temp_array))
 			zona_privada_venta_terreno[a, b] = null_terreno
-			zona_pesca_bool[a, b] = 0
+			zona_pesca_num[a, b] = 0
 			mar_checked[a, b] = false
 			land_checked[a, b] = false
 			land_matrix[a, b] = false
@@ -1216,7 +1230,7 @@ debug = false
 			temp_complex = array_shift(mares[0])
 			a = temp_complex.a
 			b = temp_complex.b
-			if zona_pesca_bool[a, b] = 0
+			if zona_pesca_num[a, b] = 0
 				break
 		}
 		if array_length(mares[0]) = 0
@@ -1231,7 +1245,7 @@ debug = false
 		var e = min(a + 5, xsize - 1), f = min(b + 5, ysize - 1), g = max(0, b - 5)
 		for(c = max(0, a - 5); c <= e; c++)
 			for(var d = g; d <= f; d++)
-				array_add(zona_pesca_bool[c], d, 1)
+				array_add(zona_pesca_num[c], d, 1)
 	}
 #endregion
 #region Setings
@@ -1413,6 +1427,7 @@ debug = false
 	adoctrinamiento = 1
 	adoctrinamiento_escuelas = true
 	adoctrinamiento_biblioteca = false
+	adoctrinamiento_universidades = false
 	null_encargo = {
 		recurso : 0,
 		cantidad : 0,
@@ -1426,6 +1441,7 @@ debug = false
 		add_empresa(power(10, random_range(3, 4.2)))
 	while array_length(personas) < 80
 		add_familia(pais_tropico)
+	personas = array_shuffle(personas)
 #endregion
 #region Edificios iniciales
 	#region Puerto principal
@@ -1475,5 +1491,7 @@ debug = false
 			buscar_trabajo(persona)
 			buscar_casa(persona)
 		}
+		else
+			buscar_escuela(persona)
 	}
 #endregion

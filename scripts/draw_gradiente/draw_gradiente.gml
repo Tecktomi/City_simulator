@@ -3,7 +3,7 @@ function draw_gradiente(tipo, modo){
 		if modo = 0{
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
-					if not mar[a, b] and not bosque[a, b] and not bool_edificio[# a, b]{
+					if not mar[a, b] and not bosque[# a, b] and not bool_edificio[# a, b]{
 						var c = cultivo_max[a, b], d = (a - b) * tile_width - xpos, e = (a + b + 1) * tile_height - ypos
 						draw_set_color(cultivo_color[a, b][tipo])
 						draw_circle(d, e, tile_height / 2, false)
@@ -25,7 +25,7 @@ function draw_gradiente(tipo, modo){
 			draw_set_color(recurso_mineral_color[tipo])
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
-					if not bosque[a, b] and not bool_edificio[# a, b] and mineral[tipo][a, b]
+					if not bosque[# a, b] and not bool_edificio[# a, b] and mineral[tipo][a, b]
 						draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height / 2, false)
 			show_string += $"Depósitos de {recurso_nombre[recurso_mineral[tipo]]}\n"
 		}
@@ -49,7 +49,7 @@ function draw_gradiente(tipo, modo){
 		else if modo = 3{
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++){
-					var c = clamp(contaminacion[a, b], 0, 100)
+					var c = clamp(contaminacion[# a, b], 0, 100)
 					if c > 0{
 						draw_set_color(make_color_hsv(0, 0, 2.55 * (100 - c)))
 						draw_set_alpha(c / 200)
@@ -61,7 +61,7 @@ function draw_gradiente(tipo, modo){
 			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
 			if mouse_x > 0 and mouse_y > 0 and mouse_x < room_width and mouse_y < room_height
-				show_string += $"{clamp(contaminacion[mx, my], 0, 100)}%\n"
+				show_string += $"{clamp(contaminacion[# mx, my], 0, 100)}%\n"
 		}
 		else if modo = 4{
 			show_string += $"Ocupación Residencial\n"
@@ -140,7 +140,7 @@ function draw_gradiente(tipo, modo){
 			show_string += $"Zonas de pesca\n"
 			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-			var closer = -1, closer_dis = infinity, flag = zona_pesca_bool[mx, my]
+			var closer = -1, closer_dis = infinity, flag = zona_pesca_num[mx, my]
 			for(var c = 0; c < array_length(zonas_pesca); c++){
 				var zona_pesca = zonas_pesca[c], a = zona_pesca.a, b = zona_pesca.b
 				draw_set_alpha(0.2 + 0.4 * zona_pesca.cantidad / zona_pesca.cantidad_max)
