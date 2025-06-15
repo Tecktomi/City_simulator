@@ -112,7 +112,7 @@ function draw_gradiente(tipo, modo){
 			draw_set_color(c_black)
 			for(var a = min_camx; a < max_camx; a++)
 				for(var b = min_camy; b < max_camy; b++)
-					if petroleo[a, b] > 0
+					if petroleo[# a, b] > 0
 						draw_circle((a - b) * tile_width - xpos, (a + b + 1) * tile_height - ypos, tile_height / 2, false)
 		}
 		else if modo = 7{

@@ -28,15 +28,6 @@ function destroy_edificio(edificio = control.null_edificio){
 			array_remove(trabajos, edificio, "eliminar trabajo")
 			for(var a = 0; a < array_length(edificio.casas_cerca); a++)
 				array_remove(edificio.casas_cerca[a].trabajos_cerca[edificio.trabajo_educacion], edificio, "eliminar trabajo de las casas cercanas")
-			if var_edificio_nombre = "Bomba de Agua"
-				agua_input -= edificio.count
-			else if var_edificio_nombre = "Planta Termoeléctrica"
-				energia_input -= edificio.count
-			else if var_edificio_nombre = "Radio"
-				radioemisoras -= edificio.count
-			else if var_edificio_nombre = "Depósito de Taxis"
-				for(var a = 0; a < array_length(edificio.carreteras); a++)
-					edificio.carreteras[a].taxis -= floor(edificio.count / edificio.array_complex[0].a)
 		}
 		if edificio_es_casa[tipo]{
 			array_remove(casas, edificio, "eliminar casa")

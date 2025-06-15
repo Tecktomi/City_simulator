@@ -53,8 +53,11 @@ function add_calle(x, y){
 				index : carreteras_index++,
 				tramos : [[x, y]],
 				edificios : temp_edificios,
-				taxis : 0
+				taxis : 0,
+				dia_taxis : []
 			}
+			repeat(30)
+				array_push(carretera.dia_taxis, 0)
 			array_push(carreteras, carretera)
 			ds_grid_set(calle_carretera, x, y, carretera)
 			for(a = 0; a < array_length(temp_edificios); a++)

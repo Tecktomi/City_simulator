@@ -1601,6 +1601,32 @@ if sel_build{
 							array_push(recurso_lujo, 29)
 							array_push(recurso_lujo_probabilidad, 0.1)
 						}
+					//Prohibir libertad de prensa
+					if a = 22 and not ley_eneabled[a]{
+						edificio_estatal[43] = true
+						for(b = 0; b < array_length(edificio_count[43]); b++){
+							var edificio = edificio_count[43, b]
+							if edificio.privado{
+								array_remove(edificio.empresa.edificios, edificio)
+								edificio.empresa = null_empresa
+								edificio.privado = false
+							}
+						}
+						edificio_estatal[57] = true
+						for(b = 0; b < array_length(edificio_count[57]); b++){
+							var edificio = edificio_count[57, b]
+							if edificio.privado{
+								array_remove(edificio.empresa.edificios, edificio)
+								edificio.empresa = null_empresa
+								edificio.privado = false
+							}
+						}
+					}
+					//Permitir libertad de prensa
+					if a = 22 and ley_eneabled[a]{
+						edificio_estatal[43] = false
+						edificio_estatal[57] = false
+					}
 				}
 			if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
 				credibilidad_financiera += floor(sueldo_minimo / 2)
@@ -1878,7 +1904,7 @@ if build_sel{
 		e = my + height
 		for(var a = mx; a < d; a++)
 			for(var b = my; b < e; b++)
-				c += petroleo[a, b]
+				c += petroleo[# a, b]
 		if c = 0{
 			flag = false
 			text += "Se necesita petróleo cerca\n"
@@ -1892,8 +1918,8 @@ if build_sel{
 	e = max(0, my - 5)
 	for(var a = max(0, mx - 5); a < c; a++)
 		for(var b = e; b < d; b++)
-			if zona_privada[a, b] or bool_edificio[# a, b] or construccion_reservada[# a, b]{
-				if zona_privada[a, b]
+			if zona_privada[# a, b] or bool_edificio[# a, b] or construccion_reservada[# a, b]{
+				if zona_privada[# a, b]
 					draw_set_color(c_blue)
 				else if construccion_reservada[# a, b]
 					draw_set_color(c_green)
@@ -1953,7 +1979,7 @@ if build_sel{
 		var coste_terreno = 0, coste_deforestar = 0, coste_escombros = 0
 		for(var a = mx; a < c; a++)
 			for(var b = my; b < d; b++){
-				coste_terreno += valor_terreno * zona_privada[a, b]
+				coste_terreno += valor_terreno * zona_privada[# a, b]
 				coste_deforestar += 10 * bosque[# a, b]
 				coste_escombros += 25 * escombros[# a, b]
 			}
@@ -2014,7 +2040,7 @@ if build_terreno{
 	e = my + 3
 	for(var a = mx - 3; a <= c; a++)
 		for(var b = d; b <= e; b++)
-			if zona_privada[a, b] or zona_privada_venta[a, b]
+			if zona_privada[# a, b] or zona_privada_venta[# a, b]
 				draw_rombo_coord(a, b, 1, 1, false)
 	draw_set_alpha(1)
 	if build_pressed{
@@ -2026,7 +2052,7 @@ if build_terreno{
 		d = miny + height
 		for(var a = minx; a < c; a++){
 			for(var b = miny; b < d; b++)
-				if (bool_edificio[# a, b] and not edificio_nombre[id_edificio[# a, b].tipo] = "Toma") or mar[a, b] or construccion_reservada[# a, b] or zona_privada[a, b] or zona_privada_venta[a, b]{
+				if (bool_edificio[# a, b] and not edificio_nombre[id_edificio[# a, b].tipo] = "Toma") or mar[a, b] or construccion_reservada[# a, b] or zona_privada[# a, b] or zona_privada_venta[# a, b]{
 					flag = false
 					break
 				}
@@ -2052,15 +2078,14 @@ if build_terreno{
 				select(,,,, terreno_venta)
 			}
 			array_push(terrenos_venta, terreno_venta)
-			c = minx + width
-			d = miny + height
-			for(var a = minx; a < c; a++)
-				for(var b = miny; b < d; b++){
-					array_set(zona_privada[a], b, true)
-					array_set(zona_privada_venta[a], b, true)
-					array_set(zona_privada_venta_terreno[a], b, terreno_venta)
-					array_copy(zona_privada_permisos[a, b], 0, build_terreno_permisos, 0, array_length(build_terreno_permisos))
-				}
+			c = minx + width - 1
+			d = miny + height - 1
+			var temp_array = []
+			array_copy(temp_array, 0, build_terreno_permisos, 0, array_length(build_terreno_permisos))
+			ds_grid_set_region(zona_privada, minx, miny, c, d, true)
+			ds_grid_set_region(zona_privada_venta, minx, miny, c, d, true)
+			ds_grid_set_region(zona_privada_permisos, minx, miny, c, d, temp_array)
+			ds_grid_set_region(zona_privada_venta_terreno, minx, miny, c, d, terreno_venta)
 		}
 	}
 	if mouse_check_button_pressed(mb_left)
@@ -2091,7 +2116,7 @@ if build_calle{
 			var b = 0
 			if mx = build_x{
 				for(var a = build_y; true; a += sign(my - build_y)){
-					if not calle[# mx, a] and not mar[mx, a] and not bosque[# mx, a] and not zona_privada[mx, a] and (not bool_edificio[# mx, a] or edificio_nombre[id_edificio[# mx, a]] = "Toma"){
+					if not calle[# mx, a] and not mar[mx, a] and not bosque[# mx, a] and not zona_privada[# mx, a] and (not bool_edificio[# mx, a] or edificio_nombre[id_edificio[# mx, a]] = "Toma"){
 						add_calle(mx, a)
 						b++
 					}
@@ -2100,7 +2125,7 @@ if build_calle{
 				}
 			}
 			else for(var a = build_x; true; a += sign(mx - build_x)){
-				if not calle[# a, my] and not mar[a, my] and not bosque[# a, my] and not zona_privada[a, my] and (not bool_edificio[# a, my] or edificio_nombre[id_edificio[# a, my]] = "Toma"){
+				if not calle[# a, my] and not mar[a, my] and not bosque[# a, my] and not zona_privada[# a, my] and (not bool_edificio[# a, my] or edificio_nombre[id_edificio[# a, my]] = "Toma"){
 					add_calle(a, my)
 					b++
 				}
@@ -2137,11 +2162,11 @@ var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_w
 if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - sel_info * 300 and not sel_build and not getstring and not build_terreno and not build_calle{
 	if debug
 		show_string += $"  ({mx}, {my}) Altura: {altura[# mx, my]}\n"
-	if bool_edificio[# mx, my] or construccion_reservada[# mx, my] or zona_privada_venta[mx, my] or calle[# mx, my]
+	if bool_edificio[# mx, my] or construccion_reservada[# mx, my] or zona_privada_venta[# mx, my] or calle[# mx, my]
 		cursor = cr_handpoint
 	if mouse_check_button_pressed(mb_left) and not build_sel{
 		mouse_clear(mb_left)
-		sel_info = bool_edificio[# mx, my] or construccion_reservada[# mx, my] or zona_privada_venta[mx, my] or calle[# mx, my]
+		sel_info = bool_edificio[# mx, my] or construccion_reservada[# mx, my] or zona_privada_venta[# mx, my] or calle[# mx, my]
 		if sel_info{
 			sel_familia = null_familia
 			sel_persona = null_persona
@@ -2163,8 +2188,8 @@ if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - 
 				if tutorial_bool and tutorial = 10
 					tutorial_complete = true
 			}
-			else if zona_privada_venta[mx, my]
-				select(,,,, zona_privada_venta_terreno[mx, my])
+			else if zona_privada_venta[# mx, my]
+				select(,,,, zona_privada_venta_terreno[# mx, my])
 			else if calle[# mx, my]
 				select(,,,,, calle_carretera[# mx, my])
 		}
@@ -2521,7 +2546,7 @@ if sel_info{
 					e = y + height
 					for(var a = x; a < d; a++)
 						for(var b = y; b < e; b++)
-							c += petroleo[a, b]
+							c += petroleo[# a, b]
 					if c > 0
 						draw_text_pos(room_width - 20, pos, $"Depósito: {c}")
 					else
@@ -2533,14 +2558,14 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_uso_de_drones)
 				}
 				else if var_edificio_nombre = "Bomba de Agua"{
-					draw_text_pos(room_width - 20, pos, $"Empujando {sel_edificio.count} agua")
+					draw_text_pos(room_width - 20, pos, $"Empujando {floor(sel_edificio.count)} agua")
 					if sel_edificio.almacen[1] + sel_edificio.almacen[9] + sel_edificio.almacen[27] = 0
 						draw_text_pos(room_width - 30, pos, "Necesita combustible!")
 					edificio_mejora(sel_edificio, mejora_bomba_rotativa)
 					edificio_mejora(sel_edificio, mejora_computadores)
 				}
 				else if var_edificio_nombre = "Periódico"{
-					if elecciones{
+					if elecciones and not sel_edificio.privado{
 						if draw_boton(room_width - 40, pos, "Campaña política"){
 							sel_edificio.modo = -2
 							set_calidad_servicio(sel_edificio)
@@ -2660,7 +2685,7 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_reciclaje_de_materiales)
 				}
 				else if var_edificio_nombre = "Planta termoeléctrica"{
-					draw_text_pos(room_width - 40, pos, $"Produciendo {sel_edificio.count} energía")
+					draw_text_pos(room_width - 40, pos, $"Produciendo {floor(sel_edificio.count)} energía")
 					edificio_mejora(sel_edificio, mejora_filtros_industriales)
 				}
 				else if var_edificio_nombre = "Oficina de Bomberos"{
@@ -2824,14 +2849,14 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_latas_de_aluminio)
 				}
 				else if var_edificio_nombre = "Paneles Solares"
-					draw_text_pos(room_width - 40, pos, $"Produciendo {sel_edificio.count} energía")
+					draw_text_pos(room_width - 40, pos, $"Produciendo {floor(sel_edificio.count)} energía")
 				else if var_edificio_nombre = "Taberna"
 					edificio_mejora(sel_edificio, mejora_frigorificos)
 				else if in(var_edificio_nombre, "Cine", "Capilla", "Teatro")
 					edificio_mejora(sel_edificio, mejora_parlantes)
 				else if var_edificio_nombre = "Radio"{
 					draw_text_pos(room_width - 20, pos, radio_modos[sel_edificio.modo])
-					if draw_menu(room_width - 20, pos, "Cambiar funcionamiento", 3){
+					if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Cambiar funcionamiento", 3){
 						if draw_boton(room_width - 40, pos, radio_modos[0]){
 							sel_edificio.modo = 0
 							show[3] = false
@@ -2850,6 +2875,7 @@ if sel_info{
 					if array_length(sel_edificio.carreteras) = 0
 						draw_text_pos(room_width - 20, pos, "¡Necesitamos conección a\ncarreteras para funcionar!")
 					else{
+						draw_text_pos(room_width - 20, pos, $"Haciendo {floor(sel_edificio.count)} viajes mensuales")
 						draw_text_pos(room_width - 20, pos, "Conectado a")
 						for(var a = 0; a < array_length(sel_edificio.carreteras); a++)
 							draw_text_pos(room_width - 40, pos, $"Carretera {sel_edificio.carreteras[a].index}")
@@ -3051,11 +3077,8 @@ if sel_info{
 						empresa.dinero += temp_precio
 						inversion_privada -= temp_precio
 						sel_edificio.privado = false
-						for(var a = x; a < x + width; a++)
-							for(var b = y; b < y + height; b++){
-								array_set(zona_privada[a], b, false)
-								array_set(zona_empresa[a], b, null_empresa)
-							}
+						ds_grid_set_region(zona_privada, x, y, x + width - 1, y + height - 1, false)
+						ds_grid_set_region(zona_empresa, x, y, x + width - 1, y + height - 1, null_empresa)
 						for(var a = 0; a < array_length(empresa.terreno); a++){
 							var complex = empresa.terreno[a]
 							if complex.a >= x and complex.a < x + width and complex.b >= y and complex.b < y + height
@@ -3303,37 +3326,38 @@ if sel_info{
 	}
 	//Información terrenos a la venta
 	else if sel_tipo = 4 and sel_terreno != null_terreno{
+		x = sel_terreno.x
+		y = sel_terreno.y
+		var width = sel_terreno.width, height = sel_terreno.height
 		draw_text_pos(room_width, pos, "Terreno a la venta")
 		pos += 20
 		draw_text_pos(room_width - 20, pos, $"{sel_terreno.width}x{sel_terreno.height} terrenos")
 		draw_text_pos(room_width - 20, pos, "Permisos de construcción:")
 		if not show[0]{
 			for(var a = 0; a < array_length(edificio_categoria); a++)
-				if zona_privada_permisos[sel_terreno.x, sel_terreno.y][a]
+				if zona_privada_permisos[# x, y][a]
 					draw_text_pos(room_width - 40, pos, edificio_categoria_nombre[a])
 		}
 		else
 			for(var a = 0; a < array_length(edificio_categoria); a++)
-				if draw_boton(room_width - 40, pos, (zona_privada_permisos[sel_edificio.x, sel_edificio.y][a] ? "-" : "+") + edificio_categoria_nombre[a])
-					array_set(zona_privada_permisos[sel_edificio.x, sel_edificio.y], a, not zona_privada_permisos[sel_edificio.x, sel_edificio.y][a])
+				if draw_boton(room_width - 40, pos, (zona_privada_permisos[# x, y][a] ? "-" : "+") + edificio_categoria_nombre[a])
+					array_set(zona_privada_permisos[# x, y], a, not zona_privada_permisos[# x, y][a])
 		if not sel_terreno.privado
 			draw_menu(room_width - 20, pos, "Cambiar permisos", 0)
 		pos += 20
 		if not sel_terreno.privado{
 			if draw_boton(room_width - 20, pos, "Cancelar venta"){
+				var a = x + width - 1, b = y + height - 1
+				ds_grid_set_region(zona_privada, x, y, a, b, false)
+				ds_grid_set_region(zona_privada_venta, x, y, a, b, false)
+				ds_grid_set_region(zona_privada_permisos, x, y, a, b, [false, false, false, false, false, false])
+				ds_grid_set_region(zona_privada_venta_terreno, x, y, a, b, null_terreno)
 				array_remove(terrenos_venta, sel_terreno)
-				for(var a = sel_terreno.x; a < sel_terreno.x + sel_terreno.width; a++)
-					for(var b = sel_terreno.y; b < sel_terreno.y + sel_terreno.height; b++){
-						array_set(zona_privada[a], b, false)
-						array_set(zona_privada_venta[a], b, false)
-						array_set(zona_privada_venta_terreno[a], b, null_terreno)
-						array_set(zona_privada_permisos[a], b, [true, false, false, false, false])
-					}
 				sel_terreno = null_terreno
 				sel_info = false
 			}
-			if sel_terreno.width * sel_terreno.height > 1{
-				var temp_division = (sel_terreno.width > sel_terreno.height)
+			if width * height > 1{
+				var temp_division = (width > height)
 				if draw_boton(room_width - 20, pos, "Dividir terreno",,, function(inputs){
 					var terreno = inputs[0], temp_division = inputs[1]
 					draw_set_alpha(0.5)
@@ -3355,7 +3379,7 @@ if sel_info{
 							privado : false,
 							empresa : null_empresa
 						}
-						sel_terreno.width = floor(sel_terreno.width / 2)
+						sel_terreno.width = floor(width / 2)
 					}
 					else{
 						new_terreno = {
@@ -3366,21 +3390,19 @@ if sel_info{
 							privado : false,
 							empresa : null_empresa
 						}
-						sel_terreno.height = floor(sel_terreno.height / 2)
+						sel_terreno.height = floor(height / 2)
 					}
-					c = new_terreno.x + new_terreno.width
-					d = new_terreno.y + new_terreno.height
-					for(var a = new_terreno.x; a < c; a++)
-						for(var b = new_terreno.y; b < d; b++)
-							array_set(zona_privada_venta_terreno[a], b, new_terreno)
+					c = new_terreno.x
+					d = new_terreno.y
+					ds_grid_set_region(zona_privada_venta_terreno, x, y, x + new_terreno.width - 1, y + new_terreno.height - 1, new_terreno)
 					array_push(terrenos_venta, new_terreno)
 				}
 			}
 		}
 		draw_set_alpha(0.5)
 		draw_set_color(c_white)
-		draw_rombo_coord(sel_terreno.x, sel_terreno.y, sel_terreno.width, sel_terreno.height, false)
-		draw_rombo_coord(sel_terreno.x, sel_terreno.y, sel_terreno.width, sel_terreno.height, true)
+		draw_rombo_coord(x, y, width, height, false)
+		draw_rombo_coord(x, y, width, height, true)
 		draw_set_color(c_black)
 		draw_set_alpha(1)
 	}
@@ -3446,6 +3468,19 @@ if (keyboard_check(vk_space) or step >= 60){
 		dia++
 		current_mes = floor(dia / 30) mod 12
 		var dia_de_anno = (dia mod 360), dia_de_mes = (dia mod 30)
+		#region ajuste eventos diarios
+			radioemisoras -= dia_radioemisoras[dia_de_mes]
+			dia_radioemisoras[dia_de_mes] = 0
+			energia_output -= dia_energia[dia_de_mes]
+			dia_energia[dia_de_mes] = 0
+			agua_output -= dia_agua[dia_de_mes]
+			dia_agua[dia_de_mes] = 0
+			for(var a = 0; a < array_length(carreteras); a++){
+				var carretera = carreteras[a]
+				carretera.taxis -= carretera.dia_taxis[dia_de_mes]
+				carretera.dia_taxis[dia_de_mes] = 0
+			}
+		#endregion
 		//Día nacional
 		if pais_dia[dia_de_anno] > 0 and array_contains(pais_current, pais_dia[dia_de_anno]){
 			var pais = pais_dia[dia_de_anno], industria = pais.industria, b = 0
@@ -4106,8 +4141,11 @@ if (keyboard_check(vk_space) or step >= 60){
 									dinero += temp_precio
 									mes_tarifas[current_mes] += temp_precio
 								}
-								if var_edificio_nombre = "Periódico"
+								if var_edificio_nombre = "Periódico"{
 									persona.informado = true
+									if adoctrinamiento_periodico and not ocio.privado
+										adoctrinar(persona)
+								}
 								else if var_edificio_nombre = "Taberna"{
 									persona.lujos[2] = true
 									ocio.almacen[22]--
@@ -4345,6 +4383,8 @@ if (keyboard_check(vk_space) or step >= 60){
 			if array_length(terrenos_venta) > 0{
 				var terreno_venta = terrenos_venta[0], width = terreno_venta.width, height = terreno_venta.height, temp_precio = valor_terreno * width * height
 				if not empresa.quiebra and irandom(10) < credibilidad_financiera and empresa.dinero > 5 * temp_precio + array_length(empresa.terreno){
+					x = terreno_venta.x
+					y = terreno_venta.y
 					array_shift(terrenos_venta)
 					if sel_terreno = terreno_venta{
 						sel_terreno = null_terreno
@@ -4358,13 +4398,14 @@ if (keyboard_check(vk_space) or step >= 60){
 						dinero += temp_precio
 						mes_privatizacion[current_mes] += temp_precio
 					}
-					for(var b = terreno_venta.x; b < terreno_venta.x + width; b++)
-						for(c = terreno_venta.y; c < terreno_venta.y + height; c++){
+					d = x + width
+					e = y + height
+					ds_grid_set_region(zona_empresa, x, y, d - 1, e - 1, empresa)
+					ds_grid_set_region(zona_privada_venta, x, y, d - 1, e - 1, false)
+					ds_grid_set_region(zona_privada_venta_terreno, x, y, d - 1, e - 1, null_terreno)
+					for(var b = x; b < d; b++)
+						for(c = y; c < e; c++)
 							array_push(empresa.terreno, {a : b, b : c})
-							array_set(zona_empresa[b], c, empresa)
-							array_set(zona_privada_venta[b], c, false)
-							array_set(zona_privada_venta_terreno[b], c, null_terreno)
-						}
 				}
 			}
 			//Compra de edificios
@@ -4399,6 +4440,10 @@ if (keyboard_check(vk_space) or step >= 60){
 							ds_grid_set(bosque_venta, temp_complex.a, temp_complex.b, true)
 						}
 					}
+					else if edificio_nombre[edificio.tipo] = "Periódico"
+						edificio.modo = -1
+					else if edificio_nombre[edificio.tipo] = "Radio"
+						edificio.modo = 2
 					edificio.empresa = empresa
 					array_push(empresa.edificios, edificio)
 					set_presupuesto(0, edificio)
@@ -4407,13 +4452,12 @@ if (keyboard_check(vk_space) or step >= 60){
 						array_push(temp_bool_array, array_contains(edificio_categoria[b], edificio.tipo))
 					d = x + width
 					e = y + height
+					ds_grid_set_region(zona_privada, x, y, d - 1, e - 1, true)
+					ds_grid_set_region(zona_empresa, x, y, d - 1, e - 1, empresa)
+					ds_grid_set_region(zona_privada_permisos, x, y, d - 1, e - 1, temp_bool_array)
 					for(var b = x; b < d; b++)
-						for(c = y; c < e; c++){
-							array_set(zona_privada[b], c, true)
-							array_set(zona_empresa[b], c, empresa)
+						for(c = y; c < e; c++)
 							array_push(empresa.terreno, {a : b, b : c})
-							array_copy(zona_privada_permisos[b, c], 0, temp_bool_array, 0, array_length(temp_bool_array))
-						}
 					edificio.venta = false
 					set_paro(false, edificio)
 				}
@@ -4431,12 +4475,12 @@ if (keyboard_check(vk_space) or step >= 60){
 				var terreno = array_pick(empresa.terreno), temp_array = []
 				mx = terreno.a
 				my = terreno.b
-				while zona_empresa[mx - 1, my] = empresa and (not bool_edificio[# mx - 1, my] or id_edificio[# mx - 1, my].tipo = 32)
+				while zona_empresa[# mx - 1, my] = empresa and (not bool_edificio[# mx - 1, my] or id_edificio[# mx - 1, my].tipo = 32)
 					mx--
-				while zona_empresa[mx, my - 1] = empresa and (not bool_edificio[# mx, my - 1] or id_edificio[# mx, my - 1].tipo = 32)
+				while zona_empresa[# mx, my - 1] = empresa and (not bool_edificio[# mx, my - 1] or id_edificio[# mx, my - 1].tipo = 32)
 					my--
 				for(var b = 0; b < array_length(edificio_categoria_nombre); b++)
-					if zona_privada_permisos[mx, my][b]
+					if zona_privada_permisos[# mx, my][b]
 						for(c = 0; c < array_length(edificio_categoria[b]); c++){
 							d = edificio_categoria[b, c]
 							if floor(dia / 360) >= edificio_anno[d] and not edificio_estatal[d]
@@ -4449,7 +4493,7 @@ if (keyboard_check(vk_space) or step >= 60){
 					until array_length(temp_array) = 0
 					if index >= 0{
 						var temp_precio = edificio_precio[index], temp_precio_2 = 0, temp_altura = 0, width = edificio_width[index], height = edificio_height[index], tipo = 0, flag = true, var_edificio_nombre = edificio_nombre[index], temp_tiempo = 0
-						if zona_empresa[mx + width - 1, my + height - 1] != empresa
+						if zona_empresa[# mx + width - 1, my + height - 1] != empresa
 							continue
 						if var_edificio_nombre = "Mina"{
 							var max_c = mx + width + 1, max_d = my + height + 1
@@ -4492,7 +4536,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							var b = 0, max_c = mx + width, max_d = my + height
 							for(c = mx; c < max_c; c++)
 								for(d = my; d < max_d; d ++)
-									b += petroleo[c, d]
+									b += petroleo[# c, d]
 							temp_precio_2 = recurso_precio[27] * b
 							flag = (temp_precio_2 * (1 - impuesto_petrolifero) > 1000 + 2 * edificio_precio[index])
 							temp_precio_2 *= impuesto_petrolifero
@@ -4509,7 +4553,7 @@ if (keyboard_check(vk_space) or step >= 60){
 								height = 0
 								for(c = my; c < my + 10; c++)
 									if b >= mx + edificio_width[index] or c >= my + edificio_height[index]{
-										if zona_empresa[b, c] != empresa or construccion_reservada[# b, c] or (bool_edificio[# b, c] and id_edificio[# b, c].tipo != 32){
+										if zona_empresa[# b, c] != empresa or construccion_reservada[# b, c] or (bool_edificio[# b, c] and id_edificio[# b, c].tipo != 32){
 											if c = my{
 												height = prev_height
 												flag_2 = true
@@ -5052,14 +5096,14 @@ if (keyboard_check(vk_space) or step >= 60){
 						var h = b, f = edificio.x + width, g = edificio.y + height
 						for(c = edificio.x; c < f; c++){
 							for(d = edificio.x; d < g; d++)
-								if petroleo[c, d] > 0{
-									if petroleo[c, d] * edificio.ahorro > h{
-										array_add(petroleo[c], d, -floor(h / edificio.ahorro))
+								if petroleo[# c, d] > 0{
+									if petroleo[# c, d] * edificio.ahorro > h{
+										ds_grid_add(petroleo, c, d, -floor(h / edificio.ahorro))
 										h = 0
 									}
 									else{
-										h -= floor(petroleo[c, d] / edificio.ahorro)
-										array_set(petroleo[c], d, 0)
+										h -= floor(petroleo[# c, d] / edificio.ahorro)
+										ds_grid_set(petroleo, c, d, 0)
 									}
 									if h = 0
 										break
@@ -5091,7 +5135,6 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 					}
 					else if var_edificio_nombre = "Bomba de Agua"{
-						agua_input -= edificio.count
 						c = 10
 						var temp_inputs = [1, 9, 27], temp_inputs_2 = [12, 25, 40]
 						e = -1
@@ -5110,10 +5153,10 @@ if (keyboard_check(vk_space) or step >= 60){
 							edificio.pedido[c] = 100 - edificio.almacen[c]
 						}
 						edificio.count = b
+						dia_agua[dia_de_mes] += b
 						agua_input += b
 					}
 					else if var_edificio_nombre = "Planta Termoeléctrica"{
-						energia_input -= edificio.count
 						c = 0
 						var temp_inputs = [1, 9, 27], temp_inputs_2 = [12, 25, 40]
 						e = -1
@@ -5132,6 +5175,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							edificio.pedido[c] = 100 - edificio.almacen[c]
 						}
 						edificio.count = b
+						dia_energia[dia_de_mes] += b
 						energia_input += b
 					}
 					else if var_edificio_nombre = "Periódico"{
@@ -5198,33 +5242,41 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 					}
 					else if var_edificio_nombre = "Radio"{
-						radioemisoras -= edificio.count
 						if edificio.modo = 0
-							edificio.count = b
+							c = b
 						else if edificio.modo = 1{
-							edificio.count = floor(b / 2)
+							c = floor(b / 2)
 							campanna++
 						}
 						else if edificio.modo = 2{
-							edificio.count = floor(b / 2)
-							dinero += 10 * floor(b / 2) / (floor(b / 2) + radioemisoras)
+							c = floor(b / 2)
+							var temp_dinero = 10 * floor(b / 2) / (floor(b / 2) + radioemisoras)
+							edificio.ganancia += temp_dinero
+							if edificio.privado{
+								dinero_privado += temp_dinero
+								edificio.empresa.dinero += temp_dinero
+							}
+							else{
+								dinero += temp_dinero
+								mes_tarifas[current_mes] += temp_dinero
+							}
 						}
-						radioemisoras += edificio.count
+						radioemisoras += c
+						dia_radioemisoras[dia_de_mes] += c
 					}
 					else if var_edificio_nombre = "Paneles Solares"{
-						energia_input -= edificio.count
-						edificio.count = round(100 * b)
-						energia_input += edificio.count
+						c = round(100 * b)
+						edificio.count = c
+						dia_energia[dia_de_mes] += c
+						energia_input += c
 					}
 					else if var_edificio_nombre = "Depósito de Taxis"{
-						d = edificio.array_complex[0].a
-						for(c = 0; c < d; c++)
-							edificio.carreteras[c].taxis -= floor(edificio.count / d)
 						edificio.count = b
-						d = array_length(edificio.carreteras)
-						edificio.array_complex[0].a = d
-						for(c = 0; c < d; c++)
-							edificio.carreteras[c].taxis += floor(edificio.count / d)
+						e = floor(b / array_length(edificio.carreteras))
+						for(c = 0; c < array_length(edificio.carreteras); c++){
+							edificio.carreteras[c].dia_taxis[dia_de_mes] += e
+							edificio.carreteras[c].taxis += e
+						}
 					}
 					else if in(var_edificio_nombre, "Biblioteca", "Universidad"){
 						if edificio.modo > 1{

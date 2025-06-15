@@ -26,7 +26,7 @@ function valorizar_edificio(edificio = null_edificio){
 			var c = 0, d = min(edificio.x + width, xsize), e = min(edificio.y + height, ysize)
 			for(var a = edificio.x; a < d; a++)
 				for(var b = edificio.y; b < e; b++)
-					c += petroleo[a, b]
+					c += petroleo[# a, b]
 			c = floor(c * recurso_precio[27] * impuesto_petrolifero)
 			temp_precio += c
 			temp_text += $"\nDerechos petrolíferos: ${c}"

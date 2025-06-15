@@ -58,8 +58,11 @@ function destroy_calle(x, y){
 						index : carreteras_index++,
 						tramos : comp,
 						edificios : edificios,
-						taxis : 0
+						taxis : 0,
+						dia_taxis : []
 					}
+					repeat(30)
+						array_push(nueva_carretera.dia_taxis, 0)
 					for(var j = 0; j < array_length(comp); j++)
 						ds_grid_set(calle_carretera, comp[j, 0], comp[j, 1], nueva_carretera)
 					for(var j = 0; j < array_length(edificios); j++)

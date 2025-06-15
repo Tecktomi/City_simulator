@@ -30,11 +30,8 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 			ds_grid_set_region(draw_construccion, x, y, d - 1, e - 1, construccion)
 			for(var a = x; a < d; a++)
 				for(var b = y; b < e; b++){
-					if not privado and zona_privada[a, b]{
-						zona_empresa[a, b].dinero += valor_terreno
-						array_set(zona_privada[a], b, false)
-						array_set(zona_empresa[a], b, null_empresa)
-					}
+					if not privado and zona_privada[# a, b]
+						zona_empresa[# a, b].dinero += valor_terreno
 					if bool_edificio[# a, b] and id_edificio[# a, b].tipo = 32
 						destroy_edificio(id_edificio[# a, b])
 					if escombros[# a, b]{
@@ -42,6 +39,8 @@ function add_construccion(null = false, x = 0, y = 0, id = 0, tipo = 0, tiempo =
 						world_update = true
 					}
 				}
+			ds_grid_set_region(zona_privada, x, y, d - 1, e - 1, false)
+			ds_grid_set_region(zona_empresa, x, y, d - 1, e - 1, null_empresa)
 			ds_grid_set_region(escombros, x, y, d - 1, e - 1, false)
 			if array_length(cola_construccion) = 0 and ley_eneabled[6]
 				for(var a = 0; a < array_length(edificio_count[20]); a++)

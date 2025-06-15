@@ -24,7 +24,7 @@ function edificio_valid_place(x, y, index, privado = false, empresa = control.nu
 		if edificio_es_costero[index]{
 			for(var a = x; a < max_x; a++)
 				for(var b = y; b < max_y; b++)
-					if construccion_reservada[# a, b] or (bool_edificio[# a, b] and (index = 32 or id_edificio[# a, b].tipo != 32)) or (privado and (zona_empresa[a, b] != empresa or not zona_privada_permisos[a, b][tipo])) or zona_privada_venta[a, b]
+					if construccion_reservada[# a, b] or (bool_edificio[# a, b] and (index = 32 or id_edificio[# a, b].tipo != 32)) or (privado and (zona_empresa[# a, b] != empresa or not zona_privada_permisos[# a, b][tipo])) or zona_privada_venta[# a, b]
 						return false
 			var flag = true
 			for(var a = x; a < max_x; a++)
@@ -45,7 +45,7 @@ function edificio_valid_place(x, y, index, privado = false, empresa = control.nu
 		else{
 			for(var a = x; a < max_x; a++)
 				for(var b = y; b < max_y; b++)
-					if mar[a, b] or construccion_reservada[# a, b] or (bool_edificio[# a, b] and (index = 32 or id_edificio[# a, b].tipo != 32)) or (privado and (zona_empresa[a, b] != empresa or not zona_privada_permisos[a, b][tipo])) or zona_privada_venta[a, b]
+					if mar[a, b] or construccion_reservada[# a, b] or (bool_edificio[# a, b] and (index = 32 or id_edificio[# a, b].tipo != 32)) or (privado and (zona_empresa[# a, b] != empresa or not zona_privada_permisos[# a, b][tipo])) or zona_privada_venta[# a, b]
 						return false
 		}
 		return true

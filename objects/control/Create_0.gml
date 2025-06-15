@@ -242,6 +242,7 @@ debug = false
 		//20
 		def_ley("Prohibición de armas", false, 100, 800, 1, 5, "Impide la venta recreativa de Armas a la población")
 		def_ley("Matrimonio igualitario", false, 200, 800, 0, 1, "Permite a personas del mismo sexo casarse")
+		def_ley("Libertad de prensa", false, 0, 500, 3, 0, "Permite a los medios de comunicación mostrar una ideología distinta a la oficial")
 	#endregion
 	politica_economia_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
 	politica_sociocultural_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]
@@ -271,7 +272,8 @@ debug = false
 		index : 0,
 		tramos : [[0, 0]],
 		edificios : [],
-		taxis : 0
+		taxis : 0,
+		dia_taxis : []
 	}
 	array_pop(null_carretera.tramos)
 	carreteras = [null_carretera]
@@ -1062,7 +1064,6 @@ debug = false
 	var temp_array_length = array_length(temp_array)
 	array_pop(mares[0])
 	var temp_color_array = [c_red, c_red, c_red, c_red, c_red, c_red, c_red]
-	//Matriz del mundo
 	calle = ds_grid_create(xsize, ysize)
 	ds_grid_clear(calle, false)
 	calle_sprite = ds_grid_create(xsize, ysize)
@@ -1093,10 +1094,22 @@ debug = false
 	ds_grid_clear(bosque, false)
 	contaminacion = ds_grid_create(xsize, ysize)
 	ds_grid_clear(contaminacion, 0)
+	zona_privada = ds_grid_create(xsize, ysize)
+	ds_grid_clear(zona_privada, false)
+	zona_empresa = ds_grid_create(xsize, ysize)
+	ds_grid_clear(zona_empresa, null_empresa)
+	zona_privada_venta = ds_grid_create(xsize, ysize)
+	ds_grid_clear(zona_privada_venta, false)
+	petroleo = ds_grid_create(xsize, ysize)
+	ds_grid_clear(petroleo, 0)
+	zona_privada_permisos = ds_grid_create(xsize, ysize)
+	ds_grid_clear(zona_privada_permisos, [false, false, false, false, false, false])
+	zona_privada_venta_terreno = ds_grid_create(xsize, ysize)
+	ds_grid_clear(zona_privada_venta_terreno, null_terreno)
 	//Ciclo principal
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
-			var c = altura[# a, b], temp_bosque = grid[# a, b]
+			var c = altura[# a, b], temp_bosque = grid[# a, b], temp_petroleo = grid_petroleo[# a, b]
 			if brandom()
 				ds_grid_set(draw_edificio_flip, a, b, true)
 			cultivo_color[a, b] = temp_color_array
@@ -1170,13 +1183,8 @@ debug = false
 					mineral_cantidad[d][a, b] = round(750 * temp_mineral * temp_mineral * temp_mineral)
 			}
 			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
-			petroleo[a, b] = floor(max(0, 10000 * (grid_petroleo[# a, b] - 0.85)))
-			zona_privada[a, b] = false
-			zona_empresa[a, b]= null_empresa
-			zona_privada_venta[a, b] = false
-			zona_privada_permisos[a, b] = [false]
-			array_copy(zona_privada_permisos[a, b], 0, temp_array, 0, array_length(temp_array))
-			zona_privada_venta_terreno[a, b] = null_terreno
+			if temp_petroleo > 0.85
+				ds_grid_set(petroleo, a, b, floor(10000 * (temp_petroleo - 0.85)))
 			zona_pesca_num[a, b] = 0
 			mar_checked[a, b] = false
 			land_checked[a, b] = false
@@ -1423,11 +1431,21 @@ debug = false
 	esperanza_de_vida_sum = 0
 	esperanza_de_vida_num = 0
 	radioemisoras = 0
+	dia_radioemisoras = []
+	dia_energia = []
+	dia_agua = []
+	repeat(30){
+		array_push(dia_radioemisoras, 0)
+		array_push(dia_energia, 0)
+		array_push(dia_agua, 0)
+		array_push(null_carretera.dia_taxis, 0)
+	}
 	probabilidad_hijos = 0
 	adoctrinamiento = 1
 	adoctrinamiento_escuelas = true
 	adoctrinamiento_biblioteca = false
 	adoctrinamiento_universidades = false
+	adoctrinamiento_periodico = true
 	null_encargo = {
 		recurso : 0,
 		cantidad : 0,
