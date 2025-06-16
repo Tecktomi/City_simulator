@@ -148,12 +148,12 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 				edificio.array_complex = [{a : 18, b : 1}]
 			else if var_edificio_nombre = "Depósito de Taxis"
 				edificio.array_complex = [{a : 1, b : 0}]
-			if in(var_edificio_nombre, "Pozo Petrolífero", "Departamentos", "Bloque Habitacional", "Planta Química"){
+			if in(var_edificio_nombre, "Pozo Petrolífero", "Departamentos", "Bloque Habitacional", "Planta Química", "Hospital"){
 				edificio.agua = true
 				edificio.agua_consumo += edificio_agua[tipo]
 				agua_output += edificio.agua_consumo
 			}
-			if in(var_edificio_nombre, "Departamentos", "Bloque Habitacional", "Planta Química", "Fábrica de Vehículos", "Conservadora", "Cine", "Discoteca", "Antena de Radio", "Estudio de Televisión"){
+			if in(var_edificio_nombre, "Departamentos", "Bloque Habitacional", "Planta Química", "Fábrica de Vehículos", "Conservadora", "Cine", "Discoteca", "Antena de Radio", "Estudio de Televisión", "Hospital"){
 				edificio.energia = true
 				edificio.energia_consumo += edificio_energia[tipo]
 				energia_output += edificio.energia_consumo

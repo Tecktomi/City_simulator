@@ -2734,7 +2734,7 @@ if sel_info{
 						}
 					}
 				}
-				else if in(var_edificio_nombre, "Consultorio", "Hospicio"){
+				else if in(var_edificio_nombre, "Consultorio", "Hospicio", "Hospital"){
 					edificio_mejora(sel_edificio, mejora_anestesia)
 					edificio_mejora(sel_edificio, mejora_penicilina)
 					edificio_mejora(sel_edificio, mejora_vacunas)
@@ -2742,23 +2742,60 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_internet)
 					if var_edificio_nombre = "Consultorio"{
 						pos += 20
-						draw_text_pos(room_width - 20, pos, (sel_edificio.modo = 0) ? "Tratamiento convencional" : "Tratamiento tradicional")
+						draw_text_pos(room_width - 20, pos, "Tratamiento " + (sel_edificio.modo = 0) ? "convencional" : "tradicional")
 						if draw_menu(room_width - 30, pos, "Cambiar modo", 3){
-							if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, "Tratamiento tradicional"){
-								sel_edificio.modo = 1
-								set_trabajo_educacion(1, sel_edificio)
-								add_trabajo_sueldo(-2, sel_edificio)
-								set_calidad_servicio(sel_edificio)
-								close_show()
-							}
 							if sel_edificio.modo != 0 and draw_boton(room_width - 40, pos, "Tratamiento convencional"){
 								sel_edificio.modo = 0
-								set_trabajo_educacion(2, sel_edificio)
+								set_trabajo_educacion(3, sel_edificio)
 								add_trabajo_sueldo(2, sel_edificio)
 								set_calidad_servicio(sel_edificio)
 								close_show()
 							}
+							if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, "Tratamiento tradicional"){
+								sel_edificio.modo = 1
+								set_trabajo_educacion(2, sel_edificio)
+								add_trabajo_sueldo(-2, sel_edificio)
+								set_calidad_servicio(sel_edificio)
+								close_show()
+							}
 						}
+					}
+					else if var_edificio_nombre = "Hospital"{
+						pos += 20
+						draw_text_pos(room_width - 20, pos, "Tratamiento " + ((sel_edificio.modo = 0) ? "convencional" : ((sel_edificio.modo = 1) ? "ambulatorio" : "experimental")))
+						if draw_menu(room_width - 30, pos, "Cambiar modo", 3){
+							if sel_edificio.modo != 0 and draw_boton(room_width - 40, pos, "Tratamiento convencional"){
+								sel_edificio.modo = 0
+								sel_edificio.servicio_max = 30
+								while array_length(sel_edificio.clientes) > 30
+									buscar_atencion_medica(array_pop(sel_edificio.clientes))
+								set_calidad_servicio(sel_edificio)
+								set_trabajo_educacion(3, sel_edificio)
+								set_trabajadores_max(8, sel_edificio)
+								add_trabajo_sueldo(12 - sel_edificio.trabajo_sueldo, sel_edificio)
+								close_show()
+							}
+							if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, "Tratamiento ambulatorio"){
+								sel_edificio.modo = 1
+								sel_edificio.servicio_max = 45
+								set_calidad_servicio(sel_edificio)
+								set_trabajo_educacion(3, sel_edificio)
+								set_trabajadores_max(8, sel_edificio)
+								add_trabajo_sueldo(12 - sel_edificio.trabajo_sueldo, sel_edificio)
+								close_show()
+							}
+							if sel_edificio.modo != 2 and draw_boton(room_width - 40, pos, "Tratamiento experimental"){
+								sel_edificio.modo = 2
+								sel_edificio.servicio_max = 30
+								while array_length(sel_edificio.clientes) > 30
+									buscar_atencion_medica(array_pop(sel_edificio.clientes))
+								set_calidad_servicio(sel_edificio)
+								set_trabajo_educacion(4, sel_edificio)
+								set_trabajadores_max(6, sel_edificio)
+								add_trabajo_sueldo(15 - sel_edificio.trabajo_sueldo, sel_edificio)
+								close_show()
+							}
+						}	
 					}
 				}
 				else if var_edificio_nombre = "Mercado"{
@@ -5479,6 +5516,10 @@ if (keyboard_check(vk_space) or step >= 60){
 			}
 			//Edificios médicos
 			if edificio_es_medico[index]{
+				if edificio_nombre[index] = "Hospital" and edificio.modo = 2{
+					edificio_experiencia[7] = 2 - 0.99 * (2 - edificio_experiencia[7])
+					edificio_experiencia[64] = 2 - 0.99 * (2 - edificio_experiencia[64])
+				}
 				//Curar pacientes
 				repeat(min(array_length(edificio.clientes), ceil(random(b)))){
 					var persona = array_shift(edificio.clientes)

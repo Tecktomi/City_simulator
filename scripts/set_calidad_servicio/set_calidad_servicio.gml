@@ -14,7 +14,7 @@ function set_calidad_servicio(edificio = control.null_edificio){
 		}
 		if adoctrinamiento_biblioteca and var_edificio_nombre = "Biblioteca" and edificio.modo < 2
 			a -= floor(power(2, adoctrinamiento - 1))
-		if var_edificio_nombre = "Consultorio" and edificio.modo = 1
+		if in(var_edificio_nombre, "Consultorio", "Hospital") and edificio.modo = 1
 			a -= 25
 		if in(var_edificio_nombre, "Periódico", "Antena de Radio", "Estudio de Televisión"){
 			if edificio.modo != 0
