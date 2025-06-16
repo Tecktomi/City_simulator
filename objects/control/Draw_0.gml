@@ -1605,29 +1605,23 @@ if sel_build{
 						}
 					//Prohibir libertad de prensa
 					if a = 22 and not ley_eneabled[a]{
-						edificio_estatal[43] = true
-						for(b = 0; b < array_length(edificio_count[43]); b++){
-							var edificio = edificio_count[43, b]
-							if edificio.privado{
-								array_remove(edificio.empresa.edificios, edificio)
-								edificio.empresa = null_empresa
-								edificio.privado = false
-							}
-						}
-						edificio_estatal[57] = true
-						for(b = 0; b < array_length(edificio_count[57]); b++){
-							var edificio = edificio_count[57, b]
-							if edificio.privado{
-								array_remove(edificio.empresa.edificios, edificio)
-								edificio.empresa = null_empresa
-								edificio.privado = false
+						for(c = 0; c < array_length(medios_comunicacion); c++){
+							d = medios_comunicacion[c]
+							edificio_estatal[d] = true
+							for(b = 0; b < array_length(edificio_count[d]); b++){
+								var edificio = edificio_count[d, b]
+								if edificio.privado{
+									array_remove(edificio.empresa.edificios, edificio)
+									edificio.empresa = null_empresa
+									edificio.privado = false
+								}
 							}
 						}
 					}
 					//Permitir libertad de prensa
 					if a = 22 and ley_eneabled[a]{
-						edificio_estatal[43] = false
-						edificio_estatal[57] = false
+						for(c = 0; c < array_length(medios_comunicacion); c++)
+							edificio_estatal[medios_comunicacion[c]] = false
 					}
 				}
 			if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
@@ -2827,15 +2821,15 @@ if sel_info{
 					if sel_edificio.modo < 0
 						draw_text_pos(room_width - 20, pos, $"Difamando a {name(candidatos[1 - sel_edificio.modo])}")
 					else
-						draw_text_pos(room_width - 20, pos, radio_modos[sel_edificio.modo])
+						draw_text_pos(room_width - 20, pos, medios_comunicacion_modos[sel_edificio.modo])
 					if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Cambiar funcionamiento", 3){
-						if sel_edificio.modo != 0 and draw_boton(room_width - 40, pos, radio_modos[0]){
+						if sel_edificio.modo != 0 and draw_boton(room_width - 40, pos, medios_comunicacion_modos[0]){
 							sel_edificio.modo = 0
 							set_calidad_servicio(sel_edificio)
 							close_show()
 						}
 						if elecciones{
-							if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, radio_modos[1]){
+							if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, medios_comunicacion_modos[1]){
 								sel_edificio.modo = 1
 								set_calidad_servicio(sel_edificio)
 								close_show()
@@ -2849,7 +2843,7 @@ if sel_info{
 									}
 							}
 						}
-						if sel_edificio.modo != 2 and draw_boton(room_width - 40, pos, radio_modos[2]){
+						if sel_edificio.modo != 2 and draw_boton(room_width - 40, pos, medios_comunicacion_modos[2]){
 							sel_edificio.modo = 2
 							set_calidad_servicio(sel_edificio)
 							close_show()
@@ -3803,21 +3797,13 @@ if (keyboard_check(vk_space) or step >= 60){
 				candidatos_votos = [0]
 				elecciones = false
 				campanna = 0
-				//Medios de comunicación
-				for(var a = 0; a < array_length(edificio_count[43]); a++){
-					var edificio = edificio_count[43, a]
-					if edificio.modo = 1 or edificio.modo < 0
-						edificio.modo = 0
-				}
-				for(var a = 0; a < array_length(edificio_count[57]); a++){
-					var edificio = edificio_count[57, a]
-					if edificio.modo = 1 or edificio.modo < 0
-						edificio.modo = 0
-				}
-				for(var a = 0; a < array_length(edificio_count[63]); a++){
-					var edificio = edificio_count[63, a]
-					if edificio.modo = 1 or edificio.modo < 0
-						edificio.modo = 0
+				for(b = 0; b < array_length(medios_comunicacion); b++){
+					c = medios_comunicacion[b]
+					for(var a = 0; a < array_length(edificio_count[c]); a++){
+						var edificio = edificio_count[c, a]
+						if edificio.modo = 1 or edificio.modo < 0
+							edificio.modo = 0
+					}
 				}
 			}
 			if not debug and (anno mod 6) = 0 and anno > 0{
@@ -4447,9 +4433,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							ds_grid_set(bosque_venta, temp_complex.a, temp_complex.b, true)
 						}
 					}
-					else if edificio_nombre[edificio.tipo] = "Periódico"
-						edificio.modo = -1
-					else if edificio_nombre[edificio.tipo] = "Antena de Radio"
+					else if in(edificio_nombre[edificio.tipo], "Periódico", "Antena de Radio", "Televisión")
 						edificio.modo = 2
 					edificio.empresa = empresa
 					array_push(empresa.edificios, edificio)
