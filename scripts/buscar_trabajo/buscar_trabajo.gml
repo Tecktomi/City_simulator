@@ -27,6 +27,6 @@ function buscar_trabajo(persona = control.null_persona){
 					}
 				}
 		}
-		return false
 	}
+	return false
 }

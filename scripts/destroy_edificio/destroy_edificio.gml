@@ -68,6 +68,11 @@ function destroy_edificio(edificio = control.null_edificio){
 				if edificios[a].muelle_cercano = edificio
 					buscar_muelle_cercano(edificios[a])
 		}
+		else if in(var_edificio_nombre, "Comisaría", "Prisión"){
+			edificio.servicio_max = 0
+			while array_length(edificio.clientes) > 0
+				arrestar_persona(edificio.clientes[0])
+		}
 		ds_grid_set_region(bool_edificio, edificio.x, edificio.y, edificio.x + width - 1, edificio.y + height - 1, false)
 		ds_grid_set_region(id_edificio, edificio.x, edificio.y, edificio.x + width - 1, edificio.y + height - 1, null_edificio)
 		if edificio.privado

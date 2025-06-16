@@ -1,5 +1,28 @@
-function arrestar_persona(edificio = control.null_edificio, persona = control.null_persona, tiempo = 12){
+function arrestar_persona(persona = control.null_persona, tiempo = 12){
 	with control{
+		var edificio = null_edificio
+		for(var a = 0; a < array_length(edificio_count[65]); a++){
+			var temp_edificio = edificio_count[65, a]
+			if array_length(temp_edificio.clientes) < temp_edificio.servicio_max{
+				edificio = temp_edificio
+				break
+			}
+		}
+		if edificio = null_edificio
+			for(var a = 0; a < array_length(edificio_count[34]); a++){
+				var temp_edificio = edificio_count[34, a]
+				if array_length(temp_edificio.clientes) < temp_edificio.servicio_max{
+					edificio = temp_edificio
+					break
+				}
+			}
+		if edificio = null_edificio or array_length(edificio.clientes) >= edificio.servicio_max{
+			if persona.preso{
+				persona.preso = false
+				cambiar_trabajo(persona, null_edificio)
+			}
+			return false
+		}
 		array_push(edificio.clientes, persona)
 		array_push(edificio.array_complex, {a : tiempo, b : 0})
 		persona.preso = true
@@ -17,4 +40,5 @@ function arrestar_persona(edificio = control.null_edificio, persona = control.nu
 		if elecciones and persona.candidato
 			delete_candidato(persona)
 	}
+	return true
 }

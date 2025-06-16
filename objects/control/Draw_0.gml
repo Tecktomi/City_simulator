@@ -375,7 +375,7 @@ if menu_principal{
 	draw_set_alpha(1)
 	if sel_comisaria{
 		draw_set_color(c_white)
-		draw_text(0, 0, "Selecciona un edificio a vigilar")
+		show_string += "Selecciona un edificio a vigilar"
 		draw_rombo_coord(sel_edificio.x, sel_edificio.y, sel_edificio.width, sel_edificio.height, true)
 		draw_set_color(c_black)
 		if mouse_check_button_pressed(mb_right){
@@ -814,9 +814,10 @@ if sel_build{
 					temp_array[persona.trabajo.tipo]++
 					num_des += (persona.trabajo = null_edificio)
 					trab_esta += not persona.trabajo.privado
-					num_del += (persona.trabajo = delincuente)
 					num_pro += (persona.trabajo = prostituta)
 				}
+				if persona.trabajo.tipo = delincuente.tipo
+					num_del++
 				num_nin += (persona.es_hijo and persona.trabajo != null_edificio)
 			}
 			var vacantes = 0, vacantes_tipo
@@ -960,6 +961,10 @@ if sel_build{
 			draw_text_pos(130, pos, "Porpaganda en bibliotecas")
 			adoctrinamiento_universidades = draw_boton_rectangle(110, pos, 125, pos + 15, adoctrinamiento_universidades)
 			draw_text_pos(130, pos, "Porpaganda en universidades")
+			adoctrinamiento_periodico = draw_boton_rectangle(110, pos, 125, pos + 15, adoctrinamiento_periodico)
+			draw_text_pos(130, pos, "Porpaganda en periódico")
+			adoctrinamiento_prision = draw_boton_rectangle(110, pos, 125, pos + 15, adoctrinamiento_prision)
+			draw_text_pos(130, pos, "Porpaganda en prisiones")
 		}
 		//Ministerio de Economía
 		else if ministerio = 5{
@@ -2172,7 +2177,7 @@ if mx >= 0 and my >= 0 and mx < xsize and my < ysize and mouse_x < room_width - 
 			else if bool_edificio[# mx, my]{
 				var edificio = id_edificio[# mx, my]
 				if sel_comisaria{
-					if edificio_nombre[edificio.tipo] != "Comisaría"{
+					if not in(edificio_nombre[edificio.tipo], "Comisaría", "Prisión"){
 						if sel_edificio.comisaria != null_edificio
 							sel_edificio.comisaria.comisaria = null_edificio
 						sel_edificio.comisaria = edificio
@@ -2281,19 +2286,19 @@ if sel_info{
 					sel_edificio.huelga = false
 					set_paro(false, sel_edificio)
 					var flag = false
-					for(a = 0; a < array_length(sel_edificio.trabajadores); a++){
-						var persona = sel_edificio.trabajadores[a]
+					while array_length(sel_edificio.trabajadores) > 0{
+						var persona = sel_edificio.trabajadores[0]
 						if brandom(){
 							if ley_eneabled[11] and brandom(){
 								destroy_persona(persona,, "Muerto por la policía")
 								mes_muertos_asesinados[current_mes]++
 								flag = true
-								a--
 								continue
 							}
 							else
 								buscar_atencion_medica(persona)
 						}
+						arrestar_persona(persona, 6)
 						persona.felicidad_temporal -= 40
 						if persona.pareja != null_persona
 							persona.pareja.felicidad_temporal -= 25
@@ -2324,17 +2329,19 @@ if sel_info{
 					(edificio_servicio_calidad[index] > 0) ? "Calidad servicio: " + string(floor(sel_edificio.servicio_calidad)) + ((sel_edificio.servicio_tarifa > 0) ? "  Tarifa: $" + string(sel_edificio.servicio_tarifa + (var_edificio_nombre = "Taberna") ? ceil(recurso_precio[22] * 1.1) : 0) : "  Sin tarifa") + "\n" : ""}")
 			#endregion
 			//Prisiones
-			if var_edificio_nombre = "Comisaría"{
+			if in(var_edificio_nombre, "Comisaría", "Prisión"){
 				if draw_menu(room_width - 20, pos, $"{array_length(sel_edificio.clientes)} preso{array_length(sel_edificio.clientes) = 1 ? "" : "s"}", 2)
 					for(var a = 0; a < array_length(sel_edificio.clientes); a++)
 						if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a]))
 							select(,, sel_edificio.clientes[a])
-				if sel_edificio.comisaria != null_edificio
-					if draw_boton(room_width - 20, pos, $"Vigilando {sel_edificio.comisaria.nombre}")
-						sel_edificio = sel_edificio.comisaria
-				if draw_boton(room_width - 20, pos, "Vigilar un edificio"){
-					sel_comisaria = true
-					sel_info = false
+				if var_edificio_nombre = "Comisaría"{
+					if sel_edificio.comisaria != null_edificio
+						if draw_boton(room_width - 20, pos, $"Vigilando {sel_edificio.comisaria.nombre}")
+							sel_edificio = sel_edificio.comisaria
+					if draw_boton(room_width - 20, pos, "Vigilar un edificio"){
+						sel_comisaria = true
+						sel_info = false
+					}
 				}
 			}
 			else if sel_edificio.comisaria != null_edificio
@@ -2430,11 +2437,8 @@ if sel_info{
 					draw_set_alpha(0.2 + 0.4 * zona_pesca.cantidad / zona_pesca.cantidad_max)
 					draw_circle((c - d) * tile_width - xpos, (c + d + 1) * tile_height - ypos, tile_height * (1 + zona_pesca.cantidad / 800), false)
 					draw_set_alpha(1)
-					if sqrt(sqr(mx - c) + sqr(my - d)) < 5{
-						draw_set_halign(fa_left)
-						draw_text(0, 0, $"Pescado: {floor(zona_pesca.cantidad)}")
-						draw_set_halign(fa_right)
-					}
+					if sqrt(sqr(mx - c) + sqr(my - d)) < 5
+						show_string += $"Pescado: {floor(zona_pesca.cantidad)}"
 					draw_set_color(c_black)
 					draw_text_pos(room_width - 40, pos, $"Eficiencia: {floor(100 * sel_edificio.eficiencia * (0.8 + 0.1 * sel_edificio.presupuesto))}%")
 					if contaminacion[# sel_edificio.x, sel_edificio.y] > 0
@@ -2690,9 +2694,32 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_uso_de_drones)
 					edificio_mejora(sel_edificio, mejora_filtros_industriales)
 				}
-				else if var_edificio_nombre = "Comisaría"{
+				else if in(var_edificio_nombre, "Comisaría", "Prisión"){
 					edificio_mejora(sel_edificio, mejora_camiones)
 					edificio_mejora(sel_edificio, mejora_internet)
+					if var_edificio_nombre = "Prisión"{
+						pos += 20
+						draw_text_pos(room_width - 20, pos, (sel_edificio.modo = 0) ? "Aglomeración" : ((sel_edificio.modo = 1) ? "Campo de reeducación" : "Trabajo voluntario"))
+						if draw_menu(room_width - 30, pos, "Cambiar modo", 3){
+							if sel_edificio.modo != 0 and draw_boton(room_width - 40, pos, "Aglomeración"){
+								sel_edificio.modo = 0
+								sel_edificio.count = 10
+								set_carcel_cantidad(sel_edificio)
+							}
+							if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, "Campo de reeducación"){
+								sel_edificio.modo = 1
+								sel_edificio.count = 5
+								set_carcel_cantidad(sel_edificio)
+								set_trabajo_educacion(1, sel_edificio)
+									
+							}
+							if sel_edificio.modo != 2 and draw_boton(room_width - 40, pos, "Trabajo voluntario"){
+								sel_edificio.modo = 2
+								sel_edificio.servicio_max = 6
+								set_carcel_cantidad(sel_edificio)
+							}
+						}
+					}
 				}
 				else if in(var_edificio_nombre, "Escuela", "Escuela parroquial"){
 					edificio_mejora(sel_edificio, mejora_computadores)
@@ -3243,7 +3270,7 @@ if sel_info{
 					}
 					credibilidad_financiera = clamp(credibilidad_financiera - 1, 1, 10)
 				}
-				arrestar_persona(array_pick(edificio_count[34]), sel_persona, 24)
+				arrestar_persona(sel_persona, 24)
 			}
 			if ley_eneabled[11] and draw_boton(room_width - 20, pos, $"Silenciar opositor{sel_persona.sexo ? "a" : ""} $1000"){
 				dinero -= 1000
@@ -3633,6 +3660,9 @@ if (keyboard_check(vk_space) or step >= 60){
 					}, familia)
 					b += mes_muertos_accidentes[current_mes] - c
 				}
+				if edificio_nombre[edificio.tipo] = "Prisión"
+					while array_length(edificio.clientes) > 0
+						destroy_persona(edificio.clientes[0], true, "Preso muerto en incendio")
 				add_noticia("Incendio", $"Se ha quemado {edificio.nombre}{b = 0 ? "" : ", ha"}{b = 1 ? "" : "n"} muerto {b} persona{b = 1 ? "" : "s"}")
 				c = edificio.x + edificio.width
 				d = edificio.y + edificio.height
@@ -4019,30 +4049,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						persona.familia.madre.embarazo = (dia + irandom_range(240, 280)) mod 360
 						array_push(embarazo[persona.familia.madre.embarazo], persona.familia.madre)
 					}
-					//Buscar trabajo
-					if not buscar_trabajo(persona) and persona.trabajo = null_edificio and irandom(persona.educacion) = 0 and irandom(persona.edad) < 10
-						if brandom()
-							cambiar_trabajo(persona, delincuente)
-						else if persona.sexo
-							cambiar_trabajo(persona, prostituta)
-					//Delinquir
-					if persona.trabajo = delincuente{
-						var familia = array_pick(familias)
-						if familia != persona.familia and (familia.casa = homeless or familia.casa.ladron = null_persona){
-							if familia.casa != homeless{
-								familia.casa.ladron = persona
-								persona.ladron = familia.casa
-							}
-							var b = clamp(irandom(familia.riqueza), 0, 24)
-							if b > 0{
-								familia.riqueza -= b
-								persona.familia.riqueza += b
-								for_familia(function(persona = null_persona, a = 0){
-									persona.felicidad_crimen = max(0, persona.felicidad_crimen - a)
-								}, familia,, 2 * b - 5)
-							}
-						}
-					}
+					buscar_trabajo(persona)
 					//Buscar educación vespertina
 					if (floor(persona.educacion) = 0 or brandom()) and persona.trabajo = null_edificio
 						buscar_escuela(persona)
@@ -4090,6 +4097,30 @@ if (keyboard_check(vk_space) or step >= 60){
 									break
 								}
 							}
+						}
+					}
+				}
+				//Volverse delincuente
+				if persona.edad > 12 and persona.escuela = null_edificio and persona.trabajo = null_edificio and irandom(persona.educacion) = 0 and random(persona.edad) < 20 and random(persona.felicidad) < 30{
+					if brandom()
+						cambiar_trabajo(persona, delincuente)
+					else if persona.sexo
+						cambiar_trabajo(persona, prostituta)
+				}
+				if persona.trabajo = delincuente{
+					var familia = array_pick(familias)
+					if familia != persona.familia and (familia.casa = homeless or familia.casa.ladron = null_persona){
+						if familia.casa != homeless{
+							familia.casa.ladron = persona
+							persona.ladron = familia.casa
+						}
+						var b = clamp(irandom(familia.riqueza), 0, 24)
+						if b > 0{
+							familia.riqueza -= b
+							persona.familia.riqueza += b
+							for_familia(function(persona = null_persona, a = 0){
+								persona.felicidad_crimen = max(0, persona.felicidad_crimen - a)
+							}, familia,, 2 * b - 5)
 						}
 					}
 				}
@@ -4333,7 +4364,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 					}
 					//Protestas
-					else if not in(persona.trabajo, null_edificio, jubilado, delincuente, prostituta) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado and not persona.preso and persona.trabajo.comisaria = null_edificio and edificio_nombre[persona.trabajo.tipo] != "Comisaría" and persona.familia.casa.comisaria = null_edificio{
+					else if not in(persona.trabajo, null_edificio, jubilado, delincuente, prostituta) and not persona.trabajo.paro and persona.trabajo.exigencia = null_exigencia and not persona.trabajo.privado and not persona.preso and persona.trabajo.comisaria = null_edificio and not in(edificio_nombre[persona.trabajo.tipo], "Comisaría", "Prisión") and persona.familia.casa.comisaria = null_edificio{
 						var edificio = persona.trabajo, fel_ali = 0, fel_sal = 0, fel_edu = 0, num_edu = 0, fel_div = 0, fel_rel = 0
 						for(var b = 0; b < array_length(edificio.trabajadores); b++){
 							var trabajador = edificio.trabajadores[b]
@@ -5070,7 +5101,23 @@ if (keyboard_check(vk_space) or step >= 60){
 								}
 							}
 					}
-					else if var_edificio_nombre = "Comisaría"{
+					else if in(var_edificio_nombre, "Comisaría", "Prisión"){
+						if var_edificio_nombre = "Prisión" and edificio.modo != 0
+							for(c = 0; c < array_length(edificio.clientes); c++){
+								var persona = edificio.clientes[c]
+								if edificio.modo = 1{
+									if adoctrinamiento_prision
+										adoctrinar(persona)
+									else if persona.educacion < 1
+										persona.educacion += random(0.05)
+								}
+								else if edificio.modo = 2{
+									edificio.ganancia++
+									dinero++
+									mes_tarifas[current_mes]++
+									persona.felicidad_trabajo = max(0, persona.felicidad_trabajo - 2)
+								}
+							}
 						for(c = 0; c < array_length(edificio.clientes); c++){
 							edificio.array_complex[c].a--
 							if edificio.array_complex[c].a = 0{
@@ -5081,17 +5128,17 @@ if (keyboard_check(vk_space) or step >= 60){
 								cambiar_trabajo(persona, null_edificio)
 							}
 						}
-						for(d = irandom(b * (1 + ley_eneabled[11])); d > 0 and array_length(edificio.clientes) < edificio.servicio_max; d--){
-							var temp_edificio = array_pick(edificio.casas_cerca)
-							if temp_edificio.ladron != null_persona
-								arrestar_persona(edificio, temp_edificio.ladron)
-							for(c = 0; c < array_length(temp_edificio.familias); c++){
-								var familia = temp_edificio.familias[c]
-								for_familia(function(persona = null_persona){
-									persona.felicidad_crimen = min(100, persona.felicidad_crimen + 4)
-								}, familia)
+						if var_edificio_nombre = "Comisaría"
+							repeat(irandom(b * (1 + ley_eneabled[11]))){
+								var temp_edificio = array_pick(edificio.casas_cerca)
+								if temp_edificio.ladron != null_persona and arrestar_persona(temp_edificio.ladron)
+									for(c = 0; c < array_length(temp_edificio.familias); c++){
+										var familia = temp_edificio.familias[c]
+										for_familia(function(persona = null_persona){
+											persona.felicidad_crimen = min(100, persona.felicidad_crimen + 4)
+										}, familia)
+									}
 							}
-						}
 					}
 					else if var_edificio_nombre = "Mercado"{
 						edificio.count = floor(b)

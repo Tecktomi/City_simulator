@@ -101,6 +101,7 @@
     {"id":{"name":"select","path":"scripts/select/select.yy",},},
     {"id":{"name":"set_calidad_servicio","path":"scripts/set_calidad_servicio/set_calidad_servicio.yy",},},
     {"id":{"name":"set_calidad_vivienda","path":"scripts/set_calidad_vivienda/set_calidad_vivienda.yy",},},
+    {"id":{"name":"set_carcel_cantidad","path":"scripts/set_carcel_cantidad/set_carcel_cantidad.yy",},},
     {"id":{"name":"set_contaminacion","path":"scripts/set_contaminacion/set_contaminacion.yy",},},
     {"id":{"name":"set_escuela_clientes_max","path":"scripts/set_escuela_clientes_max/set_escuela_clientes_max.yy",},},
     {"id":{"name":"set_escuela_servicio_max","path":"scripts/set_escuela_servicio_max/set_escuela_servicio_max.yy",},},

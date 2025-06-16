@@ -520,7 +520,8 @@ debug = false
 		"Entrega entretenimiento a la gente que sepa leer, además de mejorar la especialización de la industria",
 		"Entrega educación de mayor alto nivel, es muy caro de mantener",
 		"Entrega servicio de televisión a todos los hogares con acceso a la red electrica en la isla",
-		"Entrega atención médica de alta calidad, requiere acceso a luz y agua"]
+		"Entrega atención médica de alta calidad, requiere acceso a luz y agua",
+		"Permite encarcelar a los ciudadanos no deseados"]
 	#endregion
 	#region arreglos vacíos
 		edificio_nombre = []
@@ -710,11 +711,12 @@ debug = false
 		def_edificio_base("Universidad", 5, 6, 12000, 1440, [1, 15, 24], [50, 30, 20], 25, 80); def_edificio_servicio(,,, true, 4, 20, 80, 3); def_edificio_trabajo(true, 5, 80, 14, 3)
 		def_edificio_base("Estudio de Televisión", 3, 4, 2400, 1080, [15, 24, 26], [20, 15, 15], 20,,,,,,,,,,,, 150); def_edificio_servicio(,,,,,,,,,, true, 50); def_edificio_trabajo(true, 6, 50, 8, 2,,,,,,, 15)
 		def_edificio_base("Hospital", 4, 4, 4000, 1440, [15, 24, 26], [25, 20, 30], 25, 60,,,,,,,,,,, 110); def_edificio_servicio(true,,,,,30, 70, 30, true, 30, true, 20); def_edificio_trabajo(true, 8, 70, 12, 3,,,,,,, 10)
+		def_edificio_base("Prisión", 5, 5, 2200, 1080, [15, 26], [40, 60], 20, 20,,,,,,,,,,, 50); def_edificio_servicio(,,,,, 40); def_edificio_trabajo(true, 4, 25, 6,, 0.04,,,,,, 4)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
 	edificio_categoria = [	[8, 9, 10, 18, 31, 47, 48, 49],
 							[4, 5, 14, 15, 27, 38, 40],
-							[6, 7, 16, 21, 34, 35, 43, 46, 57, 61, 62, 63, 64],
+							[6, 7, 16, 21, 34, 35, 43, 46, 57, 61, 62, 63, 64, 65],
 							[11, 12, 24, 53, 54, 55, 56],
 							[13, 20, 22, 41, 42, 44, 58, 60],
 							[23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
@@ -1454,6 +1456,7 @@ debug = false
 	adoctrinamiento_biblioteca = false
 	adoctrinamiento_universidades = false
 	adoctrinamiento_periodico = true
+	adoctrinamiento_prision = true
 	null_encargo = {
 		recurso : 0,
 		cantidad : 0,
