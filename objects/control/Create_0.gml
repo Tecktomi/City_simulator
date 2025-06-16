@@ -249,7 +249,7 @@ debug = false
 	politica_economia = 3
 	politica_sociocultural = 3
 	politica_religion = 0.5
-	radio_modos = ["Libertad de expresión", "Campaña política", "Publicidad invasiva"]
+	radio_modos = ["Libre expresión", "Campaña política", "Publicidad invasiva"]
 	campanna = 0
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
@@ -517,7 +517,8 @@ debug = false
 		"",
 		"Permite a los ciudadanos moverse rápidamente entre edificios conectados por calles",
 		"Entrega entretenimiento a la gente que sepa leer, además de mejorar la especialización de la industria",
-		"Entrega educación de mayor alto nivel, es muy caro de mantener"]
+		"Entrega educación de mayor alto nivel, es muy caro de mantener",
+		"Entrega servicio de televisión a todos los hogares con acceso a la red electrica en la isla"]
 	#endregion
 	#region arreglos vacíos
 		edificio_nombre = []
@@ -698,18 +699,19 @@ debug = false
 		def_edificio_base("Cine", 4, 4, 3000, 1095, [1, 15, 24, 26], [40, 15, 10, 40], 15, 50,, false,,,,,,,,, 110); def_edificio_servicio(, true,,,, 25, 40, 1,,, true, 20); def_edificio_trabajo(true, 4, 35, 6)
 		def_edificio_base("Cancha de fútbol", 4, 6, 500, 450, [1, 15], [20, 5], 5, 50,, false,,,,,,,,, 90); def_edificio_servicio(, true,,,, 30, 30, 1); def_edificio_trabajo(true, 11, 40, 5,, 0.01)
 		def_edificio_base("Discoteca", 3, 3, 1400, 600, [15, 24, 26], [10, 5, 30], 12, 20, 10, false,,,,,,,,, 150); def_edificio_servicio(, true,,,, 10, 60, 1,,, true, 30); def_edificio_trabajo(true, 4, 30, 5,, 0.03)
-		def_edificio_base("Radio", 3, 2, 1200, 730, [15, 24, 26], [15, 10, 15], 10,,,,,,,,,,,, 120); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 2, 60, 10, 2,,,,,,, 10)
+		def_edificio_base("Antena de Radio", 3, 2, 1200, 730, [15, 24, 26], [15, 10, 15], 10,,,,,,,,,,,, 120); def_edificio_servicio(,,,,,,,,,, true, 30); def_edificio_trabajo(true, 2, 60, 10, 2,,,,,,, 10)
 		def_edificio_base("Paneles Solares", 5, 5, 4000, 1800, [15, 26, 33], [20, 10, 20], 25,,,,,,,,,,,, 200); def_edificio_servicio(); def_edificio_trabajo(true, 1, 80, 15, 3)
 		def_edificio_base("Prostitución"); def_edificio_servicio(); def_edificio_trabajo(,,10, 2,, 0.05)
 		//60
 		def_edificio_base("Depósito de Taxis", 3, 3, 2000, 540, [15, 31], [25, 10], 4, 35, 10,,,,,,,,,, 80); def_edificio_servicio(); def_edificio_trabajo(true, 4, 40, 5, 1, 0.02,,,,,, 5)
 		def_edificio_base("Biblioteca", 3, 5, 1800, 720, [1, 15], [20, 10], 12, 70); def_edificio_servicio(, true,,,, 20, 50, 3); def_edificio_trabajo(true, 3, 60, 7, 2)
 		def_edificio_base("Universidad", 5, 6, 12000, 1440, [1, 15, 24], [50, 30, 20], 25, 80); def_edificio_servicio(,,, true, 4, 20, 80, 3); def_edificio_trabajo(true, 5, 80, 14, 3)
+		def_edificio_base("Estudio de Televisión", 3, 4, 2400, 1080, [15, 24, 26], [20, 15, 15], 20,,,,,,,,,,,, 150); def_edificio_servicio(,,,,,,,,,, true, 50); def_edificio_trabajo(true, 6, 50, 8, 2,,,,,,, 15)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
 	edificio_categoria = [	[8, 9, 10, 18, 31, 47, 48, 49],
 							[4, 5, 14, 15, 27, 38, 40],
-							[6, 7, 16, 21, 34, 35, 43, 46, 57, 61, 62],
+							[6, 7, 16, 21, 34, 35, 43, 46, 57, 61, 62, 63],
 							[11, 12, 24, 53, 54, 55, 56],
 							[13, 20, 22, 41, 42, 44, 58, 60],
 							[23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
@@ -1431,11 +1433,14 @@ debug = false
 	esperanza_de_vida_sum = 0
 	esperanza_de_vida_num = 0
 	radioemisoras = 0
+	television = 0
 	dia_radioemisoras = []
+	dia_television = []
 	dia_energia = []
 	dia_agua = []
 	repeat(30){
 		array_push(dia_radioemisoras, 0)
+		array_push(dia_television, 0)
 		array_push(dia_energia, 0)
 		array_push(dia_agua, 0)
 		array_push(null_carretera.dia_taxis, 0)

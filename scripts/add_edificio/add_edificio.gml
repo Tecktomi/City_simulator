@@ -140,8 +140,6 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 							array_push(edificio.array_complex, {a : a, b : b})
 				edificio.array_complex = array_shuffle(edificio.array_complex)
 			}
-			else if var_edificio_nombre = "Periódico"
-				edificio.modo = -1
 			else if var_edificio_nombre = "Rancho"
 				edificio.trabajadores_max = 5 + floor((width * height - 16) / 16)
 			else if var_edificio_nombre = "Pescadería"
@@ -155,7 +153,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 				edificio.agua_consumo += edificio_agua[tipo]
 				agua_output += edificio.agua_consumo
 			}
-			if in(var_edificio_nombre, "Departamentos", "Bloque Habitacional", "Planta Química", "Fábrica de Vehículos", "Conservadora", "Cine", "Discoteca", "Radio"){
+			if in(var_edificio_nombre, "Departamentos", "Bloque Habitacional", "Planta Química", "Fábrica de Vehículos", "Conservadora", "Cine", "Discoteca", "Antena de Radio", "Estudio de Televisión"){
 				edificio.energia = true
 				edificio.energia_consumo += edificio_energia[tipo]
 				energia_output += edificio.energia_consumo

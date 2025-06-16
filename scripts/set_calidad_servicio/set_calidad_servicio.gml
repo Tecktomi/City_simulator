@@ -2,18 +2,13 @@ function set_calidad_servicio(edificio = control.null_edificio){
 	var index = edificio.tipo
 	with control{
 		var a = edificio_servicio_calidad[index], var_edificio_nombre = edificio_nombre[index]
-		if var_edificio_nombre = "Periódico" and edificio.modo != -1{
-			a = 10
-			if adoctrinamiento_periodico and not edificio.privado
-				a -= floor(power(2, adoctrinamiento - 1))
-		}
 		if var_edificio_nombre = "Escuela"{
 			if edificio.modo = 1
 				a += 20
 			if adoctrinamiento_escuelas
 				a -= floor(power(2, adoctrinamiento - 1))
 		}
-		if var_edificio_nombre = "Universidad"{
+		else if var_edificio_nombre = "Universidad"{
 			if adoctrinamiento_universidades
 				a -= floor(power(2, adoctrinamiento - 1))
 		}
@@ -21,6 +16,12 @@ function set_calidad_servicio(edificio = control.null_edificio){
 			a -= floor(power(2, adoctrinamiento - 1))
 		if var_edificio_nombre = "Consultorio" and edificio.modo = 1
 			a -= 25
+		if in(var_edificio_nombre, "Periódico", "Antena de Radio", "Estudio de Televisión"){
+			if edificio.modo != 0
+				a -= 10
+			if adoctrinamiento_periodico and not edificio.privado and var_edificio_nombre = "Periódico"
+				a -= floor(power(2, adoctrinamiento - 1))
+		}
 		a += 4 * (edificio.presupuesto - 2)
 		if edificio.agua
 			a += round(10 + clamp(agua_input / agua_output, 0, 1))

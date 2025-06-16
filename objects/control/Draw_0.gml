@@ -939,7 +939,9 @@ if sel_build{
 							if draw_boton(120, pos, $"{edificio_count[a, b].nombre} ({array_length(edificio_count[a, b].clientes)} estudiante{array_length(edificio_count[a, b].clientes) = 1 ? "" : "s"})")
 								select(edificio_count[a, b])
 			if radioemisoras > 0
-				draw_text_pos(110, pos, $"Calidad de la radio: {radioemisoras}")
+				draw_text_pos(110, pos, $"Calidad de la radio: {floor(radioemisoras)}")
+			if television > 0
+				draw_text_pos(110, pos, $"Calidad de la televisión: {floor(television)}")
 			if draw_boton(110, pos, $"Propaganda política: {adoctrinamiento}"){
 				adoctrinamiento = ++adoctrinamiento mod 6
 				if adoctrinamiento_escuelas
@@ -2323,9 +2325,9 @@ if sel_info{
 							else
 								set_presupuesto(a, sel_edificio)
 				pos += 40
-				draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[index] ? "Calidad laboral: " + string(sel_edificio.trabajo_calidad) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
-					edificio_es_casa[index] ? "Calidad vivienda: " + string(sel_edificio.vivienda_calidad) + "  Renta: $" + string(sel_edificio.vivienda_renta) + "\n" : ""}{
-					(edificio_servicio_calidad[index] > 0) ? "Calidad servicio: " + string(sel_edificio.servicio_calidad) + ((sel_edificio.servicio_tarifa > 0) ? "  Tarifa: $" + string(sel_edificio.servicio_tarifa + (var_edificio_nombre = "Taberna") ? ceil(recurso_precio[22] * 1.1) : 0) : "  Sin tarifa") + "\n" : ""}")
+				draw_text_pos(room_width - 40, pos, $"{edificio_es_trabajo[index] ? "Calidad laboral: " + string(floor(sel_edificio.trabajo_calidad)) + "  Sueldo: $" + string(sel_edificio.trabajo_sueldo) + "\n" : ""}{
+					edificio_es_casa[index] ? "Calidad vivienda: " + string(floor(sel_edificio.vivienda_calidad)) + "  Renta: $" + string(sel_edificio.vivienda_renta) + "\n" : ""}{
+					(edificio_servicio_calidad[index] > 0) ? "Calidad servicio: " + string(floor(sel_edificio.servicio_calidad)) + ((sel_edificio.servicio_tarifa > 0) ? "  Tarifa: $" + string(sel_edificio.servicio_tarifa + (var_edificio_nombre = "Taberna") ? ceil(recurso_precio[22] * 1.1) : 0) : "  Sin tarifa") + "\n" : ""}")
 			#endregion
 			//Prisiones
 			if var_edificio_nombre = "Comisaría"{
@@ -2564,39 +2566,6 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_bomba_rotativa)
 					edificio_mejora(sel_edificio, mejora_computadores)
 				}
-				else if var_edificio_nombre = "Periódico"{
-					if elecciones and not sel_edificio.privado{
-						if draw_boton(room_width - 40, pos, "Campaña política"){
-							sel_edificio.modo = -2
-							set_calidad_servicio(sel_edificio)
-							show[3] = false
-						}
-						if draw_menu(room_width - 40, pos, "Difamar candidato", 3){
-							for(var a = 0; a < array_length(candidatos); a++)
-								if draw_boton(room_width - 60, pos, name(candidatos[a])){
-									sel_edificio.modo = a
-									set_calidad_servicio(sel_edificio)
-									show[3] = false
-								}
-							if draw_boton(room_width - 60, pos, "Cancelar"){
-								sel_edificio.modo = -1
-								set_calidad_servicio(sel_edificio)
-								show[3] = false
-							}
-						}
-						var a = sel_edificio.modo
-						if a = -2
-							draw_text_pos(room_width - 40, pos, "Haciendo campaña")
-						else if a >= 0
-							if draw_boton(room_width - 40, pos, $"Difamando a {name(candidatos[a])}")
-								select(,, candidatos[a])
-					}
-					//Mejoras
-					edificio_mejora(sel_edificio, mejora_maquinas_de_escribir)
-					edificio_mejora(sel_edificio, mejora_maquinas_de_escribir_electricas)
-					edificio_mejora(sel_edificio, mejora_computadores)
-					edificio_mejora(sel_edificio, mejora_internet)
-				}
 				else if var_edificio_nombre = "Planta Siderúrgica"{
 					//Mejoras
 					edificio_mejora(sel_edificio, mejora_acero_inoxidable)
@@ -2684,7 +2653,7 @@ if sel_info{
 						edificio_mejora(sel_edificio, mejora_motor_de_diesel)
 					edificio_mejora(sel_edificio, mejora_reciclaje_de_materiales)
 				}
-				else if var_edificio_nombre = "Planta termoeléctrica"{
+				else if var_edificio_nombre = "Planta Termoeléctrica"{
 					draw_text_pos(room_width - 40, pos, $"Produciendo {floor(sel_edificio.count)} energía")
 					edificio_mejora(sel_edificio, mejora_filtros_industriales)
 				}
@@ -2854,22 +2823,45 @@ if sel_info{
 					edificio_mejora(sel_edificio, mejora_frigorificos)
 				else if in(var_edificio_nombre, "Cine", "Capilla", "Teatro")
 					edificio_mejora(sel_edificio, mejora_parlantes)
-				else if var_edificio_nombre = "Radio"{
-					draw_text_pos(room_width - 20, pos, radio_modos[sel_edificio.modo])
+				else if in(var_edificio_nombre, "Periódico", "Antena de Radio", "Estudio de Televisión"){
+					if sel_edificio.modo < 0
+						draw_text_pos(room_width - 20, pos, $"Difamando a {name(candidatos[1 - sel_edificio.modo])}")
+					else
+						draw_text_pos(room_width - 20, pos, radio_modos[sel_edificio.modo])
 					if not sel_edificio.privado and draw_menu(room_width - 20, pos, "Cambiar funcionamiento", 3){
-						if draw_boton(room_width - 40, pos, radio_modos[0]){
+						if sel_edificio.modo != 0 and draw_boton(room_width - 40, pos, radio_modos[0]){
 							sel_edificio.modo = 0
-							show[3] = false
+							set_calidad_servicio(sel_edificio)
+							close_show()
 						}
-						if elecciones and draw_boton(room_width - 40, pos, radio_modos[1]){
-							sel_edificio.modo = 1
-							show[3] = false
+						if elecciones{
+							if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, radio_modos[1]){
+								sel_edificio.modo = 1
+								set_calidad_servicio(sel_edificio)
+								close_show()
+							}
+							if draw_menu(room_width - 40, pos, "Difamar cantidato", 5){
+								for(var a = 0; a < array_length(candidatos); a++)
+									if draw_boton(room_width - 60, pos, name(candidatos[a])){
+										sel_edificio.modo = -1 - a
+										set_calidad_servicio(sel_edificio)
+										close_show()
+									}
+							}
 						}
-						if draw_boton(room_width - 40, pos, radio_modos[2]){
+						if sel_edificio.modo != 2 and draw_boton(room_width - 40, pos, radio_modos[2]){
 							sel_edificio.modo = 2
-							show[3] = false
+							set_calidad_servicio(sel_edificio)
+							close_show()
 						}
 					}
+					//Mejoras
+					if var_edificio_nombre = "Periódico"{
+						edificio_mejora(sel_edificio, mejora_maquinas_de_escribir)
+						edificio_mejora(sel_edificio, mejora_maquinas_de_escribir_electricas)
+					}
+					edificio_mejora(sel_edificio, mejora_computadores)
+					edificio_mejora(sel_edificio, mejora_internet)
 				}
 				else if var_edificio_nombre = "Depósito de Taxis"{
 					if array_length(sel_edificio.carreteras) = 0
@@ -3471,9 +3463,11 @@ if (keyboard_check(vk_space) or step >= 60){
 		#region ajuste eventos diarios
 			radioemisoras -= dia_radioemisoras[dia_de_mes]
 			dia_radioemisoras[dia_de_mes] = 0
-			energia_output -= dia_energia[dia_de_mes]
+			television -= dia_television[dia_de_mes]
+			dia_television[dia_de_mes] = 0
+			energia_input -= dia_energia[dia_de_mes]
 			dia_energia[dia_de_mes] = 0
-			agua_output -= dia_agua[dia_de_mes]
+			agua_input -= dia_agua[dia_de_mes]
 			dia_agua[dia_de_mes] = 0
 			for(var a = 0; a < array_length(carreteras); a++){
 				var carretera = carreteras[a]
@@ -3809,11 +3803,22 @@ if (keyboard_check(vk_space) or step >= 60){
 				candidatos_votos = [0]
 				elecciones = false
 				campanna = 0
-				for(var a = 0; a < array_length(edificio_count[43]); a++)
-					edificio_count[43, a].modo = -1
-				for(var a = 0; a < array_length(edificio_count[57]); a++)
-					if edificio_count[57, a].modo = 1
-						edificio_count[57, a].modo = 0
+				//Medios de comunicación
+				for(var a = 0; a < array_length(edificio_count[43]); a++){
+					var edificio = edificio_count[43, a]
+					if edificio.modo = 1 or edificio.modo < 0
+						edificio.modo = 0
+				}
+				for(var a = 0; a < array_length(edificio_count[57]); a++){
+					var edificio = edificio_count[57, a]
+					if edificio.modo = 1 or edificio.modo < 0
+						edificio.modo = 0
+				}
+				for(var a = 0; a < array_length(edificio_count[63]); a++){
+					var edificio = edificio_count[63, a]
+					if edificio.modo = 1 or edificio.modo < 0
+						edificio.modo = 0
+				}
 			}
 			if not debug and (anno mod 6) = 0 and anno > 0{
 				text = ""
@@ -4111,10 +4116,12 @@ if (keyboard_check(vk_space) or step >= 60){
 				//Acudir a edificios de ocio
 				if not persona.preso{
 					var temp_array = array_shuffle(edificios_ocio_index)
-					if persona.familia.casa.energia or persona.trabajo.energia
-						persona.felicidad_ocio = min(30, irandom(min(1, energia_input / energia_output) * radioemisoras))
-					else
-						persona.felicidad_ocio = 0
+					persona.felicidad_ocio = 0
+					if persona.familia.casa.energia or persona.trabajo.energia{
+						persona.felicidad_ocio += min(30, irandom(min(1, energia_input / energia_output) * radioemisoras))
+						if persona.familia.casa.energia
+							persona.felicidad_ocio += min(30, irandom(min(1, energia_input / energia_output) * television))
+					}
 					for(var b = 0; b < array_length(temp_array); b++){
 						c = temp_array[b]
 						var var_edificio_nombre = edificio_nombre[c]
@@ -4442,7 +4449,7 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					else if edificio_nombre[edificio.tipo] = "Periódico"
 						edificio.modo = -1
-					else if edificio_nombre[edificio.tipo] = "Radio"
+					else if edificio_nombre[edificio.tipo] = "Antena de Radio"
 						edificio.modo = 2
 					edificio.empresa = empresa
 					array_push(empresa.edificios, edificio)
@@ -5178,22 +5185,6 @@ if (keyboard_check(vk_space) or step >= 60){
 						dia_energia[dia_de_mes] += b
 						energia_input += b
 					}
-					else if var_edificio_nombre = "Periódico"{
-						if elecciones{
-							if edificio.modo = -2{
-								campanna++
-								edificio.ganancia -= 100
-								dinero -= 100
-								mes_mantenimiento[current_mes] += 100
-							}
-							if edificio.modo >= 0{
-								candidatos[edificio.modo].candidato_popularidad *= 0.9
-								edificio.ganancia -= 100
-								dinero -= 100
-								mes_mantenimiento[current_mes] += 100
-							}
-						}
-					}
 					else if var_edificio_nombre = "Oficina de Bomberos"{
 						if b > 0{
 							var flag = false
@@ -5241,7 +5232,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							}
 						}
 					}
-					else if var_edificio_nombre = "Radio"{
+					else if in(var_edificio_nombre, "Periódico", "Antena de Radio", "Estudio de Televisión"){
 						if edificio.modo = 0
 							c = b
 						else if edificio.modo = 1{
@@ -5261,8 +5252,21 @@ if (keyboard_check(vk_space) or step >= 60){
 								mes_tarifas[current_mes] += temp_dinero
 							}
 						}
-						radioemisoras += c
-						dia_radioemisoras[dia_de_mes] += c
+						else if edificio.modo < 0{
+							candidatos[-edificio.modo].candidato_popularidad *= 0.9
+							edificio.ganancia -= 50
+							dinero -= 50
+							mes_mantenimiento[current_mes] += 50
+							c = floor(b / 2)
+						}
+						if var_edificio_nombre = "Antena de Radio"{
+							radioemisoras += c
+							dia_radioemisoras[dia_de_mes] += c
+						}
+						else{
+							television += c
+							dia_television[dia_de_mes] += c
+						}
 					}
 					else if var_edificio_nombre = "Paneles Solares"{
 						c = round(100 * b)
