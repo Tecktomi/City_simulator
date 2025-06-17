@@ -1474,7 +1474,7 @@ if sel_build{
 		//Leyes
 		else if ministerio = 8{
 			for(var a = 0; a < array_length(ley_nombre); a++)
-				if (dia / 360) > ley_anno[a] and draw_boton(110, pos, $"{ley_eneabled[a] ? "Prohibir" : "Permitir"} {ley_nombre[a]}",,,
+				if (dia / 360) > ley_anno[a] and (ley_eneabled[1] or a != 23) and draw_boton(110, pos, $"{ley_eneabled[a] ? "Prohibir" : "Permitir"} {ley_nombre[a]}",,,
 				function(a){
 					draw_set_valign(fa_bottom)
 					draw_text(100, room_height - 100, $"{ley_eneabled[a] ? "Prohibir" : "Permitir"} {ley_nombre[a]}    {ley_economia[a] = 3 ? "" : politica_economia_nombre[ley_economia[a]] + "    "}{ley_sociocultural[a] = 3 ? "" : politica_sociocultural_nombre[ley_sociocultural[a]]}\n{ley_descripcion[a]} (${ley_precio[a]}){ley_tiempo[a] = 0 ? "" : "\nDebes esperar " + string(ley_tiempo[a]) + " meses para cambiar esta ley de nuevo"}")
@@ -2702,21 +2702,30 @@ if sel_info{
 						draw_text_pos(room_width - 20, pos, (sel_edificio.modo = 0) ? "Aglomeración" : ((sel_edificio.modo = 1) ? "Campo de reeducación" : "Trabajo voluntario"))
 						if draw_menu(room_width - 30, pos, "Cambiar modo", 3){
 							if sel_edificio.modo != 0 and draw_boton(room_width - 40, pos, "Aglomeración"){
-								sel_edificio.modo = 0
-								sel_edificio.count = 10
+								sel_edificio.count = 12
 								set_carcel_cantidad(sel_edificio)
+								set_mantenimiento(10, sel_edificio)
+								set_trabajo_educacion(0, sel_edificio)
+								if sel_edificio.modo = 1
+									add_trabajo_sueldo(-2, sel_edificio)
+								sel_edificio.modo = 0
 							}
 							if sel_edificio.modo != 1 and draw_boton(room_width - 40, pos, "Campo de reeducación"){
 								sel_edificio.modo = 1
-								sel_edificio.count = 5
+								sel_edificio.count = 6
+								set_mantenimiento(20, sel_edificio)
 								set_carcel_cantidad(sel_edificio)
 								set_trabajo_educacion(1, sel_edificio)
-									
+								add_trabajo_sueldo(2, sel_edificio)
 							}
 							if sel_edificio.modo != 2 and draw_boton(room_width - 40, pos, "Trabajo voluntario"){
-								sel_edificio.modo = 2
-								sel_edificio.servicio_max = 6
+								sel_edificio.servicio_max = 8
+								set_mantenimiento(10, sel_edificio)
 								set_carcel_cantidad(sel_edificio)
+								set_trabajo_educacion(0, sel_edificio)
+								if sel_edificio.modo = 1
+									add_trabajo_sueldo(-2, sel_edificio)
+								sel_edificio.modo = 2
 							}
 						}
 					}
@@ -3749,28 +3758,43 @@ if (keyboard_check(vk_space) or step >= 60){
 			if array_length(tratados_ofertas) > 20
 				array_shift(tratados_ofertas)
 			//Inmigración
-			if ley_eneabled[1] and (irandom(felicidad_total) > felicidad_minima or irandom(credibilidad_financiera) > 7 or dia < 360){
-				var b = 0, origen = null_pais
-				if brandom(){
-					for(var a = 0; a < array_length(pais_current); a++)
-						b += max(pais_current[a].relacion, 0)
-					if b > 0{
-						b = irandom(b - 1)
+			if ley_eneabled[1]
+				repeat(ley_eneabled[23] + (irandom(felicidad_total) > felicidad_minima or irandom(credibilidad_financiera) > 7 or dia < 360)){
+					var b = 0, origen = null_pais
+					if brandom(){
 						for(var a = 0; a < array_length(pais_current); a++)
-							if max(pais_current[a].relacion, 0) <= b
-								b -= max(pais_current[a].relacion, 0)
-							else{
-								origen = pais_current[a]
-								break
-							}
+							b += max(pais_current[a].relacion, 0)
+						if b > 0{
+							b = irandom(b - 1)
+							for(var a = 0; a < array_length(pais_current); a++)
+								if max(pais_current[a].relacion, 0) <= b
+									b -= max(pais_current[a].relacion, 0)
+								else{
+									origen = pais_current[a]
+									break
+								}
+						}
+					}
+					var familia = add_familia(origen)
+					if not ley_eneabled[23] or brandom(){
+						if familia.padre != null_persona and brandom(){
+							buscar_trabajo(familia.padre)
+							buscar_casa(familia.padre)
+						}
+						if familia.madre != null_persona and brandom(){
+							buscar_trabajo(familia.madre)
+							buscar_casa(familia.madre)
+						}
+						for(var a = 0; a < array_length(familia.hijos); a++)
+							buscar_escuela(familia.hijos[a])
+					}
+					else{
+						if familia.padre != null_persona and brandom()
+							cambiar_trabajo(familia.padre, delincuente)
+						if familia.madre != null_persona and brandom()
+							cambiar_trabajo(familia.madre, choose(delincuente, prostituta))
 					}
 				}
-				var familia = add_familia(origen)
-				for_familia(function(persona = null_persona){
-					buscar_trabajo(persona)
-					buscar_casa(persona)
-				}, familia, false)
-			}
 			//Cooldown exigencias cumplidas
 			for(var a = 0; a < array_length(exigencia_nombre); a++){
 				if exigencia_cumplida[a]{
@@ -4955,7 +4979,7 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					else if var_edificio_nombre = "Muelle"{
 						if (current_mes mod 6) = (edificio.mes_creacion mod 6){
-							var total_trabajo = b
+							var total_trabajo = floor(b)
 							//Importacion por construccion
 							for(c = 0; c < array_length(recurso_nombre) and total_trabajo > 0; c++)
 								if recurso_construccion[c] > 0{
@@ -5112,9 +5136,9 @@ if (keyboard_check(vk_space) or step >= 60){
 										persona.educacion += random(0.05)
 								}
 								else if edificio.modo = 2{
-									edificio.ganancia++
-									dinero++
-									mes_tarifas[current_mes]++
+									edificio.ganancia += 2
+									dinero += 2
+									mes_tarifas[current_mes] += 2
 									persona.felicidad_trabajo = max(0, persona.felicidad_trabajo - 2)
 								}
 							}

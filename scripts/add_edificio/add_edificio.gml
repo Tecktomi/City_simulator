@@ -149,7 +149,7 @@ function add_edificio(x = 0, y = 0, tipo = 0, fisico = true, pre_width = -1, pre
 			else if var_edificio_nombre = "Depósito de Taxis"
 				edificio.array_complex = [{a : 1, b : 0}]
 			else if var_edificio_nombre = "Prisión"{
-				edificio.count = 10
+				edificio.count = 12
 				set_carcel_cantidad(edificio)
 			}
 			if in(var_edificio_nombre, "Pozo Petrolífero", "Departamentos", "Bloque Habitacional", "Planta Química", "Hospital"){

@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"set_trabajo_sueldo",
+  "%Name":"add_trabajo_sueldo",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"set_trabajo_sueldo",
+  "name":"add_trabajo_sueldo",
   "parent":{
     "name":"City_simulator",
     "path":"City_simulator.yyp",

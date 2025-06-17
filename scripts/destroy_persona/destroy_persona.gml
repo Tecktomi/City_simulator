@@ -63,6 +63,22 @@ function destroy_persona(persona = null_persona, muerte = true, motivo = ""){
 		}
 		if persona.ladron != null_edificio
 			persona.ladron.ladron = null_persona
+		if persona.preso{
+			for(var a = 0; a < array_length(edificio_count[65]); a++){
+				var edificio = edificio_count[65, a], b = array_get_index(edificio.clientes, persona)
+				if b != -1{
+					array_delete(edificio.clientes, b, 1)
+					break
+				}
+			}
+			for(var a = 0; a < array_length(edificio_count[34]); a++){
+				var edificio = edificio_count[34, a], b = array_get_index(edificio.clientes, persona)
+				if b != -1{
+					array_delete(edificio.clientes, b, 1)
+					break
+				}
+			}
+		}
 		if persona.favorito
 			array_remove(personas_favoritas, persona)
 		if muerte{
