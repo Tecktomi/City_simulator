@@ -121,6 +121,7 @@
     {"id":{"name":"valorizar_edificio","path":"scripts/valorizar_edificio/valorizar_edificio.yy",},},
     {"id":{"name":"voto_persona","path":"scripts/voto_persona/voto_persona.yy",},},
     {"id":{"name":"year_history","path":"scripts/year_history/year_history.yy",},},
+    {"id":{"name":"zona_pesca_agotada","path":"scripts/zona_pesca_agotada/zona_pesca_agotada.yy",},},
     {"id":{"name":"spr_1x1","path":"sprites/spr_1x1/spr_1x1.yy",},},
     {"id":{"name":"spr_arbol","path":"sprites/spr_arbol/spr_arbol.yy",},},
     {"id":{"name":"spr_auto","path":"sprites/spr_auto/spr_auto.yy",},},

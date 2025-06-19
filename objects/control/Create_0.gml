@@ -522,7 +522,8 @@ debug = false
 		"Entrega educación de mayor alto nivel, es muy caro de mantener",
 		"Entrega servicio de televisión a todos los hogares con acceso a la red electrica en la isla",
 		"Entrega atención médica de alta calidad, requiere acceso a luz y agua",
-		"Permite encarcelar a los ciudadanos no deseados"]
+		"Permite encarcelar a los ciudadanos no deseados",
+		"Defiende las fronteras marinas de la piratería"]
 	#endregion
 	#region arreglos vacíos
 		edificio_nombre = []
@@ -713,11 +714,12 @@ debug = false
 		def_edificio_base("Estudio de Televisión", 3, 4, 2400, 1080, [15, 24, 26], [20, 15, 15], 20,,,,,,,,,,,, 150); def_edificio_servicio(,,,,,,,,,, true, 50); def_edificio_trabajo(true, 6, 50, 8, 2,,,,,,, 15)
 		def_edificio_base("Hospital", 4, 4, 4000, 1440, [15, 24, 26], [25, 20, 30], 25, 60,,,,,,,,,,, 110); def_edificio_servicio(true,,,,,30, 70, 30, true, 30, true, 20); def_edificio_trabajo(true, 8, 70, 12, 3,,,,,,, 10)
 		def_edificio_base("Prisión", 5, 5, 2200, 1080, [15, 26], [40, 60], 10, 20); def_edificio_servicio(,,,,, 40); def_edificio_trabajo(true, 4, 25, 4,, 0.04,,,,,, 4)
+		def_edificio_base("Escuadra Naval", 8, 6, 4800, 1440, [1, 15, 17, 24, 28], [40, 20, 5, 20, 20], 25,,,, true); def_edificio_servicio(,,,,,,,,,,,, true); def_edificio_trabajo(true, 15, 40, 7, 1, 0.03)
 	#endregion
 	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
 	edificio_categoria = [	[8, 9, 10, 18, 31, 47, 48, 49],
 							[4, 5, 14, 15, 27, 38, 40],
-							[6, 7, 16, 21, 34, 35, 43, 46, 57, 61, 62, 63, 64, 65],
+							[6, 7, 16, 21, 34, 35, 43, 46, 57, 61, 62, 63, 64, 65, 66],
 							[11, 12, 24, 53, 54, 55, 56],
 							[13, 20, 22, 41, 42, 44, 58, 60],
 							[23, 25, 26, 28, 29, 30, 36, 37, 39, 45, 50, 51, 52]]
@@ -1444,12 +1446,14 @@ debug = false
 	dia_television = []
 	dia_energia = []
 	dia_agua = []
+	dia_naval = []
 	repeat(30){
 		array_push(dia_radioemisoras, 0)
 		array_push(dia_television, 0)
 		array_push(dia_energia, 0)
 		array_push(dia_agua, 0)
 		array_push(null_carretera.dia_taxis, 0)
+		array_push(dia_naval, 0)
 	}
 	probabilidad_hijos = 0
 	adoctrinamiento = 1
@@ -1458,6 +1462,8 @@ debug = false
 	adoctrinamiento_universidades = false
 	adoctrinamiento_periodico = true
 	adoctrinamiento_prision = true
+	pirateria = 50
+	naval = 0
 	null_encargo = {
 		recurso : 0,
 		cantidad : 0,

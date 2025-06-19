@@ -848,6 +848,7 @@ if sel_build{
 			draw_text_pos(110, pos, $"{num_temp} trabajador{num_temp = 1 ? "" : "es"} temporal{num_temp = 1 ? "" : "es"} ({floor(100 * num_temp / num_tra)}%)")
 			draw_text_pos(110, pos, $"{floor(100 * num_del / num_tra)}% de delincuencia")
 			draw_text_pos(110, pos, $"{floor(100 * num_pro / num_tra)}% de prostitución")
+			draw_text_pos(110, pos, $"Piratería: {pirateria}%")
 			if num_tra > 0
 				draw_text_pos(110, pos, $"{floor(100 * trab_esta / num_tra)} % de trabajadores estatales.")
 			if ley_eneabled[2] and num_tra > 0
@@ -3536,6 +3537,8 @@ if (keyboard_check(vk_space) or step >= 60){
 			dia_energia[dia_de_mes] = 0
 			agua_input -= dia_agua[dia_de_mes]
 			dia_agua[dia_de_mes] = 0
+			naval -= dia_naval[dia_de_mes]
+			dia_naval[dia_de_mes] = 0
 			for(var a = 0; a < array_length(carreteras); a++){
 				var carretera = carreteras[a]
 				carretera.taxis -= carretera.dia_taxis[dia_de_mes]
@@ -3681,6 +3684,17 @@ if (keyboard_check(vk_space) or step >= 60){
 						array_set(chunk_update[floor(a / 16)], floor(b / 16), true)
 				world_update = true
 				destroy_edificio(edificio)
+			}
+		}
+		//Robo de pescado
+		if random(1) < 0.001 * pirateria and array_length(zonas_pesca) > 0{
+			if random(sqrt(naval)) > 10
+				pirateria = max(--pirateria, 10)
+			else{
+				pirateria = min(++pirateria, 100)
+				var zona_pesca = array_pick(zonas_pesca)
+				zona_pesca.cantidad -= 100 + irandom_range(dia, 2 * dia)
+				zona_pesca_agotada(zona_pesca)
 			}
 		}
 		//Eventos mensuales
@@ -4879,37 +4893,27 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					else if var_edificio_nombre = "Pescadería"{
 						var zona_pesca = edificio.zona_pesca
-						b = min(zona_pesca.cantidad, b * (1 - clamp(contaminacion[# zona_pesca.a, zona_pesca.b], 0, 100) / 200))
-						edificio.almacen[8] += b
-						zona_pesca.cantidad -= b
-						if ley_eneabled[13] and zona_pesca.cantidad < 750
-							buscar_zona_pesca(edificio)
-						if zona_pesca.cantidad = 0{
-							array_remove(zonas_pesca, zona_pesca, "Zona de pesca agotada")
-							e = min(zona_pesca.a + 5, xsize - 1)
-							var f = min(zona_pesca.b + 5, ysize - 1), g = zona_pesca.b - 5
-							for(c = zona_pesca.a - 5; c <= e; c++)
-								for(d = g; d <= f; d++)
-									array_add(zona_pesca_num[c], d, -1)
-							for(c = 0; c < array_length(edificio_count[14]); c++){
-								var temp_edificio = edificio_count[14, c]
-								if temp_edificio.zona_pesca = zona_pesca
-									buscar_zona_pesca(temp_edificio)
-							}
-						}
-						if edificio.privado or recurso_exportado[8] or recurso_utilizado[8] > 0 or not edificio.es_almacen{
-							c = 200 * edificio.es_almacen
-							if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[8] > c{
-								d = recurso_precio[8] * (edificio.almacen[8] - c)
-								if edificio.privado{
-									dinero += d * impuesto_pesquero
-									mes_impuestos[current_mes] += d * impuesto_pesquero
-									edificio.ganancia += d * (1 - impuesto_pesquero)
+						if zona_pesca != null_zona_pesca{
+							b = min(zona_pesca.cantidad, b * (1 - clamp(contaminacion[# zona_pesca.a, zona_pesca.b], 0, 100) / 200))
+							edificio.almacen[8] += b
+							zona_pesca.cantidad -= b
+							if ley_eneabled[13] and zona_pesca.cantidad < 750
+								buscar_zona_pesca(edificio)
+							zona_pesca_agotada(zona_pesca)
+							if edificio.privado or recurso_exportado[8] or recurso_utilizado[8] > 0 or not edificio.es_almacen{
+								c = 200 * edificio.es_almacen
+								if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[8] > c{
+									d = recurso_precio[8] * (edificio.almacen[8] - c)
+									if edificio.privado{
+										dinero += d * impuesto_pesquero
+										mes_impuestos[current_mes] += d * impuesto_pesquero
+										edificio.ganancia += d * (1 - impuesto_pesquero)
+									}
+									else
+										edificio.ganancia += d
+									add_encargo(8, edificio.almacen[8] - c, edificio)
+									edificio.almacen[8] = c
 								}
-								else
-									edificio.ganancia += d
-								add_encargo(8, edificio.almacen[8] - c, edificio)
-								edificio.almacen[8] = c
 							}
 						}
 					}
@@ -5380,6 +5384,10 @@ if (keyboard_check(vk_space) or step >= 60){
 							repeat(floor(b * (edificio.presupuesto + 3 * (var_edificio_nombre = "Universidad"))))
 								edificio_experiencia[c] = 2 - 0.99 * (2 - edificio_experiencia[c])
 						}
+					}
+					else if var_edificio_nombre = "Escuela Naval"{
+						dia_naval[dia_de_mes] += b
+						naval += b
 					}
 					for(c = 0; c < array_length(edificio.input_id); c++)
 						if edificio.input_num[c] > 0
