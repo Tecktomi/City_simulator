@@ -1422,6 +1422,7 @@ debug = false
 	getstring_function = function(a, b){}
 	getstring_param = []
 	show_string = ""
+	mouse_string = ""
 	felicidad_total = 50
 	dinero = 20000
 	inversion_privada = 0

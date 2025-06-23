@@ -55,6 +55,7 @@ if menu_principal{
 }
 #region Visual
 	show_string = ""
+	mouse_string = ""
 	if keyboard_check(ord("Z"))
 		for(var a = 0; a < array_length(carreteras); a++){
 			var carretera = carreteras[a]
@@ -470,7 +471,7 @@ if menu{
 		mouse_clear(mb_left)
 }
 //Abrir menú de construcción
-if mouse_check_button_pressed(mb_right) and not build_sel and not sel_build and not build_terreno and not build_calle and (not sel_info or mouse_x < room_width - 300){
+if mouse_check_button_pressed(mb_right) and not build_sel and not sel_build and not build_terreno and not build_calle and mouse_x < room_width - sel_info * 300{
 	mouse_clear(mb_right)
 	close_show()
 	sel_build = true
@@ -2383,20 +2384,20 @@ if sel_info{
 				for(var a = 0; a < sel_edificio.trabajadores_max; a++){
 					if a < array_length(sel_edificio.trabajadores){
 						var persona = sel_edificio.trabajadores[a]
-						if draw_sprite_boton(spr_icono, 12 + (persona.sexo), room_width - 270 + 25 * (a mod 10), pos + 25 * floor(a / 10),,, true)
+						if draw_sprite_boton(spr_icono, 12 + (persona.sexo), room_width - 25 - 25 * (a mod 10), pos + 25 * floor(a / 10),,, true, name(persona))
 							if mouse_lastbutton = mb_left
 								select(,, persona)
 							else
 								cambiar_trabajo(persona, null_edificio)
 					}
 					else if a < sel_edificio.trabajadores_max_allow{
-						if draw_sprite_boton(spr_icono, 0, room_width - 270 + 25 * (a mod 10), pos + 25 * floor(a / 10),,, true) and mouse_lastbutton = mb_right{
+						if draw_sprite_boton(spr_icono, (index = 24), room_width - 25 - 25 * (a mod 10), pos + 25 * floor(a / 10),,, true) and mouse_lastbutton = mb_right{
 							sel_edificio.trabajadores_max_allow = a
 							if array_length(sel_edificio.trabajadores) = a
 								array_remove(trabajo_educacion[sel_edificio.trabajo_educacion], sel_edificio, "trabajo ya no está disponible")
 						}
 					}
-					else if draw_sprite_boton(spr_icono, 14, room_width - 270 + 25 * (a mod 10), pos + 25 * floor(a / 10)){
+					else if draw_sprite_boton(spr_icono, 14 + (index = 24), room_width - 25 - 25 * (a mod 10), pos + 25 * floor(a / 10)){
 						sel_edificio.trabajadores_max_allow = a + 1
 						if array_length(sel_edificio.trabajadores) < a + 1
 							array_push(trabajo_educacion[sel_edificio.trabajo_educacion], sel_edificio)
@@ -3064,11 +3065,18 @@ if sel_info{
 				pos += 20
 			}
 			//Información escuelas / consultas
-			if edificio_es_escuela[index] or edificio_es_medico[index]
-				if draw_menu(room_width - 20, pos, $"{edificio_es_escuela[index] ? "Estudientes" : "Clientes"}: {array_length(sel_edificio.clientes)}/{sel_edificio.servicio_max}", 2)
-					for(var a = 0; a < array_length(sel_edificio.clientes); a++)
-						if draw_boton(room_width - 40, pos, name(sel_edificio.clientes[a]))
-							select(,, sel_edificio.clientes[a])
+			if edificio_es_escuela[index] or edificio_es_medico[index]{
+				for(var a = 0; a < sel_edificio.servicio_max; a++){
+					if a < array_length(sel_edificio.clientes){
+						var persona = sel_edificio.clientes[a]
+						if draw_sprite_boton(spr_icono, 12 + (persona.sexo), room_width - 25 - 25 * (a mod 10), pos + 25 * floor(a / 10),,,, name(persona))
+							select(,, persona)
+					}
+					else
+						draw_sprite(spr_icono, 0, room_width - 25 - 25 * (a mod 10), pos + 25 * floor(a / 10))
+				}
+				pos += 25 * ceil(sel_edificio.servicio_max / 10)
+			}
 			//Información edificios de ocio
 			if edificio_es_ocio[index] or edificio_es_iglesia[index]
 				draw_text_pos(room_width - 20, pos, $"{sel_edificio.count} visitantes este mes")
@@ -5738,13 +5746,36 @@ if (keyboard_check(vk_space) or step >= 60){
 	//Activar grilla
 	if keyboard_check_pressed(ord("Q"))
 		show_grid = not show_grid
-	show_string = string_trim(show_string)
-	draw_set_alpha(0.5)
-	draw_set_color(c_black)
-	draw_rectangle(0, 0, string_width(show_string), string_height(show_string), false)
-	draw_set_color(c_white)
-	draw_text(0, 0, show_string)
-	draw_set_alpha(1)
+	if show_string != ""{
+		show_string = string_trim(show_string)
+		draw_set_alpha(0.5)
+		draw_set_color(c_black)
+		draw_rectangle(0, 0, string_width(show_string), string_height(show_string), false)
+		draw_set_color(c_white)
+		draw_text(0, 0, show_string)
+		draw_set_alpha(1)
+	}
+	if mouse_string != ""{
+		mouse_string = string_trim(mouse_string)
+		var width = string_width(mouse_string), height = string_height(mouse_string)
+		if mouse_x + width < room_width
+			var xx1 = mouse_x, xx2 = mouse_x + width
+		else{
+			xx1 = room_width - width
+			xx2 = room_width
+		}
+		if mouse_y + height - 20 < room_height
+			var yy1 = mouse_y - 20, yy2 = mouse_y + height - 20
+		else{
+			yy1 = room_height - height
+			yy2 = room_height
+		}
+		draw_set_color(c_ltgray)
+		draw_rectangle(xx1, yy1, xx2, yy2, false)
+		draw_set_color(c_black)
+		draw_rectangle(xx1, yy1, xx2, yy2, true)
+		draw_text(xx1, yy1, mouse_string)
+	}
 #endregion
 //Tutorial
 if tutorial_bool and not menu{
