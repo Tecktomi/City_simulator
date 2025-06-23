@@ -140,7 +140,7 @@ function draw_gradiente(tipo, modo){
 			show_string += $"Zonas de pesca\n"
 			var mx = clamp(floor(((mouse_x + xpos) / tile_width + (mouse_y + ypos) / tile_height) / 2), 0, xsize - 1)
 			var my = clamp(floor(((mouse_y + ypos) / tile_height - (mouse_x + xpos) / tile_width) / 2), 0, ysize - 1)
-			var closer = -1, closer_dis = infinity, flag = zona_pesca_num[mx, my]
+			var closer = -1, closer_dis = infinity, flag = (zona_pesca_num[# mx, my] > 0)
 			for(var c = 0; c < array_length(zonas_pesca); c++){
 				var zona_pesca = zonas_pesca[c], a = zona_pesca.a, b = zona_pesca.b
 				draw_set_alpha(0.2 + 0.4 * zona_pesca.cantidad / zona_pesca.cantidad_max)

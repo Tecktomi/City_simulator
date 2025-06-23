@@ -798,6 +798,7 @@ debug = false
 		servicio_tarifa : 0,
 		escuela_max : 0,
 		trabajadores_max : 0,
+		trabajadores_max_allow : 0,
 		trabajo_calidad : 0,
 		trabajo_sueldo : 0,
 		trabajo_riesgo : 0,
@@ -1116,6 +1117,8 @@ debug = false
 	ds_grid_clear(zona_privada_permisos, [false, false, false, false, false, false])
 	zona_privada_venta_terreno = ds_grid_create(xsize, ysize)
 	ds_grid_clear(zona_privada_venta_terreno, null_terreno)
+	zona_pesca_num = ds_grid_create(xsize, ysize)
+	ds_grid_clear(zona_pesca_num, 0)
 	//Ciclo principal
 	for(a = 0; a < xsize; a++)
 		for(b = 0; b < ysize; b++){
@@ -1195,7 +1198,6 @@ debug = false
 			belleza[a, b] = 50 + floor(100 * (0.6 - min(0.6, c)))
 			if temp_petroleo > 0.85
 				ds_grid_set(petroleo, a, b, floor(10000 * (temp_petroleo - 0.85)))
-			zona_pesca_num[a, b] = 0
 			mar_checked[a, b] = false
 			land_checked[a, b] = false
 			land_matrix[a, b] = false
@@ -1248,7 +1250,7 @@ debug = false
 			temp_complex = array_shift(mares[0])
 			a = temp_complex.a
 			b = temp_complex.b
-			if zona_pesca_num[a, b] = 0
+			if zona_pesca_num[# a, b] = 0
 				break
 		}
 		if array_length(mares[0]) = 0
@@ -1260,10 +1262,7 @@ debug = false
 			cantidad : c,
 			cantidad_max : c
 		})
-		var e = min(a + 5, xsize - 1), f = min(b + 5, ysize - 1), g = max(0, b - 5)
-		for(c = max(0, a - 5); c <= e; c++)
-			for(var d = g; d <= f; d++)
-				array_add(zona_pesca_num[c], d, 1)
+		ds_grid_add_region(zona_pesca_num, max(0, a - 5), max(0, b - 5), min(xsize - 1, a + 4), min(ysize - 1, b + 4), 1)
 	}
 #endregion
 #region Setings

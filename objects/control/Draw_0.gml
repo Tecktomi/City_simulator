@@ -470,7 +470,7 @@ if menu{
 		mouse_clear(mb_left)
 }
 //Abrir menú de construcción
-if mouse_check_button_pressed(mb_right) and not build_sel and not sel_build and not build_terreno and not build_calle{
+if mouse_check_button_pressed(mb_right) and not build_sel and not sel_build and not build_terreno and not build_calle and (not sel_info or mouse_x < room_width - 300){
 	mouse_clear(mb_right)
 	close_show()
 	sel_build = true
@@ -823,11 +823,12 @@ if sel_build{
 			var vacantes = 0, vacantes_tipo
 			for(var a = 0; a < array_length(edificio_nombre); a++)
 				if edificio_es_trabajo[a]{
-					vacantes_tipo[a] = edificio_trabajadores_max[a] * array_length(edificio_count[a])
+					vacantes_tipo[a] = 0
 					for(b = 0; b < array_length(edificio_count[a]); b++){
-						vacantes_tipo[a] -= array_length(edificio_count[a, b].trabajadores)
+						var edificio = edificio_count[a, b]
+						vacantes_tipo[a] += edificio.trabajadores_max_allow - array_length(edificio.trabajadores)
 						if ley_eneabled[6] and a = 20
-							num_temp += array_length(edificio_count[a, b].trabajadores)
+							num_temp += array_length(edificio.trabajadores)
 					}
 					vacantes += vacantes_tipo[a]
 				}
@@ -2379,10 +2380,29 @@ if sel_info{
 			mejora_requiere_energia = false
 			//Información trabajadores
 			if edificio_es_trabajo[index]{
-				if draw_menu(room_width - 20, pos, $"Trabajadores: {array_length(sel_edificio.trabajadores)}/{sel_edificio.trabajadores_max}", 4)
-					for(var a = 0; a < array_length(sel_edificio.trabajadores); a++)
-						if draw_boton(room_width - 40, pos, name(sel_edificio.trabajadores[a]))
-							select(,, sel_edificio.trabajadores[a])
+				for(var a = 0; a < sel_edificio.trabajadores_max; a++){
+					if a < array_length(sel_edificio.trabajadores){
+						var persona = sel_edificio.trabajadores[a]
+						if draw_sprite_boton(spr_icono, 12 + (persona.sexo), room_width - 270 + 25 * (a mod 10), pos + 25 * floor(a / 10),,, true)
+							if mouse_lastbutton = mb_left
+								select(,, persona)
+							else
+								cambiar_trabajo(persona, null_edificio)
+					}
+					else if a < sel_edificio.trabajadores_max_allow{
+						if draw_sprite_boton(spr_icono, 0, room_width - 270 + 25 * (a mod 10), pos + 25 * floor(a / 10),,, true) and mouse_lastbutton = mb_right{
+							sel_edificio.trabajadores_max_allow = a
+							if array_length(sel_edificio.trabajadores) = a
+								array_remove(trabajo_educacion[sel_edificio.trabajo_educacion], sel_edificio, "trabajo ya no está disponible")
+						}
+					}
+					else if draw_sprite_boton(spr_icono, 14, room_width - 270 + 25 * (a mod 10), pos + 25 * floor(a / 10)){
+						sel_edificio.trabajadores_max_allow = a + 1
+						if array_length(sel_edificio.trabajadores) < a + 1
+							array_push(trabajo_educacion[sel_edificio.trabajo_educacion], sel_edificio)
+					}
+				}
+				pos += 25 * ceil(sel_edificio.trabajadores_max / 10)
 				if var_edificio_nombre = "Granja"{
 					draw_text_pos(room_width - 40, pos, $"Eficiencia: {floor(sel_edificio.eficiencia * 100)}%")
 					if contaminacion[# sel_edificio.x, sel_edificio.y] > 0
@@ -3687,13 +3707,13 @@ if (keyboard_check(vk_space) or step >= 60){
 			}
 		}
 		//Robo de pescado
-		if random(1) < 0.001 * pirateria and array_length(zonas_pesca) > 0{
+		if random(1) < 0.0002 * pirateria and array_length(zonas_pesca) > 0{
 			if random(sqrt(naval)) > 10
 				pirateria = max(--pirateria, 10)
 			else{
 				pirateria = min(++pirateria, 100)
 				var zona_pesca = array_pick(zonas_pesca)
-				zona_pesca.cantidad -= 100 + irandom_range(dia, 2 * dia)
+				zona_pesca.cantidad -= 100 + irandom_range(dia / 5, dia / 3)
 				zona_pesca_agotada(zona_pesca)
 			}
 		}
@@ -4900,6 +4920,8 @@ if (keyboard_check(vk_space) or step >= 60){
 							if ley_eneabled[13] and zona_pesca.cantidad < 750
 								buscar_zona_pesca(edificio)
 							zona_pesca_agotada(zona_pesca)
+							if edificio.privado and not array_contains(edificio_count[14], edificio)
+								continue
 							if edificio.privado or recurso_exportado[8] or recurso_utilizado[8] > 0 or not edificio.es_almacen{
 								c = 200 * edificio.es_almacen
 								if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[8] > c{
