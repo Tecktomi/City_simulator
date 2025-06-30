@@ -535,6 +535,22 @@ if sel_build{
 						c -= 20
 					}
 				}
+				else edificio_categoria_nombre[build_categoria] = "Materias Primas"{
+					if edificio_nombre[b] = "Granja"
+						draw_sprite(spr_recursos, 0, room_width - 120, pos)
+					else if edificio_nombre[b] = "Aserradero"
+						draw_sprite(spr_recursos, 1, room_width - 120, pos)
+					else if edificio_nombre[b] = "Pescadería"
+						draw_sprite(spr_recursos, 8, room_width - 120, pos)
+					else if edificio_nombre[b] = "Mina"
+						draw_sprite(spr_recursos, 9, room_width - 120, pos)
+					else if edificio_nombre[b] = "Rancho"
+						draw_sprite(spr_recursos, 18, room_width - 120, pos)
+					else if edificio_nombre[b] = "Tejar"
+						draw_sprite(spr_recursos, 26, room_width - 120, pos)
+					else if edificio_nombre[b] = "Pozo Petrolífero"
+						draw_sprite(spr_recursos, 27, room_width - 120, pos)
+				}
 				if draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}",,, function(b){
 						draw_set_valign(fa_bottom)
 						var text = "", temp_precio = 0
@@ -1734,7 +1750,7 @@ if sel_build{
 		sel_build = false
 	}
 }
-////Colocar edificio
+//Colocar edificio
 if build_sel{
 	var width = edificio_width[build_index], height = edificio_height[build_index], temp_altura = 0, temp_precio = edificio_precio[build_index], temp_tiempo = edificio_construccion_tiempo[build_index], var_edificio_nombre = edificio_nombre[build_index]
 	text = ""
@@ -3079,7 +3095,7 @@ if sel_info{
 			}
 			//Información edificios de ocio
 			if edificio_es_ocio[index] or edificio_es_iglesia[index]
-				draw_text_pos(room_width - 20, pos, $"{sel_edificio.count} visitantes este mes")
+				draw_text_pos(room_width - 20, pos, $"{sel_edificio.count} visitante{sel_edificio.count = 1 ? "" : "s"} este mes")
 			//Conexión al agua potable
 			if (edificio_bool_agua[index] or mejora_requiere_agua) and (dia / 360) > 50 and not sel_edificio.privado{
 				var b = 0
@@ -3205,6 +3221,7 @@ if sel_info{
 			}
 			else if draw_boton(room_width, pos, $"Muelle más cercano a {round(sel_edificio.distancia_muelle_cercano)}")
 				sel_edificio = sel_edificio.muelle_cercano
+			pos += 80
 			//Destruir edificio
 			pos += 40
 			if not sel_edificio.privado and ((var_edificio_nombre != "Muelle" and var_edificio_nombre != "Oficina de Construcción") or array_length(edificio_count[index]) > 1) and draw_boton(room_width, pos, "Destruir Edificio", , not sel_edificio.huelga)
@@ -3977,17 +3994,8 @@ if (keyboard_check(vk_space) or step >= 60){
 					if (adoctrinamiento_escuelas and edificio_nombre[escuela.tipo] = "Escuela") or (adoctrinamiento_universidades and edificio_nombre[escuela.tipo] = "Universidad")
 						adoctrinar(persona)
 					if escuela.servicio_tarifa > 0{
-						var temp_precio = clamp(12 * escuela.servicio_tarifa, 0, persona.familia.riqueza)
 						persona.familia.riqueza -= 12 * escuela.servicio_tarifa
-						escuela.ganancia += temp_precio
-						if escuela.privado{
-							escuela.empresa.dinero += temp_precio
-							dinero_privado += temp_precio
-						}
-						else{
-							dinero += temp_precio
-							mes_tarifas[current_mes] += temp_precio
-						}
+						mes_tarifas[current_mes] += pagar(clamp(12 * escuela.servicio_tarifa, 0, persona.familia.riqueza), escuela)
 						if persona.familia.riqueza < 0{
 							persona.familia.riqueza = 0
 							cambiar_escuela(persona, null_edificio)
@@ -4215,14 +4223,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							add_noticia("Accidente", $"Ha muerto {name(persona)} en un accidente laboral en {persona.trabajo.nombre}")
 							if ley_eneabled[12] and (persona.religion or ley_eneabled[16]) and persona.familia.integrantes > 0{
 								persona.familia.riqueza += 100
-								if persona.trabajo.privado{
-									persona.trabajo.empresa.dinero -= 100
-									dinero_privado -= 100
-								}
-								else{
-									dinero -= 100
-									mes_salida_micelaneo[current_mes] += 100
-								}
+								mes_salida_micelaneo[current_mes] += pagar(-100, persona.trabajo)
 							}
 							destroy_persona(persona,, "Accidente laboral")
 							mes_muertos_accidentes[current_mes]++
@@ -4259,15 +4260,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							set_calidad_servicio(ocio)
 							if ocio.count < ocio.servicio_max and persona.familia.riqueza >= temp_precio{
 								persona.familia.riqueza -= temp_precio
-								ocio.ganancia += temp_precio
-								if ocio.privado{
-									dinero_privado += temp_precio
-									ocio.empresa.dinero += temp_precio
-								}
-								else{
-									dinero += temp_precio
-									mes_tarifas[current_mes] += temp_precio
-								}
+								mes_tarifas[current_mes] += pagar(temp_precio, ocio)
 								if var_edificio_nombre = "Periódico"{
 									persona.informado = true
 									if adoctrinamiento_periodico and not ocio.privado
@@ -4314,16 +4307,7 @@ if (keyboard_check(vk_space) or step >= 60){
 										tienda.count--
 										tienda.almacen[c]--
 										persona.felicidad_ocio = min(100, persona.felicidad_ocio + recurso_lujo_ocio[b])
-										tienda.ganancia += temp_precio
-										persona.familia.riqueza -= temp_precio
-										if tienda.privado{
-											dinero_privado += temp_precio
-											tienda.empresa.dinero += temp_precio
-										}
-										else{
-											dinero += temp_precio
-											mes_tarifas[current_mes] += temp_precio
-										}
+										mes_tarifas[current_mes] += pagar(temp_precio, tienda)
 									}
 								}
 							}
@@ -4781,15 +4765,7 @@ if (keyboard_check(vk_space) or step >= 60){
 				edificio_experiencia[index] = 2 - 0.99 * (2 - edificio_experiencia[index])
 			if edificio = delincuente or edificio = prostituta
 				continue
-			edificio.ganancia -= edificio.mantenimiento
-			if edificio.privado{
-				dinero_privado -= edificio.mantenimiento
-				edificio.empresa.dinero -= edificio.mantenimiento
-			}
-			else{
-				dinero -= edificio.mantenimiento
-				mes_mantenimiento[current_mes] += edificio.mantenimiento
-			}
+			mes_mantenimiento[current_mes] += pagar(-edificio.mantenimiento, edificio)
 			if edificio.ladron != null_persona{
 				edificio.ladron.ladron = null_edificio
 				edificio.ladron = null_persona
@@ -4808,16 +4784,9 @@ if (keyboard_check(vk_space) or step >= 60){
 				}
 				else if not edificio.paro{
 					b = floor(edificio.trabajo_sueldo * edificio.trabajo_mes / 30)
-					if edificio.privado{
-						b *= 1 + impuesto_trabajador
-						dinero += b * impuesto_trabajador
-						mes_impuestos[current_mes] += b * impuesto_trabajador
-					}
-					else{
-						dinero -= b
-						mes_sueldos[current_mes] += b
-					}
-					edificio.ganancia -= b
+					if edificio.privado
+						mes_impuestos[current_mes] += pagar(-b * (1 + impuesto_trabajador), edificio)
+					mes_sueldos[current_mes] += pagar(-b, edificio)
 					for(b = 0; b < array_length(edificio.trabajadores); b++)
 						edificio.trabajadores[b].familia.riqueza += edificio.trabajo_sueldo
 					b = max(0, edificio.trabajo_mes / 30 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * edificio_industria_velocidad[index] * (edificio.energia ? 0.75 + min(0.5, energia_input / energia_output) : 1) * (edificio.agua ? 0.75 + min(0.5, agua_input / agua_output) : 1))
@@ -4847,11 +4816,8 @@ if (keyboard_check(vk_space) or step >= 60){
 							edificio.count += b / 5
 						if edificio.privado or recurso_exportado[c] or recurso_utilizado[c] > 0 or not edificio.es_almacen{
 							d = 200 * array_contains(recurso_comida, c) * edificio.es_almacen
-							if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[c] > d{
-								edificio.ganancia += recurso_precio[c] * (edificio.almacen[c] - d)
-								add_encargo(c, edificio.almacen[c] - d, edificio)
-								edificio.almacen[c] = d
-							}
+							if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[c] > d
+								produccion_edificio(c, edificio, d)
 						}
 					}
 					else if var_edificio_nombre = "Aserradero"{
@@ -4891,8 +4857,7 @@ if (keyboard_check(vk_space) or step >= 60){
 									array_shift(edificio.array_complex)
 									if array_length(edificio.array_complex) = 0{
 										edificio.almacen[1] += e - f
-										add_encargo(1, edificio.almacen[1], edificio)
-										edificio.almacen[1] = 0
+										produccion_edificio(1, edificio)
 										set_paro(true, edificio)
 										while array_length(edificio.trabajadores) > 0{
 											var persona = edificio.trabajadores[0]
@@ -4913,11 +4878,8 @@ if (keyboard_check(vk_space) or step >= 60){
 							}
 							edificio.almacen[1] += e - f
 						}
-						if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[1] > 0{
-							edificio.ganancia += recurso_precio[1] * edificio.almacen[1]
-							add_encargo(1, edificio.almacen[1], edificio)
-							edificio.almacen[1] = 0
-						}
+						if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[1] > 0
+							produccion_edificio(1, edificio)
 					}
 					else if var_edificio_nombre = "Pescadería"{
 						var zona_pesca = edificio.zona_pesca
@@ -4932,24 +4894,17 @@ if (keyboard_check(vk_space) or step >= 60){
 								continue
 							if edificio.privado or recurso_exportado[8] or recurso_utilizado[8] > 0 or not edificio.es_almacen{
 								c = 200 * edificio.es_almacen
-								if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[8] > c{
-									d = recurso_precio[8] * (edificio.almacen[8] - c)
-									if edificio.privado{
-										dinero += d * impuesto_pesquero
-										mes_impuestos[current_mes] += d * impuesto_pesquero
-										edificio.ganancia += d * (1 - impuesto_pesquero)
-									}
-									else
-										edificio.ganancia += d
-									add_encargo(8, edificio.almacen[8] - c, edificio)
-									edificio.almacen[8] = c
+								if (current_mes mod 6) = (edificio.mes_creacion mod 6) and floor(edificio.almacen[8]) > c{
+									if edificio.privado
+										mes_impuestos += pagar(recurso_precio[8] * (edificio.almacen[8] - c) * -impuesto_pesquero, edificio)
+									produccion_edificio(8, edificio, c)
 								}
 							}
 						}
 					}
 					else if var_edificio_nombre = "Mina"{
 						e = b
-						var h = b, f = min(xsize - 1, edificio.x + width + 1), g = min(ysize - 1, edificio.y + height + 1), i = max(0, edificio.y - 1)
+						var h = b, f = min(xsize - 1, edificio.x + width + 1), g = min(ysize - 1, edificio.y + height + 1), i = max(0, edificio.y - 1), temp_rss = recurso_mineral[edificio.modo]
 						for(c = max(0, edificio.x - 1); c < f; c++){
 							for(d = i; d < g; d++)
 								if mineral[edificio.modo][c, d]{
@@ -4968,7 +4923,7 @@ if (keyboard_check(vk_space) or step >= 60){
 							if h = 0
 								break
 						}
-						edificio.almacen[recurso_mineral[edificio.modo]] += e - h
+						edificio.almacen[temp_rss] += e - h
 						if h > 0{
 							var flag = false
 							if edificio.privado{
@@ -4984,15 +4939,15 @@ if (keyboard_check(vk_space) or step >= 60){
 									}
 									if flag{
 										edificio.modo = (edificio.modo + e) mod array_length(recurso_mineral)
-										edificio.nombre = $"Mina de {recurso_nombre[recurso_mineral[edificio.modo]]} {++edificio_number_mina[edificio.modo]}"
+										temp_rss = recurso_mineral[edificio.modo]
+										edificio.nombre = $"Mina de {recurso_nombre[temp_rss]} {++edificio_number_mina[edificio.modo]}"
 										break
 									}
 								}
 							}
 							if not flag{
 								set_paro(true, edificio)
-								add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
-								edificio.almacen[recurso_mineral[edificio.modo]] = 0
+								produccion_edificio(temp_rss, edificio)
 								while array_length(edificio.trabajadores) > 0{
 									var persona = edificio.trabajadores[0]
 									cambiar_trabajo(persona, null_edificio)
@@ -5005,11 +4960,8 @@ if (keyboard_check(vk_space) or step >= 60){
 								}
 							}
 						}
-						if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[recurso_mineral[edificio.modo]] > 0{
-							edificio.ganancia += edificio.almacen[recurso_mineral[edificio.modo]] * recurso_precio[recurso_mineral[edificio.modo]]
-							add_encargo(recurso_mineral[edificio.modo], edificio.almacen[recurso_mineral[edificio.modo]], edificio)
-							edificio.almacen[recurso_mineral[edificio.modo]] = 0
-						}
+						if (current_mes mod 6) = (edificio.mes_creacion mod 6) and floor(edificio.almacen[temp_rss]) > 0
+							produccion_edificio(temp_rss, edificio)
 					}
 					else if var_edificio_nombre = "Muelle"{
 						if (current_mes mod 6) = (edificio.mes_creacion mod 6){
@@ -5151,11 +5103,8 @@ if (keyboard_check(vk_space) or step >= 60){
 								c = ganado_produccion[edificio.modo, e]
 								if edificio.privado or recurso_exportado[c] or recurso_utilizado[c] > 0 or not edificio.es_almacen{
 									d = 200 * array_contains(recurso_comida, c) * edificio.es_almacen
-									if edificio.almacen[c] > d{
-										edificio.ganancia += recurso_precio[c] * (edificio.almacen[c] - d)
-										add_encargo(c, edificio.almacen[c] - d, edificio)
-										edificio.almacen[c] = d
-									}
+									if edificio.almacen[c] > d
+										produccion_edificio(c, edificio, d)
 								}
 							}
 					}
@@ -5170,9 +5119,7 @@ if (keyboard_check(vk_space) or step >= 60){
 										persona.educacion += random(0.05)
 								}
 								else if edificio.modo = 2{
-									edificio.ganancia += 2
-									dinero += 2
-									mes_tarifas[current_mes] += 2
+									mes_tarifas[current_mes] += pagar(2, edificio)
 									persona.felicidad_trabajo = max(0, persona.felicidad_trabajo - 2)
 								}
 							}
@@ -5218,11 +5165,8 @@ if (keyboard_check(vk_space) or step >= 60){
 					}
 					else if var_edificio_nombre = "Tejar"{
 						edificio.almacen[26] += b
-						if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[26] > 0{
-							edificio.ganancia += recurso_precio[26] * edificio.almacen[26]
-							add_encargo(26, edificio.almacen[26], edificio)
-							edificio.almacen[26] = 0
-						}
+						if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[26] > 0
+							produccion_edificio(26, edificio)
 					}
 					else if var_edificio_nombre = "Pozo Petrolífero"{
 						e = b
@@ -5246,9 +5190,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 						edificio.almacen[27] += e - h
 						if e > 0 and h > 0{
-							edificio.ganancia += recurso_precio[27] * edificio.almacen[27]
-							add_encargo(27, edificio.almacen[27], edificio)
-							edificio.almacen[27] = 0
+							produccion_edificio(27, edificio)
 							set_paro(true, edificio)
 							while array_length(edificio.trabajadores) > 0{
 								var persona = edificio.trabajadores[0]
@@ -5261,11 +5203,8 @@ if (keyboard_check(vk_space) or step >= 60){
 								continue
 							}
 						}
-						if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[27] > 0{
-							edificio.ganancia += recurso_precio[27] * edificio.almacen[27]
-							add_encargo(27, edificio.almacen[27], edificio)
-							edificio.almacen[27] = 0
-						}
+						if (current_mes mod 6) = (edificio.mes_creacion mod 6) and edificio.almacen[27] > 0
+							produccion_edificio(27, edificio)
 					}
 					else if var_edificio_nombre = "Bomba de Agua"{
 						c = 10
@@ -5345,17 +5284,8 @@ if (keyboard_check(vk_space) or step >= 60){
 								familia.banco = true
 								familia.riqueza += irandom(ceil(familia.riqueza * 0.01))
 							}
-							if temp_precio > 0{
-								edificio.ganancia += temp_precio
-								if edificio.privado{
-									dinero_privado += temp_precio
-									edificio.empresa.dinero += temp_precio
-								}
-								else{
-									dinero += temp_precio
-									mes_renta[current_mes] += temp_precio
-								}
-							}
+							if temp_precio > 0
+								mes_renta[current_mes] += pagar(temp_precio, edificio)
 						}
 					}
 					else if in(var_edificio_nombre, "Periódico", "Antena de Radio", "Estudio de Televisión"){
@@ -5367,16 +5297,7 @@ if (keyboard_check(vk_space) or step >= 60){
 						}
 						else if edificio.modo = 2{
 							c = floor(b / 2)
-							var temp_dinero = 10 * floor(b / 2) / (floor(b / 2) + radioemisoras)
-							edificio.ganancia += temp_dinero
-							if edificio.privado{
-								dinero_privado += temp_dinero
-								edificio.empresa.dinero += temp_dinero
-							}
-							else{
-								dinero += temp_dinero
-								mes_tarifas[current_mes] += temp_dinero
-							}
+							mes_tarifas[current_mes] += pagar(10 * floor(b / 2) / (floor(b / 2) + radioemisoras), edificio)
 						}
 						else if edificio.modo < 0{
 							candidatos[-edificio.modo].candidato_popularidad *= 0.9
@@ -5457,16 +5378,7 @@ if (keyboard_check(vk_space) or step >= 60){
 					continue
 				}
 				set_calidad_vivienda(edificio)
-				b = edificio.vivienda_renta * array_length(edificio.familias)
-				edificio.ganancia += b
-				if edificio.privado{
-					dinero_privado += b
-					edificio.empresa.dinero +=b
-				}
-				else{
-					dinero += b
-					mes_renta[current_mes] += b
-				}
+				mes_renta[current_mes] += pagar(edificio.vivienda_renta * array_length(edificio.familias), edificio)
 				if var_edificio_nombre != "Toma" and ley_eneabled[8] and not edificio.agua
 					add_tuberias(edificio)
 				var poblacion = 0

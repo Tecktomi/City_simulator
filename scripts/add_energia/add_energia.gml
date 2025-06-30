@@ -10,14 +10,6 @@ function add_energia(edificio = control.null_edificio){
 				set_calidad_vivienda(edificio)
 			else
 				set_calidad_servicio(edificio)
-			if edificio.privado{
-				dinero_privado -= 100
-				edificio.empresa.dinero -= 100
-			}
-			else{
-				dinero -= 100
-				mes_construccion[current_mes] += 100
-			}
-			edificio.precio += 100
+			mes_construccion[current_mes] += pagar(-100, edificio, false)
 		}
 }

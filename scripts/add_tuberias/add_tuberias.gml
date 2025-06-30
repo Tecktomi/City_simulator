@@ -10,14 +10,6 @@ function add_tuberias(edificio = control.null_edificio){
 				set_calidad_vivienda(edificio)
 			else
 				set_calidad_servicio(edificio)
-			if edificio.privado{
-				dinero_privado -= 200
-				edificio.empresa.dinero -= 200
-			}
-			else{
-				dinero -= 200
-				mes_construccion[current_mes] += 200
-			}
-			edificio.precio += 200
+			mes_construccion[current_mes] += pagar(200, edificio, false)
 		}
 }
