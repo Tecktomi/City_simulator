@@ -535,17 +535,28 @@ if sel_build{
 						c -= 20
 					}
 				}
-				else edificio_categoria_nombre[build_categoria] = "Materias Primas"{
-					if edificio_nombre[b] = "Granja"
-						draw_sprite(spr_recursos, 0, room_width - 120, pos)
+				else if edificio_categoria_nombre[build_categoria] = "Materias Primas"{
+					if edificio_nombre[b] = "Granja"{
+						for(c = 0; c < array_length(recurso_cultivo); c++)
+							draw_sprite(spr_recursos, recurso_cultivo[c], room_width - 120 - 20 * c, pos)
+					}
 					else if edificio_nombre[b] = "Aserradero"
 						draw_sprite(spr_recursos, 1, room_width - 120, pos)
 					else if edificio_nombre[b] = "Pescadería"
 						draw_sprite(spr_recursos, 8, room_width - 120, pos)
-					else if edificio_nombre[b] = "Mina"
-						draw_sprite(spr_recursos, 9, room_width - 120, pos)
-					else if edificio_nombre[b] = "Rancho"
-						draw_sprite(spr_recursos, 18, room_width - 120, pos)
+					else if edificio_nombre[b] = "Mina"{
+						for(c = 0; c < array_length(recurso_mineral); c++)
+							draw_sprite(spr_recursos, recurso_mineral[c], room_width - 120 - 20 * c, pos)
+					}
+					else if edificio_nombre[b] = "Rancho"{
+						var temp_array = []
+						for(c = 0; c < array_length(ganado_nombre); c++)
+							for(d = 0; d < array_length(ganado_produccion[c]); d++)
+								if not array_contains(temp_array, ganado_produccion[c, d])
+									array_push(temp_array, ganado_produccion[c, d])
+						for(c = 0; c < array_length(temp_array); c++)
+							draw_sprite(spr_recursos, temp_array[c], room_width - 120 - 20 * c, pos)
+					}
 					else if edificio_nombre[b] = "Tejar"
 						draw_sprite(spr_recursos, 26, room_width - 120, pos)
 					else if edificio_nombre[b] = "Pozo Petrolífero"
@@ -1741,6 +1752,15 @@ if sel_build{
 				}
 				draw_set_color(c_white)
 				draw_circle(tempx + 50 * politica_economia, tempy + 300 - 50 * politica_sociocultural, 10, false)
+				if ley_eneabled[24] and anno >= 110{
+					b = tempx + 50 * politica_economia
+					c = tempy + 300 - 50 * politica_sociocultural
+					for(var a = 0; a < 2 * pi; a += pi / 32)
+						if b + 200 * cos(a) > tempx and c + 200 * sin(a) > tempy and b + 200 * cos(a) < tempx + 300 and c + 200 * sin(a) < tempy + 300{
+							d = a + pi / 32
+							draw_line(b + 200 * cos(a), c + 200 * sin(a), b + 200 * cos(d), c + 200 * sin(d))
+						}
+				}
 				draw_set_color(c_black)
 			#endregion
 		}
@@ -3961,7 +3981,7 @@ if (keyboard_check(vk_space) or step >= 60){
 				candidatos_votos = [0]
 				repeat(5){
 					var persona = array_pick(personas)
-					if persona.edad > 30 and persona.edad < 65 and not persona.candidato and persona.medico = null_edificio and (persona.pareja = null_persona or not persona.pareja.candidato) and not persona.preso{
+					if persona.edad > 30 and persona.edad < 65 and not persona.candidato and persona.medico = null_edificio and (persona.pareja = null_persona or not persona.pareja.candidato) and not persona.preso and (not persona.sexo or ley_eneabled[10]){
 						persona.candidato = true
 						array_push(candidatos, persona)
 						array_push(candidatos_votos, 0)

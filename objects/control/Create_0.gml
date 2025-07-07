@@ -244,6 +244,7 @@ debug = false
 		def_ley("Matrimonio igualitario", false, 200, 800, 0, 1, "Permite a personas del mismo sexo casarse")
 		def_ley("Libertad de prensa", false, 0, 500, 3, 0, "Permite a los medios de comunicación mostrar una ideología distinta a la oficial")
 		def_ley("Colonia punitiva", false, 0, 500, 6, 5, "Recibe presos de otros países (aumentando la inmigración) a cambio de un ingreso mensual")
+		def_ley("Pena de muerte", true, 120, 800, 3, 6, "Ahorraremos espacio en las prisiones acabando con los peores criminales")
 	#endregion
 	politica_economia_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
 	politica_sociocultural_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]

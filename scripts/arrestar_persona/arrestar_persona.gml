@@ -1,5 +1,16 @@
 function arrestar_persona(persona = control.null_persona, tiempo = 12){
 	with control{
+		if ley_eneabled[24] and sqrt(sqr(persona.economia - politica_economia) + sqr(persona.sociocultural - politica_sociocultural)) > 4{
+			mes_muertos_asesinados[current_mes]++
+			if persona.ladron != null_edificio
+				persona.ladron.ladron = null_persona
+			if persona.pareja != null_persona
+				persona.pareja.felicidad_temporal -= 60
+			for(var a = 0; a < array_length(persona.familia.hijos); a++)
+				persona.familia.hijos[a].felicidad_temporal -= 40
+			destroy_persona(persona)
+			return false
+		}
 		var edificio = null_edificio
 		for(var a = 0; a < array_length(edificio_count[65]); a++){
 			var temp_edificio = edificio_count[65, a]
