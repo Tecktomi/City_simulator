@@ -245,6 +245,7 @@ debug = false
 		def_ley("Libertad de prensa", false, 0, 500, 3, 0, "Permite a los medios de comunicación mostrar una ideología distinta a la oficial")
 		def_ley("Colonia punitiva", false, 0, 500, 6, 5, "Recibe presos de otros países (aumentando la inmigración) a cambio de un ingreso mensual")
 		def_ley("Pena de muerte", true, 120, 800, 3, 6, "Ahorraremos espacio en las prisiones acabando con los peores criminales")
+		def_ley("Condiciones laborales dignas", false, 90, 800, 1, 1, "Mejora la calidad laboral de todos los trabajadores pero aumenta el mantenimiento")
 	#endregion
 	politica_economia_nombre = ["Extrema izquierda", "Izquierda", "Centro izquierda", "Centro", "Centro derecha", "Derecha", "Extrema derecha"]
 	politica_sociocultural_nombre = ["Extremo libertario", "Libertario", "Libertario moderado", "Moderado", "Autoritario moderado", "Autoritario", "Extremo autoritario"]
@@ -256,7 +257,6 @@ debug = false
 	campanna = 0
 	ministerio_nombre = ["Población", "Vivienda", "Trabajo", "Salud", "Educación", "Economía", "Exterior", "Propiedad privada", "Leyes"]
 	ministerio = -1
-	subministerio = -1
 	null_noticia = {
 		dia : 0,
 		titulo : "null_noticia",
@@ -415,6 +415,9 @@ debug = false
 	recurso_mineral_rareza = [0.85, 0.875, 0.95, 0.85, 0.9, 0.925]
 	ganado_nombre = ["Vacas", "Cabras", "Ovejas", "Cerdos"]
 	ganado_produccion = [[18, 21], [19], [20], [18]]
+	recurso_ganado = [18, 19, 20, 21]
+	recurso_usado_construccion = []
+	recurso_usado_mejoras = []
 	for(a = 0; a < array_length(paises); a++){
 		var pais = paises[a], industria = pais.industria, c = 0, d = 0, text = $"{pais.nombre}: ["
 		pais.recursos = []
@@ -717,7 +720,7 @@ debug = false
 		def_edificio_base("Prisión", 5, 5, 2200, 1080, [15, 26], [40, 60], 10, 20); def_edificio_servicio(,,,,, 40); def_edificio_trabajo(true, 4, 25, 4,, 0.04,,,,,, 4)
 		def_edificio_base("Escuadra Naval", 8, 6, 4800, 1440, [1, 15, 17, 24, 28], [40, 20, 5, 20, 20], 25,,,, true); def_edificio_servicio(,,,,,,,,,,,, true); def_edificio_trabajo(true, 15, 40, 7, 1, 0.03)
 	#endregion
-	edificio_categoria_nombre = ["Residencial", "Meterias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
+	edificio_categoria_nombre = ["Residencial", "Materias Primas", "Servicios", "Entretenimiento", "Infrastructura", "Industria"]
 	edificio_categoria = [	[8, 9, 10, 18, 31, 47, 48, 49],
 							[4, 5, 14, 15, 27, 38, 40],
 							[6, 7, 16, 21, 34, 35, 43, 46, 57, 61, 62, 63, 64, 65, 66],
@@ -759,6 +762,9 @@ debug = false
 			text += $" -> Ganancia: ${c * d}"
 			show_debug_message(text)
 		}
+		for(b = 0; b < array_length(edificio_recursos_id[a]); b++)
+			if not array_contains(recurso_usado_construccion, edificio_recursos_id[a, b])
+				array_push(recurso_usado_construccion, edificio_recursos_id[a, b])
 	}
 	array_set(edificio_color, 17, 88)
 	array_set(edificio_color, 18, 88)
@@ -931,6 +937,12 @@ debug = false
 	mejora_trilladora = def_mejora("Trilladora", "Mejora la eficiencia", 100, 400, [24], [15],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.3; add_mantenimiento(2, edificio)}, [0], 0.85)
 	mejora_uso_de_drones = def_mejora("Uso de drones", "Aumenta el rendimiento y requiere menos trabajdores más instruidos", 220, 400, [24, 33], [10, 15],,, true, 5, function(edificio = null_edificio){edificio.eficiencia += 1; add_mantenimiento(1, edificio); set_trabajo_educacion(2, edificio); set_trabajadores_max(floor(edificio.trabajadores_max * 0.5), edificio); add_trabajo_sueldo(4, edificio)}, [0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 16, 24, 27, 31, 32], 0.8)
 	mejora_vacunas = def_mejora("Vacunas", "Mejora la eficiencia y consume químicos", 140, 500, [30], [10],,,,, function(edificio = null_edificio){edificio.eficiencia += 0.2; add_mantenimiento(2, edificio); add_industria_io(edificio, [30], [0.1])}, [18, 19, 20, 21], 0.9)
+	for(a = 0; a < array_length(mejoras); a++){
+		var mejora = mejoras[a]
+		for(b = 0; b < array_length(mejora.recurso_id); b++)
+			if not array_contains(recurso_usado_mejoras, mejora.recurso_id[b])
+				array_push(recurso_usado_mejoras, mejora.recurso_id[b])
+	}
 #endregion
 #region Empresas
 	null_empresa = {
@@ -1283,7 +1295,7 @@ debug = false
 	build_sel = false
 	build_index = 0
 	build_type = 0
-	build_categoria = 0
+	subministerio = 0
 	build_x = 0
 	build_y = 0
 	build_pressed = false
@@ -1424,7 +1436,7 @@ debug = false
 	getstring_param = []
 	show_string = ""
 	mouse_string = ""
-	felicidad_total = 50
+	felicidad_total = felicidad_minima
 	dinero = 20000
 	inversion_privada = 0
 	dinero_privado = 0
@@ -1472,6 +1484,7 @@ debug = false
 	}
 	encargos = [null_encargo]
 	array_pop(encargos)
+	anno_felicidad = [felicidad_total]
 	repeat(10)
 		generar_tratado()
 	repeat(10)

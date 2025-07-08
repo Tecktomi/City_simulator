@@ -478,7 +478,7 @@ if mouse_check_button_pressed(mb_right) and not build_sel and not sel_build and 
 	sel_info = false
 	build_type = 0
 	ministerio = -1
-	subministerio = -1
+	subministerio = 0
 	if tutorial = 4
 		tutorial_complete = true
 }
@@ -496,7 +496,7 @@ if sel_build{
 	for(var a = 0; a < array_length(edificio_categoria); a++){
 		if draw_boton(b, 80, edificio_categoria_nombre[a], true){
 			ministerio = -1
-			build_categoria = a
+			subministerio = a
 		}
 		b += last_width + 10
 	}
@@ -507,6 +507,8 @@ if sel_build{
 		if draw_boton(b, room_height - 100, ministerio_nombre[a], true){
 			close_show()
 			ministerio = a
+			if a = 5
+				subministerio = -1
 			if tutorial_bool{
 				if tutorial = 18 and a = 0
 					tutorial_complete = true
@@ -519,48 +521,43 @@ if sel_build{
 	pos = 100
 	//Menú de construcción
 	if ministerio = -1{
-		for(var a = 0; a < array_length(edificio_categoria[build_categoria]); a++){
-			b = edificio_categoria[build_categoria, a]
+		for(var a = 0; a < array_length(edificio_categoria[subministerio]); a++){
+			b = edificio_categoria[subministerio, a]
 			if floor(dia / 360) >= edificio_anno[b]{
-				if edificio_categoria_nombre[build_categoria] = "Industria"{
+				if edificio_categoria_nombre[subministerio] = "Industria"{
 					c = room_width - 120
 					for(d = 0; d < array_length(edificio_industria_output_id[b]); d++){
-						draw_sprite(spr_recursos, edificio_industria_output_id[b, d], c, pos)
+						draw_sprite_boton(spr_recursos, edificio_industria_output_id[b, d], c, pos,,,, recurso_nombre[edificio_industria_output_id[b, d]])
 						c -= 20
 					}
 					draw_text(c, pos, "->")
 					c -= 30
 					for(d = 0; d < array_length(edificio_industria_input_id[b]); d++){
-						draw_sprite(spr_recursos, edificio_industria_input_id[b, d], c, pos)
+						draw_sprite_boton(spr_recursos, edificio_industria_input_id[b, d], c, pos,,,, recurso_nombre[edificio_industria_input_id[b, d]])
 						c -= 20
 					}
 				}
-				else if edificio_categoria_nombre[build_categoria] = "Materias Primas"{
+				else if edificio_categoria_nombre[subministerio] = "Materias Primas"{
 					if edificio_nombre[b] = "Granja"{
 						for(c = 0; c < array_length(recurso_cultivo); c++)
-							draw_sprite(spr_recursos, recurso_cultivo[c], room_width - 120 - 20 * c, pos)
+							draw_sprite_boton(spr_recursos, recurso_cultivo[c], room_width - 120 - 20 * c, pos,,,, recurso_nombre[recurso_cultivo[c]])
 					}
 					else if edificio_nombre[b] = "Aserradero"
-						draw_sprite(spr_recursos, 1, room_width - 120, pos)
+						draw_sprite_boton(spr_recursos, 1, room_width - 120, pos,,,, recurso_nombre[1])
 					else if edificio_nombre[b] = "Pescadería"
-						draw_sprite(spr_recursos, 8, room_width - 120, pos)
+						draw_sprite_boton(spr_recursos, 8, room_width - 120, pos,,,, recurso_nombre[8])
 					else if edificio_nombre[b] = "Mina"{
 						for(c = 0; c < array_length(recurso_mineral); c++)
-							draw_sprite(spr_recursos, recurso_mineral[c], room_width - 120 - 20 * c, pos)
+							draw_sprite_boton(spr_recursos, recurso_mineral[c], room_width - 120 - 20 * c, pos,,,, recurso_nombre[recurso_mineral[c]])
 					}
 					else if edificio_nombre[b] = "Rancho"{
-						var temp_array = []
-						for(c = 0; c < array_length(ganado_nombre); c++)
-							for(d = 0; d < array_length(ganado_produccion[c]); d++)
-								if not array_contains(temp_array, ganado_produccion[c, d])
-									array_push(temp_array, ganado_produccion[c, d])
-						for(c = 0; c < array_length(temp_array); c++)
-							draw_sprite(spr_recursos, temp_array[c], room_width - 120 - 20 * c, pos)
+						for(c = 0; c < array_length(recurso_ganado); c++)
+							draw_sprite_boton(spr_recursos, recurso_ganado[c], room_width - 120 - 20 * c, pos,,,, recurso_nombre[recurso_ganado[c]])
 					}
 					else if edificio_nombre[b] = "Tejar"
-						draw_sprite(spr_recursos, 26, room_width - 120, pos)
+						draw_sprite_boton(spr_recursos, 26, room_width - 120, pos,,,, recurso_nombre[26])
 					else if edificio_nombre[b] = "Pozo Petrolífero"
-						draw_sprite(spr_recursos, 27, room_width - 120, pos)
+						draw_sprite_boton(spr_recursos, 27, room_width - 120, pos,,,, recurso_nombre[27])
 				}
 				if draw_boton(110, pos, $"{edificio_nombre[b]} ${edificio_precio[b]}",,, function(b){
 						draw_set_valign(fa_bottom)
@@ -591,7 +588,7 @@ if sel_build{
 				}
 			}
 		}
-		if floor(dia / 360) > 80 and edificio_categoria_nombre[build_categoria] = "Infrastructura" and draw_boton(110, pos, "Calles $10"){
+		if floor(dia / 360) > 80 and edificio_categoria_nombre[subministerio] = "Infrastructura" and draw_boton(110, pos, "Calles $10"){
 			sel_build = false
 			build_calle = true
 		}
@@ -736,6 +733,14 @@ if sel_build{
 				draw_text_pos(130, pos, $"Legislación: {floor(fel_ley / num_ley)}")
 				draw_text_pos(130, pos, $"Delincuencia: {floor(fel_cri / len)}")
 				draw_text_pos(130, pos, $"Eventos recientes: {floor(fel_temp / len)}")
+				//Gráfico de felicidad
+				if array_length(anno_felicidad) > 1{
+					b = 200 / (array_length(anno_felicidad) - 1)
+					draw_line(130, pos + 20, 130, pos + 120)
+					draw_line(130, pos + 120, 330, pos + 120)
+					for(var a = 0; a < array_length(anno_felicidad) - 1; a++)
+						draw_line(130 + a * b, pos + 120 - anno_felicidad[a], 130 + (a + 1) * b, pos + 120 - anno_felicidad[a + 1])
+				}
 			}
 			//Mostrar personas
 			pos = 120
@@ -1299,6 +1304,7 @@ if sel_build{
 					if draw_boton(wpos, pos, " + ",,,,,, false)
 						recurso_importado_fijo[subministerio] += 100
 					draw_text_pos(wpos, pos, recurso_importado_fijo[subministerio])
+					//Banda de precios
 					if array_contains(recurso_comida, subministerio) or array_contains(recurso_lujo, subministerio){
 						pos += 10
 						if draw_boton(510, pos, $"Banda de precio: {recurso_banda[subministerio] ? "Sí" : "No"}"){
@@ -1325,6 +1331,61 @@ if sel_build{
 								recurso_banda_max[subministerio] /= 0.9
 						}
 					}
+					pos += 10
+					draw_text_pos(510, pos, "Producido en:")
+					var flag = false
+					var temp_text = ""
+					for(var a = 0; a < array_length(edificio_categoria[5]); a++){
+						b = edificio_categoria[5, a]
+						for(c = 0; c < array_length(edificio_industria_output_id[b]); c++)
+							if edificio_industria_output_id[b, c] = subministerio{
+								flag = true
+								if draw_boton(530, pos, edificio_nombre[b]){
+									ministerio = -1
+									subministerio = 5
+								}
+								break
+							}
+					}
+					if array_contains(recurso_cultivo, subministerio)
+						temp_text += $"{edificio_nombre[4]}\n"
+					if array_contains(recurso_mineral, subministerio)
+						temp_text += $"{edificio_nombre[15]}\n"
+					if array_contains(recurso_ganado, subministerio)
+						temp_text += $"{edificio_nombre[27]}\n"
+					if subministerio = 1
+						temp_text += $"{edificio_nombre[5]}\n"
+					if subministerio = 8
+						temp_text += $"{edificio_nombre[14]}\n"
+					if subministerio = 26
+						temp_text += $"{edificio_nombre[38]}\n"
+					if subministerio = 27
+						temp_text += $"{edificio_nombre[40]}\n"
+					if temp_text = "" and not flag
+						temp_text = "Solo importado"
+					draw_text_pos(530, pos, temp_text)
+					pos += 10
+					draw_text_pos(510, pos, "Usado en:")
+					temp_text = ""
+					for(var a = 0; a < array_length(edificio_categoria[5]); a++){
+						b = edificio_categoria[5, a]
+						for(c = 0; c < array_length(edificio_industria_input_id[b]); c++)
+							if edificio_industria_input_id[b, c] = subministerio{
+								temp_text += $"{edificio_nombre[b]}\n"
+								break
+							}
+					}
+					if array_contains(recurso_comida, subministerio)
+						temp_text += "Comida\n"
+					if array_contains(recurso_lujo, subministerio)
+						temp_text += "Bien de lujo\n"
+					if array_contains(recurso_usado_construccion, subministerio)
+						temp_text += "Construcción\n"
+					if array_contains(recurso_usado_mejoras, subministerio)
+						temp_text += "Mejoras\n"
+					if temp_text = ""
+						temp_text = "Solo exportado"
+					draw_text_pos(530, pos, temp_text)
 				}
 				#region gráfico
 					draw_line(800, 150, 800, 350)
@@ -1658,6 +1719,16 @@ if sel_build{
 						for(c = 0; c < array_length(medios_comunicacion); c++)
 							edificio_estatal[medios_comunicacion[c]] = false
 					}
+					//Permitir condiciones laborales dignas
+					if a = 25{
+						if ley_eneabled[a]{
+							for(c = 0; c < array_length(edificios); c++)
+								edificios[c].trabajo_calidad += 10
+						}
+						else
+							for(c = 0; c < array_length(edificios); c++)
+								edificios[c].trabajo_calidad -= 10
+					}
 				}
 			if draw_boton(110, pos, $"Sueldo mínimo: ${sueldo_minimo}"){
 				credibilidad_financiera += floor(sueldo_minimo / 2)
@@ -1752,7 +1823,7 @@ if sel_build{
 				}
 				draw_set_color(c_white)
 				draw_circle(tempx + 50 * politica_economia, tempy + 300 - 50 * politica_sociocultural, 10, false)
-				if ley_eneabled[24] and anno >= 110{
+				if ley_eneabled[24] and (dia / 365) >= 110{
 					b = tempx + 50 * politica_economia
 					c = tempy + 300 - 50 * politica_sociocultural
 					for(var a = 0; a < 2 * pi; a += pi / 32)
@@ -3918,7 +3989,7 @@ if (keyboard_check(vk_space) or step >= 60){
 		if (dia_de_anno) = 0{
 			var anno = floor(dia / 360)
 			felicidad_minima = floor(20 + 50 * (1 + anno) / (100 + anno))
-			//Credibilidad financiera
+			array_push(anno_felicidad, felicidad_total)
 			credibilidad_financiera = clamp(credibilidad_financiera + sign((dinero_privado + inversion_privada) - prev_beneficio_privado), 1, 10)
 			prev_beneficio_privado = dinero_privado + inversion_privada
 			if array_length(empresas) < irandom(credibilidad_financiera)
@@ -4807,6 +4878,8 @@ if (keyboard_check(vk_space) or step >= 60){
 					if edificio.privado
 						mes_impuestos[current_mes] += pagar(-b * (1 + impuesto_trabajador), edificio)
 					mes_sueldos[current_mes] += pagar(-b, edificio)
+					if ley_eneabled[25]
+						mes_mantenimiento[current_mes] += pagar(-array_length(edificio.trabajadores) * 0.75, edificio)
 					for(b = 0; b < array_length(edificio.trabajadores); b++)
 						edificio.trabajadores[b].familia.riqueza += edificio.trabajo_sueldo
 					b = max(0, edificio.trabajo_mes / 30 * (0.8 + 0.1 * edificio.presupuesto) * edificio.eficiencia * edificio_experiencia[index] * edificio_industria_velocidad[index] * (edificio.energia ? 0.75 + min(0.5, energia_input / energia_output) : 1) * (edificio.agua ? 0.75 + min(0.5, agua_input / agua_output) : 1))
