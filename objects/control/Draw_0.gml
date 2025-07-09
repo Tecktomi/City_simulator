@@ -2163,7 +2163,7 @@ if build_terreno{
 		d = miny + height
 		for(var a = minx; a < c; a++){
 			for(var b = miny; b < d; b++)
-				if (bool_edificio[# a, b] and not edificio_nombre[id_edificio[# a, b].tipo] = "Toma") or mar[a, b] or construccion_reservada[# a, b] or zona_privada[# a, b] or zona_privada_venta[# a, b]{
+				if (bool_edificio[# a, b] and edificio_nombre[id_edificio[# a, b].tipo] != "Toma") or mar[a, b] or construccion_reservada[# a, b] or zona_privada[# a, b] or zona_privada_venta[# a, b]{
 					flag = false
 					break
 				}
